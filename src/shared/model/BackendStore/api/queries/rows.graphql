@@ -1,0 +1,14 @@
+query RowsMst($data: GetRowsInput!) {
+  rows(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfoMst
+    }
+    edges {
+      cursor
+      node {
+        ...RowMst
+      }
+    }
+  }
+}

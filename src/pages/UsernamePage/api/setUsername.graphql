@@ -1,0 +1,3 @@
+mutation setUsername($data: SetUsernameInput!) {
+  setUsername(data: $data)
+}

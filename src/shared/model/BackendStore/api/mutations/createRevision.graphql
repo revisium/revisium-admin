@@ -1,0 +1,8 @@
+mutation CreateRevisionMst($data: CreateRevisionInput!) {
+  createRevision(data: $data) {
+    ...RevisionMst
+    branch {
+      ...BranchMst
+    }
+  }
+}

@@ -1,0 +1,10 @@
+fragment ProjectMst on ProjectModel {
+  id
+  organizationId
+  createdAt
+  name
+  isPublic
+  rootBranch {
+    ...BranchMst
+  }
+}

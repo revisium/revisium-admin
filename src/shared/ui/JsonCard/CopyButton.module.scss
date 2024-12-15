@@ -1,0 +1,11 @@
+.JsonCard {
+  .CopyButton {
+    visibility: hidden;
+  }
+
+  &:hover {
+    .CopyButton {
+      visibility: visible;
+    }
+  }
+}

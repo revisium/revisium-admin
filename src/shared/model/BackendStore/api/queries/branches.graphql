@@ -1,0 +1,14 @@
+query BranchesMst($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfoMst
+    }
+    edges {
+      cursor
+      node {
+        ...BranchMst
+      }
+    }
+  }
+}

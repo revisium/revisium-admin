@@ -1,0 +1,1 @@
+export const COUNT_REVISIONS_TO_BE_LOADED = 12

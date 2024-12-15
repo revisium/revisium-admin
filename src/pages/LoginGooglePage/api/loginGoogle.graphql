@@ -1,0 +1,5 @@
+mutation loginGoogle($data: LoginGoogleInput!) {
+  loginGoogle(data: $data) {
+    accessToken
+  }
+}

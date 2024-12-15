@@ -1,0 +1,5 @@
+mutation loginGithub($data: LoginGithubInput!) {
+  loginGithub(data: $data) {
+    accessToken
+  }
+}

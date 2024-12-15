@@ -1,0 +1,5 @@
+mutation RevertChangesMst($data: RevertChangesInput!) {
+  revertChanges(data: $data) {
+    ...BranchMst
+  }
+}

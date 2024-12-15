@@ -1,0 +1,8 @@
+fragment TableMst on TableModel {
+  id
+  versionId
+  createdAt
+  readonly
+  count
+  schema
+}

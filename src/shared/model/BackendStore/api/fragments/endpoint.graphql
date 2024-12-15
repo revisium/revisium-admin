@@ -1,0 +1,5 @@
+fragment EndpointMst on EndpointModel {
+  id
+  type
+  createdAt
+}

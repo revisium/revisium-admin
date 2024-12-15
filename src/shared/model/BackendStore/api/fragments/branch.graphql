@@ -1,0 +1,25 @@
+fragment BranchMst on BranchModel {
+  id
+  createdAt
+  name
+  touched
+  projectId
+  parent {
+    branch {
+      id
+      name
+    }
+    revision {
+      id
+    }
+  }
+  start {
+    ...RevisionStartMst
+  }
+  head {
+    ...RevisionMst
+  }
+  draft {
+    ...RevisionDraftMst
+  }
+}

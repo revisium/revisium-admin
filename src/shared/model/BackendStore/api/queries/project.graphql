@@ -1,0 +1,5 @@
+query ProjectMst($data: GetProjectInput!) {
+  project(data: $data) {
+    ...ProjectMst
+  }
+}

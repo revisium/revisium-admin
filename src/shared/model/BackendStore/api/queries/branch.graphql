@@ -1,0 +1,5 @@
+query BranchMst($data: GetBranchInput!) {
+  branch(data: $data) {
+    ...BranchMst
+  }
+}

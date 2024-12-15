@@ -1,0 +1,10 @@
+mutation CreateTableMst($data: CreateTableInput!) {
+  createTable(data: $data) {
+    branch {
+      ...BranchMst
+    }
+    table {
+      ...TableMst
+    }
+  }
+}

@@ -1,0 +1,14 @@
+query meProjectsMst($data: GetMeProjectsInput!) {
+  meProjects(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfoMst
+    }
+    edges {
+      cursor
+      node {
+        ...ProjectMst
+      }
+    }
+  }
+}

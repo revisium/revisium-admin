@@ -1,0 +1,5 @@
+mutation CreateBranchByRevisionIdMst($data: CreateBranchByRevisionIdInput!) {
+  createBranchByRevisionId(data: $data) {
+    ...BranchMst
+  }
+}

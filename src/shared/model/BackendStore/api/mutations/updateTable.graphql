@@ -1,0 +1,8 @@
+mutation UpdateTableMst($data: UpdateTableInput!) {
+  updateTable(data: $data) {
+    table {
+      ...TableMst
+    }
+    previousVersionTableId
+  }
+}

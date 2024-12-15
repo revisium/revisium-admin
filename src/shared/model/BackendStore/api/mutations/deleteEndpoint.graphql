@@ -1,0 +1,3 @@
+mutation DeleteEndpointMst($data: DeleteEndpointInput!) {
+  deleteEndpoint(data: $data)
+}

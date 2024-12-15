@@ -1,0 +1,16 @@
+/node_modules
+/build
+
+.DS_Store
+.eslintcache
+
+npm-debug.log*
+
+.vscode
+.idea
+*.code-workspace
+
+# generated
+#*.generated.ts
+#src/__generated__/globalTypes.ts
+dist

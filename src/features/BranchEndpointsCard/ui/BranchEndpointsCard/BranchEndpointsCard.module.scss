@@ -1,0 +1,9 @@
+.Root {
+  .Action {
+    visibility: hidden;
+  }
+
+  &:hover .Action {
+    visibility: visible;
+  }
+}

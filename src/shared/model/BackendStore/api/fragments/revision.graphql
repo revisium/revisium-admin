@@ -1,0 +1,56 @@
+fragment RevisionMst on RevisionModel {
+  id
+  createdAt
+  comment
+  parent {
+    id
+  }
+  child {
+    id
+  }
+  childBranches {
+    branch {
+      id
+      name
+    }
+    revision {
+      id
+    }
+  }
+  endpoints {
+    ...EndpointMst
+  }
+}
+
+fragment RevisionStartMst on RevisionModel {
+  id
+  createdAt
+  comment
+  child {
+    id
+  }
+  childBranches {
+    branch {
+      id
+      name
+    }
+    revision {
+      id
+    }
+  }
+  endpoints {
+    ...EndpointMst
+  }
+}
+
+fragment RevisionDraftMst on RevisionModel {
+  id
+  createdAt
+  comment
+  parent {
+    id
+  }
+  endpoints {
+    ...EndpointMst
+  }
+}

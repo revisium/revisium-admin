@@ -1,0 +1,13 @@
+query configuration {
+  configuration {
+    availableEmailSignUp
+    google {
+      available
+      clientId
+    }
+    github {
+      available
+      clientId
+    }
+  }
+}

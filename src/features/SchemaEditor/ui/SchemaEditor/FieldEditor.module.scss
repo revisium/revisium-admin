@@ -1,0 +1,9 @@
+.Root {
+  .Field {
+    visibility: hidden;
+  }
+
+  &:hover .Field {
+    visibility: visible;
+  }
+}

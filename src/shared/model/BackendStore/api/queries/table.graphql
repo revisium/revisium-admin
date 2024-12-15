@@ -1,0 +1,5 @@
+query TableMst($data: GetTableInput!) {
+  table(data: $data) {
+    ...TableMst
+  }
+}

@@ -1,0 +1,11 @@
+.Field {
+  flex: 1;
+
+  .SelectReferenceButton {
+    visibility: hidden;
+  }
+
+  &:hover .SelectReferenceButton {
+    visibility: visible;
+  }
+}

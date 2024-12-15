@@ -1,0 +1,14 @@
+query TablesMst($data: GetTablesInput!) {
+  tables(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfoMst
+    }
+    edges {
+      cursor
+      node {
+        ...TableMst
+      }
+    }
+  }
+}

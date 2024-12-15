@@ -1,0 +1,12 @@
+fragment User on UserModel {
+  id
+  username
+  email
+  organizationId
+}
+
+query getMe {
+  me {
+    ...User
+  }
+}

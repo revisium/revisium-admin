@@ -1,0 +1,11 @@
+.Field {
+  width: 100%;
+
+  .RemoveButton {
+    visibility: hidden;
+  }
+
+  &:hover .RemoveButton {
+    visibility: visible;
+  }
+}

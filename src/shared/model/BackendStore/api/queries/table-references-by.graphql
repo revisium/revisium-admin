@@ -1,0 +1,17 @@
+query TableReferencesBy($data: GetTableInput!, $referenceData: GetTableReferencesInput!) {
+  table(data: $data) {
+    versionId
+    referencesBy(data: $referenceData) {
+      totalCount
+      pageInfo {
+        ...PageInfoMst
+      }
+      edges {
+        cursor
+        node {
+          ...TableMst
+        }
+      }
+    }
+  }
+}

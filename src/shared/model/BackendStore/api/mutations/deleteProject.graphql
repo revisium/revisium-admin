@@ -1,0 +1,3 @@
+mutation DeleteProjectMst($data: DeleteProjectInput!) {
+  deleteProject(data: $data)
+}

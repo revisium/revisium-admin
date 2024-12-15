@@ -1,0 +1,24 @@
+fragment BranchRevisionMst on RevisionModel {
+  ...RevisionMst
+  endpoints {
+    ...EndpointMst
+  }
+}
+
+query RevisionsMst($branch: GetBranchInput!, $revisions: GetBranchRevisionsInput!) {
+  branch(data: $branch) {
+    id
+    revisions(data: $revisions) {
+      totalCount
+      pageInfo {
+        ...PageInfoMst
+      }
+      edges {
+        cursor
+        node {
+          ...BranchRevisionMst
+        }
+      }
+    }
+  }
+}

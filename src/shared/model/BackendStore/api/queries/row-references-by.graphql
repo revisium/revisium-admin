@@ -1,0 +1,17 @@
+query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowReferencesInput!) {
+  row(data: $data) {
+    versionId
+    rowReferencesBy(data: $referenceData) {
+      totalCount
+      pageInfo {
+        ...PageInfoMst
+      }
+      edges {
+        cursor
+        node {
+          ...RowMst
+        }
+      }
+    }
+  }
+}

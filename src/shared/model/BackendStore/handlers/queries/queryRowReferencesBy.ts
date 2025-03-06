@@ -17,15 +17,15 @@ export class QueryRowReferencesByHandler implements QueryRowReferencesByHandlerT
       throw new Error('Invalid row')
     }
 
-    const connectionSnapshot = transformConnectionVersionId(result.row.rowReferencesBy)
+    const connectionSnapshot = transformConnectionVersionId(result.row.rowForeignKeysBy)
 
-    result.row.rowReferencesBy.edges.forEach(({ node }) => {
+    result.row.rowForeignKeysBy.edges.forEach(({ node }) => {
       const row = this.store.cache.addRow(node)
 
       this.store.cache.addRowByVariables(
         {
           revisionId: variables.data.revisionId,
-          tableId: variables.referenceData.referenceTableId,
+          tableId: variables.referenceData.foreignKeyTableId,
           rowId: row.id,
         },
         row.versionId,
@@ -39,7 +39,7 @@ export class QueryRowReferencesByHandler implements QueryRowReferencesByHandlerT
     })
 
     const rowReferencesByConnection = row?.getOrCreateRowReferencesByConnection(
-      variables.referenceData.referenceTableId,
+      variables.referenceData.foreignKeyTableId,
     )
 
     if (!variables.referenceData.after) {

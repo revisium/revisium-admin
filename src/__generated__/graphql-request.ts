@@ -207,22 +207,22 @@ export type GetRevisionTablesInput = {
   first: Scalars['Int']['input']
 }
 
-export type GetRowCountReferencesByInput = {
+export type GetRowCountForeignKeysByInput = {
   revisionId: Scalars['String']['input']
   rowId: Scalars['String']['input']
   tableId: Scalars['String']['input']
+}
+
+export type GetRowForeignKeysInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  foreignKeyTableId: Scalars['String']['input']
 }
 
 export type GetRowInput = {
   revisionId: Scalars['String']['input']
   rowId: Scalars['String']['input']
   tableId: Scalars['String']['input']
-}
-
-export type GetRowReferencesInput = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first: Scalars['Int']['input']
-  referenceTableId: Scalars['String']['input']
 }
 
 export type GetRowsInput = {
@@ -232,14 +232,14 @@ export type GetRowsInput = {
   tableId: Scalars['String']['input']
 }
 
+export type GetTableForeignKeysInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+}
+
 export type GetTableInput = {
   revisionId: Scalars['String']['input']
   tableId: Scalars['String']['input']
-}
-
-export type GetTableReferencesInput = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first: Scalars['Int']['input']
 }
 
 export type GetTableRowsInput = {
@@ -314,13 +314,15 @@ export type Mutation = {
   removeTable: RemoveTableResultModel
   removeUserFromOrganization: Scalars['Boolean']['output']
   removeUserFromProject: Scalars['Boolean']['output']
+  renameRow: RenameRowResultModel
+  renameTable: RenameTableResultModel
   revertChanges: BranchModel
   setUsername: Scalars['Boolean']['output']
   signUp: Scalars['Boolean']['output']
   updatePassword: Scalars['Boolean']['output']
   updateProject: Scalars['Boolean']['output']
   updateRow: UpdateRowResultModel
-  updateTable: UpdateRowResultModel
+  updateTable: UpdateTableResultModel
 }
 
 export type MutationAddUserToOrganizationArgs = {
@@ -399,6 +401,14 @@ export type MutationRemoveUserFromProjectArgs = {
   data: RemoveUserFromProjectInput
 }
 
+export type MutationRenameRowArgs = {
+  data: RenameRowInput
+}
+
+export type MutationRenameTableArgs = {
+  data: RenameTableInput
+}
+
 export type MutationRevertChangesArgs = {
   data: RevertChangesInput
 }
@@ -468,7 +478,7 @@ export type Query = {
   branch: BranchModel
   branches: BranchesConnection
   configuration: ConfigurationModel
-  getRowCountReferencesTo: Scalars['Int']['output']
+  getRowCountForeignKeysTo: Scalars['Int']['output']
   me: UserModel
   meProjects: ProjectsConnection
   project: ProjectModel
@@ -490,8 +500,8 @@ export type QueryBranchesArgs = {
   data: GetBranchesInput
 }
 
-export type QueryGetRowCountReferencesToArgs = {
-  data: GetRowCountReferencesByInput
+export type QueryGetRowCountForeignKeysToArgs = {
+  data: GetRowCountForeignKeysByInput
 }
 
 export type QueryMeProjectsArgs = {
@@ -566,6 +576,31 @@ export type RemoveUserFromProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type RenameRowInput = {
+  nextRowId: Scalars['String']['input']
+  revisionId: Scalars['String']['input']
+  rowId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
+export type RenameRowResultModel = {
+  previousVersionRowId: Scalars['String']['output']
+  previousVersionTableId: Scalars['String']['output']
+  row: RowModel
+  table: TableModel
+}
+
+export type RenameTableInput = {
+  nextTableId: Scalars['String']['input']
+  revisionId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
+export type RenameTableResultModel = {
+  previousVersionTableId: Scalars['String']['output']
+  table: TableModel
+}
+
 export type RevertChangesInput = {
   branchName: Scalars['String']['input']
   organizationId: Scalars['String']['input']
@@ -610,23 +645,22 @@ export type RoleModel = {
 }
 
 export type RowModel = {
-  countReferencesTo: Scalars['Int']['output']
+  countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
   data: Scalars['JSON']['output']
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
-  rowReferencesBy: RowsConnection
-  rowReferencesTo: RowsConnection
-  tables: Array<TableModel>
+  rowForeignKeysBy: RowsConnection
+  rowForeignKeysTo: RowsConnection
   versionId: Scalars['String']['output']
 }
 
-export type RowModelRowReferencesByArgs = {
-  data: GetRowReferencesInput
+export type RowModelRowForeignKeysByArgs = {
+  data: GetRowForeignKeysInput
 }
 
-export type RowModelRowReferencesToArgs = {
-  data: GetRowReferencesInput
+export type RowModelRowForeignKeysToArgs = {
+  data: GetRowForeignKeysInput
 }
 
 export type RowModelEdge = {
@@ -652,25 +686,24 @@ export type SignUpInput = {
 
 export type TableModel = {
   count: Scalars['Int']['output']
-  countReferencesBy: Scalars['Int']['output']
-  countReferencesTo: Scalars['Int']['output']
+  countForeignKeysBy: Scalars['Int']['output']
+  countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
+  foreignKeysBy: TablesConnection
+  foreignKeysTo: TablesConnection
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
-  referencesBy: TablesConnection
-  referencesTo: TablesConnection
-  revisions: Array<RevisionModel>
   rows: RowsConnection
   schema: Scalars['JSON']['output']
   versionId: Scalars['String']['output']
 }
 
-export type TableModelReferencesByArgs = {
-  data: GetTableReferencesInput
+export type TableModelForeignKeysByArgs = {
+  data: GetTableForeignKeysInput
 }
 
-export type TableModelReferencesToArgs = {
-  data: GetTableReferencesInput
+export type TableModelForeignKeysToArgs = {
+  data: GetTableForeignKeysInput
 }
 
 export type TableModelRowsArgs = {
@@ -717,6 +750,11 @@ export type UpdateTableInput = {
   patches: Scalars['JSON']['input']
   revisionId: Scalars['String']['input']
   tableId: Scalars['String']['input']
+}
+
+export type UpdateTableResultModel = {
+  previousVersionTableId: Scalars['String']['output']
+  table: TableModel
 }
 
 export type UserModel = {
@@ -1457,10 +1495,10 @@ export type BranchesMstQuery = {
 }
 
 export type GetRowCountReferencesToQueryVariables = Exact<{
-  data: GetRowCountReferencesByInput
+  data: GetRowCountForeignKeysByInput
 }>
 
-export type GetRowCountReferencesToQuery = { getRowCountReferencesTo: number }
+export type GetRowCountReferencesToQuery = { getRowCountForeignKeysTo: number }
 
 export type MeProjectsMstQueryVariables = Exact<{
   data: GetMeProjectsInput
@@ -1675,13 +1713,13 @@ export type RevisionsMstQuery = {
 
 export type RowReferencesByQueryVariables = Exact<{
   data: GetRowInput
-  referenceData: GetRowReferencesInput
+  referenceData: GetRowForeignKeysInput
 }>
 
 export type RowReferencesByQuery = {
   row?: {
     versionId: string
-    rowReferencesBy: {
+    rowForeignKeysBy: {
       totalCount: number
       pageInfo: {
         startCursor?: string | null
@@ -1740,13 +1778,13 @@ export type RowsMstQuery = {
 
 export type TableReferencesByQueryVariables = Exact<{
   data: GetTableInput
-  referenceData: GetTableReferencesInput
+  referenceData: GetTableForeignKeysInput
 }>
 
 export type TableReferencesByQuery = {
   table?: {
     versionId: string
-    referencesBy: {
+    foreignKeysBy: {
       totalCount: number
       pageInfo: {
         startCursor?: string | null
@@ -2195,8 +2233,8 @@ export const BranchesMstDocument = gql`
   ${BranchMstFragmentDoc}
 `
 export const GetRowCountReferencesToDocument = gql`
-  query GetRowCountReferencesTo($data: GetRowCountReferencesByInput!) {
-    getRowCountReferencesTo(data: $data)
+  query GetRowCountReferencesTo($data: GetRowCountForeignKeysByInput!) {
+    getRowCountForeignKeysTo(data: $data)
   }
 `
 export const MeProjectsMstDocument = gql`
@@ -2276,10 +2314,10 @@ export const RevisionsMstDocument = gql`
   ${BranchRevisionMstFragmentDoc}
 `
 export const RowReferencesByDocument = gql`
-  query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowReferencesInput!) {
+  query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowForeignKeysInput!) {
     row(data: $data) {
       versionId
-      rowReferencesBy(data: $referenceData) {
+      rowForeignKeysBy(data: $referenceData) {
         totalCount
         pageInfo {
           ...PageInfoMst
@@ -2323,10 +2361,10 @@ export const RowsMstDocument = gql`
   ${RowMstFragmentDoc}
 `
 export const TableReferencesByDocument = gql`
-  query TableReferencesBy($data: GetTableInput!, $referenceData: GetTableReferencesInput!) {
+  query TableReferencesBy($data: GetTableInput!, $referenceData: GetTableForeignKeysInput!) {
     table(data: $data) {
       versionId
-      referencesBy(data: $referenceData) {
+      foreignKeysBy(data: $referenceData) {
         totalCount
         pageInfo {
           ...PageInfoMst

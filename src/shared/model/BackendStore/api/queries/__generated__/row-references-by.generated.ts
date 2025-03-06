@@ -8,7 +8,7 @@ import * as Apollo from '@apollo/client'
 const defaultOptions = {} as const
 export type RowReferencesByQueryVariables = Types.Exact<{
   data: Types.GetRowInput
-  referenceData: Types.GetRowReferencesInput
+  referenceData: Types.GetRowForeignKeysInput
 }>
 
 export type RowReferencesByQuery = {
@@ -16,7 +16,7 @@ export type RowReferencesByQuery = {
   row?: {
     __typename?: 'RowModel'
     versionId: string
-    rowReferencesBy: {
+    rowForeignKeysBy: {
       __typename?: 'RowsConnection'
       totalCount: number
       pageInfo: {
@@ -43,10 +43,10 @@ export type RowReferencesByQuery = {
 }
 
 export const RowReferencesByDocument = gql`
-  query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowReferencesInput!) {
+  query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowForeignKeysInput!) {
     row(data: $data) {
       versionId
-      rowReferencesBy(data: $referenceData) {
+      rowForeignKeysBy(data: $referenceData) {
         totalCount
         pageInfo {
           ...PageInfoMst

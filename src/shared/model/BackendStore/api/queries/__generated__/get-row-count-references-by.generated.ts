@@ -5,14 +5,14 @@ import { gql } from '@apollo/client'
 import * as Apollo from '@apollo/client'
 const defaultOptions = {} as const
 export type GetRowCountReferencesToQueryVariables = Types.Exact<{
-  data: Types.GetRowCountReferencesByInput
+  data: Types.GetRowCountForeignKeysByInput
 }>
 
-export type GetRowCountReferencesToQuery = { __typename?: 'Query'; getRowCountReferencesTo: number }
+export type GetRowCountReferencesToQuery = { __typename?: 'Query'; getRowCountForeignKeysTo: number }
 
 export const GetRowCountReferencesToDocument = gql`
-  query GetRowCountReferencesTo($data: GetRowCountReferencesByInput!) {
-    getRowCountReferencesTo(data: $data)
+  query GetRowCountReferencesTo($data: GetRowCountForeignKeysByInput!) {
+    getRowCountForeignKeysTo(data: $data)
   }
 `
 

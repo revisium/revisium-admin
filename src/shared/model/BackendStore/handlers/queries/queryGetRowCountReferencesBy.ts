@@ -14,7 +14,7 @@ export class QueryGetRowCountReferencesByHandler implements QueryGetRowCountRefe
   constructor(private readonly store: IRootStore) {}
 
   public async execute(variables: QueryGetRowCountReferencesByHandlerVariables) {
-    const { getRowCountReferencesTo: count } = await getRowCountReferencesByMstRequest({ data: variables })
+    const { getRowCountForeignKeysTo: count } = await getRowCountReferencesByMstRequest({ data: variables })
 
     const cacheVariables = {
       revisionId: variables.revisionId,

@@ -17,9 +17,9 @@ export class QueryTableReferencesByHandler implements QueryTableReferencesByHand
       throw new Error('Invalid table')
     }
 
-    const connectionSnapshot = transformConnectionVersionId(result.table.referencesBy)
+    const connectionSnapshot = transformConnectionVersionId(result.table.foreignKeysBy)
 
-    result.table.referencesBy.edges.forEach(({ node }) => {
+    result.table.foreignKeysBy.edges.forEach(({ node }) => {
       this.store.cache.addOrTable(node)
     })
 

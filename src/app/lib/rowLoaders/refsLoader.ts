@@ -18,7 +18,7 @@ export const refsLoader = async (variables: { revisionId: string; tableId: strin
       data: variables,
       referenceData: {
         first: 100, // TODO lazy + fetch more
-        referenceTableId: edge.node.id,
+        foreignKeyTableId: edge.node.id,
       },
     })
   }

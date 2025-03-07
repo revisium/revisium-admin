@@ -22,14 +22,14 @@ export class QueryGetRowCountForeignKeysByHandler implements QueryGetRowCountFor
       rowId: variables.rowId,
     }
 
-    const rowRefsBy =
-      this.store.cache.getRowRefsByVariables(cacheVariables) ||
-      this.store.cache.createRowRefsByByVariables(cacheVariables)
+    const rowForeignKeysBy =
+      this.store.cache.getRowForeignKeysByVariables(cacheVariables) ||
+      this.store.cache.createRowForeignKeysByByVariables(cacheVariables)
 
-    rowRefsBy.update({
+    rowForeignKeysBy.update({
       countForeignKeysBy: count,
     })
 
-    return rowRefsBy
+    return rowForeignKeysBy
   }
 }

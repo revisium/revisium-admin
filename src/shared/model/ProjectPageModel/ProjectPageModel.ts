@@ -74,7 +74,7 @@ export class ProjectPageModel {
 
   public get rowRefsBy(): IRowForeignKeysByModel | undefined {
     if (this.revision && this.table && this.row) {
-      return this.cache.getRowRefsByVariables({
+      return this.cache.getRowForeignKeysByVariables({
         revisionId: this.revision.id,
         tableId: this.table.id,
         rowId: this.row.id,

@@ -1,21 +1,21 @@
 import { Flex } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
-import { RefsItem } from 'src/entities/Schema/ui/RefsByDataCard/RefsItem/RefsItem.tsx'
+import { ForeignKeysItem } from 'src/entities/Schema/ui/ForeignKeysByDataCard/ForeignKeysItem/ForeignKeysItem.tsx'
 import { IRowModel } from 'src/shared/model/BackendStore'
 import { IConnection } from 'src/shared/model/BackendStore/model-connection/createModelConnection.ts'
 
-interface RefsByDataCardProps {
+interface ForeignKeysByDataCardProps {
   row: IRowModel
 }
 
-export const RefsByDataCard: React.FC<RefsByDataCardProps> = ({ row }) => {
+export const ForeignKeysByDataCard: React.FC<ForeignKeysByDataCardProps> = ({ row }) => {
   const tables: { tableId: string; connection: IConnection<IRowModel> }[] = useMemo(() => {
-    const tableIds = [...row.rowReferencesByConnection.keys()]
+    const tableIds = [...row.rowForeignKeysByConnection.keys()]
 
     return tableIds
       .map((tableId) => ({
         tableId,
-        connection: row.rowReferencesByConnection.get(tableId) as IConnection<IRowModel>,
+        connection: row.rowForeignKeysByConnection.get(tableId) as IConnection<IRowModel>,
       }))
       .filter((item) => item.connection.totalCount)
   }, [row])
@@ -23,7 +23,7 @@ export const RefsByDataCard: React.FC<RefsByDataCardProps> = ({ row }) => {
   return (
     <Flex flexDirection="column" width="100%" gap="40px">
       {tables.map(({ tableId, connection }) => (
-        <RefsItem key={tableId} tableId={tableId} connection={connection} />
+        <ForeignKeysItem key={tableId} tableId={tableId} connection={connection} />
       ))}
     </Flex>
   )

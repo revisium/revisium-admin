@@ -13,10 +13,10 @@ interface CreateRowCardProps {
   store: RowDataCardStore
   onCancel?: () => void
   onAdd: () => Promise<void>
-  onSelectReference: (node: JsonStringValueStore) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
 }
 
-export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, onCancel, onAdd, onSelectReference }) => {
+export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, onCancel, onAdd, onSelectForeignKey }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleAdd = useCallback(async () => {
@@ -32,18 +32,18 @@ export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, on
     }
   })
 
-  const handleSelectReference = useCallback(
+  const handleSelectForeignKey = useCallback(
     async (node: JsonStringValueStore) => {
       store.setScrollPosition(window.scrollY)
-      await onSelectReference(node)
+      await onSelectForeignKey(node)
     },
-    [onSelectReference, store],
+    [onSelectForeignKey, store],
   )
 
   return (
     <RowEditorActions.Provider
       value={{
-        onSelectReference: handleSelectReference,
+        onSelectForeignKey: handleSelectForeignKey,
         onOverNode: store.setOverNode,
         mode: RowEditorMode.Creating,
       }}

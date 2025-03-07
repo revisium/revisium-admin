@@ -5,24 +5,24 @@ import { nanoid } from 'nanoid'
 import { NodeStoreType, SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
 
-type StringReferenceNodeStoreState = {
-  reference: string | null
+type StringForeignKeyNodeStoreState = {
+  foreignKey: string | null
   parent: StringNodeStore | null
   connectedToParent: boolean
 }
 
-export class StringReferenceNodeStore {
+export class StringForeignKeyNodeStore {
   public nodeId = nanoid()
-  public readonly type: NodeStoreType = NodeStoreType.StringReference
+  public readonly type: NodeStoreType = NodeStoreType.StringForeignKey
 
-  private state: StringReferenceNodeStoreState & IViewModel<StringReferenceNodeStoreState>
+  private state: StringForeignKeyNodeStoreState & IViewModel<StringForeignKeyNodeStoreState>
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
 
     this.state = createViewModel(
       observable({
-        reference: null,
+        foreignKey: null,
         parent: null,
         connectedToParent: false,
       }),
@@ -49,20 +49,20 @@ export class StringReferenceNodeStore {
     this.nodeId = value
   }
 
-  public get reference(): string | null {
-    return this.state.model.reference
+  public get foreignKey(): string | null {
+    return this.state.model.foreignKey
   }
 
-  public get draftReference(): string | null {
-    return this.state.reference
+  public get draftForeignKey(): string | null {
+    return this.state.foreignKey
   }
 
   public get isDirtyItself(): boolean {
     return this.state.isDirty
   }
 
-  public setReference(value: string | null): void {
-    this.state.reference = value
+  public setForeignKey(value: string | null): void {
+    this.state.foreignKey = value
   }
 
   public setParent(value: StringNodeStore | null): void {

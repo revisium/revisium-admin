@@ -29,7 +29,7 @@ export const createJsonObjectSchemaStore = (value: JsonObjectSchema): JsonObject
 export const createPrimitiveStoreBySchema = (schema: JsonSchema): JsonSchemaStorePrimitives => {
   if (schema.type === JsonSchemaTypeName.String) {
     const stringStore = new JsonStringStore()
-    stringStore.reference = schema.reference
+    stringStore.foreignKey = schema.foreignKey
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {
     return new JsonNumberStore()

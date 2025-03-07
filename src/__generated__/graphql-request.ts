@@ -1494,11 +1494,11 @@ export type BranchesMstQuery = {
   }
 }
 
-export type GetRowCountReferencesToQueryVariables = Exact<{
+export type GetRowCountForeignKeysToQueryVariables = Exact<{
   data: GetRowCountForeignKeysByInput
 }>
 
-export type GetRowCountReferencesToQuery = { getRowCountForeignKeysTo: number }
+export type GetRowCountForeignKeysToQuery = { getRowCountForeignKeysTo: number }
 
 export type MeProjectsMstQueryVariables = Exact<{
   data: GetMeProjectsInput
@@ -1711,12 +1711,12 @@ export type RevisionsMstQuery = {
   }
 }
 
-export type RowReferencesByQueryVariables = Exact<{
+export type RowForeignKeysByQueryVariables = Exact<{
   data: GetRowInput
-  referenceData: GetRowForeignKeysInput
+  foreignKeyData: GetRowForeignKeysInput
 }>
 
-export type RowReferencesByQuery = {
+export type RowForeignKeysByQuery = {
   row?: {
     versionId: string
     rowForeignKeysBy: {
@@ -1776,12 +1776,12 @@ export type RowsMstQuery = {
   }
 }
 
-export type TableReferencesByQueryVariables = Exact<{
+export type TableForeignKeysByQueryVariables = Exact<{
   data: GetTableInput
-  referenceData: GetTableForeignKeysInput
+  foreignKeyData: GetTableForeignKeysInput
 }>
 
-export type TableReferencesByQuery = {
+export type TableForeignKeysByQuery = {
   table?: {
     versionId: string
     foreignKeysBy: {
@@ -2232,8 +2232,8 @@ export const BranchesMstDocument = gql`
   ${PageInfoMstFragmentDoc}
   ${BranchMstFragmentDoc}
 `
-export const GetRowCountReferencesToDocument = gql`
-  query GetRowCountReferencesTo($data: GetRowCountForeignKeysByInput!) {
+export const GetRowCountForeignKeysToDocument = gql`
+  query GetRowCountForeignKeysTo($data: GetRowCountForeignKeysByInput!) {
     getRowCountForeignKeysTo(data: $data)
   }
 `
@@ -2313,11 +2313,11 @@ export const RevisionsMstDocument = gql`
   ${PageInfoMstFragmentDoc}
   ${BranchRevisionMstFragmentDoc}
 `
-export const RowReferencesByDocument = gql`
-  query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowForeignKeysInput!) {
+export const RowForeignKeysByDocument = gql`
+  query RowForeignKeysBy($data: GetRowInput!, $foreignKeyData: GetRowForeignKeysInput!) {
     row(data: $data) {
       versionId
-      rowForeignKeysBy(data: $referenceData) {
+      rowForeignKeysBy(data: $foreignKeyData) {
         totalCount
         pageInfo {
           ...PageInfoMst
@@ -2360,11 +2360,11 @@ export const RowsMstDocument = gql`
   ${PageInfoMstFragmentDoc}
   ${RowMstFragmentDoc}
 `
-export const TableReferencesByDocument = gql`
-  query TableReferencesBy($data: GetTableInput!, $referenceData: GetTableForeignKeysInput!) {
+export const TableForeignKeysByDocument = gql`
+  query TableForeignKeysBy($data: GetTableInput!, $foreignKeyData: GetTableForeignKeysInput!) {
     table(data: $data) {
       versionId
-      foreignKeysBy(data: $referenceData) {
+      foreignKeysBy(data: $foreignKeyData) {
         totalCount
         pageInfo {
           ...PageInfoMst
@@ -2743,17 +2743,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    GetRowCountReferencesTo(
-      variables: GetRowCountReferencesToQueryVariables,
+    GetRowCountForeignKeysTo(
+      variables: GetRowCountForeignKeysToQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<GetRowCountReferencesToQuery> {
+    ): Promise<GetRowCountForeignKeysToQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
-          client.request<GetRowCountReferencesToQuery>(GetRowCountReferencesToDocument, variables, {
+          client.request<GetRowCountForeignKeysToQuery>(GetRowCountForeignKeysToDocument, variables, {
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'GetRowCountReferencesTo',
+        'GetRowCountForeignKeysTo',
         'query',
         variables,
       )
@@ -2833,17 +2833,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    RowReferencesBy(
-      variables: RowReferencesByQueryVariables,
+    RowForeignKeysBy(
+      variables: RowForeignKeysByQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RowReferencesByQuery> {
+    ): Promise<RowForeignKeysByQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
-          client.request<RowReferencesByQuery>(RowReferencesByDocument, variables, {
+          client.request<RowForeignKeysByQuery>(RowForeignKeysByDocument, variables, {
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'RowReferencesBy',
+        'RowForeignKeysBy',
         'query',
         variables,
       )
@@ -2866,17 +2866,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    TableReferencesBy(
-      variables: TableReferencesByQueryVariables,
+    TableForeignKeysBy(
+      variables: TableForeignKeysByQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<TableReferencesByQuery> {
+    ): Promise<TableForeignKeysByQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
-          client.request<TableReferencesByQuery>(TableReferencesByDocument, variables, {
+          client.request<TableForeignKeysByQuery>(TableForeignKeysByDocument, variables, {
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'TableReferencesBy',
+        'TableForeignKeysBy',
         'query',
         variables,
       )

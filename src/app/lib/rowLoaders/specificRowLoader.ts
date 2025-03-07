@@ -16,7 +16,7 @@ export const specificRowLoader: LoaderFunction = async ({ params }) => {
   }
 
   if (!rootStore.cache.getRowRefsByVariables(variables)) {
-    await rootStore.queryGetRowCountReferencesBy(variables)
+    await rootStore.queryGetRowCountForeignKeysBy(variables)
   }
 
   await refsLoader(variables) // TODO separate route

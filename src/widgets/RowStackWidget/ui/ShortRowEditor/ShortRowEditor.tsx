@@ -6,7 +6,7 @@ interface ShortRowEditorProps {
   previousType: RowStackModelStateType
   tableId: string
   rowId: string
-  referencePath: string
+  foreignKeyPath: string
   onCancel: () => void
 }
 
@@ -14,7 +14,7 @@ export const ShortRowEditor: React.FC<ShortRowEditorProps> = ({
   previousType,
   tableId,
   rowId,
-  referencePath,
+  foreignKeyPath,
   onCancel,
 }) => {
   const prefix = useMemo(() => {
@@ -37,7 +37,7 @@ export const ShortRowEditor: React.FC<ShortRowEditorProps> = ({
           <Text>
             - {prefix} "{tableId} - {rowId}":
           </Text>
-          <Text>{referencePath}</Text>
+          <Text>{foreignKeyPath}</Text>
         </Flex>
       </Box>
     </>

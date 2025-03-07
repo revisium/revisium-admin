@@ -1,17 +1,17 @@
-import { RowReferencesByQueryVariables } from 'src/shared/model/BackendStore/api/queries/__generated__/row-references-by.generated.ts'
-import { rowReferencesByMstRequest } from 'src/shared/model/BackendStore/api/rowReferencesByMstRequest.ts'
+import { RowForeignKeysByQueryVariables } from 'src/shared/model/BackendStore/api/queries/__generated__/row-foreign-keys-by.generated.ts'
+import { rowForeignKeysByMstRequest } from 'src/shared/model/BackendStore/api/rowForeignKeysByMstRequest.ts'
 import { IQueryHandler, IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { transformConnectionVersionId } from 'src/shared/model/BackendStore/utils/transformConnection.ts'
 
-export type QueryRowReferencesByHandlerVariables = RowReferencesByQueryVariables
+export type QueryRowForeignKeysByHandlerVariables = RowForeignKeysByQueryVariables
 
-export type QueryRowReferencesByHandlerType = IQueryHandler<QueryRowReferencesByHandlerVariables, void>
+export type QueryRowForeignKeysByHandlerType = IQueryHandler<QueryRowForeignKeysByHandlerVariables, void>
 
-export class QueryRowReferencesByHandler implements QueryRowReferencesByHandlerType {
+export class QueryRowForeignKeysByHandler implements QueryRowForeignKeysByHandlerType {
   constructor(private readonly store: IRootStore) {}
 
-  public async execute(variables: QueryRowReferencesByHandlerVariables) {
-    const result = await rowReferencesByMstRequest(variables)
+  public async execute(variables: QueryRowForeignKeysByHandlerVariables) {
+    const result = await rowForeignKeysByMstRequest(variables)
 
     if (!result.row) {
       throw new Error('Invalid row')
@@ -25,7 +25,7 @@ export class QueryRowReferencesByHandler implements QueryRowReferencesByHandlerT
       this.store.cache.addRowByVariables(
         {
           revisionId: variables.data.revisionId,
-          tableId: variables.referenceData.foreignKeyTableId,
+          tableId: variables.foreignKeyData.foreignKeyTableId,
           rowId: row.id,
         },
         row.versionId,
@@ -38,14 +38,14 @@ export class QueryRowReferencesByHandler implements QueryRowReferencesByHandlerT
       rowId: variables.data.rowId,
     })
 
-    const rowReferencesByConnection = row?.getOrCreateRowReferencesByConnection(
-      variables.referenceData.foreignKeyTableId,
+    const rowForeignKeysByConnection = row?.getOrCreateRowForeignKeysByConnection(
+      variables.foreignKeyData.foreignKeyTableId,
     )
 
-    if (!variables.referenceData.after) {
-      rowReferencesByConnection?.reset()
+    if (!variables.foreignKeyData.after) {
+      rowForeignKeysByConnection?.reset()
     }
-    rowReferencesByConnection?.onLoad({
+    rowForeignKeysByConnection?.onLoad({
       edges: connectionSnapshot.edges,
       hasNextPage: connectionSnapshot.pageInfo.hasNextPage,
       totalCount: connectionSnapshot.totalCount,

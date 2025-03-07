@@ -1,7 +1,7 @@
-query TableReferencesBy($data: GetTableInput!, $referenceData: GetTableForeignKeysInput!) {
+query TableForeignKeysBy($data: GetTableInput!, $foreignKeyData: GetTableForeignKeysInput!) {
   table(data: $data) {
     versionId
-    foreignKeysBy(data: $referenceData) {
+    foreignKeysBy(data: $foreignKeyData) {
       totalCount
       pageInfo {
         ...PageInfoMst

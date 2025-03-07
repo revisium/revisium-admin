@@ -5,7 +5,7 @@ import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { NumberNodeStore } from 'src/features/SchemaEditor/model/NumberNodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
   switch (schema.type) {
@@ -27,11 +27,11 @@ const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
     case JsonSchemaTypeName.String: {
       const stringNode = new StringNodeStore()
 
-      if (schema.reference !== undefined) {
-        const stringReferenceNode = new StringReferenceNodeStore()
-        stringReferenceNode.setReference(schema.reference)
+      if (schema.foreignKey !== undefined) {
+        const stringForeignKeyNode = new StringForeignKeyNodeStore()
+        stringForeignKeyNode.setForeignKey(schema.foreignKey)
 
-        stringNode.setReference(stringReferenceNode)
+        stringNode.setForeignKey(stringForeignKeyNode)
       }
 
       return stringNode

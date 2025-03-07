@@ -10,7 +10,7 @@ import { EditRowDataCard } from 'src/features/EditRowDataCard'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
-import { SelectingReferenceDivider } from 'src/widgets/RowStackWidget/ui/SelectingReferenceDivider/SelectingRefrenceDivider.tsx'
+import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 import { ShortRowEditor } from 'src/widgets/RowStackWidget/ui/ShortRowEditor/ShortRowEditor.tsx'
 import { RowList } from 'src/widgets/RowList'
 
@@ -19,20 +19,20 @@ export const RowStack: React.FC = observer(() => {
   const linkMaker = useLinkMaker()
   const { root, item } = useRowStackModel()
 
-  const handleSelectReference = useCallback(
+  const handleSelectForeignKey = useCallback(
     async (node: JsonStringValueStore) => {
-      await root.selectReference(item, node)
+      await root.selectForeignKey(item, node)
     },
     [item, root],
   )
 
-  const handleCancelSelectReference = useCallback(() => {
-    root.cancelSelectingReference(item)
+  const handleCancelSelectForeignKey = useCallback(() => {
+    root.cancelSelectingForeignKey(item)
   }, [item, root])
 
   const handleSelectRow = useCallback(
     (rowId: string) => {
-      root.onSelectedReference(item, rowId)
+      root.onSelectedForeignKey(item, rowId)
     },
     [item, root],
   )
@@ -43,8 +43,8 @@ export const RowStack: React.FC = observer(() => {
       const createdRow = await item.createRow(store.name.getPlainValue(), store.root.getPlainValue())
 
       if (createdRow) {
-        if (item.state.isSelectingReference) {
-          root.onSelectedReference(item, store.name.getPlainValue())
+        if (item.state.isSelectingForeignKey) {
+          root.onSelectedForeignKey(item, store.name.getPlainValue())
         } else {
           navigate(linkMaker.make({ isDraft: true, rowId: createdRow.id }))
         }
@@ -62,15 +62,15 @@ export const RowStack: React.FC = observer(() => {
     }
   }, [item])
 
-  if (item.state.type === RowStackModelStateType.ConnectingReferenceRow) {
+  if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
     const schemaStore = item.state.store
 
     return (
       <>
         <ShortRowEditor
           previousType={item.state.previousType}
-          referencePath={item.currentReferencePath}
-          onCancel={handleCancelSelectReference}
+          foreignKeyPath={item.currentForeignKeyPath}
+          onCancel={handleCancelSelectForeignKey}
           tableId={item.table.id}
           rowId={schemaStore.name.getPlainValue()}
         />
@@ -81,10 +81,10 @@ export const RowStack: React.FC = observer(() => {
   if (item.state.type === RowStackModelStateType.List) {
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider tableId={item.table.id} />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <CreateRowButton onClick={item.toCreatingRow} />
         <Box paddingTop="0.5rem" paddingBottom="1rem">
-          <RowList table={item.table} onSelect={item.state.isSelectingReference ? handleSelectRow : undefined} />
+          <RowList table={item.table} onSelect={item.state.isSelectingForeignKey ? handleSelectRow : undefined} />
         </Box>
       </>
     )
@@ -93,12 +93,12 @@ export const RowStack: React.FC = observer(() => {
   if (item.state.type === RowStackModelStateType.CreatingRow) {
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider tableId={item.table.id} />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <CreateRowCard
           store={item.state.store}
           onAdd={handleCreateRow}
           onCancel={item.toList}
-          onSelectReference={handleSelectReference}
+          onSelectForeignKey={handleSelectForeignKey}
         />
       </>
     )
@@ -107,12 +107,12 @@ export const RowStack: React.FC = observer(() => {
   if (item.state.type === RowStackModelStateType.UpdatingRow) {
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider tableId={item.table.id} />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <EditRowDataCard
           isEdit={item.isEditableRevision}
           store={item.state.store}
           onUpdate={handleUpdateRow}
-          onSelectReference={handleSelectReference}
+          onSelectForeignKey={handleSelectForeignKey}
         />
       </>
     )

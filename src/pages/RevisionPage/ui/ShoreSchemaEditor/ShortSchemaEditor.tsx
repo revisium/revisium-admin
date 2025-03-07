@@ -5,14 +5,14 @@ import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStac
 interface ShortSchemaEditorProps {
   previousType: TableStackModelStateType
   tableId: string
-  referencePath: string
+  foreignKeyPath: string
   onCancel: () => void
 }
 
 export const ShortSchemaEditor: React.FC<ShortSchemaEditorProps> = ({
   previousType,
   tableId,
-  referencePath,
+  foreignKeyPath,
   onCancel,
 }) => {
   const prefix = useMemo(() => {
@@ -35,7 +35,7 @@ export const ShortSchemaEditor: React.FC<ShortSchemaEditorProps> = ({
           - {prefix} "{tableId}" -
         </Text>
         <Text minWidth={0} dir="rtl" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          path: {referencePath}
+          path: {foreignKeyPath}
         </Text>
       </Flex>
     </Box>

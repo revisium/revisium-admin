@@ -10,22 +10,22 @@ import {
 import { CacheModel } from 'src/shared/model/BackendStore/cache.mst.ts'
 import { QueryRevisionsHandler, QueryRevisionsHandlerVariables } from 'src/shared/model/BackendStore/handlers/queries'
 import {
-  QueryGetRowCountReferencesByHandler,
-  QueryGetRowCountReferencesByHandlerVariables,
-} from 'src/shared/model/BackendStore/handlers/queries/queryGetRowCountReferencesBy.ts'
+  QueryGetRowCountForeignKeysByHandler,
+  QueryGetRowCountForeignKeysByHandlerVariables,
+} from 'src/shared/model/BackendStore/handlers/queries/queryGetRowCountForeignKeysBy.ts'
 import { QueryRowHandler, QueryRowHandlerVariables } from 'src/shared/model/BackendStore/handlers/queries/queryRow.ts'
 import {
-  QueryRowReferencesByHandler,
-  QueryRowReferencesByHandlerVariables,
-} from 'src/shared/model/BackendStore/handlers/queries/queryRowReferencesBy.ts'
+  QueryRowForeignKeysByHandler,
+  QueryRowForeignKeysByHandlerVariables,
+} from 'src/shared/model/BackendStore/handlers/queries/queryRowForeignKeysBy.ts'
 import {
   QueryTableHandler,
   QueryTableHandlerVariables,
 } from 'src/shared/model/BackendStore/handlers/queries/queryTable.ts'
 import {
-  QueryTableReferencesByHandler,
-  QueryTableReferencesByHandlerVariables,
-} from 'src/shared/model/BackendStore/handlers/queries/queryTableReferencesBy.ts'
+  QueryTableForeignKeysByHandler,
+  QueryTableForeignKeysByHandlerVariables,
+} from 'src/shared/model/BackendStore/handlers/queries/queryTableForeignKeysBy.ts'
 import {
   QueryTablesHandler,
   QueryTablesHandlerVariables,
@@ -117,11 +117,11 @@ const RootStore = types
     const mapper = {
       queryRevisions: new QueryRevisionsHandler(root),
       queryTable: new QueryTableHandler(root),
-      queryTableReferencesBy: new QueryTableReferencesByHandler(root),
+      queryTableForeignKeysBy: new QueryTableForeignKeysByHandler(root),
       queryTables: new QueryTablesHandler(root),
       queryRow: new QueryRowHandler(root),
-      queryRowReferencesBy: new QueryRowReferencesByHandler(root),
-      queryGetRowCountReferencesBy: new QueryGetRowCountReferencesByHandler(root),
+      queryRowForeignKeysBy: new QueryRowForeignKeysByHandler(root),
+      queryGetRowCountForeignKeysBy: new QueryGetRowCountForeignKeysByHandler(root),
       queryRows: new QueryRowsHandler(root),
     } as const
 
@@ -132,8 +132,8 @@ const RootStore = types
       queryTable: flow(function* (variables: QueryTableHandlerVariables) {
         return yield mapper.queryTable.execute(variables)
       }),
-      queryTableReferencesBy: flow(function* (variables: QueryTableReferencesByHandlerVariables) {
-        return yield mapper.queryTableReferencesBy.execute(variables)
+      queryTableForeignKeysBy: flow(function* (variables: QueryTableForeignKeysByHandlerVariables) {
+        return yield mapper.queryTableForeignKeysBy.execute(variables)
       }),
       queryTables: flow(function* (variables: QueryTablesHandlerVariables) {
         return yield mapper.queryTables.execute(variables)
@@ -141,11 +141,11 @@ const RootStore = types
       queryRow: flow(function* (variables: QueryRowHandlerVariables) {
         return yield mapper.queryRow.execute(variables)
       }),
-      queryRowReferencesBy: flow(function* (variables: QueryRowReferencesByHandlerVariables) {
-        return yield mapper.queryRowReferencesBy.execute(variables)
+      queryRowForeignKeysBy: flow(function* (variables: QueryRowForeignKeysByHandlerVariables) {
+        return yield mapper.queryRowForeignKeysBy.execute(variables)
       }),
-      queryGetRowCountReferencesBy: flow(function* (variables: QueryGetRowCountReferencesByHandlerVariables) {
-        return yield mapper.queryGetRowCountReferencesBy.execute(variables)
+      queryGetRowCountForeignKeysBy: flow(function* (variables: QueryGetRowCountForeignKeysByHandlerVariables) {
+        return yield mapper.queryGetRowCountForeignKeysBy.execute(variables)
       }),
       queryRows: flow(function* (variables: QueryRowsHandlerVariables) {
         return yield mapper.queryRows.execute(variables)

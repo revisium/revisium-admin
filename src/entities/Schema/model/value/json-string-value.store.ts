@@ -19,8 +19,8 @@ export class JsonStringValueStore {
     makeAutoObservable(this)
   }
 
-  public get reference() {
-    return this.schema.reference
+  public get foreignKey() {
+    return this.schema.foreignKey
   }
 
   public get touched(): boolean {
@@ -28,7 +28,7 @@ export class JsonStringValueStore {
   }
 
   public get isValid(): boolean {
-    if (this.schema.reference && !this.value) {
+    if (this.schema.foreignKey && !this.value) {
       return false
     }
 

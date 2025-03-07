@@ -4,7 +4,7 @@ import { BooleanNodeStore } from 'src/features/SchemaEditor/model/BooleanNodeSto
 import { NumberNodeStore } from 'src/features/SchemaEditor/model/NumberNodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 describe('ObjectNodeStore', () => {
   it('id', () => {
@@ -101,10 +101,10 @@ describe('ObjectNodeStore', () => {
     store.addProperty(str)
     expect(store.isValid).toEqual(true)
 
-    str.setReference(new StringReferenceNodeStore())
+    str.setForeignKey(new StringForeignKeyNodeStore())
     expect(store.isValid).toEqual(false)
 
-    str.draftReference?.setReference('User')
+    str.draftForeignKey?.setForeignKey('User')
     expect(store.isValid).toEqual(true)
   })
 

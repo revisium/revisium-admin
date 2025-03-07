@@ -14,7 +14,7 @@ import { NumberNodeStore } from 'src/features/SchemaEditor/model/NumberNodeStore
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 describe('getChangesByNode', () => {
   it.each([
@@ -376,7 +376,7 @@ describe('getChangesByNode', () => {
     ])
   })
 
-  it('changed reference', () => {
+  it('changed foreign key', () => {
     const object = new ObjectNodeStore()
     const root = new RootNodeStore(object)
     const string = new StringNodeStore()
@@ -384,9 +384,9 @@ describe('getChangesByNode', () => {
     root.addProperty(object, string)
     root.submitChanges()
 
-    const ref = new StringReferenceNodeStore()
-    ref.setReference('User')
-    root.setReference(string, ref)
+    const ref = new StringForeignKeyNodeStore()
+    ref.setForeignKey('User')
+    root.setForeignKey(string, ref)
     root.setId(string, 'field2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
@@ -395,14 +395,14 @@ describe('getChangesByNode', () => {
     ])
     root.submitChanges()
 
-    root.setReferenceValue(ref, 'User2')
+    root.setForeignKeyValue(ref, 'User2')
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/properties/field2', value: string.getSchema().getPlainSchema() },
     ])
     root.submitChanges()
 
     root.setId(string, 'field3')
-    root.setReferenceValue(ref, 'User3')
+    root.setForeignKeyValue(ref, 'User3')
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/properties/field2', value: string.getSchema().getPlainSchema() },
       { op: 'move', from: '/properties/field2', path: '/properties/field3' },
@@ -590,7 +590,7 @@ describe('getChangesByNode', () => {
     })
   })
 
-  it('replaceProperty from string to string with reference', () => {
+  it('replaceProperty from string to string with foreign key', () => {
     const object = new ObjectNodeStore()
     const root = new RootNodeStore(object)
     const string = new StringNodeStore()
@@ -599,22 +599,22 @@ describe('getChangesByNode', () => {
     root.submitChanges()
 
     const nextString = new StringNodeStore()
-    nextString.setReference(new StringReferenceNodeStore())
+    nextString.setForeignKey(new StringForeignKeyNodeStore())
     root.replaceProperty(object, string, nextString)
-    root.setReferenceValue(nextString.draftReference, 'User')
+    root.setForeignKeyValue(nextString.draftForeignKey, 'User')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/properties/field', value: nextString.getSchema().getPlainSchema() },
     ])
   })
 
-  it('replaceProperty from string with reference to string', () => {
+  it('replaceProperty from string with foreign key to string', () => {
     const object = new ObjectNodeStore()
     const root = new RootNodeStore(object)
     const string = new StringNodeStore()
     root.setId(string, 'field')
-    root.setReference(string, new StringReferenceNodeStore())
-    root.setReferenceValue(string.draftReference, 'User')
+    root.setForeignKey(string, new StringForeignKeyNodeStore())
+    root.setForeignKeyValue(string.draftForeignKey, 'User')
     root.addProperty(object, string)
     root.submitChanges()
 
@@ -626,20 +626,20 @@ describe('getChangesByNode', () => {
     ])
   })
 
-  it('replaceProperty from string with reference to string with another reference', () => {
+  it('replaceProperty from string with foreign key to string with another foreign key', () => {
     const object = new ObjectNodeStore()
     const root = new RootNodeStore(object)
     const string = new StringNodeStore()
     root.setId(string, 'field')
-    root.setReference(string, new StringReferenceNodeStore())
-    root.setReferenceValue(string.draftReference, 'User')
+    root.setForeignKey(string, new StringForeignKeyNodeStore())
+    root.setForeignKeyValue(string.draftForeignKey, 'User')
     root.addProperty(object, string)
     root.submitChanges()
 
     const nextString = new StringNodeStore()
-    nextString.setReference(new StringReferenceNodeStore())
+    nextString.setForeignKey(new StringForeignKeyNodeStore())
     root.replaceProperty(object, string, nextString)
-    root.setReferenceValue(nextString.draftReference, 'User2')
+    root.setForeignKeyValue(nextString.draftForeignKey, 'User2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/properties/field', value: nextString.getSchema().getPlainSchema() },
@@ -738,26 +738,26 @@ describe('getChangesByNode', () => {
     ])
   })
 
-  it('replace items from string to string with reference', () => {
+  it('replace items from string to string with foreign key', () => {
     const items = new StringNodeStore()
     const array = new ArrayNodeStore(items)
     const root = new RootNodeStore(array)
     root.submitChanges()
 
     const nextItems = new StringNodeStore()
-    nextItems.setReference(new StringReferenceNodeStore())
+    nextItems.setForeignKey(new StringForeignKeyNodeStore())
     root.replaceItems(array, nextItems)
-    root.setReferenceValue(nextItems.draftReference, 'User')
+    root.setForeignKeyValue(nextItems.draftForeignKey, 'User')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
     ])
   })
 
-  it('replace items from string with reference to string', () => {
+  it('replace items from string with foreign key to string', () => {
     const items = new StringNodeStore()
-    items.setReference(new StringReferenceNodeStore())
-    items.draftReference?.setReference('User')
+    items.setForeignKey(new StringForeignKeyNodeStore())
+    items.draftForeignKey?.setForeignKey('User')
     const array = new ArrayNodeStore(items)
     const root = new RootNodeStore(array)
     root.submitChanges()
@@ -770,18 +770,18 @@ describe('getChangesByNode', () => {
     ])
   })
 
-  it('replace items from string with reference to string with another reference', () => {
+  it('replace items from string with foreign key to string with another foreign key', () => {
     const items = new StringNodeStore()
-    items.setReference(new StringReferenceNodeStore())
-    items.draftReference?.setReference('User')
+    items.setForeignKey(new StringForeignKeyNodeStore())
+    items.draftForeignKey?.setForeignKey('User')
     const array = new ArrayNodeStore(items)
     const root = new RootNodeStore(array)
     root.submitChanges()
 
     const nextItems = new StringNodeStore()
-    nextItems.setReference(new StringReferenceNodeStore())
+    nextItems.setForeignKey(new StringForeignKeyNodeStore())
     root.replaceItems(array, nextItems)
-    root.setReferenceValue(nextItems.draftReference, 'User2')
+    root.setForeignKeyValue(nextItems.draftForeignKey, 'User2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
@@ -805,8 +805,8 @@ describe('getChangesByNode', () => {
     const items = new ObjectNodeStore()
     const refField = new StringNodeStore()
     root.setId(refField, 'refField')
-    root.setReference(refField, new StringReferenceNodeStore())
-    root.setReferenceValue(refField.draftReference, 'User')
+    root.setForeignKey(refField, new StringForeignKeyNodeStore())
+    root.setForeignKeyValue(refField.draftForeignKey, 'User')
 
     root.addProperty(items, refField)
     const subArray = new ArrayNodeStore(items)
@@ -814,7 +814,7 @@ describe('getChangesByNode', () => {
     root.addProperty(field1, subArray)
     root.submitChanges()
 
-    root.setReferenceValue(refField.draftReference, 'User2')
+    root.setForeignKeyValue(refField.draftForeignKey, 'User2')
     root.setId(refField, 'refField2')
     const addedSubField = new StringNodeStore()
     root.setId(addedSubField, 'addedSubField')
@@ -834,7 +834,7 @@ describe('getChangesByNode', () => {
       {
         op: 'replace',
         path: '/properties/object/properties/field1/properties/array/items/properties/refField',
-        value: getStringSchema({ reference: 'User2' }),
+        value: getStringSchema({ foreignKey: 'User2' }),
       },
       {
         op: 'add',

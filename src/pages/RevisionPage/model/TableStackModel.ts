@@ -5,7 +5,7 @@ import { JsonPatch } from 'src/entities/Schema/types/json-patch.types.ts'
 import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
 import { getJsonDraftPathByNode } from 'src/features/SchemaEditor/lib/getJsonDraftPathByNode.ts'
 import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 import { CreateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateTableCommand.ts'
 import { UpdateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/UpdateTableCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
@@ -14,36 +14,36 @@ import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageM
 export enum TableStackModelStateType {
   List = 'List',
   CreatingTable = 'CreatingTable',
-  ConnectingReferenceTable = 'ConnectingReferenceTable',
+  ConnectingForeignKeyTable = 'ConnectingForeignKeyTable',
   UpdatingTable = 'UpdatingTable',
 }
 
-export type TableStackModelStateList = { type: TableStackModelStateType.List; isSelectingReference: boolean }
+export type TableStackModelStateList = { type: TableStackModelStateType.List; isSelectingForeignKey: boolean }
 
 export type TableStackModelStateCreatingTable = {
   type: TableStackModelStateType.CreatingTable
   store: RootNodeStore
-  isSelectingReference: boolean
+  isSelectingForeignKey: boolean
 }
 
-export type TableStackModelStateConnectingReferenceTable = {
-  type: TableStackModelStateType.ConnectingReferenceTable
+export type TableStackModelStateConnectingForeignKeyTable = {
+  type: TableStackModelStateType.ConnectingForeignKeyTable
   previousType: TableStackModelStateType.CreatingTable | TableStackModelStateType.UpdatingTable
   store: RootNodeStore
-  referenceNode: StringReferenceNodeStore
-  isSelectingReference: boolean
+  foreignKeyNode: StringForeignKeyNodeStore
+  isSelectingForeignKey: boolean
 }
 
 export type TableStackModelStateUpdatingTable = {
   type: TableStackModelStateType.UpdatingTable
   store: RootNodeStore
-  isSelectingReference: boolean
+  isSelectingForeignKey: boolean
 }
 
 export type TableStackModelState =
   | TableStackModelStateList
   | TableStackModelStateCreatingTable
-  | TableStackModelStateConnectingReferenceTable
+  | TableStackModelStateConnectingForeignKeyTable
   | TableStackModelStateUpdatingTable
 
 export class TableStackModel {
@@ -57,9 +57,9 @@ export class TableStackModel {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public get currentReferencePath() {
-    if (this.state.type === TableStackModelStateType.ConnectingReferenceTable && this.state.referenceNode.draftParent) {
-      return getJsonDraftPathByNode(this.state.referenceNode.draftParent)
+  public get currentForeignKeyPath() {
+    if (this.state.type === TableStackModelStateType.ConnectingForeignKeyTable && this.state.foreignKeyNode.draftParent) {
+      return getJsonDraftPathByNode(this.state.foreignKeyNode.draftParent)
     }
     return ''
   }
@@ -77,21 +77,21 @@ export class TableStackModel {
   public toList() {
     this.state = {
       type: TableStackModelStateType.List,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
     }
   }
 
-  public toConnectingReferenceTable(referenceNode: StringReferenceNodeStore) {
+  public toConnectingForeignKeyTable(foreignKeyNode: StringForeignKeyNodeStore) {
     if (
       this.state.type === TableStackModelStateType.CreatingTable ||
       this.state.type === TableStackModelStateType.UpdatingTable
     ) {
       this.state = {
-        type: TableStackModelStateType.ConnectingReferenceTable,
+        type: TableStackModelStateType.ConnectingForeignKeyTable,
         previousType: this.state.type,
         store: this.state.store,
-        isSelectingReference: this.state.isSelectingReference,
-        referenceNode,
+        isSelectingForeignKey: this.state.isSelectingForeignKey,
+        foreignKeyNode,
       }
     } else {
       throw new Error('Invalid state')
@@ -100,17 +100,17 @@ export class TableStackModel {
 
   public toCreatingTable() {
     const store =
-      this.state.type === TableStackModelStateType.ConnectingReferenceTable ? this.state.store : new RootNodeStore()
+      this.state.type === TableStackModelStateType.ConnectingForeignKeyTable ? this.state.store : new RootNodeStore()
 
     this.state = {
       type: TableStackModelStateType.CreatingTable,
       store,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
     }
   }
 
-  public toUpdatingTableFromConnectingReferenceTable() {
-    if (this.state.type !== TableStackModelStateType.ConnectingReferenceTable) {
+  public toUpdatingTableFromConnectingForeignKeyTable() {
+    if (this.state.type !== TableStackModelStateType.ConnectingForeignKeyTable) {
       throw new Error('Invalid state')
     }
 
@@ -119,7 +119,7 @@ export class TableStackModel {
     this.state = {
       type: TableStackModelStateType.UpdatingTable,
       store,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
     }
   }
 
@@ -133,7 +133,7 @@ export class TableStackModel {
     this.state = {
       type: TableStackModelStateType.UpdatingTable,
       store,
-      isSelectingReference: false,
+      isSelectingForeignKey: false,
     }
   }
 
@@ -153,7 +153,7 @@ export class TableStackModel {
     this.state = {
       type: TableStackModelStateType.UpdatingTable,
       store,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
     }
   }
 

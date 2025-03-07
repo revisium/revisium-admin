@@ -6,7 +6,7 @@ export class JsonStringStore implements JsonStringSchema {
   public readonly type = JsonSchemaTypeName.String
 
   public default: string = ''
-  public reference?: string
+  public foreignKey?: string
 
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)
@@ -18,8 +18,8 @@ export class JsonStringStore implements JsonStringSchema {
       default: this.default,
     }
 
-    if (this.reference) {
-      schema.reference = this.reference
+    if (this.foreignKey) {
+      schema.foreignKey = this.foreignKey
     }
 
     return schema

@@ -9,7 +9,7 @@ export enum RowEditorMode {
 }
 
 export interface RowEditorActionsType {
-  onSelectReference: (node: JsonStringValueStore) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
   mode: RowEditorMode
   onOverNode: (node: JsonValueStore | null) => void
 }

@@ -22,7 +22,7 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const { onSelectReference, mode } = useRowEditorActions()
+  const { onSelectForeignKey, mode } = useRowEditorActions()
 
   const handleChange = useCallback(
     (value: string) => {
@@ -31,25 +31,25 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
     [store],
   )
 
-  const handleSelectReference = useCallback(async () => {
+  const handleSelectForeignKey = useCallback(async () => {
     setIsLoading(true)
-    await onSelectReference(store)
+    await onSelectForeignKey(store)
     setIsLoading(false)
-  }, [onSelectReference, store])
+  }, [onSelectForeignKey, store])
 
-  const handleViewReference = useCallback(async () => {
+  const handleViewForeignKey = useCallback(async () => {
     navigate(
       linkMaker.make({
         ...linkMaker.getCurrentOptions(),
-        tableId: store.reference,
+        tableId: store.foreignKey,
         rowId: store.getPlainValue(),
       }),
       { state: { isBackToRow: true } },
     )
   }, [linkMaker, navigate, store])
 
-  const showSelectReference = store.reference && !readonly
-  const showViewReference = store.reference && mode !== RowEditorMode.Creating && store.getPlainValue()
+  const showSelectForeignKey = store.foreignKey && !readonly
+  const showViewForeignKey = store.foreignKey && mode !== RowEditorMode.Creating && store.getPlainValue()
 
   return (
     <Flex className={styles.Field}>
@@ -66,29 +66,29 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
           />
         )}
       </Box>
-      {showViewReference && (
+      {showViewForeignKey && (
         <IconButton
-          data-testid={`${dataTestId}-view-reference`}
+          data-testid={`${dataTestId}-view-foreign-key`}
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
           icon={<PiEyeThin />}
           variant="ghost"
-          onClick={handleViewReference}
-          className={styles.SelectReferenceButton}
+          onClick={handleViewForeignKey}
+          className={styles.SelectForeignKeyButton}
         />
       )}
-      {showSelectReference && (
+      {showSelectForeignKey && (
         <IconButton
-          data-testid={`${dataTestId}-select-reference`}
+          data-testid={`${dataTestId}-select-foreign-key`}
           isLoading={isLoading}
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
           icon={<PiLinkThin />}
           variant="ghost"
-          onClick={handleSelectReference}
-          className={styles.SelectReferenceButton}
+          onClick={handleSelectForeignKey}
+          className={styles.SelectForeignKeyButton}
         />
       )}
     </Flex>

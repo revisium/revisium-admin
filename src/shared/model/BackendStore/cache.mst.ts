@@ -13,13 +13,13 @@ import {
   IRevisionModelReferences,
   IRowModel,
   IRowModelReferences,
-  IRowRefsByModel,
+  IRowForeignKeysByModel,
   ITableModel,
   ITableModelReferences,
   ProjectModel,
   RevisionModel,
   RowModel,
-  RowRefsByModel,
+  RowForeignKeysByModel,
   TableModel,
 } from 'src/shared/model/BackendStore/model'
 import {
@@ -60,8 +60,8 @@ export const CacheModel = types
     tableByVariables: types.map(types.reference(types.late(() => TableModel))),
     row: types.map(types.late(() => RowModel)),
     rowByVariables: types.map(types.reference(types.late(() => RowModel))),
-    rowRefsBy: types.map(types.late(() => RowRefsByModel)),
-    rowRefsByByVariables: types.map(types.reference(types.late(() => RowRefsByModel))),
+    rowRefsBy: types.map(types.late(() => RowForeignKeysByModel)),
+    rowRefsByByVariables: types.map(types.reference(types.late(() => RowForeignKeysByModel))),
   })
   .views((self) => ({
     getOrganization(id: string) {
@@ -218,9 +218,9 @@ export const CacheModel = types
     },
 
     createRowRefsByByVariables({ revisionId, tableId, rowId }: RowRefsByVariables) {
-      const rowRefsBy = RowRefsByModel.create({
+      const rowRefsBy = RowForeignKeysByModel.create({
         id: nanoid(),
-        countReferencesBy: 0,
+        countForeignKeysBy: 0,
       })
 
       self.rowRefsBy.put(rowRefsBy)
@@ -255,7 +255,7 @@ export type ICacheModel = Readonly<
     getTableByVariables(variables: TableVariables): ITableModel | undefined
     getRow(id: string): IRowModel | undefined
     getRowByVariables(variables: RowVariables): IRowModel | undefined
-    getRowRefsByVariables(variables: RowRefsByVariables): IRowRefsByModel | undefined
+    getRowRefsByVariables(variables: RowRefsByVariables): IRowForeignKeysByModel | undefined
   } & {
     addOrganization(organizationSnapshot: Partial<IOrganizationModelReferences>): IOrganizationModel
     addProject(projectSnapshot: Partial<IProjectModelReferences>): IProjectModel
@@ -268,6 +268,6 @@ export type ICacheModel = Readonly<
     addTableByVariables(variables: TableVariables, tableVersionId: string): ITableModel
     addRow(rowSnapshot: Partial<IRowModelReferences>): IRowModel
     addRowByVariables(variables: RowVariables, rowVersionId: string): ITableModel
-    createRowRefsByByVariables(variables: RowRefsByVariables): IRowRefsByModel
+    createRowRefsByByVariables(variables: RowRefsByVariables): IRowForeignKeysByModel
   }
 >

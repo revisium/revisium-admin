@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 export enum SchemaEditorMode {
   Creating = 'Creating',
@@ -9,7 +9,7 @@ export enum SchemaEditorMode {
 }
 
 export interface SchemaEditorActionsType {
-  onSelectReference: (node: StringReferenceNodeStore) => void
+  onSelectForeignKey: (node: StringForeignKeyNodeStore) => void
   mode: SchemaEditorMode
   root: RootNodeStore
 }

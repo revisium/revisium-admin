@@ -11,14 +11,14 @@ describe('createSchemaNode', () => {
   it('complex', () => {
     const schema = getObjectSchema({
       fieldStr: getStringSchema(),
-      fieldRef: getStringSchema({ reference: 'User' }),
+      fieldRef: getStringSchema({ foreignKey: 'User' }),
       fieldNested: getObjectSchema({
         subField: getStringSchema(),
       }),
       arrayObjects: getArraySchema(
         getArraySchema(
           getObjectSchema({
-            ref: getStringSchema({ reference: 'Post' }),
+            ref: getStringSchema({ foreignKey: 'Post' }),
             num: getNumberSchema(),
             bool: getBooleanSchema(),
           }),

@@ -11,7 +11,7 @@ export const stringMetaSchema: Schema = {
     default: {
       type: 'string',
     },
-    reference: {
+    foreignKey: {
       type: 'string',
     },
   },

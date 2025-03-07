@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ViewerSwitcherMode } from 'src/entities/Schema'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
-import { RefsByDataCard } from 'src/entities/Schema/ui/RefsByDataCard/RefsByDataCard.tsx'
+import { ForeignKeysByDataCard } from 'src/entities/Schema/ui/ForeignKeysByDataCard/ForeignKeysByDataCard.tsx'
 
 import styles from 'src/entities/Schema/ui/RowDataCard/RowDataCard.module.scss'
 import { RowDataCardFooter } from 'src/entities/Schema/ui/RowDataCardFooter/RowDataCardFooter.tsx'
@@ -33,7 +33,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         <Flex minHeight="40px">{actions}</Flex>
         <Box className={styles.Actions}>
           <RowViewerSwitcher
-            availableRefByMode={store.areThereReferencesBy}
+            availableRefByMode={store.areThereForeignKeysBy}
             mode={store.viewMode || ViewerSwitcherMode.Tree}
             onChange={store.setViewMode}
           />
@@ -43,7 +43,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         <TreeDataCard rootValue={rootValue} rootName={rootName} store={store} isEdit={isEdit} />
       )}
       {store.viewMode === ViewerSwitcherMode.Json && <JsonCard data={store.root.getPlainValue()} />}
-      {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && <RefsByDataCard row={store.originRow} />}
+      {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && <ForeignKeysByDataCard row={store.originRow} />}
       <RowDataCardFooter store={store} />
     </Flex>
   )

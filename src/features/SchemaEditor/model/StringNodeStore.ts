@@ -4,11 +4,11 @@ import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 import { NodeStoreType, ParentSchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 type StringNodeStoreState = {
   id: string
-  reference: StringReferenceNodeStore | null
+  foreignKey: StringForeignKeyNodeStore | null
   parent: ParentSchemaNode | null
   connectedToParent: boolean
 }
@@ -25,7 +25,7 @@ export class StringNodeStore {
     this.state = createViewModel(
       observable({
         id: '',
-        reference: null,
+        foreignKey: null,
         parent: null,
         connectedToParent: false,
       }),
@@ -60,23 +60,24 @@ export class StringNodeStore {
     return this.state.connectedToParent
   }
 
-  public get reference(): StringReferenceNodeStore | null {
-    return this.state.model.reference
+  public get foreignKey(): StringForeignKeyNodeStore | null {
+    return this.state.model.foreignKey
   }
 
-  public get draftReference(): StringReferenceNodeStore | null {
-    return this.state.reference
+  public get draftForeignKey(): StringForeignKeyNodeStore | null {
+    return this.state.foreignKey
   }
 
   public getSchema(): JsonStringStore {
     const schema = new JsonStringStore()
-    schema.reference = this.state.reference?.draftReference !== null ? this.state.reference?.draftReference : undefined
+    schema.foreignKey =
+      this.state.foreignKey?.draftForeignKey !== null ? this.state.foreignKey?.draftForeignKey : undefined
 
     return schema
   }
 
   public get isValid(): boolean {
-    if (this.state.reference && !this.state.reference.draftReference) {
+    if (this.state.foreignKey && !this.state.foreignKey.draftForeignKey) {
       return false
     }
 
@@ -84,7 +85,7 @@ export class StringNodeStore {
   }
 
   public get isDirtyItself() {
-    return this.state.isDirty || Boolean(this.state.reference && this.state.reference.isDirtyItself)
+    return this.state.isDirty || Boolean(this.state.foreignKey && this.state.foreignKey.isDirtyItself)
   }
 
   public get isDirty() {
@@ -104,8 +105,8 @@ export class StringNodeStore {
     this.state.connectedToParent = false
   }
 
-  public setReference(value: StringReferenceNodeStore | null): void {
-    this.state.reference = value
+  public setForeignKey(value: StringForeignKeyNodeStore | null): void {
+    this.state.foreignKey = value
 
     if (value) {
       value.setParent(this)
@@ -115,16 +116,16 @@ export class StringNodeStore {
   public submitChanges(): void {
     this.state.submit()
 
-    if (this.state.reference) {
-      this.state.reference.submitChanges()
+    if (this.state.foreignKey) {
+      this.state.foreignKey.submitChanges()
     }
   }
 
   public resetChanges(): void {
     this.state.reset()
 
-    if (this.state.reference) {
-      this.state.reference.resetChanges()
+    if (this.state.foreignKey) {
+      this.state.foreignKey.resetChanges()
     }
   }
 }

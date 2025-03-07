@@ -6,8 +6,8 @@ import {
   IConnection,
 } from 'src/shared/model/BackendStore/model-connection/createModelConnection.ts'
 
-export const RowReferencesByConnection = createModelConnection(
-  'RowReferencesByConnection',
+export const RowForeignKeysByConnection = createModelConnection(
+  'RowForeignKeysByConnection',
   types.late(() => RowModel),
 )
 
@@ -18,7 +18,7 @@ export const RowModel = types
     createdAt: types.late(() => ISODate),
     readonly: types.boolean,
     data: types.frozen({}),
-    rowReferencesByConnection: types.map(types.optional(RowReferencesByConnection, {})),
+    rowForeignKeysByConnection: types.map(types.optional(RowForeignKeysByConnection, {})),
   })
   .actions((self) => ({
     update(rowSnapshot: SnapshotOrInstance<typeof RowModel>) {
@@ -27,12 +27,12 @@ export const RowModel = types
       }
     },
 
-    getOrCreateRowReferencesByConnection(referenceTableId: string) {
-      if (!self.rowReferencesByConnection.has(referenceTableId)) {
-        self.rowReferencesByConnection.set(referenceTableId, RowReferencesByConnection.create())
+    getOrCreateRowForeignKeysByConnection(foreignKeyTableId: string) {
+      if (!self.rowForeignKeysByConnection.has(foreignKeyTableId)) {
+        self.rowForeignKeysByConnection.set(foreignKeyTableId, RowForeignKeysByConnection.create())
       }
 
-      return self.rowReferencesByConnection.get(referenceTableId)
+      return self.rowForeignKeysByConnection.get(foreignKeyTableId)
     },
   }))
 
@@ -46,13 +46,13 @@ export type IRowModelBase = {
 
 export type IRowModel = IRowModelBase &
   Readonly<{
-    rowReferencesByConnection: Map<string, IConnection<IRowModel>>
+    rowForeignKeysByConnection: Map<string, IConnection<IRowModel>>
   }> & {
-    getOrCreateRowReferencesByConnection(referenceTableId: string): IConnection<IRowModel>
+  getOrCreateRowForeignKeysByConnection(foreignKeyTableId: string): IConnection<IRowModel>
     update: (snapshot: Partial<Omit<IRowModelBase, 'id' | 'versionId'>>) => void
   }
 
 export type IRowModelReferences = IRowModelBase &
   Readonly<{
-    rowReferencesByConnection: Map<string, IConnection<IRowModel>>
+    rowForeignKeysByConnection: Map<string, IConnection<IRowModel>>
   }>

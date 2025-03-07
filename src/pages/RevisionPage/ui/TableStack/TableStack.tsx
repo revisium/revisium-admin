@@ -2,27 +2,27 @@ import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { CreateTableButton } from 'src/features/CreateTableButton'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 import { SchemaEditorMode } from 'src/features/SchemaEditor/model/SchemaEditorActions.ts'
 import { SchemaEditor } from 'src/features/SchemaEditor/ui/SchemaEditor/SchemaEditor.tsx'
 import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
 import { useTableStackModel } from 'src/pages/RevisionPage/model/TableStackModelContext.ts'
-import { SelectingReferenceDivider } from 'src/pages/RevisionPage/ui/SelectingReferenceDivider/SelectingRefrenceDivider.tsx'
+import { SelectingForeignKeyDivider } from 'src/pages/RevisionPage/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 import { ShortSchemaEditor } from 'src/pages/RevisionPage/ui/ShoreSchemaEditor/ShortSchemaEditor.tsx'
 import { TableList } from 'src/widgets/TableList'
 
 export const TableStack: React.FC = observer(() => {
   const { root, item } = useTableStackModel()
 
-  const handleSelectReference = useCallback(
-    (node: StringReferenceNodeStore) => {
-      root.selectReference(item, node)
+  const handleSelectForeignKey = useCallback(
+    (node: StringForeignKeyNodeStore) => {
+      root.selectForeignKey(item, node)
     },
     [item, root],
   )
 
-  const handleCancelSelectReference = useCallback(() => {
-    root.cancelSelectingReference(item)
+  const handleCancelSelectForeignKey = useCallback(() => {
+    root.cancelSelectingForeignKey(item)
   }, [item, root])
 
   const handleApprove = useCallback(async () => {
@@ -33,8 +33,8 @@ export const TableStack: React.FC = observer(() => {
       if (result) {
         store.submitChanges()
 
-        if (item.state.isSelectingReference) {
-          root.onSelectedReference(item, store.tableId)
+        if (item.state.isSelectingForeignKey) {
+          root.onSelectedForeignKey(item, store.tableId)
         } else {
           item.toUpdatingTableFromCreatingTable()
         }
@@ -54,20 +54,20 @@ export const TableStack: React.FC = observer(() => {
 
   const handleSelectTable = useCallback(
     (tableId: string) => {
-      root.onSelectedReference(item, tableId)
+      root.onSelectedForeignKey(item, tableId)
     },
     [item, root],
   )
 
-  if (item.state.type === TableStackModelStateType.ConnectingReferenceTable) {
+  if (item.state.type === TableStackModelStateType.ConnectingForeignKeyTable) {
     const schemaStore = item.state.store
 
     return (
       <>
         <ShortSchemaEditor
           previousType={item.state.previousType}
-          referencePath={item.currentReferencePath}
-          onCancel={handleCancelSelectReference}
+          foreignKeyPath={item.currentForeignKeyPath}
+          onCancel={handleCancelSelectForeignKey}
           tableId={schemaStore.tableId}
         />
       </>
@@ -77,13 +77,13 @@ export const TableStack: React.FC = observer(() => {
   if (item.state.type === TableStackModelStateType.List) {
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
         <CreateTableButton onClick={item.toCreatingTable} />
 
         <Box paddingTop="0.5rem" paddingBottom="1rem">
           <TableList
             onSettings={item.toUpdatingTable}
-            onSelect={item.state.isSelectingReference ? handleSelectTable : undefined}
+            onSelect={item.state.isSelectingForeignKey ? handleSelectTable : undefined}
           />
         </Box>
       </>
@@ -95,13 +95,13 @@ export const TableStack: React.FC = observer(() => {
 
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
         <SchemaEditor
           store={schemaStore}
           mode={SchemaEditorMode.Creating}
           onApprove={handleApprove}
           onCancel={item.toList}
-          onSelectReference={handleSelectReference}
+          onSelectForeignKey={handleSelectForeignKey}
         />
       </>
     )
@@ -112,14 +112,14 @@ export const TableStack: React.FC = observer(() => {
 
     return (
       <>
-        {item.state.isSelectingReference && <SelectingReferenceDivider />}
+        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
         <SchemaEditor
           store={schemaStore}
           mode={SchemaEditorMode.Updating}
           isEditingMode
           onApprove={handleUpdate}
           onCancel={item.toList}
-          onSelectReference={handleSelectReference}
+          onSelectForeignKey={handleSelectForeignKey}
         />
       </>
     )

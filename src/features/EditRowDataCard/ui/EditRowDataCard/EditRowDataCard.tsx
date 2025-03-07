@@ -15,11 +15,11 @@ interface EditRowDataCardProps {
   store: RowDataCardStore
   isEdit: boolean
   onUpdate: () => Promise<void>
-  onSelectReference: (node: JsonStringValueStore) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
 }
 
 export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
-  ({ store, isEdit, onUpdate, onSelectReference }) => {
+  ({ store, isEdit, onUpdate, onSelectForeignKey }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [isLoading, setIsLoading] = useState(false)
@@ -49,18 +49,18 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
       }
     })
 
-    const handleSelectReference = useCallback(
+    const handleSelectForeignKey = useCallback(
       async (node: JsonStringValueStore) => {
         store.setScrollPosition(window.scrollY)
-        await onSelectReference(node)
+        await onSelectForeignKey(node)
       },
-      [onSelectReference, store],
+      [onSelectForeignKey, store],
     )
 
     return (
       <RowEditorActions.Provider
         value={{
-          onSelectReference: handleSelectReference,
+          onSelectForeignKey: handleSelectForeignKey,
           onOverNode: store.setOverNode,
           mode: isEdit ? RowEditorMode.Updating : RowEditorMode.Reading,
         }}

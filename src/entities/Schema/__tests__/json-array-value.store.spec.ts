@@ -8,7 +8,7 @@ describe('JsonArrayValueStore', () => {
     const schema = createJsonSchemaStore(
       getArraySchema(
         getObjectSchema({
-          userId: getStringSchema({ reference: 'User' }),
+          userId: getStringSchema({ foreignKey: 'User' }),
         }),
       ),
     ) as JsonArrayStore

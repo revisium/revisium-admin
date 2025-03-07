@@ -11,8 +11,8 @@ export const TableRowsConnection = createModelConnection(
   types.late(() => RowModel),
 )
 
-export const ReferencesByConnection = createModelConnection(
-  'ReferencesByConnection',
+export const foreignKeysByConnection = createModelConnection(
+  'foreignKeysByConnection',
   types.late(() => TableModel),
 )
 
@@ -25,7 +25,7 @@ export const TableModel = types
     createdAt: types.late(() => ISODate),
     schema: types.frozen({}),
     rowsConnection: types.optional(TableRowsConnection, {}),
-    referencesByConnection: types.optional(ReferencesByConnection, {}),
+    foreignKeysByConnection: types.optional(foreignKeysByConnection, {}),
   })
   .actions((self) => ({
     update(rowSnapshot: SnapshotOrInstance<typeof TableModel>) {
@@ -47,7 +47,7 @@ export type ITableModelBase = Readonly<{
 export type ITableModel = ITableModelBase &
   Readonly<{
     rowsConnection: IConnection<IRowModel>
-    referencesByConnection: IConnection<ITableModel>
+    foreignKeysByConnection: IConnection<ITableModel>
   }> & {
     update: (snapshot: Partial<Omit<ITableModelBase, 'id' | 'versionId'>>) => void
   }
@@ -55,5 +55,5 @@ export type ITableModel = ITableModelBase &
 export type ITableModelReferences = ITableModelBase &
   Readonly<{
     rowsConnection: IConnection<string>
-    referencesByConnection: IConnection<string>
+    foreignKeysByConnection: IConnection<string>
   }>

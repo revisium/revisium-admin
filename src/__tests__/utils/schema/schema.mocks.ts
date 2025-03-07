@@ -35,18 +35,18 @@ export const getMovePatch = ({ from, path }: { from: string; path: string }): Js
 })
 export const getStringSchema = ({
   defaultValue = '',
-  reference,
+  foreignKey,
 }: {
   defaultValue?: string
-  reference?: string
+  foreignKey?: string
 } = {}): JsonStringSchema => {
   const schema: JsonStringSchema = {
     type: JsonSchemaTypeName.String,
     default: defaultValue,
   }
 
-  if (reference) {
-    schema.reference = reference
+  if (foreignKey) {
+    schema.foreignKey = foreignKey
   }
 
   return schema

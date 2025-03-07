@@ -6,7 +6,7 @@ export enum JsonSchemaTypeName {
   Array = 'array',
 }
 
-export type JsonStringSchema = { type: JsonSchemaTypeName.String; default: string; reference?: string }
+export type JsonStringSchema = { type: JsonSchemaTypeName.String; default: string; foreignKey?: string }
 
 export type JsonNumberSchema = { type: JsonSchemaTypeName.Number; default: number }
 

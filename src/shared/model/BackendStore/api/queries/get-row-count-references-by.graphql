@@ -1,3 +1,0 @@
-query GetRowCountReferencesTo($data: GetRowCountReferencesByInput!) {
-  getRowCountReferencesTo(data: $data)
-}

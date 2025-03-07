@@ -1,7 +1,7 @@
-query RowReferencesBy($data: GetRowInput!, $referenceData: GetRowReferencesInput!) {
+query RowForeignKeysBy($data: GetRowInput!, $foreignKeyData: GetRowForeignKeysInput!) {
   row(data: $data) {
     versionId
-    rowReferencesBy(data: $referenceData) {
+    rowForeignKeysBy(data: $foreignKeyData) {
       totalCount
       pageInfo {
         ...PageInfoMst

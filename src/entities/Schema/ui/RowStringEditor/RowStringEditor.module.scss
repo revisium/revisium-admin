@@ -1,11 +1,11 @@
 .Field {
   flex: 1;
 
-  .SelectReferenceButton {
+  .SelectForeignKeyButton {
     visibility: hidden;
   }
 
-  &:hover .SelectReferenceButton {
+  &:hover .SelectForeignKeyButton {
     visibility: visible;
   }
 }

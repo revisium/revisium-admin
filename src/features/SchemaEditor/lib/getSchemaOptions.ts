@@ -7,7 +7,7 @@ export enum SchemaIds {
   Boolean = 'Boolean',
   Object = 'Object',
   Array = 'Array',
-  ReferenceString = 'ReferenceString',
+  ForeignKeyString = 'ForeignKeyString',
 }
 
 type OptionSchemas = { label: string; getSchema: (currentSchema: JsonSchema) => JsonSchema; id: SchemaIds }
@@ -73,21 +73,21 @@ const typesSchemas: OptionSchemas[] = [
   },
 ]
 
-const referenceSchemas: OptionSchemas[] = [
+const foreignKeySchemas: OptionSchemas[] = [
   {
-    id: SchemaIds.ReferenceString,
+    id: SchemaIds.ForeignKeyString,
     label: JsonSchemaTypeName.String,
     getSchema: (currentSchema) => {
       let schema: JsonSchema = {
         type: JsonSchemaTypeName.String,
         default: '',
-        reference: '',
+        foreignKey: '',
       }
 
       if (
         currentSchema.type === JsonSchemaTypeName.Array &&
         currentSchema.items.type === JsonSchemaTypeName.String &&
-        currentSchema.items.reference !== undefined
+        currentSchema.items.foreignKey !== undefined
       ) {
         schema = currentSchema.items
       }
@@ -105,8 +105,8 @@ export const menuSchemaGroups: Group[] = [
   },
   {
     id: nanoid(),
-    label: 'References',
-    options: referenceSchemas,
+    label: 'Link to table',
+    options: foreignKeySchemas,
   },
 ]
 

@@ -13,13 +13,13 @@ import {
   IRevisionModelReferences,
   IRowModel,
   IRowModelReferences,
-  IRowRefsByModel,
+  IRowForeignKeysByModel,
   ITableModel,
   ITableModelReferences,
   ProjectModel,
   RevisionModel,
   RowModel,
-  RowRefsByModel,
+  RowForeignKeysByModel,
   TableModel,
 } from 'src/shared/model/BackendStore/model'
 import {
@@ -36,7 +36,7 @@ type ProjectVariables = { organizationId: string; projectName: string }
 type BranchVariables = ProjectVariables & { branchName: string }
 type TableVariables = { revisionId: string; tableId: string }
 type RowVariables = { revisionId: string; tableId: string; rowId: string }
-type RowRefsByVariables = { revisionId: string; tableId: string; rowId: string }
+type RowForeignKeysByVariables = { revisionId: string; tableId: string; rowId: string }
 
 const getVariablesKey = <T extends Record<string, unknown>>(variables: T) => JSON.stringify(variables)
 
@@ -60,8 +60,8 @@ export const CacheModel = types
     tableByVariables: types.map(types.reference(types.late(() => TableModel))),
     row: types.map(types.late(() => RowModel)),
     rowByVariables: types.map(types.reference(types.late(() => RowModel))),
-    rowRefsBy: types.map(types.late(() => RowRefsByModel)),
-    rowRefsByByVariables: types.map(types.reference(types.late(() => RowRefsByModel))),
+    rowForeignKeysBy: types.map(types.late(() => RowForeignKeysByModel)),
+    rowForeignKeysByByVariables: types.map(types.reference(types.late(() => RowForeignKeysByModel))),
   })
   .views((self) => ({
     getOrganization(id: string) {
@@ -116,9 +116,9 @@ export const CacheModel = types
       }).get()
     },
 
-    getRowRefsByVariables({ revisionId, tableId, rowId }: RowVariables) {
+    getRowForeignKeysByVariables({ revisionId, tableId, rowId }: RowVariables) {
       return computed(() => {
-        return self.rowRefsByByVariables.get(getVariablesKey({ revisionId, tableId, rowId }))
+        return self.rowForeignKeysByByVariables.get(getVariablesKey({ revisionId, tableId, rowId }))
       }).get()
     },
   }))
@@ -217,16 +217,16 @@ export const CacheModel = types
       self.rowByVariables.set(getVariablesKey({ revisionId, tableId, rowId }), rowVersionId)
     },
 
-    createRowRefsByByVariables({ revisionId, tableId, rowId }: RowRefsByVariables) {
-      const rowRefsBy = RowRefsByModel.create({
+    createRowForeignKeysByByVariables({ revisionId, tableId, rowId }: RowForeignKeysByVariables) {
+      const rowForeignKeysBy = RowForeignKeysByModel.create({
         id: nanoid(),
-        countReferencesBy: 0,
+        countForeignKeysBy: 0,
       })
 
-      self.rowRefsBy.put(rowRefsBy)
-      self.rowRefsByByVariables.set(getVariablesKey({ revisionId, tableId, rowId }), rowRefsBy.id)
+      self.rowForeignKeysBy.put(rowForeignKeysBy)
+      self.rowForeignKeysByByVariables.set(getVariablesKey({ revisionId, tableId, rowId }), rowForeignKeysBy.id)
 
-      return rowRefsBy
+      return rowForeignKeysBy
     },
   }))
 
@@ -255,7 +255,7 @@ export type ICacheModel = Readonly<
     getTableByVariables(variables: TableVariables): ITableModel | undefined
     getRow(id: string): IRowModel | undefined
     getRowByVariables(variables: RowVariables): IRowModel | undefined
-    getRowRefsByVariables(variables: RowRefsByVariables): IRowRefsByModel | undefined
+    getRowForeignKeysByVariables(variables: RowForeignKeysByVariables): IRowForeignKeysByModel | undefined
   } & {
     addOrganization(organizationSnapshot: Partial<IOrganizationModelReferences>): IOrganizationModel
     addProject(projectSnapshot: Partial<IProjectModelReferences>): IProjectModel
@@ -268,6 +268,6 @@ export type ICacheModel = Readonly<
     addTableByVariables(variables: TableVariables, tableVersionId: string): ITableModel
     addRow(rowSnapshot: Partial<IRowModelReferences>): IRowModel
     addRowByVariables(variables: RowVariables, rowVersionId: string): ITableModel
-    createRowRefsByByVariables(variables: RowRefsByVariables): IRowRefsByModel
+    createRowForeignKeysByByVariables(variables: RowForeignKeysByVariables): IRowForeignKeysByModel
   }
 >

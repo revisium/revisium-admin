@@ -12,7 +12,7 @@ export type UpdateTableMstMutationVariables = Types.Exact<{
 export type UpdateTableMstMutation = {
   __typename?: 'Mutation'
   updateTable: {
-    __typename?: 'UpdateRowResultModel'
+    __typename?: 'UpdateTableResultModel'
     previousVersionTableId: string
     table: {
       __typename?: 'TableModel'

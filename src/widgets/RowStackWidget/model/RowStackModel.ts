@@ -16,36 +16,36 @@ import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageM
 export enum RowStackModelStateType {
   List = 'List',
   CreatingRow = 'CreatingRow',
-  ConnectingReferenceRow = 'ConnectingReferenceRow',
+  ConnectingForeignKeyRow = 'ConnectingForeignKeyRow',
   UpdatingRow = 'UpdatingRow',
 }
 
-export type RowStackModelStateList = { type: RowStackModelStateType.List; isSelectingReference: boolean }
+export type RowStackModelStateList = { type: RowStackModelStateType.List; isSelectingForeignKey: boolean }
 
 export type RowStackModelStateCreatingTable = {
   type: RowStackModelStateType.CreatingRow
-  isSelectingReference: boolean
+  isSelectingForeignKey: boolean
   store: RowDataCardStore
 }
 
-export type RowStackModelStateConnectingReferenceTable = {
-  type: RowStackModelStateType.ConnectingReferenceRow
+export type RowStackModelStateConnectingForeignKeyTable = {
+  type: RowStackModelStateType.ConnectingForeignKeyRow
   previousType: RowStackModelStateType.CreatingRow | RowStackModelStateType.UpdatingRow
-  isSelectingReference: boolean
+  isSelectingForeignKey: boolean
   store: RowDataCardStore
-  referenceNode: JsonStringValueStore
+  foreignKeyNode: JsonStringValueStore
 }
 
 export type RowStackModelStateUpdatingTable = {
   type: RowStackModelStateType.UpdatingRow
-  isSelectingReference: boolean
+  isSelectingForeignKey: boolean
   store: RowDataCardStore
 }
 
 export type RowStackModelState =
   | RowStackModelStateList
   | RowStackModelStateCreatingTable
-  | RowStackModelStateConnectingReferenceTable
+  | RowStackModelStateConnectingForeignKeyTable
   | RowStackModelStateUpdatingTable
 
 export class RowStackModel {
@@ -76,9 +76,9 @@ export class RowStackModel {
     return this.projectPageModel.isEditableRevision
   }
 
-  public get currentReferencePath() {
-    if (this.state.type === RowStackModelStateType.ConnectingReferenceRow) {
-      return createJsonValuePathByStore(this.state.referenceNode)
+  public get currentForeignKeyPath() {
+    if (this.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
+      return createJsonValuePathByStore(this.state.foreignKeyNode)
     }
     return ''
   }
@@ -108,21 +108,21 @@ export class RowStackModel {
   public toList() {
     this.state = {
       type: RowStackModelStateType.List,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
     }
   }
 
-  public toConnectingReferenceRow(referenceNode: JsonStringValueStore) {
+  public toConnectingForeignKeyRow(foreignKeyNode: JsonStringValueStore) {
     if (
       this.state.type === RowStackModelStateType.CreatingRow ||
       this.state.type === RowStackModelStateType.UpdatingRow
     ) {
       this.state = {
-        type: RowStackModelStateType.ConnectingReferenceRow,
+        type: RowStackModelStateType.ConnectingForeignKeyRow,
         previousType: this.state.type,
-        isSelectingReference: this.state.isSelectingReference,
+        isSelectingForeignKey: this.state.isSelectingForeignKey,
         store: this.state.store,
-        referenceNode,
+        foreignKeyNode,
       }
     } else {
       throw new Error('Invalid state')
@@ -131,19 +131,19 @@ export class RowStackModel {
 
   public toCreatingRow() {
     const store =
-      this.state.type === RowStackModelStateType.ConnectingReferenceRow
+      this.state.type === RowStackModelStateType.ConnectingForeignKeyRow
         ? this.state.store
         : new RowDataCardStore(createJsonValueStore(createJsonSchemaStore(this.schema)))
 
     this.state = {
       type: RowStackModelStateType.CreatingRow,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
       store,
     }
   }
 
-  public toUpdatingTableFromConnectingReferenceRow() {
-    if (this.state.type !== RowStackModelStateType.ConnectingReferenceRow) {
+  public toUpdatingTableFromConnectingForeignKeyRow() {
+    if (this.state.type !== RowStackModelStateType.ConnectingForeignKeyRow) {
       throw new Error('Invalid state')
     }
 
@@ -151,7 +151,7 @@ export class RowStackModel {
 
     this.state = {
       type: RowStackModelStateType.UpdatingRow,
-      isSelectingReference: this.state.isSelectingReference,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
       store,
     }
   }

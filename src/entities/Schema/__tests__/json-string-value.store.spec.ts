@@ -8,7 +8,7 @@ describe('JsonStringValueStore', () => {
 
     expect(store.isValid).toEqual(true)
 
-    schema.reference = 'User'
+    schema.foreignKey = 'User'
     expect(store.isValid).toEqual(false)
 
     store.value = 'user-1'

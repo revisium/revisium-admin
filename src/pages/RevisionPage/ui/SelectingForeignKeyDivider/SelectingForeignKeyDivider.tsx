@@ -1,11 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react'
-import React from 'react'
 
-interface SelectingReferenceDividerProps {
-  tableId: string
-}
-
-export const SelectingReferenceDivider: React.FC<SelectingReferenceDividerProps> = ({ tableId }) => {
+export const SelectingForeignKeyDivider = () => {
   return (
     <Flex
       width="100%"
@@ -19,7 +14,7 @@ export const SelectingReferenceDivider: React.FC<SelectingReferenceDividerProps>
       pb="0.5rem"
     >
       <Box backgroundColor="gray.50" pl="5px" pr="5px" borderRadius="5px">
-        Select or create a row in "{tableId}" to be referenced by the above row
+        Select or create a table to be referenced by the above table
       </Box>
     </Flex>
   )

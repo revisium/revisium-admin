@@ -7,14 +7,14 @@ import { IRowModel } from 'src/shared/model/BackendStore'
 import { IConnection } from 'src/shared/model/BackendStore/model-connection/createModelConnection.ts'
 import { RowListItem } from './RowListItem.tsx'
 
-interface RefsItemProps {
+interface ForeignKeysItemProps {
   tableId: string
   connection: IConnection<IRowModel>
 }
 
 // TODO create model
 
-export const RefsItem: React.FC<RefsItemProps> = ({ tableId, connection }) => {
+export const ForeignKeysItem: React.FC<ForeignKeysItemProps> = ({ tableId, connection }) => {
   const navigate = useNavigate()
   const linkMaker = useLinkMaker()
 

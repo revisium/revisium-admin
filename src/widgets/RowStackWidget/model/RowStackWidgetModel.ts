@@ -25,7 +25,7 @@ export class RowStackWidgetModel {
     this.stack = [
       new RowStackModel(this.rootStore, this.projectPageModel, null, {
         type: RowStackModelStateType.List,
-        isSelectingReference: false,
+        isSelectingForeignKey: false,
       }),
     ]
 
@@ -33,7 +33,7 @@ export class RowStackWidgetModel {
       this.stack = [
         new RowStackModel(this.rootStore, this.projectPageModel, null, {
           type: RowStackModelStateType.UpdatingRow,
-          isSelectingReference: false,
+          isSelectingForeignKey: false,
           store: this.createStore(),
         }),
       ]
@@ -42,53 +42,53 @@ export class RowStackWidgetModel {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public async selectReference(item: RowStackModel, node: JsonStringValueStore): Promise<void> {
-    if (!node.reference) {
-      throw new Error('Invalid reference')
+  public async selectForeignKey(item: RowStackModel, node: JsonStringValueStore): Promise<void> {
+    if (!node.foreignKey) {
+      throw new Error('Invalid foreign key')
     }
 
-    const customTable = await this.getFetchedTableWithRows(node.reference)
+    const customTable = await this.getFetchedTableWithRows(node.foreignKey)
 
-    item.toConnectingReferenceRow(node)
+    item.toConnectingForeignKeyRow(node)
 
     runInAction(() => {
       this.stack.push(
         new RowStackModel(this.rootStore, this.projectPageModel, customTable, {
           type: RowStackModelStateType.List,
-          isSelectingReference: true,
+          isSelectingForeignKey: true,
         }),
       )
     })
   }
 
-  public cancelSelectingReference(item: RowStackModel) {
+  public cancelSelectingForeignKey(item: RowStackModel) {
     const foundIndex = this.stack.findIndex((iterItem) => iterItem === item)
 
     if (foundIndex !== -1) {
       this.stack.splice(foundIndex + 1)
     }
 
-    if (item.state.type === RowStackModelStateType.ConnectingReferenceRow) {
+    if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
       if (item.state.previousType === RowStackModelStateType.CreatingRow) {
         item.toCreatingRow()
       } else if (item.state.previousType === RowStackModelStateType.UpdatingRow) {
-        item.toUpdatingTableFromConnectingReferenceRow()
+        item.toUpdatingTableFromConnectingForeignKeyRow()
       }
     }
   }
 
-  public onSelectedReference(item: RowStackModel, rowId: string) {
+  public onSelectedForeignKey(item: RowStackModel, rowId: string) {
     const foundIndex = this.stack.findIndex((iterItem) => iterItem === item)
 
     const parentItem = this.stack[foundIndex - 1]
 
-    if (parentItem.state.type === RowStackModelStateType.ConnectingReferenceRow) {
-      parentItem.state.referenceNode.setValue(rowId)
+    if (parentItem.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
+      parentItem.state.foreignKeyNode.setValue(rowId)
 
       if (parentItem.state.previousType === RowStackModelStateType.CreatingRow) {
         parentItem.toCreatingRow()
       } else if (parentItem.state.previousType === RowStackModelStateType.UpdatingRow) {
-        parentItem.toUpdatingTableFromConnectingReferenceRow()
+        parentItem.toUpdatingTableFromConnectingForeignKeyRow()
       }
     }
 

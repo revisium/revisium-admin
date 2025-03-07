@@ -10,7 +10,7 @@ import { NodeHistory } from 'src/features/SchemaEditor/model/NodeHistory.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 type RootNodeStoreState = {
   node: SchemaNode
@@ -129,15 +129,15 @@ export class RootNodeStore {
     }
   }
 
-  public setReference(string: StringNodeStore, ref: StringReferenceNodeStore | null) {
-    string.setReference(ref)
+  public setForeignKey(string: StringNodeStore, foreignKey: StringForeignKeyNodeStore | null) {
+    string.setForeignKey(foreignKey)
     this.history.replace(string, string)
   }
 
-  public setReferenceValue(referenceNode: StringReferenceNodeStore | null, tableId: string) {
-    if (referenceNode && referenceNode.draftParent) {
-      referenceNode.setReference(tableId)
-      this.history.replace(referenceNode.draftParent, referenceNode.draftParent)
+  public setForeignKeyValue(foreignKeyNode: StringForeignKeyNodeStore | null, tableId: string) {
+    if (foreignKeyNode && foreignKeyNode.draftParent) {
+      foreignKeyNode.setForeignKey(tableId)
+      this.history.replace(foreignKeyNode.draftParent, foreignKeyNode.draftParent)
     }
   }
 }

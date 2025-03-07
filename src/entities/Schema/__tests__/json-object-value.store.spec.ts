@@ -7,8 +7,8 @@ describe('JsonObjectValueStore', () => {
   it('isValid', () => {
     const schema = createJsonSchemaStore(
       getObjectSchema({
-        userId: getStringSchema({ reference: 'User' }),
-        postId: getStringSchema({ reference: 'Post' }),
+        userId: getStringSchema({ foreignKey: 'User' }),
+        postId: getStringSchema({ foreignKey: 'Post' }),
       }),
     ) as JsonObjectStore
 

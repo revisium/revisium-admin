@@ -1,7 +1,7 @@
 import { getStringSchema } from 'src/__tests__/utils/schema/schema.mocks.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 describe('StringNodeStore', () => {
   it('id', () => {
@@ -55,11 +55,11 @@ describe('StringNodeStore', () => {
 
     expect(store.getSchema().getPlainSchema()).toEqual(getStringSchema())
 
-    const reference = new StringReferenceNodeStore()
-    reference.setReference('User')
-    store.setReference(reference)
+    const foreignKey = new StringForeignKeyNodeStore()
+    foreignKey.setForeignKey('User')
+    store.setForeignKey(foreignKey)
 
-    expect(store.getSchema().getPlainSchema()).toEqual(getStringSchema({ reference: 'User' }))
+    expect(store.getSchema().getPlainSchema()).toEqual(getStringSchema({ foreignKey: 'User' }))
   })
 
   it('isValid', () => {
@@ -67,10 +67,10 @@ describe('StringNodeStore', () => {
 
     expect(store.isValid).toEqual(true)
 
-    store.setReference(new StringReferenceNodeStore())
+    store.setForeignKey(new StringForeignKeyNodeStore())
     expect(store.isValid).toEqual(false)
 
-    store.draftReference?.setReference('User')
+    store.draftForeignKey?.setForeignKey('User')
     expect(store.isValid).toEqual(true)
   })
 
@@ -84,13 +84,13 @@ describe('StringNodeStore', () => {
     store.submitChanges()
     expect(store.isDirtyItself).toBe(false)
 
-    store.setReference(new StringReferenceNodeStore())
+    store.setForeignKey(new StringForeignKeyNodeStore())
     expect(store.isDirtyItself).toBe(true)
 
     store.submitChanges()
     expect(store.isDirtyItself).toBe(false)
 
-    store.setReference(null)
+    store.setForeignKey(null)
     expect(store.isDirtyItself).toBe(true)
 
     store.submitChanges()
@@ -100,7 +100,7 @@ describe('StringNodeStore', () => {
   it('isDirty', () => {
     const store = new StringNodeStore()
 
-    store.setReference(new StringReferenceNodeStore())
+    store.setForeignKey(new StringForeignKeyNodeStore())
     expect(store.isDirtyItself).toBe(true)
     expect(store.isDirty).toBe(true)
 
@@ -108,7 +108,7 @@ describe('StringNodeStore', () => {
     expect(store.isDirtyItself).toBe(false)
     expect(store.isDirty).toBe(false)
 
-    store.draftReference?.setReference('User')
+    store.draftForeignKey?.setForeignKey('User')
     expect(store.isDirtyItself).toBe(true)
     expect(store.isDirty).toBe(true)
 
@@ -117,45 +117,45 @@ describe('StringNodeStore', () => {
     expect(store.isDirty).toBe(false)
   })
 
-  it('reference', () => {
+  it('foreignKey', () => {
     const store = new StringNodeStore()
 
-    expect(store.reference).toBeNull()
-    expect(store.draftReference).toBeNull()
+    expect(store.foreignKey).toBeNull()
+    expect(store.draftForeignKey).toBeNull()
 
-    const ref = new StringReferenceNodeStore()
-    store.setReference(ref)
-    expect(store.reference).toBeNull()
-    expect(store.draftReference).toBe(ref)
-    expect(ref.parent).toBeNull()
-    expect(ref.draftParent).toBe(store)
+    const foreignKey = new StringForeignKeyNodeStore()
+    store.setForeignKey(foreignKey)
+    expect(store.foreignKey).toBeNull()
+    expect(store.draftForeignKey).toBe(foreignKey)
+    expect(foreignKey.parent).toBeNull()
+    expect(foreignKey.draftParent).toBe(store)
 
     store.submitChanges()
-    expect(store.reference).toBe(ref)
-    expect(store.draftReference).toBe(ref)
-    expect(ref.parent).toBe(store)
-    expect(ref.draftParent).toBe(store)
+    expect(store.foreignKey).toBe(foreignKey)
+    expect(store.draftForeignKey).toBe(foreignKey)
+    expect(foreignKey.parent).toBe(store)
+    expect(foreignKey.draftParent).toBe(store)
   })
 
   it('resetChanges', () => {
     const store = new StringNodeStore()
-    store.setReference(new StringReferenceNodeStore())
+    store.setForeignKey(new StringForeignKeyNodeStore())
 
     store.setId('id')
-    store.draftReference?.setReference('ref')
+    store.draftForeignKey?.setForeignKey('foreignKey')
     store.submitChanges()
 
     store.setId('id2')
-    store.draftReference?.setReference('ref2')
+    store.draftForeignKey?.setForeignKey('foreignKey2')
     expect(store.draftId).toEqual('id2')
     expect(store.id).toEqual('id')
-    expect(store.draftReference?.draftReference).toEqual('ref2')
-    expect(store.draftReference?.reference).toEqual('ref')
+    expect(store.draftForeignKey?.draftForeignKey).toEqual('foreignKey2')
+    expect(store.draftForeignKey?.foreignKey).toEqual('foreignKey')
 
     store.resetChanges()
     expect(store.draftId).toEqual('id')
     expect(store.id).toEqual('id')
-    expect(store.draftReference?.draftReference).toEqual('ref')
-    expect(store.draftReference?.reference).toEqual('ref')
+    expect(store.draftForeignKey?.draftForeignKey).toEqual('foreignKey')
+    expect(store.draftForeignKey?.foreignKey).toEqual('foreignKey')
   })
 })

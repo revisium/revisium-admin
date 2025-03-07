@@ -16,7 +16,7 @@ export const draftRowLoader: LoaderFunction = async ({ params }) => {
     throw new NotFoundRow(params.rowId)
   }
 
-  await rootStore.queryGetRowCountReferencesBy(variables)
+  await rootStore.queryGetRowCountForeignKeysBy(variables)
   await refsLoader(variables) // TODO separate route
 
   return row

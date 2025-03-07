@@ -188,22 +188,22 @@ input GetRevisionTablesInput {
   first: Int!
 }
 
-input GetRowCountReferencesByInput {
+input GetRowCountForeignKeysByInput {
   revisionId: String!
   rowId: String!
   tableId: String!
+}
+
+input GetRowForeignKeysInput {
+  after: String
+  first: Int!
+  foreignKeyTableId: String!
 }
 
 input GetRowInput {
   revisionId: String!
   rowId: String!
   tableId: String!
-}
-
-input GetRowReferencesInput {
-  after: String
-  first: Int!
-  referenceTableId: String!
 }
 
 input GetRowsInput {
@@ -213,14 +213,14 @@ input GetRowsInput {
   tableId: String!
 }
 
+input GetTableForeignKeysInput {
+  after: String
+  first: Int!
+}
+
 input GetTableInput {
   revisionId: String!
   tableId: String!
-}
-
-input GetTableReferencesInput {
-  after: String
-  first: Int!
 }
 
 input GetTableRowsInput {
@@ -300,13 +300,15 @@ type Mutation {
   removeTable(data: RemoveTableInput!): RemoveTableResultModel!
   removeUserFromOrganization(data: RemoveUserFromOrganizationInput!): Boolean!
   removeUserFromProject(data: RemoveUserFromProjectInput!): Boolean!
+  renameRow(data: RenameRowInput!): RenameRowResultModel!
+  renameTable(data: RenameTableInput!): RenameTableResultModel!
   revertChanges(data: RevertChangesInput!): BranchModel!
   setUsername(data: SetUsernameInput!): Boolean!
   signUp(data: SignUpInput!): Boolean!
   updatePassword(data: UpdatePasswordInput!): Boolean!
   updateProject(data: UpdateProjectInput!): Boolean!
   updateRow(data: UpdateRowInput!): UpdateRowResultModel!
-  updateTable(data: UpdateTableInput!): UpdateRowResultModel!
+  updateTable(data: UpdateTableInput!): UpdateTableResultModel!
 }
 
 type PageInfo {
@@ -346,7 +348,7 @@ type Query {
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountReferencesTo(data: GetRowCountReferencesByInput!): Int!
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
   me: UserModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
   project(data: GetProjectInput!): ProjectModel!
@@ -392,6 +394,31 @@ input RemoveUserFromProjectInput {
   userId: String!
 }
 
+input RenameRowInput {
+  nextRowId: String!
+  revisionId: String!
+  rowId: String!
+  tableId: String!
+}
+
+type RenameRowResultModel {
+  previousVersionRowId: String!
+  previousVersionTableId: String!
+  row: RowModel!
+  table: TableModel!
+}
+
+input RenameTableInput {
+  nextTableId: String!
+  revisionId: String!
+  tableId: String!
+}
+
+type RenameTableResultModel {
+  previousVersionTableId: String!
+  table: TableModel!
+}
+
 input RevertChangesInput {
   branchName: String!
   organizationId: String!
@@ -432,14 +459,13 @@ type RoleModel {
 }
 
 type RowModel {
-  countReferencesTo: Int!
+  countForeignKeysTo: Int!
   createdAt: DateTime!
   data: JSON!
   id: String!
   readonly: Boolean!
-  rowReferencesBy(data: GetRowReferencesInput!): RowsConnection!
-  rowReferencesTo(data: GetRowReferencesInput!): RowsConnection!
-  tables: [TableModel!]!
+  rowForeignKeysBy(data: GetRowForeignKeysInput!): RowsConnection!
+  rowForeignKeysTo(data: GetRowForeignKeysInput!): RowsConnection!
   versionId: String!
 }
 
@@ -466,14 +492,13 @@ input SignUpInput {
 
 type TableModel {
   count: Int!
-  countReferencesBy: Int!
-  countReferencesTo: Int!
+  countForeignKeysBy: Int!
+  countForeignKeysTo: Int!
   createdAt: DateTime!
+  foreignKeysBy(data: GetTableForeignKeysInput!): TablesConnection!
+  foreignKeysTo(data: GetTableForeignKeysInput!): TablesConnection!
   id: String!
   readonly: Boolean!
-  referencesBy(data: GetTableReferencesInput!): TablesConnection!
-  referencesTo(data: GetTableReferencesInput!): TablesConnection!
-  revisions: [RevisionModel!]!
   rows(data: GetTableRowsInput!): RowsConnection!
   schema: JSON!
   versionId: String!
@@ -519,6 +544,11 @@ input UpdateTableInput {
   patches: JSON!
   revisionId: String!
   tableId: String!
+}
+
+type UpdateTableResultModel {
+  previousVersionTableId: String!
+  table: TableModel!
 }
 
 type UserModel {

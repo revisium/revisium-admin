@@ -5,7 +5,7 @@ import { ViewerSwitcherMode } from 'src/entities/Schema'
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
 import { SchemaEditorActions, SchemaEditorMode } from 'src/features/SchemaEditor/model/SchemaEditorActions.ts'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 import { RootNode } from 'src/features/SchemaEditor/ui/SchemaEditor/RootNode.tsx'
 import { ApproveButton, CloseButton } from 'src/shared/ui'
 import { BackButton2 } from 'src/shared/ui/BackButton2/BackButton2.tsx'
@@ -19,12 +19,12 @@ interface SchemaEditorProps {
   mode: SchemaEditorMode
   onApprove: () => Promise<void>
   onCancel: () => void
-  onSelectReference: (node: StringReferenceNodeStore) => void
+  onSelectForeignKey: (node: StringForeignKeyNodeStore) => void
   isEditingMode?: boolean
 }
 
 export const SchemaEditor: React.FC<SchemaEditorProps> = observer(
-  ({ store, mode, onApprove, onCancel, onSelectReference }) => {
+  ({ store, mode, onApprove, onCancel, onSelectForeignKey }) => {
     const [loading, setLoading] = useState(false)
 
     const handleApprove = useCallback(async () => {
@@ -36,7 +36,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = observer(
     return (
       <SchemaEditorActions.Provider
         value={{
-          onSelectReference: onSelectReference,
+          onSelectForeignKey: onSelectForeignKey,
           mode,
           root: store,
         }}

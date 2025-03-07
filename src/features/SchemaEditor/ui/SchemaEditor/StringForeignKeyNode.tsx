@@ -2,19 +2,19 @@ import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { PiDotOutlineFill } from 'react-icons/pi'
-import { StringReferenceNodeStore } from 'src/features/SchemaEditor/model/StringReferenceNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 import { useSchemaEditor } from 'src/features/SchemaEditor/model/SchemaEditorActions.ts'
 
-interface ReferenceEditorProps {
-  node: StringReferenceNodeStore
+interface ForeignKeyEditorProps {
+  node: StringForeignKeyNodeStore
   dataTestId?: string
 }
 
-export const StringReferenceNode: React.FC<ReferenceEditorProps> = observer(({ node, dataTestId }) => {
+export const StringForeignKeyNode: React.FC<ForeignKeyEditorProps> = observer(({ node, dataTestId }) => {
   const actions = useSchemaEditor()
 
   const handleClick = useCallback(() => {
-    actions.onSelectReference(node)
+    actions.onSelectForeignKey(node)
   }, [actions, node])
 
   return (
@@ -33,8 +33,8 @@ export const StringReferenceNode: React.FC<ReferenceEditorProps> = observer(({ n
         }}
         onClick={handleClick}
       >
-        <Text color="gray.300" cursor="pointer" data-testid={`${dataTestId}-connect-reference`}>
-          {node.draftReference || '<Connect table>'}
+        <Text color="gray.300" cursor="pointer" data-testid={`${dataTestId}-connect-foreign-key`}>
+          {node.draftForeignKey || '<Connect table>'}
         </Text>
       </Flex>
     </Flex>

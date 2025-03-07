@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { Params } from 'react-router-dom'
 import { IBranchModel, IProjectModel, IRevisionModel, IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { ICacheModel } from 'src/shared/model/BackendStore/cache.mst.ts'
-import { IRowRefsByModel } from 'src/shared/model/BackendStore/model'
+import { IRowForeignKeysByModel } from 'src/shared/model/BackendStore/model'
 import { IOrganizationModel } from 'src/shared/model/BackendStore/model/organization.mst.ts'
 
 export class ProjectPageModel {
@@ -72,9 +72,9 @@ export class ProjectPageModel {
     return this.row
   }
 
-  public get rowRefsBy(): IRowRefsByModel | undefined {
+  public get rowRefsBy(): IRowForeignKeysByModel | undefined {
     if (this.revision && this.table && this.row) {
-      return this.cache.getRowRefsByVariables({
+      return this.cache.getRowForeignKeysByVariables({
         revisionId: this.revision.id,
         tableId: this.table.id,
         rowId: this.row.id,

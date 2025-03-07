@@ -1,12 +1,12 @@
 import { IBackendStore } from 'src/shared/model/BackendStore/BackendStore.ts'
 import { ICacheModel } from 'src/shared/model/BackendStore/cache.mst.ts'
 import { QueryRevisionsHandlerType, QueryTablesHandlerType } from 'src/shared/model/BackendStore/handlers/queries'
-import { QueryGetRowCountReferencesByHandlerType } from 'src/shared/model/BackendStore/handlers/queries/queryGetRowCountReferencesBy.ts'
+import { QueryGetRowCountForeignKeysByHandlerType } from 'src/shared/model/BackendStore/handlers/queries/queryGetRowCountForeignKeysBy.ts'
 import { QueryRowHandlerType } from 'src/shared/model/BackendStore/handlers/queries/queryRow.ts'
-import { QueryRowReferencesByHandler } from 'src/shared/model/BackendStore/handlers/queries/queryRowReferencesBy.ts'
+import { QueryRowForeignKeysByHandler } from 'src/shared/model/BackendStore/handlers/queries/queryRowForeignKeysBy.ts'
 import { QueryTableHandlerType } from 'src/shared/model/BackendStore/handlers/queries/queryTable.ts'
 import { QueryRowsHandlerType } from 'src/shared/model/BackendStore/handlers/queries/queryRows.ts'
-import { QueryTableReferencesByHandler } from 'src/shared/model/BackendStore/handlers/queries/queryTableReferencesBy.ts'
+import { QueryTableForeignKeysByHandler } from 'src/shared/model/BackendStore/handlers/queries/queryTableForeignKeysBy.ts'
 import { IRevisionModel, ITableModel } from 'src/shared/model/BackendStore/model'
 import { IOrganizationModel } from 'src/shared/model/BackendStore/model/organization.mst.ts'
 
@@ -23,11 +23,11 @@ export type IRootStore = { cache: ICacheModel; backend: IBackendStore } & {
 } & {
   queryRevisions: QueryRevisionsHandlerType['execute']
   queryTable: QueryTableHandlerType['execute']
-  queryTableReferencesBy: QueryTableReferencesByHandler['execute']
+  queryTableForeignKeysBy: QueryTableForeignKeysByHandler['execute']
   queryTables: QueryTablesHandlerType['execute']
   queryRow: QueryRowHandlerType['execute']
-  queryRowReferencesBy: QueryRowReferencesByHandler['execute']
-  queryGetRowCountReferencesBy: QueryGetRowCountReferencesByHandlerType['execute']
+  queryRowForeignKeysBy: QueryRowForeignKeysByHandler['execute']
+  queryGetRowCountForeignKeysBy: QueryGetRowCountForeignKeysByHandlerType['execute']
   queryRows: QueryRowsHandlerType['execute']
 }
 

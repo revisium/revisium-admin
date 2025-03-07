@@ -58,7 +58,10 @@ export class TableStackModel {
   }
 
   public get currentForeignKeyPath() {
-    if (this.state.type === TableStackModelStateType.ConnectingForeignKeyTable && this.state.foreignKeyNode.draftParent) {
+    if (
+      this.state.type === TableStackModelStateType.ConnectingForeignKeyTable &&
+      this.state.foreignKeyNode.draftParent
+    ) {
       return getJsonDraftPathByNode(this.state.foreignKeyNode.draftParent)
     }
     return ''

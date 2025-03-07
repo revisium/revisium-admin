@@ -16,55 +16,57 @@ interface CreateRowCardProps {
   onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
 }
 
-export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, onCancel, onAdd, onSelectForeignKey }) => {
-  const [isLoading, setIsLoading] = useState(false)
+export const CreateRowCard: React.FC<CreateRowCardProps> = observer(
+  ({ store, onCancel, onAdd, onSelectForeignKey }) => {
+    const [isLoading, setIsLoading] = useState(false)
 
-  const handleAdd = useCallback(async () => {
-    setIsLoading(true)
-    await onAdd()
-    setIsLoading(false)
-  }, [onAdd])
+    const handleAdd = useCallback(async () => {
+      setIsLoading(true)
+      await onAdd()
+      setIsLoading(false)
+    }, [onAdd])
 
-  useEffectOnce(() => {
-    if (store.scrollPosition) {
-      window.scrollTo(0, store.scrollPosition)
-      store.setScrollPosition(null)
-    }
-  })
+    useEffectOnce(() => {
+      if (store.scrollPosition) {
+        window.scrollTo(0, store.scrollPosition)
+        store.setScrollPosition(null)
+      }
+    })
 
-  const handleSelectForeignKey = useCallback(
-    async (node: JsonStringValueStore) => {
-      store.setScrollPosition(window.scrollY)
-      await onSelectForeignKey(node)
-    },
-    [onSelectForeignKey, store],
-  )
+    const handleSelectForeignKey = useCallback(
+      async (node: JsonStringValueStore) => {
+        store.setScrollPosition(window.scrollY)
+        await onSelectForeignKey(node)
+      },
+      [onSelectForeignKey, store],
+    )
 
-  return (
-    <RowEditorActions.Provider
-      value={{
-        onSelectForeignKey: handleSelectForeignKey,
-        onOverNode: store.setOverNode,
-        mode: RowEditorMode.Creating,
-      }}
-    >
-      <RowDataCard
-        store={store}
-        rootName="<id>"
-        rootValue={<RowStringEditor dataTestId="0" store={store.name} />}
-        actions={
-          <>
-            <CloseButton dataTestId="close-create-row-button" onClick={onCancel} />
-            <ApproveButton
-              dataTestId="approve-create-row-button"
-              loading={isLoading}
-              onClick={handleAdd}
-              isDisabled={!store.root.isValid}
-            />
-          </>
-        }
-        isEdit
-      />
-    </RowEditorActions.Provider>
-  )
-})
+    return (
+      <RowEditorActions.Provider
+        value={{
+          onSelectForeignKey: handleSelectForeignKey,
+          onOverNode: store.setOverNode,
+          mode: RowEditorMode.Creating,
+        }}
+      >
+        <RowDataCard
+          store={store}
+          rootName="<id>"
+          rootValue={<RowStringEditor dataTestId="0" store={store.name} />}
+          actions={
+            <>
+              <CloseButton dataTestId="close-create-row-button" onClick={onCancel} />
+              <ApproveButton
+                dataTestId="approve-create-row-button"
+                loading={isLoading}
+                onClick={handleAdd}
+                isDisabled={!store.root.isValid}
+              />
+            </>
+          }
+          isEdit
+        />
+      </RowEditorActions.Provider>
+    )
+  },
+)

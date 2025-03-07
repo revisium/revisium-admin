@@ -48,7 +48,7 @@ export type IRowModel = IRowModelBase &
   Readonly<{
     rowForeignKeysByConnection: Map<string, IConnection<IRowModel>>
   }> & {
-  getOrCreateRowForeignKeysByConnection(foreignKeyTableId: string): IConnection<IRowModel>
+    getOrCreateRowForeignKeysByConnection(foreignKeyTableId: string): IConnection<IRowModel>
     update: (snapshot: Partial<Omit<IRowModelBase, 'id' | 'versionId'>>) => void
   }
 

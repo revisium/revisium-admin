@@ -43,7 +43,9 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         <TreeDataCard rootValue={rootValue} rootName={rootName} store={store} isEdit={isEdit} />
       )}
       {store.viewMode === ViewerSwitcherMode.Json && <JsonCard data={store.root.getPlainValue()} />}
-      {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && <ForeignKeysByDataCard row={store.originRow} />}
+      {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && (
+        <ForeignKeysByDataCard row={store.originRow} />
+      )}
       <RowDataCardFooter store={store} />
     </Flex>
   )

@@ -833,7 +833,7 @@ describe('getChangesByNode', () => {
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       {
         op: 'replace',
-        path: '/properties/object/properties/field1/properties/array/items/properties/foreignKey',
+        path: '/properties/object/properties/field1/properties/array/items/properties/foreignKeyField',
         value: getStringSchema({ foreignKey: 'User2' }),
       },
       {
@@ -862,9 +862,9 @@ describe('getChangesByNode', () => {
         path: '/properties/object2/properties/field1_1/properties/array2',
       },
       {
-        from: '/properties/object2/properties/field1_1/properties/array2/items/properties/foreignKey',
+        from: '/properties/object2/properties/field1_1/properties/array2/items/properties/foreignKeyField',
         op: 'move',
-        path: '/properties/object2/properties/field1_1/properties/array2/items/properties/foreignKey2',
+        path: '/properties/object2/properties/field1_1/properties/array2/items/properties/foreignKeyField2',
       },
       {
         from: '/properties/object2/properties/field2',

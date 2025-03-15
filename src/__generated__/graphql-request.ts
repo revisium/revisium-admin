@@ -1326,6 +1326,32 @@ export type DeleteTableMstMutation = {
   }
 }
 
+export type RenameRowMstMutationVariables = Exact<{
+  data: RenameRowInput
+}>
+
+export type RenameRowMstMutation = {
+  renameRow: {
+    previousVersionTableId: string
+    previousVersionRowId: string
+    table: {
+      id: string
+      versionId: string
+      createdAt: string
+      readonly: boolean
+      count: number
+      schema: { [key: string]: any } | string | number | boolean | null
+    }
+    row: {
+      id: string
+      versionId: string
+      createdAt: string
+      readonly: boolean
+      data: { [key: string]: any } | string | number | boolean | null
+    }
+  }
+}
+
 export type RenameTableMstMutationVariables = Exact<{
   data: RenameTableInput
 }>
@@ -2189,6 +2215,22 @@ export const DeleteTableMstDocument = gql`
   }
   ${BranchMstFragmentDoc}
 `
+export const RenameRowMstDocument = gql`
+  mutation RenameRowMst($data: RenameRowInput!) {
+    renameRow(data: $data) {
+      table {
+        ...TableMst
+      }
+      previousVersionTableId
+      row {
+        ...RowMst
+      }
+      previousVersionRowId
+    }
+  }
+  ${TableMstFragmentDoc}
+  ${RowMstFragmentDoc}
+`
 export const RenameTableMstDocument = gql`
   mutation RenameTableMst($data: RenameTableInput!) {
     renameTable(data: $data) {
@@ -2696,6 +2738,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'DeleteTableMst',
+        'mutation',
+        variables,
+      )
+    },
+    RenameRowMst(
+      variables: RenameRowMstMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RenameRowMstMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RenameRowMstMutation>(RenameRowMstDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RenameRowMst',
         'mutation',
         variables,
       )

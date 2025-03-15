@@ -1,7 +1,9 @@
+import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { RowMstFragment } from 'src/shared/model/BackendStore/api/fragments/__generated__/row.generated.ts'
 import { TableMstFragment } from 'src/shared/model/BackendStore/api/fragments/__generated__/table.generated.ts'
+import { renameRowMstRequest } from 'src/shared/model/BackendStore/api/renameRowMstRequest.ts'
 import { updateRowMstRequest } from 'src/shared/model/BackendStore/api/updateRowMstRequest.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { transformRowFragment } from 'src/shared/model/BackendStore/utils/transformRowFragment.ts'
@@ -12,6 +14,7 @@ export class UpdateRowCommand {
   constructor(
     private readonly rootStore: IRootStore,
     private readonly projectPageModel: ProjectPageModel,
+    private readonly store: RowDataCardStore,
   ) {}
 
   private get branch() {
@@ -26,8 +29,41 @@ export class UpdateRowCommand {
     return this.projectPageModel.rowOrThrow
   }
 
-  public async execute(data: JsonValue) {
-    const { table, previousVersionTableId, row, previousVersionRowId } = await this.updateRowRequest(data)
+  public async execute() {
+    let needToRevalidateLoaders = false
+    let wasRenamedRow = false
+
+    if (this.row.id !== this.store.name.value) {
+      await this.renameRowRequest()
+
+      needToRevalidateLoaders = true
+      wasRenamedRow = true
+    }
+
+    if (this.store.root.touched) {
+      const { wasCreatedNewVersionTable, wasCreatedNewVersionRow } = await this.updateRowProcess()
+      needToRevalidateLoaders = needToRevalidateLoaders || wasCreatedNewVersionTable || wasCreatedNewVersionRow
+    }
+
+    if (!this.branch.touched) {
+      this.branch.updateTouched(true)
+    }
+
+    if (wasRenamedRow) {
+      this.branch.draft.tablesConnection.reset()
+    }
+
+    if (needToRevalidateLoaders) {
+      this.projectPageModel.revalidateLoaders()
+    }
+
+    return true
+  }
+
+  private async updateRowProcess() {
+    const { table, previousVersionTableId, row, previousVersionRowId } = await this.updateRowRequest(
+      this.store.root.getPlainValue(),
+    )
 
     const wasCreatedNewVersionTable = table.versionId !== previousVersionTableId
     if (wasCreatedNewVersionTable) {
@@ -39,15 +75,28 @@ export class UpdateRowCommand {
       this.updateRowsConnection(table, row)
     }
 
-    if (!this.branch.touched) {
-      this.branch.updateTouched(true)
+    return {
+      wasCreatedNewVersionTable,
+      wasCreatedNewVersionRow,
     }
+  }
 
-    if (wasCreatedNewVersionTable || wasCreatedNewVersionRow) {
-      this.projectPageModel.revalidateLoaders()
+  private async renameRowRequest() {
+    const response = await renameRowMstRequest({
+      data: {
+        revisionId: this.branch.draft.id,
+        tableId: this.table.id,
+        rowId: this.row.id,
+        nextRowId: this.store.name.getPlainValue(),
+      },
+    })
+
+    return {
+      table: this.addVersionedTableToCache(response.renameRow.table),
+      previousVersionTableId: response.renameRow.previousVersionTableId,
+      row: this.addVersionedRowToCache(response.renameRow.row),
+      previousVersionRowId: response.renameRow.previousVersionRowId,
     }
-
-    return true
   }
 
   private async updateRowRequest(data: JsonValue) {

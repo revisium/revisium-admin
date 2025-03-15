@@ -1,0 +1,12 @@
+mutation RenameRowMst($data: RenameRowInput!) {
+  renameRow(data: $data) {
+    table {
+      ...TableMst
+    }
+    previousVersionTableId
+    row {
+      ...RowMst
+    }
+    previousVersionRowId
+  }
+}

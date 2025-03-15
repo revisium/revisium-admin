@@ -26,12 +26,21 @@ export class RowDataCardStore {
     private originRowRefsBy: IRowForeignKeysByModel | null = null,
   ) {
     this.root = root
+    this.name.baseValue = name
     this.name.value = name
     this.originData = this.originRow?.data || null
 
     this.reset()
 
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get touched() {
+    return this.root.touched || this.name.touched
+  }
+
+  public get isValid() {
+    return this.root.isValid || this.name.isValid
   }
 
   public get isComplexStructure(): boolean {
@@ -66,11 +75,13 @@ export class RowDataCardStore {
   public reset() {
     if (this.originData) {
       this.root.updateBaseValue(this.originData)
+      this.name.value = this.name.baseValue
     }
   }
 
   public save() {
     this.originData = this.root.getPlainValue()
     this.root.updateBaseValue(this.originData)
+    this.name.updateBaseValue(this.name.value)
   }
 }

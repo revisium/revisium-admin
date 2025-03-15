@@ -19,7 +19,6 @@ export class QueryTablesHandler implements QueryTablesHandlerType {
     const connectionSnapshot = transformConnectionVersionId(result.tables)
 
     result.tables.edges.forEach(({ node }) => {
-      console.log('added to cache', node.id, node.versionId)
       this.store.cache.addOrTable(node)
     })
 

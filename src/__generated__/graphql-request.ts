@@ -1326,6 +1326,24 @@ export type DeleteTableMstMutation = {
   }
 }
 
+export type RenameTableMstMutationVariables = Exact<{
+  data: RenameTableInput
+}>
+
+export type RenameTableMstMutation = {
+  renameTable: {
+    previousVersionTableId: string
+    table: {
+      id: string
+      versionId: string
+      createdAt: string
+      readonly: boolean
+      count: number
+      schema: { [key: string]: any } | string | number | boolean | null
+    }
+  }
+}
+
 export type RevertChangesMstMutationVariables = Exact<{
   data: RevertChangesInput
 }>
@@ -2171,6 +2189,17 @@ export const DeleteTableMstDocument = gql`
   }
   ${BranchMstFragmentDoc}
 `
+export const RenameTableMstDocument = gql`
+  mutation RenameTableMst($data: RenameTableInput!) {
+    renameTable(data: $data) {
+      table {
+        ...TableMst
+      }
+      previousVersionTableId
+    }
+  }
+  ${TableMstFragmentDoc}
+`
 export const RevertChangesMstDocument = gql`
   mutation RevertChangesMst($data: RevertChangesInput!) {
     revertChanges(data: $data) {
@@ -2667,6 +2696,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'DeleteTableMst',
+        'mutation',
+        variables,
+      )
+    },
+    RenameTableMst(
+      variables: RenameTableMstMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RenameTableMstMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RenameTableMstMutation>(RenameTableMstDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RenameTableMst',
         'mutation',
         variables,
       )

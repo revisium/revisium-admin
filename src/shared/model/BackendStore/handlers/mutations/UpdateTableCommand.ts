@@ -1,6 +1,7 @@
-import { JsonPatch } from 'src/entities/Schema/types/json-patch.types.ts'
+import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
 import { IBranchModel } from 'src/shared/model/BackendStore'
 import { TableMstFragment } from 'src/shared/model/BackendStore/api/fragments/__generated__/table.generated.ts'
+import { renameTableMstRequest } from 'src/shared/model/BackendStore/api/renameTableMstRequest.ts'
 import { updateTableMstRequest } from 'src/shared/model/BackendStore/api/updateTableMstRequest.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { transformTableFragment } from 'src/shared/model/BackendStore/utils/transformTableFragment.ts'
@@ -9,12 +10,11 @@ export class UpdateTableCommand {
   constructor(
     private readonly rootStore: IRootStore,
     private readonly branch: IBranchModel,
-    private readonly tableId: string,
-    private readonly patches: JsonPatch[],
+    private readonly store: RootNodeStore,
   ) {}
 
   public async execute() {
-    const { table, previousVersionTableId } = await this.updateTableRequest()
+    const wasCreatedNewVersionTable = await this.updateTableRequest()
 
     this.resetRowsConnectionCache()
 
@@ -22,22 +22,42 @@ export class UpdateTableCommand {
       this.branch.updateTouched(true)
     }
 
-    const wasCreatedNewVersionTable = table.versionId !== previousVersionTableId
-
     if (wasCreatedNewVersionTable) {
       await this.refetchTablesConnection()
     }
   }
 
   private async updateTableRequest() {
-    const response = await updateTableMstRequest({
-      data: { revisionId: this.branch.draft.id, tableId: this.tableId, patches: this.patches },
-    })
+    let wasCreatedNewVersionTable = false
 
-    return {
-      table: this.addVersionedTableToCache(response.updateTable.table),
-      previousVersionTableId: response.updateTable.previousVersionTableId,
+    if (this.store.tableId !== this.store.draftTableId) {
+      const response = await renameTableMstRequest({
+        data: {
+          revisionId: this.branch.draft.id,
+          tableId: this.store.tableId,
+          nextTableId: this.store.draftTableId,
+        },
+      })
+
+      this.addVersionedTableToCache(response.renameTable.table)
+
+      wasCreatedNewVersionTable = true
     }
+
+    const patches = this.store.getPatches()
+
+    if (patches.length) {
+      const response = await updateTableMstRequest({
+        data: { revisionId: this.branch.draft.id, tableId: this.store.draftTableId, patches: this.store.getPatches() },
+      })
+
+      const table = this.addVersionedTableToCache(response.updateTable.table)
+      const previousVersionTableId = response.updateTable.previousVersionTableId
+
+      wasCreatedNewVersionTable = wasCreatedNewVersionTable || table.versionId !== previousVersionTableId
+    }
+
+    return wasCreatedNewVersionTable
   }
 
   private addVersionedTableToCache(tableFragment: TableMstFragment) {
@@ -47,7 +67,7 @@ export class UpdateTableCommand {
   private addTableToCache(tableFragment: TableMstFragment) {
     const responseTable = this.rootStore.cache.addOrTable(transformTableFragment(tableFragment))
     this.rootStore.cache.addTableByVariables(
-      { revisionId: this.branch.draft.id, tableId: this.tableId },
+      { revisionId: this.branch.draft.id, tableId: this.store.draftTableId },
       responseTable.versionId,
     )
 
@@ -56,7 +76,7 @@ export class UpdateTableCommand {
 
   private resetRowsConnectionCache() {
     const table = this.rootStore.cache.getTableByVariables({
-      tableId: this.tableId,
+      tableId: this.store.draftTableId,
       revisionId: this.branch.draft.id,
     })
 

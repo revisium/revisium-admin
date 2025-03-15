@@ -9,12 +9,12 @@ describe('RootNodeStore', () => {
     const store = new RootNodeStore(object)
 
     object.setId('id1')
-    expect(store.tableId).toEqual('id1')
+    expect(store.draftTableId).toEqual('id1')
 
     object.submitChanges()
-    expect(store.tableId).toEqual('id1')
+    expect(store.draftTableId).toEqual('id1')
     object.setId('id2')
-    expect(store.tableId).toEqual('id2')
+    expect(store.draftTableId).toEqual('id2')
   })
 
   it('isApproveDisabled', () => {

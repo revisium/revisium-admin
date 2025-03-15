@@ -1,0 +1,8 @@
+mutation RenameTableMst($data: RenameTableInput!) {
+  renameTable(data: $data) {
+    table {
+      ...TableMst
+    }
+    previousVersionTableId
+  }
+}

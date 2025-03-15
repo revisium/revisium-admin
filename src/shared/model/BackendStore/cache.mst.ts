@@ -195,6 +195,7 @@ export const CacheModel = types
         table.count = tableSnapshot.count
         table.createdAt = cast(tableSnapshot.createdAt)
         table.schema = cast(tableSnapshot.schema)
+        table.id = tableSnapshot.id
         return table
       }
     },

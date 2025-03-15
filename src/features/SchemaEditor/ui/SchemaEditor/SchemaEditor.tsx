@@ -20,7 +20,6 @@ interface SchemaEditorProps {
   onApprove: () => Promise<void>
   onCancel: () => void
   onSelectForeignKey: (node: StringForeignKeyNodeStore) => void
-  isEditingMode?: boolean
 }
 
 export const SchemaEditor: React.FC<SchemaEditorProps> = observer(

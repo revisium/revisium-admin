@@ -94,10 +94,10 @@ export class RowStackModel {
     }
   }
 
-  public async updateRow(data: JsonValue): Promise<boolean> {
+  public async updateRow(store: RowDataCardStore): Promise<boolean> {
     try {
-      const command = new UpdateRowCommand(this.rootStore, this.projectPageModel)
-      return await command.execute(data)
+      const command = new UpdateRowCommand(this.rootStore, this.projectPageModel, store)
+      return await command.execute()
     } catch (e) {
       console.error(e)
 

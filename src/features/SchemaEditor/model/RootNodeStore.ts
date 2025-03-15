@@ -37,6 +37,10 @@ export class RootNodeStore {
   }
 
   public get tableId(): string {
+    return this.state.node.id
+  }
+
+  public get draftTableId(): string {
     return this.state.node.draftId
   }
 
@@ -46,6 +50,10 @@ export class RootNodeStore {
 
   public get isDirty(): boolean {
     return this.state.node.isDirty
+  }
+
+  public get isDirtyItself() {
+    return this.state.node.isDirtyItself
   }
 
   public getPlainSchema() {

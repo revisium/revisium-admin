@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonSchema } from 'src/entities/Schema'
-import { JsonPatch } from 'src/entities/Schema/types/json-patch.types.ts'
 import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
 import { getJsonDraftPathByNode } from 'src/features/SchemaEditor/lib/getJsonDraftPathByNode.ts'
 import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
@@ -185,9 +184,9 @@ export class TableStackModel {
     }
   }
 
-  public async updateTable(tableId: string, patches: JsonPatch[]) {
+  public async updateTable(store: RootNodeStore) {
     try {
-      const command = new UpdateTableCommand(this.rootStore, this.branch, tableId, patches)
+      const command = new UpdateTableCommand(this.rootStore, this.branch, store)
       await command.execute()
 
       return true

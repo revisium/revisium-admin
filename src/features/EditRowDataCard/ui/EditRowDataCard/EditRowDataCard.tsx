@@ -68,21 +68,19 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
         <RowDataCard
           store={store}
           rootName="<id>"
-          rootValue={<RowStringEditor dataTestId="0" readonly store={store.name} />}
+          rootValue={<RowStringEditor dataTestId="0" store={store.name} />}
           actions={
             <>
               <BackButton2 dataTestId="back-to-row-list-button" onClick={handleBack} />
               {isEdit && (
                 <ApproveButton
                   dataTestId="row-editor-approve-button"
-                  isDisabled={!store.root.touched || !store.root.isValid}
+                  isDisabled={!store.touched || !store.isValid}
                   loading={isLoading}
                   onClick={handleClick}
                 />
               )}
-              {isEdit && store.root.touched && (
-                <RevertButton dataTestId="row-editor-revert-button" onClick={handleRevert} />
-              )}
+              {isEdit && store.touched && <RevertButton dataTestId="row-editor-revert-button" onClick={handleRevert} />}
             </>
           }
           isEdit={isEdit}

@@ -28,13 +28,13 @@ export const TableStack: React.FC = observer(() => {
   const handleApprove = useCallback(async () => {
     if (item.state.type === TableStackModelStateType.CreatingTable) {
       const store = item.state.store
-      const result = await item.createTable(store.tableId, store.getPlainSchema())
+      const result = await item.createTable(store.draftTableId, store.getPlainSchema())
 
       if (result) {
         store.submitChanges()
 
         if (item.state.isSelectingForeignKey) {
-          root.onSelectedForeignKey(item, store.tableId)
+          root.onSelectedForeignKey(item, store.draftTableId)
         } else {
           item.toUpdatingTableFromCreatingTable()
         }
@@ -45,7 +45,7 @@ export const TableStack: React.FC = observer(() => {
   const handleUpdate = useCallback(async () => {
     if (item.state.type === TableStackModelStateType.UpdatingTable) {
       const store = item.state.store
-      const result = await item.updateTable(store.tableId, store.getPatches())
+      const result = await item.updateTable(store)
       if (result) {
         store.submitChanges()
       }
@@ -68,7 +68,7 @@ export const TableStack: React.FC = observer(() => {
           previousType={item.state.previousType}
           foreignKeyPath={item.currentForeignKeyPath}
           onCancel={handleCancelSelectForeignKey}
-          tableId={schemaStore.tableId}
+          tableId={schemaStore.draftTableId}
         />
       </>
     )
@@ -116,7 +116,6 @@ export const TableStack: React.FC = observer(() => {
         <SchemaEditor
           store={schemaStore}
           mode={SchemaEditorMode.Updating}
-          isEditingMode
           onApprove={handleUpdate}
           onCancel={item.toList}
           onSelectForeignKey={handleSelectForeignKey}

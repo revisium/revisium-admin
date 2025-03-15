@@ -7,12 +7,12 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { CreateRowButton } from 'src/features/CreateRowButton'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
+import { RowList } from 'src/widgets/RowList'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 import { ShortRowEditor } from 'src/widgets/RowStackWidget/ui/ShortRowEditor/ShortRowEditor.tsx'
-import { RowList } from 'src/widgets/RowList'
 
 export const RowStack: React.FC = observer(() => {
   const navigate = useNavigate()
@@ -55,12 +55,13 @@ export const RowStack: React.FC = observer(() => {
   const handleUpdateRow = useCallback(async () => {
     if (item.state.type === RowStackModelStateType.UpdatingRow) {
       const store = item.state.store
-      const result = await item.updateRow(store.root.getPlainValue())
+      const result = await item.updateRow(store)
       if (result) {
         store.save()
+        navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
       }
     }
-  }, [item])
+  }, [item, linkMaker, navigate])
 
   if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
     const schemaStore = item.state.store

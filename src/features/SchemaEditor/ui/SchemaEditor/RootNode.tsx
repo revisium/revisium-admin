@@ -40,7 +40,7 @@ export const RootNode: React.FC<RootNodeProps> = observer(({ store }) => {
       field={
         <FieldEditor
           dataTestId="0"
-          isEditable={actions.mode === SchemaEditorMode.Creating}
+          isEditable={actions.mode === SchemaEditorMode.Creating || actions.mode === SchemaEditorMode.Updating}
           store={store.node}
           typeClassName={styles.Field}
           onSelect={handleSelect}

@@ -140,7 +140,7 @@ export class RowStackWidgetModel {
       createJsonValueStore(isValidSchema(schema) ? createJsonSchemaStore(schema) : new JsonObjectStore()),
       this.projectPageModel.rowOrThrow.id,
       this.projectPageModel.rowOrThrow,
-      this.projectPageModel.rowRefsBy,
+      this.projectPageModel,
     )
   }
 }

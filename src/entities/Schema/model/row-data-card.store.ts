@@ -6,7 +6,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { IRowModel } from 'src/shared/model/BackendStore'
-import { IRowForeignKeysByModel } from 'src/shared/model/BackendStore/model'
+import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class RowDataCardStore {
   public readonly name = new JsonStringValueStore(new JsonStringStore())
@@ -23,7 +23,7 @@ export class RowDataCardStore {
     root: JsonValueStore,
     name: string = nanoid(6),
     public readonly originRow: IRowModel | null = null,
-    private originRowRefsBy: IRowForeignKeysByModel | null = null,
+    private readonly projectPageModel?: ProjectPageModel,
   ) {
     this.root = root
     this.name.baseValue = name
@@ -57,7 +57,7 @@ export class RowDataCardStore {
   }
 
   public get areThereForeignKeysBy(): boolean {
-    return Boolean(this.originRowRefsBy?.countForeignKeysBy)
+    return Boolean(this.projectPageModel?.rowRefsBy?.countForeignKeysBy)
   }
 
   public setOverNode(value: JsonValueStore | null): void {

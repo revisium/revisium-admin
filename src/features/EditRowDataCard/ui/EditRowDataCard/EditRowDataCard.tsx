@@ -68,7 +68,7 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
         <RowDataCard
           store={store}
           rootName="<id>"
-          rootValue={<RowStringEditor dataTestId="0" store={store.name} />}
+          rootValue={<RowStringEditor dataTestId="0" store={store.name} readonly={!isEdit} />}
           actions={
             <>
               <BackButton2 dataTestId="back-to-row-list-button" onClick={handleBack} />

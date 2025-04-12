@@ -150,7 +150,7 @@ export class TableStackModel {
     root.setId(table.id)
     root.submitChanges()
 
-    const store = new RootNodeStore(root)
+    const store = new RootNodeStore(root, table.id)
 
     this.state = {
       type: TableStackModelStateType.UpdatingTable,

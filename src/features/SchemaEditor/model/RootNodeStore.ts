@@ -14,6 +14,7 @@ import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/Strin
 
 type RootNodeStoreState = {
   node: SchemaNode
+  tableId: string
 }
 
 export class RootNodeStore {
@@ -22,12 +23,13 @@ export class RootNodeStore {
   private state: RootNodeStoreState & IViewModel<RootNodeStoreState>
   private history: NodeHistory = new NodeHistory()
 
-  constructor(node: SchemaNode = new ObjectNodeStore()) {
+  constructor(node: SchemaNode = new ObjectNodeStore(), tableId = '') {
     makeAutoObservable(this, {}, { autoBind: true })
 
     this.state = createViewModel(
       observable({
         node,
+        tableId,
       }),
     )
   }
@@ -37,7 +39,7 @@ export class RootNodeStore {
   }
 
   public get tableId(): string {
-    return this.state.node.id
+    return this.state.tableId
   }
 
   public get draftTableId(): string {
@@ -87,6 +89,8 @@ export class RootNodeStore {
 
   public submitChanges(): void {
     this.node.submitChanges()
+    this.state.tableId = this.node.id
+    this.state.submit()
     this.history.reset()
   }
 

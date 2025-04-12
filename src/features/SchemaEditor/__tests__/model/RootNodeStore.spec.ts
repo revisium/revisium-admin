@@ -6,14 +6,16 @@ import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore
 describe('RootNodeStore', () => {
   it('tableId', () => {
     const object = new ObjectNodeStore()
-    const store = new RootNodeStore(object)
+    const store = new RootNodeStore(object, 'id1')
 
     object.setId('id1')
     expect(store.draftTableId).toEqual('id1')
+    expect(store.tableId).toEqual('id1')
 
     object.submitChanges()
     expect(store.draftTableId).toEqual('id1')
     object.setId('id2')
+    expect(store.tableId).toEqual('id1')
     expect(store.draftTableId).toEqual('id2')
   })
 

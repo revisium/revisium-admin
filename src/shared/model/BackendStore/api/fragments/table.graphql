@@ -1,7 +1,9 @@
 fragment TableMst on TableModel {
+  createdId
   id
   versionId
   createdAt
+  updatedAt
   readonly
   count
   schema

@@ -670,11 +670,13 @@ export type RowModel = {
   __typename: 'RowModel'
   countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
   data: Scalars['JSON']['output']
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
   rowForeignKeysBy: RowsConnection
   rowForeignKeysTo: RowsConnection
+  updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
 }
 
@@ -715,12 +717,14 @@ export type TableModel = {
   countForeignKeysBy: Scalars['Int']['output']
   countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
   foreignKeysBy: TablesConnection
   foreignKeysTo: TablesConnection
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
   rows: RowsConnection
   schema: Scalars['JSON']['output']
+  updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
 }
 

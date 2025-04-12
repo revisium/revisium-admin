@@ -17,18 +17,22 @@ export type CreateRowMstMutation = {
     previousVersionTableId: string
     table: {
       __typename?: 'TableModel'
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
     }
     row: {
       __typename?: 'RowModel'
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       data: { [key: string]: any } | string | number | boolean | null
     }

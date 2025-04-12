@@ -27,9 +27,11 @@ export type RowsMstQuery = {
       cursor: string
       node: {
         __typename?: 'RowModel'
+        createdId: string
         id: string
         versionId: string
         createdAt: string
+        updatedAt: string
         readonly: boolean
         data: { [key: string]: any } | string | number | boolean | null
       }

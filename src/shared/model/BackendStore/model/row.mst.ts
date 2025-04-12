@@ -13,9 +13,11 @@ export const RowForeignKeysByConnection = createModelConnection(
 
 export const RowModel = types
   .model('RowModel', {
+    createdId: types.string,
     id: types.string,
     versionId: types.identifier,
     createdAt: types.late(() => ISODate),
+    updatedAt: types.late(() => ISODate),
     readonly: types.boolean,
     data: types.frozen({}),
     rowForeignKeysByConnection: types.map(types.optional(RowForeignKeysByConnection, {})),
@@ -37,9 +39,11 @@ export const RowModel = types
   }))
 
 export type IRowModelBase = {
+  createdId: string
   id: string
   versionId: string
   createdAt: Date | string
+  updatedAt: Date | string
   readonly: boolean
   data: JsonValue
 }

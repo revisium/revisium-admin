@@ -18,11 +18,13 @@ export const foreignKeysByConnection = createModelConnection(
 
 export const TableModel = types
   .model('TableModel', {
+    createdId: types.string,
     id: types.string,
     versionId: types.identifier,
     count: types.integer,
     readonly: types.boolean,
     createdAt: types.late(() => ISODate),
+    updatedAt: types.late(() => ISODate),
     schema: types.frozen({}),
     rowsConnection: types.optional(TableRowsConnection, {}),
     foreignKeysByConnection: types.optional(foreignKeysByConnection, {}),
@@ -36,11 +38,13 @@ export const TableModel = types
   }))
 
 export type ITableModelBase = Readonly<{
+  createdId: string
   id: string
   versionId: string
   count: number
   readonly: boolean
   createdAt: Date | string
+  updatedAt: Date | string
   schema: JsonValue
 }>
 

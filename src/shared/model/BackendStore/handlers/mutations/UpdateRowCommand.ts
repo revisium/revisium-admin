@@ -101,7 +101,7 @@ export class UpdateRowCommand {
 
   private async updateRowRequest(data: JsonValue) {
     const response = await updateRowMstRequest({
-      data: { revisionId: this.branch.draft.id, tableId: this.table.id, rowId: this.row.id, data },
+      data: { revisionId: this.branch.draft.id, tableId: this.table.id, rowId: this.store.name.getPlainValue(), data },
     })
 
     return {

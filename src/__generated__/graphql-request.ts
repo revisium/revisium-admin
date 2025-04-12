@@ -647,11 +647,13 @@ export type RoleModel = {
 export type RowModel = {
   countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
   data: Scalars['JSON']['output']
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
   rowForeignKeysBy: RowsConnection
   rowForeignKeysTo: RowsConnection
+  updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
 }
 
@@ -689,12 +691,14 @@ export type TableModel = {
   countForeignKeysBy: Scalars['Int']['output']
   countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
   foreignKeysBy: TablesConnection
   foreignKeysTo: TablesConnection
   id: Scalars['String']['output']
   readonly: Scalars['Boolean']['output']
   rows: RowsConnection
   schema: Scalars['JSON']['output']
+  updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
 }
 
@@ -994,17 +998,21 @@ export type RevisionDraftMstFragment = {
 }
 
 export type RowMstFragment = {
+  createdId: string
   id: string
   versionId: string
   createdAt: string
+  updatedAt: string
   readonly: boolean
   data: { [key: string]: any } | string | number | boolean | null
 }
 
 export type TableMstFragment = {
+  createdId: string
   id: string
   versionId: string
   createdAt: string
+  updatedAt: string
   readonly: boolean
   count: number
   schema: { [key: string]: any } | string | number | boolean | null
@@ -1157,17 +1165,21 @@ export type CreateRowMstMutation = {
   createRow: {
     previousVersionTableId: string
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
     }
     row: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       data: { [key: string]: any } | string | number | boolean | null
     }
@@ -1213,9 +1225,11 @@ export type CreateTableMstMutation = {
       }
     }
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
@@ -1275,9 +1289,11 @@ export type DeleteRowMstMutation = {
       }
     }
     table?: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
@@ -1335,17 +1351,21 @@ export type RenameRowMstMutation = {
     previousVersionTableId: string
     previousVersionRowId: string
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
     }
     row: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       data: { [key: string]: any } | string | number | boolean | null
     }
@@ -1360,9 +1380,11 @@ export type RenameTableMstMutation = {
   renameTable: {
     previousVersionTableId: string
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
@@ -1418,17 +1440,21 @@ export type UpdateRowMstMutation = {
     previousVersionTableId: string
     previousVersionRowId: string
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
     }
     row: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       data: { [key: string]: any } | string | number | boolean | null
     }
@@ -1443,9 +1469,11 @@ export type UpdateTableMstMutation = {
   updateTable: {
     previousVersionTableId: string
     table: {
+      createdId: string
       id: string
       versionId: string
       createdAt: string
+      updatedAt: string
       readonly: boolean
       count: number
       schema: { [key: string]: any } | string | number | boolean | null
@@ -1774,9 +1802,11 @@ export type RowForeignKeysByQuery = {
       edges: Array<{
         cursor: string
         node: {
+          createdId: string
           id: string
           versionId: string
           createdAt: string
+          updatedAt: string
           readonly: boolean
           data: { [key: string]: any } | string | number | boolean | null
         }
@@ -1791,9 +1821,11 @@ export type RowMstQueryVariables = Exact<{
 
 export type RowMstQuery = {
   row?: {
+    createdId: string
     id: string
     versionId: string
     createdAt: string
+    updatedAt: string
     readonly: boolean
     data: { [key: string]: any } | string | number | boolean | null
   } | null
@@ -1810,9 +1842,11 @@ export type RowsMstQuery = {
     edges: Array<{
       cursor: string
       node: {
+        createdId: string
         id: string
         versionId: string
         createdAt: string
+        updatedAt: string
         readonly: boolean
         data: { [key: string]: any } | string | number | boolean | null
       }
@@ -1839,9 +1873,11 @@ export type TableForeignKeysByQuery = {
       edges: Array<{
         cursor: string
         node: {
+          createdId: string
           id: string
           versionId: string
           createdAt: string
+          updatedAt: string
           readonly: boolean
           count: number
           schema: { [key: string]: any } | string | number | boolean | null
@@ -1857,9 +1893,11 @@ export type TableMstQueryVariables = Exact<{
 
 export type TableMstQuery = {
   table?: {
+    createdId: string
     id: string
     versionId: string
     createdAt: string
+    updatedAt: string
     readonly: boolean
     count: number
     schema: { [key: string]: any } | string | number | boolean | null
@@ -1877,9 +1915,11 @@ export type TablesMstQuery = {
     edges: Array<{
       cursor: string
       node: {
+        createdId: string
         id: string
         versionId: string
         createdAt: string
+        updatedAt: string
         readonly: boolean
         count: number
         schema: { [key: string]: any } | string | number | boolean | null
@@ -2027,18 +2067,22 @@ export const ProjectMstFragmentDoc = gql`
 `
 export const RowMstFragmentDoc = gql`
   fragment RowMst on RowModel {
+    createdId
     id
     versionId
     createdAt
+    updatedAt
     readonly
     data
   }
 `
 export const TableMstFragmentDoc = gql`
   fragment TableMst on TableModel {
+    createdId
     id
     versionId
     createdAt
+    updatedAt
     readonly
     count
     schema

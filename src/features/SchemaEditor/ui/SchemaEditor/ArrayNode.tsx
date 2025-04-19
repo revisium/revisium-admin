@@ -38,7 +38,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
     (items: SchemaNode) => {
       root.replaceItems(node, items)
 
-      if (items instanceof ObjectNodeStore) {
+      if (items instanceof ObjectNodeStore && !items.$ref) {
         root.addProperty(items, new StringNodeStore())
       }
     },
@@ -74,7 +74,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
                     textDecorationColor: 'gray.300',
                   }}
                 >
-                  {node.draftItems.label}
+                  {node.draftItems.type}
                   {mode === SchemaEditorMode.Updating && node.draftItems.isDirtyItself && <span>*</span>}
                 </MenuButton>
               </Box>

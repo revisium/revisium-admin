@@ -2,7 +2,8 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
-import { JsonBooleanStore } from 'src/entities/Schema/model/json-boolean.store.ts'
+import { JsonBooleanSchema, JsonRefSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
 import { NodeStoreType, ParentSchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 
 type BooleanNodeStoreState = {
@@ -14,6 +15,8 @@ type BooleanNodeStoreState = {
 export class BooleanNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Boolean
+
+  public $ref: string = ''
 
   private state: BooleanNodeStoreState & IViewModel<BooleanNodeStoreState>
 
@@ -27,6 +30,14 @@ export class BooleanNodeStore {
         connectedToParent: false,
       }),
     )
+  }
+
+  public get isDisabled(): boolean {
+    return Boolean(this.draftParent?.$ref)
+  }
+
+  public get label() {
+    return getLabelByRef(this.$ref) ?? this.type
   }
 
   public setNodeId(value: string): void {
@@ -57,8 +68,17 @@ export class BooleanNodeStore {
     return this.state.connectedToParent
   }
 
-  public getSchema(): JsonBooleanStore {
-    return new JsonBooleanStore()
+  public getSchema(): JsonBooleanSchema | JsonRefSchema {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    return {
+      type: JsonSchemaTypeName.Boolean,
+      default: false,
+    }
   }
 
   public get isValid(): boolean {

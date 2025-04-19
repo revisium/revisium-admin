@@ -29,6 +29,10 @@ export class StringForeignKeyNodeStore {
     )
   }
 
+  public get isDisabled(): boolean {
+    return Boolean(this.draftParent?.$ref)
+  }
+
   public get parent(): SchemaNode | null {
     return this.state.model.parent
   }

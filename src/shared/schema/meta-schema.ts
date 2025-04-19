@@ -2,6 +2,17 @@ import { Schema } from 'ajv/dist/2020'
 
 // https://json-schema.org/specification#single-vocabulary-meta-schemas
 
+export const refMetaSchema: Schema = {
+  type: 'object',
+  properties: {
+    $ref: {
+      type: 'string',
+    },
+  },
+  additionalProperties: false,
+  required: ['$ref'],
+}
+
 export const stringMetaSchema: Schema = {
   type: 'object',
   properties: {
@@ -73,6 +84,7 @@ export const arrayMetaSchema: Schema = {
     },
     items: {
       oneOf: [
+        { $ref: '#/$defs/refSchema' },
         { $ref: '#/$defs/objectSchema' },
         { $ref: '#/$defs/arraySchema' },
         { $ref: '#/$defs/stringSchema' },
@@ -89,6 +101,7 @@ export const metaSchema: Schema = {
   type: 'object',
   $dynamicAnchor: 'meta',
   oneOf: [
+    { $ref: '#/$defs/refSchema' },
     { $ref: '#/$defs/objectSchema' },
     { $ref: '#/$defs/arraySchema' },
     { $ref: '#/$defs/stringSchema' },
@@ -102,6 +115,7 @@ export const metaSchema: Schema = {
       uniqueItems: true,
       default: [],
     },
+    refSchema: refMetaSchema,
     objectSchema: objectMetaSchema,
     stringSchema: stringMetaSchema,
     numberSchema: numberMetaSchema,

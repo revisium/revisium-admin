@@ -59,7 +59,7 @@ export class RootNodeStore {
   }
 
   public getPlainSchema() {
-    return this.state.node.getSchema().getPlainSchema()
+    return this.state.node.getSchema()
   }
 
   public setViewMode(value: ViewerSwitcherMode): void {
@@ -68,7 +68,7 @@ export class RootNodeStore {
 
   public getPatches(): JsonPatch[] {
     if (this.state.node !== this.state.model.node) {
-      return [{ op: 'replace', path: '', value: this.state.node.getSchema().getPlainSchema() }]
+      return [{ op: 'replace', path: '', value: this.state.node.getSchema() }]
     } else {
       return [...this.history.getPatches(this.state.node)]
     }

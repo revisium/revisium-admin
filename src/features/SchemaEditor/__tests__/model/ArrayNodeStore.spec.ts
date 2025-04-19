@@ -72,10 +72,10 @@ describe('ArrayNodeStore', () => {
   it('schema', () => {
     const store = new ArrayNodeStore(new StringNodeStore())
 
-    expect(store.getSchema().getPlainSchema()).toEqual(getArraySchema(getStringSchema()))
+    expect(store.getSchema()).toEqual(getArraySchema(getStringSchema()))
 
     store.replaceItems(new NumberNodeStore())
-    expect(store.getSchema().getPlainSchema()).toEqual(getArraySchema(getNumberSchema()))
+    expect(store.getSchema()).toEqual(getArraySchema(getNumberSchema()))
   })
 
   it('items parent', () => {

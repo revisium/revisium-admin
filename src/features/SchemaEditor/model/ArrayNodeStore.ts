@@ -2,7 +2,8 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
-import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
+import { JsonArraySchema, JsonRefSchema, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
 import { SchemaFilter } from 'src/features/SchemaEditor/config/types.ts'
 import { NodeStoreType, ParentSchemaNode, SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
@@ -17,6 +18,8 @@ type ArrayNodeStoreState = {
 export class ArrayNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Array
+
+  public $ref: string = ''
 
   private state: ArrayNodeStoreState & IViewModel<ArrayNodeStoreState>
 
@@ -34,6 +37,14 @@ export class ArrayNodeStore {
         connectedToParent: false,
       }),
     )
+  }
+
+  public get isDisabled(): boolean {
+    return Boolean(this.draftParent?.$ref)
+  }
+
+  public get label() {
+    return getLabelByRef(this.$ref) ?? this.type
   }
 
   public setNodeId(value: string): void {
@@ -72,13 +83,26 @@ export class ArrayNodeStore {
     return this.state.items
   }
 
-  public getSchema(filter?: SchemaFilter): JsonArrayStore {
+  public getSchema(filter?: SchemaFilter): JsonArraySchema | JsonRefSchema {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    return {
+      type: JsonSchemaTypeName.Array,
+      items: this.getItemsSchema(filter),
+    }
+  }
+
+  private getItemsSchema(filter?: SchemaFilter): JsonSchema {
     if (this.state.items instanceof ArrayNodeStore) {
-      return new JsonArrayStore(this.state.items.getSchema(filter))
+      return this.state.items.getSchema(filter)
     } else if (this.state.items instanceof ObjectNodeStore) {
-      return new JsonArrayStore(this.state.items.getSchema(filter))
+      return this.state.items.getSchema(filter)
     } else {
-      return new JsonArrayStore(this.state.items.getSchema())
+      return this.state.items.getSchema()
     }
   }
 

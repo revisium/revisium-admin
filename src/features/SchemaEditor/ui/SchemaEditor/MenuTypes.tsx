@@ -3,11 +3,12 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonSchema } from 'src/entities/Schema'
 import { getSchemaByMenuId, menuSchemaGroups } from 'src/features/SchemaEditor/lib/getSchemaOptions.ts'
+import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 
 interface TypesMenuListProps {
   currentSchema: JsonSchema
   menuButton: React.ReactElement
-  onSelect: (value: JsonSchema) => void
+  onSelect: (value: SchemaNode) => void
   dataTestId?: string
 }
 
@@ -16,10 +17,10 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
     const handleChangeTypeAddingNode = useCallback(
       async (id: string | string[]) => {
         if (!Array.isArray(id)) {
-          const schema = getSchemaByMenuId(id, currentSchema)
+          const schemaMode = getSchemaByMenuId(id, currentSchema)
 
-          if (schema) {
-            onSelect(schema)
+          if (schemaMode) {
+            onSelect(schemaMode)
           }
         }
       },

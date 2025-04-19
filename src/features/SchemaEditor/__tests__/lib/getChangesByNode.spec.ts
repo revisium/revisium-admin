@@ -45,7 +45,7 @@ describe('getChangesByNode', () => {
     root.addProperty(object, string)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'add', path: '/properties/field', value: string.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/field', value: string.getSchema() },
     ])
   })
 
@@ -335,7 +335,7 @@ describe('getChangesByNode', () => {
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
       { op: 'remove', path: '/properties/field' },
-      { op: 'add', path: '/properties/field', value: store2.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/field', value: store2.getSchema() },
     ])
   })
 
@@ -361,7 +361,7 @@ describe('getChangesByNode', () => {
     root.setId(nestedObject, 'root2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'add', path: '/properties/root/properties/addedStore', value: addedStore.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/root/properties/addedStore', value: addedStore.getSchema() },
       { op: 'remove', path: '/properties/root/properties/removedStore' },
       {
         op: 'move',
@@ -390,21 +390,21 @@ describe('getChangesByNode', () => {
     root.setId(string, 'field2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field', value: string.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field', value: string.getSchema() },
       { op: 'move', from: '/properties/field', path: '/properties/field2' },
     ])
     root.submitChanges()
 
     root.setForeignKeyValue(foreignKey, 'User2')
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field2', value: string.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field2', value: string.getSchema() },
     ])
     root.submitChanges()
 
     root.setId(string, 'field3')
     root.setForeignKeyValue(foreignKey, 'User3')
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field2', value: string.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field2', value: string.getSchema() },
       { op: 'move', from: '/properties/field2', path: '/properties/field3' },
     ])
   })
@@ -422,7 +422,7 @@ describe('getChangesByNode', () => {
       root.replaceProperty(object, string, number)
 
       expect(root.getPatches()).toEqual<JsonPatch[]>([
-        { op: 'replace', path: '/properties/field', value: number.getSchema().getPlainSchema() },
+        { op: 'replace', path: '/properties/field', value: number.getSchema() },
       ])
     })
 
@@ -439,7 +439,7 @@ describe('getChangesByNode', () => {
       root.replaceProperty(object, string, number)
 
       expect(root.getPatches()).toEqual<JsonPatch[]>([
-        { op: 'replace', path: '/properties/field', value: number.getSchema().getPlainSchema() },
+        { op: 'replace', path: '/properties/field', value: number.getSchema() },
         { op: 'move', from: '/properties/field', path: '/properties/field2' },
       ])
     })
@@ -457,7 +457,7 @@ describe('getChangesByNode', () => {
       root.setId(number, 'field2')
 
       expect(root.getPatches()).toEqual<JsonPatch[]>([
-        { op: 'replace', path: '/properties/field', value: number.getSchema().getPlainSchema() },
+        { op: 'replace', path: '/properties/field', value: number.getSchema() },
         { op: 'move', from: '/properties/field', path: '/properties/field2' },
       ])
     })
@@ -604,7 +604,7 @@ describe('getChangesByNode', () => {
     root.setForeignKeyValue(nextString.draftForeignKey, 'User')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field', value: nextString.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field', value: nextString.getSchema() },
     ])
   })
 
@@ -622,7 +622,7 @@ describe('getChangesByNode', () => {
     root.replaceProperty(object, string, nextString)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field', value: nextString.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field', value: nextString.getSchema() },
     ])
   })
 
@@ -642,7 +642,7 @@ describe('getChangesByNode', () => {
     root.setForeignKeyValue(nextString.draftForeignKey, 'User2')
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/field', value: nextString.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/field', value: nextString.getSchema() },
     ])
   })
 
@@ -655,9 +655,7 @@ describe('getChangesByNode', () => {
     const nextItems = new ObjectNodeStore()
     root.replaceItems(array, nextItems)
 
-    expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
-    ])
+    expect(root.getPatches()).toEqual<JsonPatch[]>([{ op: 'replace', path: '/items', value: nextItems.getSchema() }])
   })
 
   it('replace items and changed id', () => {
@@ -674,7 +672,7 @@ describe('getChangesByNode', () => {
     root.replaceItems(array, nextItems)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/array/items', value: nextItems.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/array/items', value: nextItems.getSchema() },
       { op: 'move', from: '/properties/array', path: '/properties/array2' },
     ])
   })
@@ -693,7 +691,7 @@ describe('getChangesByNode', () => {
     root.addProperty(items, subField)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'add', path: '/properties/array/items/properties/subField', value: subField.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/array/items/properties/subField', value: subField.getSchema() },
     ])
   })
 
@@ -712,7 +710,7 @@ describe('getChangesByNode', () => {
     root.addProperty(items, subField)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'add', path: '/properties/array/items/properties/subField', value: subField.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/array/items/properties/subField', value: subField.getSchema() },
       { op: 'move', from: '/properties/array', path: '/properties/array2' },
     ])
   })
@@ -734,7 +732,7 @@ describe('getChangesByNode', () => {
     root.replaceItems(array, nextItems)
 
     expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/properties/array/items', value: nextItems.getSchema().getPlainSchema() },
+      { op: 'replace', path: '/properties/array/items', value: nextItems.getSchema() },
     ])
   })
 
@@ -749,9 +747,7 @@ describe('getChangesByNode', () => {
     root.replaceItems(array, nextItems)
     root.setForeignKeyValue(nextItems.draftForeignKey, 'User')
 
-    expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
-    ])
+    expect(root.getPatches()).toEqual<JsonPatch[]>([{ op: 'replace', path: '/items', value: nextItems.getSchema() }])
   })
 
   it('replace items from string with foreign key to string', () => {
@@ -765,9 +761,7 @@ describe('getChangesByNode', () => {
     const nextItems = new StringNodeStore()
     root.replaceItems(array, nextItems)
 
-    expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
-    ])
+    expect(root.getPatches()).toEqual<JsonPatch[]>([{ op: 'replace', path: '/items', value: nextItems.getSchema() }])
   })
 
   it('replace items from string with foreign key to string with another foreign key', () => {
@@ -783,9 +777,7 @@ describe('getChangesByNode', () => {
     root.replaceItems(array, nextItems)
     root.setForeignKeyValue(nextItems.draftForeignKey, 'User2')
 
-    expect(root.getPatches()).toEqual<JsonPatch[]>([
-      { op: 'replace', path: '/items', value: nextItems.getSchema().getPlainSchema() },
-    ])
+    expect(root.getPatches()).toEqual<JsonPatch[]>([{ op: 'replace', path: '/items', value: nextItems.getSchema() }])
   })
 
   it('complex', () => {

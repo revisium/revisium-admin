@@ -1,4 +1,4 @@
-import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { JsonSchema, JsonSchemaTypeName, schemaRefsMapper } from 'src/entities/Schema'
 import { ArrayNodeStore } from 'src/features/SchemaEditor/model/ArrayNodeStore.ts'
 import { BooleanNodeStore } from 'src/features/SchemaEditor/model/BooleanNodeStore.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
@@ -8,6 +8,18 @@ import { StringNodeStore } from 'src/features/SchemaEditor/model/StringNodeStore
 import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
 const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
+  if ('$ref' in schema) {
+    const refSchema = schemaRefsMapper[schema.$ref] as JsonSchema | undefined
+
+    if (!refSchema) {
+      throw new Error(`Schema refs must be defined ref$=${schema.$ref}`)
+    }
+
+    const node = internalCreateSchemaNode(refSchema)
+    node.$ref = schema.$ref
+    return node
+  }
+
   switch (schema.type) {
     case JsonSchemaTypeName.Object: {
       const objectNode = new ObjectNodeStore()

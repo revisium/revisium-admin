@@ -39,15 +39,13 @@ describe('RootNodeStore', () => {
     store.addProperty(object, field)
 
     expect(store.getPatches()).toStrictEqual<JsonPatch[]>([
-      { op: 'add', path: '/properties/field', value: field.getSchema().getPlainSchema() },
+      { op: 'add', path: '/properties/field', value: field.getSchema() },
     ])
 
     store.submitChanges()
     const nextNode = new StringNodeStore()
     store.replaceNode(nextNode)
-    expect(store.getPatches()).toStrictEqual<JsonPatch[]>([
-      { op: 'replace', path: '', value: nextNode.getSchema().getPlainSchema() },
-    ])
+    expect(store.getPatches()).toStrictEqual<JsonPatch[]>([{ op: 'replace', path: '', value: nextNode.getSchema() }])
   })
 
   it('getPlainSchema', () => {
@@ -58,7 +56,7 @@ describe('RootNodeStore', () => {
 
     const store = new RootNodeStore(object)
 
-    expect(store.getPlainSchema()).toEqual(object.getSchema().getPlainSchema())
+    expect(store.getPlainSchema()).toEqual(object.getSchema())
   })
 
   xit('areThereDropTargets', () => {})

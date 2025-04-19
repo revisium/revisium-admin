@@ -74,7 +74,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
                     textDecorationColor: 'gray.300',
                   }}
                 >
-                  {node.draftItems.type}
+                  {node.draftItems.label}
                   {mode === SchemaEditorMode.Updating && node.draftItems.isDirtyItself && <span>*</span>}
                 </MenuButton>
               </Box>

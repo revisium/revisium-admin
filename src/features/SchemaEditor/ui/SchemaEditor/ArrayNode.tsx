@@ -1,8 +1,6 @@
 import { Box, Flex, MenuButton, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
-import { JsonSchema } from 'src/entities/Schema'
-import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
 import { ArrayNodeStore } from 'src/features/SchemaEditor/model/ArrayNodeStore.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
@@ -37,8 +35,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
   const { dragAndDropRef, isDrop, isDraggedOver, isDisabledDrop } = useDragAndDrop(node.draftItems, true, handleDrop)
 
   const handleSelect = useCallback(
-    (schema: JsonSchema) => {
-      const items = createSchemaNode(schema)
+    (items: SchemaNode) => {
       root.replaceItems(node, items)
 
       if (items instanceof ObjectNodeStore) {
@@ -77,7 +74,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
                     textDecorationColor: 'gray.300',
                   }}
                 >
-                  {node.draftItems.type}
+                  {node.draftItems.label}
                   {mode === SchemaEditorMode.Updating && node.draftItems.isDirtyItself && <span>*</span>}
                 </MenuButton>
               </Box>

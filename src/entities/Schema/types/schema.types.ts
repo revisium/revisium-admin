@@ -26,4 +26,8 @@ export type JsonArraySchema = {
   items: JsonSchema
 }
 
-export type JsonSchema = JsonObjectSchema | JsonArraySchema | JsonSchemaPrimitives
+export type JsonRefSchema = {
+  $ref: string
+}
+
+export type JsonSchema = JsonObjectSchema | JsonArraySchema | JsonSchemaPrimitives | JsonRefSchema

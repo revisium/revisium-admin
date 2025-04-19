@@ -2,6 +2,7 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
+import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
 import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
 import { SchemaFilter } from 'src/features/SchemaEditor/config/types.ts'
 import { ArrayNodeStore } from 'src/features/SchemaEditor/model/ArrayNodeStore.ts'
@@ -18,6 +19,8 @@ export class ObjectNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Object
 
+  public $ref: string = ''
+
   private state: ObjectNodeStoreState & IViewModel<ObjectNodeStoreState>
 
   constructor() {
@@ -31,6 +34,14 @@ export class ObjectNodeStore {
         connectedToParent: false,
       }),
     )
+  }
+
+  public get isDisabled(): boolean {
+    return Boolean(this.draftParent?.$ref)
+  }
+
+  public get label() {
+    return getLabelByRef(this.$ref) || this.type
   }
 
   public setNodeId(value: string): void {
@@ -175,6 +186,10 @@ export class ObjectNodeStore {
   }
 
   public get showingCreateField(): boolean {
+    if (this.$ref) {
+      return false
+    }
+
     return Boolean(this.state.id) || Boolean(this.state.parent)
   }
 

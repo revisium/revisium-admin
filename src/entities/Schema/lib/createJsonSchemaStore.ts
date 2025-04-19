@@ -1,4 +1,10 @@
-import { JsonObjectSchema, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import {
+  JsonObjectSchema,
+  JsonSchema,
+  JsonSchemaPrimitives,
+  JsonSchemaTypeName,
+  schemaRefsMapper,
+} from 'src/entities/Schema'
 import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
 import { JsonBooleanStore } from 'src/entities/Schema/model/json-boolean.store.ts'
 import { JsonNumberStore } from 'src/entities/Schema/model/json-number.store.ts'
@@ -7,7 +13,15 @@ import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 import { JsonSchemaStore, JsonSchemaStorePrimitives } from 'src/entities/Schema/model/json-schema.store.ts'
 
 export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
-  if (schema.type === JsonSchemaTypeName.Object) {
+  if ('$ref' in schema) {
+    const refSchema = schemaRefsMapper[schema.$ref] as JsonSchema | undefined
+
+    if (!refSchema) {
+      throw new Error(`Schema refs must be defined ref$=${schema.$ref}`)
+    }
+
+    return createJsonSchemaStore(refSchema)
+  } else if (schema.type === JsonSchemaTypeName.Object) {
     return createJsonObjectSchemaStore(schema)
   } else if (schema.type === JsonSchemaTypeName.Array) {
     return new JsonArrayStore(createJsonSchemaStore(schema.items))
@@ -26,7 +40,7 @@ export const createJsonObjectSchemaStore = (value: JsonObjectSchema): JsonObject
   return store
 }
 
-export const createPrimitiveStoreBySchema = (schema: JsonSchema): JsonSchemaStorePrimitives => {
+export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): JsonSchemaStorePrimitives => {
   if (schema.type === JsonSchemaTypeName.String) {
     const stringStore = new JsonStringStore()
     stringStore.foreignKey = schema.foreignKey

@@ -1,5 +1,8 @@
 import { nanoid } from 'nanoid'
-import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { JsonSchema, JsonSchemaTypeName, JsonRefSchema } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
+import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
+import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 
 export enum SchemaIds {
   String = 'String',
@@ -8,67 +11,74 @@ export enum SchemaIds {
   Object = 'Object',
   Array = 'Array',
   ForeignKeyString = 'ForeignKeyString',
+  File = 'File',
 }
 
-type OptionSchemas = { label: string; getSchema: (currentSchema: JsonSchema) => JsonSchema; id: SchemaIds }
+type OptionSchemas = { label: string; getSchemaNode: (currentSchema: JsonSchema) => SchemaNode; id: SchemaIds }
 type Group = { id: string; label: string; options: OptionSchemas[] }
 
 const typesSchemas: OptionSchemas[] = [
   {
     id: SchemaIds.String,
     label: JsonSchemaTypeName.String,
-    getSchema: () => ({
-      type: JsonSchemaTypeName.String,
-      default: '',
-    }),
+    getSchemaNode: () =>
+      createSchemaNode({
+        type: JsonSchemaTypeName.String,
+        default: '',
+      }),
   },
   {
     id: SchemaIds.Number,
     label: JsonSchemaTypeName.Number,
-    getSchema: () => ({
-      type: JsonSchemaTypeName.Number,
-      default: 0,
-    }),
+    getSchemaNode: () =>
+      createSchemaNode({
+        type: JsonSchemaTypeName.Number,
+        default: 0,
+      }),
   },
   {
     id: SchemaIds.Boolean,
     label: JsonSchemaTypeName.Boolean,
-    getSchema: () => ({
-      type: JsonSchemaTypeName.Boolean,
-      default: false,
-    }),
+    getSchemaNode: () =>
+      createSchemaNode({
+        type: JsonSchemaTypeName.Boolean,
+        default: false,
+      }),
   },
   {
     id: SchemaIds.Object,
     label: JsonSchemaTypeName.Object,
-    getSchema: () => ({
-      type: JsonSchemaTypeName.Object,
-      properties: {},
-      required: [],
-      additionalProperties: false,
-    }),
+    getSchemaNode: () =>
+      createSchemaNode({
+        type: JsonSchemaTypeName.Object,
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      }),
   },
   {
     id: SchemaIds.Array,
     label: JsonSchemaTypeName.Array,
-    getSchema: (currentSchema) => {
+    getSchemaNode: (currentSchema) => {
       let items: JsonSchema = {
         type: JsonSchemaTypeName.String,
         default: '',
       }
 
-      if (currentSchema.type === JsonSchemaTypeName.Number) {
-        items = currentSchema
-      } else if (currentSchema.type === JsonSchemaTypeName.Boolean) {
-        items = currentSchema
-      } else if (currentSchema.type === JsonSchemaTypeName.String) {
-        items = currentSchema
+      if (!('$ref' in currentSchema)) {
+        if (currentSchema.type === JsonSchemaTypeName.Number) {
+          items = currentSchema
+        } else if (currentSchema.type === JsonSchemaTypeName.Boolean) {
+          items = currentSchema
+        } else if (currentSchema.type === JsonSchemaTypeName.String) {
+          items = currentSchema
+        }
       }
 
-      return {
+      return createSchemaNode({
         type: JsonSchemaTypeName.Array,
         items,
-      }
+      })
     },
   },
 ]
@@ -77,7 +87,7 @@ const foreignKeySchemas: OptionSchemas[] = [
   {
     id: SchemaIds.ForeignKeyString,
     label: JsonSchemaTypeName.String,
-    getSchema: (currentSchema) => {
+    getSchemaNode: (currentSchema) => {
       let schema: JsonSchema = {
         type: JsonSchemaTypeName.String,
         default: '',
@@ -85,14 +95,29 @@ const foreignKeySchemas: OptionSchemas[] = [
       }
 
       if (
+        !('$ref' in currentSchema) &&
         currentSchema.type === JsonSchemaTypeName.Array &&
+        !('$ref' in currentSchema.items) &&
         currentSchema.items.type === JsonSchemaTypeName.String &&
         currentSchema.items.foreignKey !== undefined
       ) {
         schema = currentSchema.items
       }
 
-      return schema
+      return createSchemaNode(schema)
+    },
+  },
+]
+
+const schemas: OptionSchemas[] = [
+  {
+    id: SchemaIds.File,
+    label: 'File',
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.File,
+      }
+      return createSchemaNode(schema)
     },
   },
 ]
@@ -108,11 +133,16 @@ export const menuSchemaGroups: Group[] = [
     label: 'Link to table',
     options: foreignKeySchemas,
   },
+  {
+    id: nanoid(),
+    label: 'Schemas',
+    options: schemas,
+  },
 ]
 
-export const getSchemaByMenuId = (id: string, currentSchema: JsonSchema): JsonSchema | undefined => {
+export const getSchemaByMenuId = (id: string, currentSchema: JsonSchema): SchemaNode | undefined => {
   return menuSchemaGroups
     .flatMap((item) => item.options)
     .find((option) => option.id === id)
-    ?.getSchema(currentSchema)
+    ?.getSchemaNode(currentSchema)
 }

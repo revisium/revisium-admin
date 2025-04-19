@@ -1,8 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
-import { JsonSchema } from 'src/entities/Schema'
-import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
 import { useSchemaEditor } from 'src/features/SchemaEditor/model/SchemaEditorActions.ts'
@@ -42,8 +40,7 @@ export const ObjectNode: React.FC<ObjectNodeProps> = observer(({ node, dataTestI
   )
 
   const handleSelect = useCallback(
-    (item: SchemaNode, schema: JsonSchema) => {
-      const nextNode = createSchemaNode(schema)
+    (item: SchemaNode, nextNode: SchemaNode) => {
       root.replaceProperty(node, item, nextNode)
     },
     [node, root],
@@ -70,7 +67,6 @@ export const ObjectNode: React.FC<ObjectNodeProps> = observer(({ node, dataTestI
             <FieldEditor
               dataTestId={`${dataTestId}-${index}`}
               store={property}
-              isEditable={true}
               typeClassName={styles.Field}
               onSelect={handleSelect}
               onBlur={handleBlur}

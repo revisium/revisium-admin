@@ -2,7 +2,6 @@ import { DragHandleIcon } from '@chakra-ui/icons'
 import { Box, Flex, MenuButton, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
-import { JsonSchema } from 'src/entities/Schema'
 import { ArrayNodeStore } from 'src/features/SchemaEditor/model/ArrayNodeStore.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { ObjectNodeStore } from 'src/features/SchemaEditor/model/ObjectNodeStore.ts'
@@ -14,17 +13,16 @@ import { RemoveButton } from 'src/shared/ui/RemoveButton/RemoveButton.tsx'
 
 interface TypeEditorProps {
   store: SchemaNode
-  isEditable: boolean
   typeClassName?: string
   onBlur?: (node: SchemaNode) => void
   onEnter?: (node: SchemaNode) => void
   onRemove?: (node: SchemaNode) => void
-  onSelect: (node: SchemaNode, schema: JsonSchema) => void
+  onSelect: (node: SchemaNode, schemaNode: SchemaNode) => void
   dataTestId?: string
 }
 
 export const FieldEditor: React.FC<TypeEditorProps> = observer(
-  ({ store, typeClassName, isEditable, onBlur, onEnter, onRemove, onSelect, dataTestId }) => {
+  ({ store, typeClassName, onBlur, onEnter, onRemove, onSelect, dataTestId }) => {
     const { root, mode } = useSchemaEditor()
 
     const [isFocused, setIsFocused] = useState(false)
@@ -72,13 +70,34 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
     )
 
     const handleSelect = useCallback(
-      (schema: JsonSchema) => {
-        onSelect(store, schema)
+      (schemaNode: SchemaNode) => {
+        onSelect(store, schemaNode)
       },
       [onSelect, store],
     )
 
     const applyTypeClassName = !isFocused
+
+    if (store.isDisabled) {
+      return (
+        <Flex gap="0.5rem" width="100%" justifyContent="flex-start" outline={0}>
+          <Flex
+            flex={0}
+            position="relative"
+            borderWidth={1}
+            borderStyle="dashed"
+            borderColor={'#00000000'}
+            color={'gray.300'}
+            whiteSpace="nowrap"
+          >
+            <Box userSelect="none">{store.draftId}</Box>
+          </Flex>
+          <Text color="gray.300" className={typeClassName}>
+            {store.label}
+          </Text>
+        </Flex>
+      )
+    }
 
     return (
       <Flex gap="0.5rem" width="100%" justifyContent="flex-start" outline={0}>
@@ -94,7 +113,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
           color={isDisabledDrop ? 'gray.300' : undefined}
           whiteSpace="nowrap"
         >
-          {isEditable ? (
+          {!store.isDisabled ? (
             <>
               {availableDragging && (
                 <Flex
@@ -147,7 +166,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                 cursor="pointer"
                 className={applyTypeClassName ? typeClassName : undefined}
               >
-                {store.type}
+                {store.label}
               </MenuButton>
             }
           />

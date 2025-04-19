@@ -2,8 +2,8 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
+import { JsonObjectSchema, JsonRefSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
-import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
 import { SchemaFilter } from 'src/features/SchemaEditor/config/types.ts'
 import { ArrayNodeStore } from 'src/features/SchemaEditor/model/ArrayNodeStore.ts'
 import { NodeStoreType, ParentSchemaNode, SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
@@ -146,8 +146,15 @@ export class ObjectNodeStore {
       })
   }
 
-  public getSchema(filter?: SchemaFilter): JsonObjectStore {
-    const schema = new JsonObjectStore()
+  public getSchema(filter?: SchemaFilter): JsonObjectSchema | JsonRefSchema {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    const properties: JsonObjectSchema['properties'] = {}
+    const required: JsonObjectSchema['required'] = []
 
     if (!filter?.skipObjectProperties) {
       this.state.properties.forEach((field) => {
@@ -155,17 +162,22 @@ export class ObjectNodeStore {
           return
         }
 
-        if (field instanceof ArrayNodeStore) {
-          schema.addPropertyWithStore(field.draftId, field.getSchema(filter))
-        } else if (field instanceof ObjectNodeStore) {
-          schema.addPropertyWithStore(field.draftId, field.getSchema(filter))
+        if (field instanceof ArrayNodeStore || field instanceof ObjectNodeStore) {
+          properties[field.draftId] = field.getSchema(filter)
         } else {
-          schema.addPropertyWithStore(field.draftId, field.getSchema())
+          properties[field.draftId] = field.getSchema()
         }
+
+        required.push(field.draftId)
       })
     }
 
-    return schema
+    return {
+      type: JsonSchemaTypeName.Object,
+      additionalProperties: false,
+      required: required.sort(),
+      properties,
+    }
   }
 
   public get isValid(): boolean {

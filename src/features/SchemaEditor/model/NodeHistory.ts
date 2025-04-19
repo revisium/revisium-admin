@@ -155,13 +155,13 @@ export class NodeHistory {
           return {
             op: 'add',
             path: getJsonPathBySequence(item.sequence),
-            value: item.node.getSchema({ skipMovedBetweenParentsNodes: true }).getPlainSchema(),
+            value: item.node.getSchema({ skipMovedBetweenParentsNodes: true }),
           }
         case 'replace':
           return {
             op: 'replace',
             path: getJsonPathBySequence(item.sequence),
-            value: item.node.getSchema({ skipMovedBetweenParentsNodes: true }).getPlainSchema(),
+            value: item.node.getSchema({ skipMovedBetweenParentsNodes: true }),
           }
         case 'remove':
           return {

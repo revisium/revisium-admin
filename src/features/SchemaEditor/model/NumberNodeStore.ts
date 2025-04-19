@@ -2,8 +2,8 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
+import { JsonNumberSchema, JsonRefSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
-import { JsonNumberStore } from 'src/entities/Schema/model/json-number.store.ts'
 import { NodeStoreType, ParentSchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 
 type NumberNodeStoreState = {
@@ -68,8 +68,17 @@ export class NumberNodeStore {
     return this.state.connectedToParent
   }
 
-  public getSchema(): JsonNumberStore {
-    return new JsonNumberStore()
+  public getSchema(): JsonNumberSchema | JsonRefSchema {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    return {
+      type: JsonSchemaTypeName.Number,
+      default: 0,
+    }
   }
 
   public get isValid(): boolean {

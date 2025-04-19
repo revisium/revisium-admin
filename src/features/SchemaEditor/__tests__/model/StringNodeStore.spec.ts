@@ -53,13 +53,13 @@ describe('StringNodeStore', () => {
   it('schema', () => {
     const store = new StringNodeStore()
 
-    expect(store.getSchema().getPlainSchema()).toEqual(getStringSchema())
+    expect(store.getSchema()).toEqual(getStringSchema())
 
     const foreignKey = new StringForeignKeyNodeStore()
     foreignKey.setForeignKey('User')
     store.setForeignKey(foreignKey)
 
-    expect(store.getSchema().getPlainSchema()).toEqual(getStringSchema({ foreignKey: 'User' }))
+    expect(store.getSchema()).toEqual(getStringSchema({ foreignKey: 'User' }))
   })
 
   it('isValid', () => {

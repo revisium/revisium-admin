@@ -33,7 +33,7 @@ describe('createSchemaNode', () => {
 
     expect(store.isDirtyItself).toBe(false)
     expect(store.isDirty).toBe(false)
-    expect(store.getSchema().getPlainSchema()).toEqual(schema)
+    expect(store.getSchema()).toEqual(schema)
     expect(store.draftId).toEqual('rootId')
   })
 })

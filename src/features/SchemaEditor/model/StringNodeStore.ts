@@ -2,8 +2,8 @@ import { makeAutoObservable, observable } from 'mobx'
 import { createViewModel } from 'mobx-utils'
 import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
+import { JsonRefSchema, JsonSchemaTypeName, JsonStringSchema } from 'src/entities/Schema'
 import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
-import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 import { NodeStoreType, ParentSchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
 import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 
@@ -79,10 +79,21 @@ export class StringNodeStore {
     return this.state.foreignKey
   }
 
-  public getSchema(): JsonStringStore {
-    const schema = new JsonStringStore()
-    schema.foreignKey =
-      this.state.foreignKey?.draftForeignKey !== null ? this.state.foreignKey?.draftForeignKey : undefined
+  public getSchema(): JsonStringSchema | JsonRefSchema {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    const schema: JsonStringSchema = {
+      type: JsonSchemaTypeName.String,
+      default: '',
+    }
+
+    if (this.state.foreignKey?.draftForeignKey) {
+      schema.foreignKey = this.state.foreignKey?.draftForeignKey
+    }
 
     return schema
   }

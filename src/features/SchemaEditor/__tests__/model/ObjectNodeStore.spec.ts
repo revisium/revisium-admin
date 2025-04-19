@@ -69,7 +69,7 @@ describe('ObjectNodeStore', () => {
   it('schema', () => {
     const store = new ObjectNodeStore()
 
-    expect(store.getSchema().getPlainSchema()).toEqual(getObjectSchema({}))
+    expect(store.getSchema()).toEqual(getObjectSchema({}))
 
     const str = new StringNodeStore()
     str.setId('str')
@@ -79,11 +79,11 @@ describe('ObjectNodeStore', () => {
     store.addProperty(str)
     store.addProperty(num)
 
-    expect(store.getSchema().getPlainSchema()).toEqual(
+    expect(store.getSchema()).toEqual(
       getObjectSchema({ [str.draftId]: getStringSchema(), [num.draftId]: getNumberSchema() }),
     )
 
-    expect(store.getSchema({ skipObjectProperties: true }).getPlainSchema()).toEqual(getObjectSchema({}))
+    expect(store.getSchema({ skipObjectProperties: true })).toEqual(getObjectSchema({}))
   })
 
   it('isValid', () => {

@@ -41,16 +41,28 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
         <Flex width="150px">
           {onSelect ? (
             <Text
+              maxWidth="140px"
               textDecoration="underline"
               cursor="pointer"
               onClick={handleClickOnTableId}
               data-testid={`table-${table.id}-select`}
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              overflow="hidden"
             >
               {table.id}
             </Text>
           ) : (
             <Link to={`${table.id}`} data-testid={`table-${table.id}-link`}>
-              <Text textDecoration="underline">{table.id}</Text>
+              <Text
+                maxWidth="140px"
+                textDecoration="underline"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                overflow="hidden"
+              >
+                {table.id}
+              </Text>
             </Link>
           )}
           {!table.readonly && store.isEditableRevision && <Text>*</Text>}

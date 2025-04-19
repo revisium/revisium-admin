@@ -37,7 +37,7 @@ export class BooleanNodeStore {
   }
 
   public get label() {
-    return getLabelByRef(this.$ref) || this.type
+    return getLabelByRef(this.$ref) ?? this.type
   }
 
   public setNodeId(value: string): void {

@@ -45,9 +45,7 @@ describe('RootNodeStore', () => {
     store.submitChanges()
     const nextNode = new StringNodeStore()
     store.replaceNode(nextNode)
-    expect(store.getPatches()).toStrictEqual<JsonPatch[]>([
-      { op: 'replace', path: '', value: nextNode.getSchema() },
-    ])
+    expect(store.getPatches()).toStrictEqual<JsonPatch[]>([{ op: 'replace', path: '', value: nextNode.getSchema() }])
   })
 
   it('getPlainSchema', () => {

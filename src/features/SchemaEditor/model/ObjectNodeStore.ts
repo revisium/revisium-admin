@@ -41,7 +41,7 @@ export class ObjectNodeStore {
   }
 
   public get label() {
-    return getLabelByRef(this.$ref) || this.type
+    return getLabelByRef(this.$ref) ?? this.type
   }
 
   public setNodeId(value: string): void {
@@ -172,10 +172,12 @@ export class ObjectNodeStore {
       })
     }
 
+    const sortedRequired = required.sort((a, b) => a.localeCompare(b))
+
     return {
       type: JsonSchemaTypeName.Object,
       additionalProperties: false,
-      required: required.sort(),
+      required: sortedRequired,
       properties,
     }
   }

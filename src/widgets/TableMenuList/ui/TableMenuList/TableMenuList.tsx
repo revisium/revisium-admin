@@ -22,15 +22,16 @@ export const TableMenuList: React.FC = observer(() => {
           height="32px"
           key={table.versionId}
           paddingLeft="0.5rem"
+          paddingRight="0.5rem"
           width="100%"
         >
           {table.isActive ? (
-            <Text color="gray.500" fontWeight="600">
+            <Text color="gray.500" fontWeight="600" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
               {table.id}
             </Text>
           ) : (
             <Button minWidth={0} variant="link">
-              <Text>
+              <Text textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
                 <Link key={table.id} to={table.link} data-testid={`sidebar-table-${table.id}`}>
                   {table.id}
                 </Link>

@@ -30,19 +30,30 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onSelect }
       width="100%"
       data-testid={`row-${row.id}`}
     >
-      <Flex minWidth="150px">
+      <Flex width="150px">
         {onSelect ? (
           <Text
+            maxWidth="140px"
             textDecoration="underline"
             cursor="pointer"
             onClick={handleClickOnRowId}
             data-testid={`row-${row.id}-select`}
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+            overflow="hidden"
           >
             {row.id}
           </Text>
         ) : (
           <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-            <Text color="gray.400" textDecoration="underline">
+            <Text
+              maxWidth="140px"
+              color="gray.400"
+              textDecoration="underline"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              overflow="hidden"
+            >
               {row.id}
             </Text>
           </Link>

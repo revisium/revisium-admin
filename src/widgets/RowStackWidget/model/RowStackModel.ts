@@ -130,10 +130,11 @@ export class RowStackModel {
   }
 
   public toCreatingRow() {
+    const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
     const store =
       this.state.type === RowStackModelStateType.ConnectingForeignKeyRow
         ? this.state.store
-        : new RowDataCardStore(createJsonValueStore(createJsonSchemaStore(this.schema)))
+        : new RowDataCardStore(createJsonValueStore(createJsonSchemaStore(this.schema)), rowId)
 
     this.state = {
       type: RowStackModelStateType.CreatingRow,

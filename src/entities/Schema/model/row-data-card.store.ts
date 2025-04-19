@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx'
-import { nanoid } from 'nanoid'
 import { JsonSchemaTypeName, ViewerSwitcherMode } from 'src/entities/Schema'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
@@ -21,7 +20,7 @@ export class RowDataCardStore {
 
   public constructor(
     root: JsonValueStore,
-    name: string = nanoid(6),
+    name: string,
     public readonly originRow: IRowModel | null = null,
     private readonly projectPageModel?: ProjectPageModel,
   ) {

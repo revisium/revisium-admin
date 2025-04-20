@@ -44,11 +44,16 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
   if (schema.type === JsonSchemaTypeName.String) {
     const stringStore = new JsonStringStore()
     stringStore.foreignKey = schema.foreignKey
+    stringStore.readOnly = schema.readOnly
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {
-    return new JsonNumberStore()
+    const numberStore = new JsonNumberStore()
+    numberStore.readOnly = schema.readOnly
+    return numberStore
   } else if (schema.type === JsonSchemaTypeName.Boolean) {
-    return new JsonBooleanStore()
+    const booleanStore = new JsonBooleanStore()
+    booleanStore.readOnly = schema.readOnly
+    return booleanStore
   } else {
     throw new Error('this type is not allowed')
   }

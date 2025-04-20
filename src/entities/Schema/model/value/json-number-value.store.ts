@@ -19,6 +19,10 @@ export class JsonNumberValueStore {
     makeAutoObservable(this)
   }
 
+  public get readOnly() {
+    return this.schema.readOnly
+  }
+
   public get touched(): boolean {
     return this.baseValue !== this.value
   }

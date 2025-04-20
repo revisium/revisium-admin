@@ -34,21 +34,39 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
             <RowFieldEditor
               colorName="gray.400"
               name="<root value>"
-              value={<RowStringEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />}
+              value={
+                <RowStringEditor
+                  dataTestId={childDataTestId}
+                  readonly={!isEdit || store.root.readOnly}
+                  store={store.root}
+                />
+              }
             />
           )}
           {store.root.type === JsonSchemaTypeName.Number && (
             <RowFieldEditor
               colorName="gray.400"
               name="<root value>"
-              value={<RowNumberEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />}
+              value={
+                <RowNumberEditor
+                  dataTestId={childDataTestId}
+                  readonly={!isEdit || store.root.readOnly}
+                  store={store.root}
+                />
+              }
             />
           )}
           {store.root.type === JsonSchemaTypeName.Boolean && (
             <RowFieldEditor
               colorName="gray.400"
               name="<root value>"
-              value={<RowBooleanEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />}
+              value={
+                <RowBooleanEditor
+                  dataTestId={childDataTestId}
+                  readonly={!isEdit || store.root.readOnly}
+                  store={store.root}
+                />
+              }
             />
           )}
         </RowFieldEditor>

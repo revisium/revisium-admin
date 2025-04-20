@@ -6,6 +6,7 @@ export class JsonNumberStore implements JsonNumberSchema {
   public readonly type = JsonSchemaTypeName.Number
 
   public default: number = 0
+  public readOnly?: boolean
 
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)

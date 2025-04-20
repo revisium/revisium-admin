@@ -6,6 +6,7 @@ export class JsonBooleanStore implements JsonBooleanSchema {
   public readonly type = JsonSchemaTypeName.Boolean
 
   public default: boolean = false
+  public readOnly?: boolean
 
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)

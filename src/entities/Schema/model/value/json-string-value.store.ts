@@ -19,6 +19,10 @@ export class JsonStringValueStore {
     makeAutoObservable(this)
   }
 
+  public get readOnly() {
+    return this.schema.readOnly
+  }
+
   public get foreignKey() {
     return this.schema.foreignKey
   }

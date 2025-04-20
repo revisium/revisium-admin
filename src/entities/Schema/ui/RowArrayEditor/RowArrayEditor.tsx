@@ -56,7 +56,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                   <RowStringEditor
                     dataTestId={childDataTestId}
                     key={index}
-                    readonly={readonly}
+                    readonly={readonly || store.items.readOnly}
                     store={value as JsonStringValueStore}
                   />
                 )}
@@ -64,7 +64,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                   <RowNumberEditor
                     dataTestId={childDataTestId}
                     key={index}
-                    readonly={readonly}
+                    readonly={readonly || store.items.readOnly}
                     store={value as JsonNumberValueStore}
                   />
                 )}
@@ -72,7 +72,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                   <RowBooleanEditor
                     dataTestId={childDataTestId}
                     key={index}
-                    readonly={readonly}
+                    readonly={readonly || store.items.readOnly}
                     store={value as JsonBooleanValueStore}
                   />
                 )}

@@ -39,13 +39,13 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
             value={
               <>
                 {item.type === JsonSchemaTypeName.String && (
-                  <RowStringEditor dataTestId={childDataTestId} readonly={readonly} store={item} />
+                  <RowStringEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
                 )}
                 {item.type === JsonSchemaTypeName.Number && (
-                  <RowNumberEditor dataTestId={childDataTestId} readonly={readonly} store={item} />
+                  <RowNumberEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
                 )}
                 {item.type === JsonSchemaTypeName.Boolean && (
-                  <RowBooleanEditor dataTestId={childDataTestId} readonly={readonly} store={item} />
+                  <RowBooleanEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
                 )}
               </>
             }

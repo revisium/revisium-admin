@@ -130,7 +130,7 @@ export const menuSchemaGroups: Group[] = [
   },
   {
     id: nanoid(),
-    label: 'Link to table',
+    label: 'Foreign key',
     options: foreignKeySchemas,
   },
   {

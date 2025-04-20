@@ -40,6 +40,10 @@ export class StringNodeStore {
   }
 
   public get label() {
+    if (this.draftForeignKey) {
+      return `foreign key`
+    }
+
     return getLabelByRef(this.$ref) ?? this.type
   }
 

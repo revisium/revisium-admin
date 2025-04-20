@@ -36,9 +36,11 @@ export const getMovePatch = ({ from, path }: { from: string; path: string }): Js
 export const getStringSchema = ({
   defaultValue = '',
   foreignKey,
+  readOnly,
 }: {
   defaultValue?: string
   foreignKey?: string
+  readOnly?: boolean
 } = {}): JsonStringSchema => {
   const schema: JsonStringSchema = {
     type: JsonSchemaTypeName.String,
@@ -49,16 +51,39 @@ export const getStringSchema = ({
     schema.foreignKey = foreignKey
   }
 
+  if (readOnly) {
+    schema.readOnly = readOnly
+  }
+
   return schema
 }
-export const getNumberSchema = (defaultValue: number = 0): JsonNumberSchema => ({
-  type: JsonSchemaTypeName.Number,
-  default: defaultValue,
-})
-export const getBooleanSchema = (defaultValue: boolean = false): JsonBooleanSchema => ({
-  type: JsonSchemaTypeName.Boolean,
-  default: defaultValue,
-})
+
+export const getNumberSchema = (defaultValue: number = 0, readOnly?: boolean): JsonNumberSchema => {
+  const schema: JsonNumberSchema = {
+    type: JsonSchemaTypeName.Number,
+    default: defaultValue,
+  }
+
+  if (readOnly) {
+    schema.readOnly = readOnly
+  }
+
+  return schema
+}
+
+export const getBooleanSchema = (defaultValue: boolean = false, readOnly?: boolean): JsonBooleanSchema => {
+  const schema: JsonBooleanSchema = {
+    type: JsonSchemaTypeName.Boolean,
+    default: defaultValue,
+  }
+
+  if (readOnly) {
+    schema.readOnly = readOnly
+  }
+
+  return schema
+}
+
 export const getObjectSchema = (properties: Record<string, JsonSchema>): JsonObjectSchema => ({
   type: JsonSchemaTypeName.Object,
   additionalProperties: false,

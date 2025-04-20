@@ -7,6 +7,7 @@ export class JsonStringStore implements JsonStringSchema {
 
   public default: string = ''
   public foreignKey?: string
+  public readOnly?: boolean
 
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)

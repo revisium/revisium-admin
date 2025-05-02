@@ -6,12 +6,15 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 
 interface FilePluginActionsProps {
   store: JsonObjectValueStore
+  readonly?: boolean
   onUpload?: (fileId: string, file: File) => void
 }
 
-export const FilePluginActions: FC<FilePluginActionsProps> = ({ store, onUpload }) => {
+export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store, onUpload }) => {
+  const status = (store.value['status'] as JsonStringValueStore).getPlainValue()
   const fileId = (store.value['fileId'] as JsonStringValueStore).getPlainValue()
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
+  const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -38,18 +41,22 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ store, onUpload 
           // className={styles.SelectForeignKeyButton}
         />
       )}
-      <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
-      <IconButton
-        as="label"
-        htmlFor={`file-${fileId}`}
-        cursor="pointer"
-        _hover={{ backgroundColor: 'gray.100' }}
-        aria-label=""
-        height="24px"
-        icon={<PiUploadThin />}
-        variant="ghost"
-        // className={styles.SelectForeignKeyButton}
-      />
+      {showUploadFile && (
+        <>
+          <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
+          <IconButton
+            as="label"
+            htmlFor={`file-${fileId}`}
+            cursor="pointer"
+            _hover={{ backgroundColor: 'gray.100' }}
+            aria-label=""
+            height="24px"
+            icon={<PiUploadThin />}
+            variant="ghost"
+            // className={styles.SelectForeignKeyButton}
+          />
+        </>
+      )}
     </Flex>
   )
 }

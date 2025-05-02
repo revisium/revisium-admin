@@ -20,7 +20,9 @@ export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
       throw new Error(`Schema refs must be defined ref$=${schema.$ref}`)
     }
 
-    return createJsonSchemaStore(refSchema)
+    const store = createJsonSchemaStore(refSchema)
+    store.$ref = schema.$ref
+    return store
   } else if (schema.type === JsonSchemaTypeName.Object) {
     return createJsonObjectSchemaStore(schema)
   } else if (schema.type === JsonSchemaTypeName.Array) {

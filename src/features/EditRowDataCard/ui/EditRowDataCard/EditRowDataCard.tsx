@@ -16,10 +16,11 @@ interface EditRowDataCardProps {
   isEdit: boolean
   onUpdate: () => Promise<void>
   onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
+  onUploadFile: (fileId: string, file: File) => Promise<void>
 }
 
 export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
-  ({ store, isEdit, onUpdate, onSelectForeignKey }) => {
+  ({ store, isEdit, onUpdate, onSelectForeignKey, onUploadFile }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [isLoading, setIsLoading] = useState(false)
@@ -60,6 +61,7 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
     return (
       <RowEditorActions.Provider
         value={{
+          onUploadFile,
           onSelectForeignKey: handleSelectForeignKey,
           onOverNode: store.setOverNode,
           mode: isEdit ? RowEditorMode.Updating : RowEditorMode.Reading,

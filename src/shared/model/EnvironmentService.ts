@@ -1,6 +1,7 @@
 import { container } from 'src/shared/lib'
 
 type Envs =
+  | 'REACT_APP_SWAGGER_SERVER_URL'
   | 'REACT_APP_GRAPHQL_SERVER_URL'
   | 'REACT_APP_GRAPHQL_SERVER_PROTOCOL'
   | 'REACT_APP_GRAPHQL_SERVER_HOST'

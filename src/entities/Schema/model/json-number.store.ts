@@ -5,6 +5,8 @@ import { JsonNumberSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 export class JsonNumberStore implements JsonNumberSchema {
   public readonly type = JsonSchemaTypeName.Number
 
+  public $ref = ''
+
   public default: number = 0
   public readOnly?: boolean
 

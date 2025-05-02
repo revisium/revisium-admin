@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
+import { FilePluginActions } from 'src/entities/Schema/ui/FilePluginActions/FilePluginActions.tsx'
 import { RowArrayEditor } from 'src/entities/Schema/ui/RowArrayEditor/RowArrayEditor.tsx'
 import { RowBooleanEditor } from 'src/entities/Schema/ui/RowBooleanEditor/RowBooleanEditor.tsx'
 import { RowFieldEditor } from 'src/entities/Schema/ui/RowFieldEditor/RowFieldEditor.tsx'
@@ -38,6 +40,9 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
             name={name}
             value={
               <>
+                {item.$ref === SystemSchemaIds.File && (
+                  <FilePluginActions store={item as JsonObjectValueStore} onUpload={actions.onUploadFile} />
+                )}
                 {item.type === JsonSchemaTypeName.String && (
                   <RowStringEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
                 )}

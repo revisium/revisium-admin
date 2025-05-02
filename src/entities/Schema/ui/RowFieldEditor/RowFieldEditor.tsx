@@ -31,10 +31,10 @@ export const RowFieldEditor: React.FC<RowFieldEditorProps & React.PropsWithChild
 
   return (
     <Flex flexDirection="column" flex={1} width="100%">
-      <Flex gap="4px" height="28px" alignItems="center" onMouseOver={onOverLabel} onMouseOut={onOutLabel}>
-        <Box color="gray.300">
+      <Flex gap="4px" minHeight="28px" alignItems="flex-start" onMouseOver={onOverLabel} onMouseOut={onOutLabel}>
+        <Flex color="gray.300" height="28px" alignItems="center">
           <PiDotOutlineFill />
-        </Box>
+        </Flex>
         {name ? (
           <Flex className={nameAndValueClassName} flex={1}>
             <Text color={colorName} fontWeight="300">

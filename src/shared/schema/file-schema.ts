@@ -5,8 +5,9 @@ export const fileSchema: JsonObjectSchema = {
   properties: {
     status: { type: JsonSchemaTypeName.String, default: '', readOnly: true },
     fileId: { type: JsonSchemaTypeName.String, default: '', readOnly: true },
+    fromRowVersionId: { type: JsonSchemaTypeName.String, default: '', readOnly: true },
     url: { type: JsonSchemaTypeName.String, default: '', readOnly: true },
-    filename: { type: JsonSchemaTypeName.String, default: '' },
+    fileName: { type: JsonSchemaTypeName.String, default: '' },
     hash: {
       type: JsonSchemaTypeName.String,
       default: '',
@@ -38,6 +39,18 @@ export const fileSchema: JsonObjectSchema = {
       readOnly: true,
     },
   },
-  required: ['status', 'fileId', 'url', 'filename', 'hash', 'extension', 'mimeType', 'size', 'width', 'height'],
+  required: [
+    'status',
+    'fileId',
+    'fromRowVersionId',
+    'url',
+    'fileName',
+    'hash',
+    'extension',
+    'mimeType',
+    'size',
+    'width',
+    'height',
+  ],
   additionalProperties: false,
 }

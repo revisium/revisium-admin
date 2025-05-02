@@ -22,20 +22,22 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ store, onUpload 
 
   const handleOpenFile = useCallback(() => {
     window.open(url, '_blank')
-  }, [])
+  }, [url])
 
   return (
     <Flex>
-      <IconButton
-        // data-testid={`${dataTestId}-view-foreign-key`}
-        _hover={{ backgroundColor: 'gray.100' }}
-        aria-label=""
-        height="24px"
-        icon={<PiEyeThin />}
-        variant="ghost"
-        onClick={handleOpenFile}
-        // className={styles.SelectForeignKeyButton}
-      />
+      {url && (
+        <IconButton
+          // data-testid={`${dataTestId}-view-foreign-key`}
+          _hover={{ backgroundColor: 'gray.100' }}
+          aria-label=""
+          height="24px"
+          icon={<PiEyeThin />}
+          variant="ghost"
+          onClick={handleOpenFile}
+          // className={styles.SelectForeignKeyButton}
+        />
+      )}
       <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
       <IconButton
         as="label"

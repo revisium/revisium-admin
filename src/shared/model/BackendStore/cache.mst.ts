@@ -192,10 +192,14 @@ export const CacheModel = types
         return self.table.put(tableSnapshot)
       } else {
         table.readonly = tableSnapshot.readonly
-        table.count = tableSnapshot.count
         table.createdAt = cast(tableSnapshot.createdAt)
-        table.schema = cast(tableSnapshot.schema)
         table.id = tableSnapshot.id
+        if (tableSnapshot.count) {
+          table.count = tableSnapshot.count
+        }
+        if (tableSnapshot.schema) {
+          table.schema = cast(tableSnapshot.schema)
+        }
         return table
       }
     },

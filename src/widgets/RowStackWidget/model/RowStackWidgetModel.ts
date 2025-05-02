@@ -95,12 +95,16 @@ export class RowStackWidgetModel {
     this.stack.splice(foundIndex)
   }
 
+  public updateStore() {
+    this.stack[0].updateStore(this.createStore())
+  }
+
   public init() {
     this.disposers.push(
       reaction(
         () => this.projectPageModel.row,
         () => {
-          this.stack[0].updateStore(this.createStore())
+          this.updateStore()
         },
       ),
     )

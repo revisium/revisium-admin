@@ -51,6 +51,7 @@ type ConfigurationModel {
   availableEmailSignUp: Boolean!
   github: GithubOauth!
   google: GoogleOauth!
+  plugins: PluginsModel!
 }
 
 input ConfirmEmailCodeInput {
@@ -321,6 +322,10 @@ type PageInfo {
 type ParentBranchModel {
   branch: BranchModel!
   revision: RevisionModel!
+}
+
+type PluginsModel {
+  file: Boolean!
 }
 
 type ProjectModel {

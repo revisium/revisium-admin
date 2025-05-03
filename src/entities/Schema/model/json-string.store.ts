@@ -5,6 +5,8 @@ import { JsonSchemaTypeName, JsonStringSchema } from 'src/entities/Schema'
 export class JsonStringStore implements JsonStringSchema {
   public readonly type = JsonSchemaTypeName.String
 
+  public $ref = ''
+
   public default: string = ''
   public foreignKey?: string
   public readOnly?: boolean

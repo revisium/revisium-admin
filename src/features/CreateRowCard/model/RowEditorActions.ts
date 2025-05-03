@@ -12,6 +12,7 @@ export interface RowEditorActionsType {
   onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
   mode: RowEditorMode
   onOverNode: (node: JsonValueStore | null) => void
+  onUploadFile?: (fileId: string, file: File) => Promise<void>
 }
 
 export const RowEditorActions = createContext<RowEditorActionsType | null>(null)

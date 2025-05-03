@@ -6,6 +6,8 @@ import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 export class JsonObjectStore implements JsonObjectSchema {
   public readonly type = JsonSchemaTypeName.Object
 
+  public $ref = ''
+
   public readonly additionalProperties = false
   public readonly required: string[] = []
   public readonly properties: Record<string, JsonSchemaStore> = {}

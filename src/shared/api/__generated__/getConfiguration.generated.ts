@@ -13,6 +13,7 @@ export type ConfigurationQuery = {
     availableEmailSignUp: boolean
     google: { __typename?: 'GoogleOauth'; available: boolean; clientId?: string | null }
     github: { __typename?: 'GithubOauth'; available: boolean; clientId?: string | null }
+    plugins: { __typename?: 'PluginsModel'; file: boolean }
   }
 }
 
@@ -27,6 +28,9 @@ export const ConfigurationDocument = gql`
       github {
         available
         clientId
+      }
+      plugins {
+        file
       }
     }
   }

@@ -9,5 +9,8 @@ query configuration {
       available
       clientId
     }
+    plugins {
+      file
+    }
   }
 }

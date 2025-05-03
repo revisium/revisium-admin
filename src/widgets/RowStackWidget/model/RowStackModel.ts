@@ -7,10 +7,13 @@ import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
+import { container } from 'src/shared/lib'
 import { IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { CreateRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRowCommand.ts'
 import { UpdateRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/UpdateRowCommand.ts'
+import { UploadFileCommand } from 'src/shared/model/BackendStore/handlers/mutations/UploadFileCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
+import { FileService } from 'src/shared/model/FileService.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export enum RowStackModelStateType {
@@ -98,6 +101,18 @@ export class RowStackModel {
     try {
       const command = new UpdateRowCommand(this.rootStore, this.projectPageModel, store)
       return await command.execute()
+    } catch (e) {
+      console.error(e)
+
+      return false
+    }
+  }
+
+  public async uploadFile(store: RowDataCardStore, fileId: string, file: File): Promise<boolean> {
+    try {
+      const fileService = container.get(FileService)
+      const command = new UploadFileCommand(this.rootStore, this.projectPageModel, fileService, store)
+      return await command.execute(fileId, file)
     } catch (e) {
       console.error(e)
 

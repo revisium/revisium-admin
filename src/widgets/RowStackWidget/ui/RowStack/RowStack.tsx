@@ -58,10 +58,25 @@ export const RowStack: React.FC = observer(() => {
       const result = await item.updateRow(store)
       if (result) {
         store.save()
+        root.updateStore()
         navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
       }
     }
-  }, [item, linkMaker, navigate])
+  }, [item, linkMaker, navigate, root])
+
+  const handleUploadFile = useCallback(
+    async (fileId: string, file: File) => {
+      if (item.state.type === RowStackModelStateType.UpdatingRow) {
+        const store = item.state.store
+        const result = await item.uploadFile(store, fileId, file)
+        if (result) {
+          root.updateStore()
+          navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
+        }
+      }
+    },
+    [item, linkMaker, navigate, root],
+  )
 
   if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
     const schemaStore = item.state.store
@@ -114,6 +129,7 @@ export const RowStack: React.FC = observer(() => {
           store={item.state.store}
           onUpdate={handleUpdateRow}
           onSelectForeignKey={handleSelectForeignKey}
+          onUploadFile={handleUploadFile}
         />
       </>
     )

@@ -21,6 +21,10 @@ export class JsonObjectValueStore {
     this.init()
   }
 
+  public get $ref() {
+    return this.schema.$ref
+  }
+
   public get touched(): boolean {
     return Object.values(this.value).some((store) => store.touched)
   }

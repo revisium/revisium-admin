@@ -19,6 +19,10 @@ export class JsonBooleanValueStore {
     makeAutoObservable(this)
   }
 
+  public get $ref() {
+    return this.schema.$ref
+  }
+
   public get readOnly() {
     return this.schema.readOnly
   }

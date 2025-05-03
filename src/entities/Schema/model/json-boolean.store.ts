@@ -5,6 +5,8 @@ import { JsonBooleanSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 export class JsonBooleanStore implements JsonBooleanSchema {
   public readonly type = JsonSchemaTypeName.Boolean
 
+  public $ref = ''
+
   public default: boolean = false
   public readOnly?: boolean
 

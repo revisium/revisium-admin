@@ -53,7 +53,7 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
 
   return (
     <Flex className={styles.Field}>
-      <Box ml="2px" pl="4px" pr="4px" height="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
+      <Box ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
         {readonly ? (
           `"${store.getPlainValue()}"`
         ) : (

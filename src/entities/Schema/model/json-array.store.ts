@@ -6,6 +6,8 @@ import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 export class JsonArrayStore implements JsonArraySchema {
   public readonly type = JsonSchemaTypeName.Array
 
+  public $ref = ''
+
   constructor(
     public readonly items: JsonSchemaStore,
     public readonly nodeId: string = nanoid(),

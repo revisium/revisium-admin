@@ -75,6 +75,7 @@ export type ConfigurationModel = {
   availableEmailSignUp: Scalars['Boolean']['output']
   github: GithubOauth
   google: GoogleOauth
+  plugins: PluginsModel
 }
 
 export type ConfirmEmailCodeInput = {
@@ -447,6 +448,10 @@ export type PageInfo = {
 export type ParentBranchModel = {
   branch: BranchModel
   revision: RevisionModel
+}
+
+export type PluginsModel = {
+  file: Scalars['Boolean']['output']
 }
 
 export type ProjectModel = {
@@ -872,6 +877,7 @@ export type ConfigurationQuery = {
     availableEmailSignUp: boolean
     google: { available: boolean; clientId?: string | null }
     github: { available: boolean; clientId?: string | null }
+    plugins: { file: boolean }
   }
 }
 
@@ -2147,6 +2153,9 @@ export const ConfigurationDocument = gql`
       github {
         available
         clientId
+      }
+      plugins {
+        file
       }
     }
   }

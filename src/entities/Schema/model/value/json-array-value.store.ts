@@ -20,6 +20,10 @@ export class JsonArrayValueStore {
     makeAutoObservable(this)
   }
 
+  public get $ref() {
+    return this.schema.$ref
+  }
+
   public get touched(): boolean {
     if (this.value !== this.baseValue) {
       return true

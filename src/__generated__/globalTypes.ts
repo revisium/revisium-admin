@@ -76,6 +76,7 @@ export type ConfigurationModel = {
   availableEmailSignUp: Scalars['Boolean']['output']
   github: GithubOauth
   google: GoogleOauth
+  plugins: PluginsModel
 }
 
 export type ConfirmEmailCodeInput = {
@@ -457,6 +458,11 @@ export type ParentBranchModel = {
   __typename: 'ParentBranchModel'
   branch: BranchModel
   revision: RevisionModel
+}
+
+export type PluginsModel = {
+  __typename: 'PluginsModel'
+  file: Scalars['Boolean']['output']
 }
 
 export type ProjectModel = {

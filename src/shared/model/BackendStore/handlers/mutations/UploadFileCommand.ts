@@ -59,10 +59,24 @@ export class UploadFileCommand extends BaseUpdateRowCommand {
       file,
     })
 
+    const table = await this.rootStore.queryTable({
+      data: { revisionId: this.branch.draft.id, tableId: this.table.id },
+    })
+
+    const row = await this.rootStore.queryRow({
+      revisionId: this.branch.draft.id,
+      tableId: this.table.id,
+      rowId: this.row.id,
+    })
+
+    if (!table || !row) {
+      throw new Error('Table or row not found')
+    }
+
     return {
-      table: this.addVersionedTableToCache(response.table),
+      table,
       previousVersionTableId: response.previousVersionTableId,
-      row: this.addVersionedRowToCache(response.row),
+      row,
       previousVersionRowId: response.previousVersionRowId,
     }
   }

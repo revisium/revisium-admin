@@ -31,20 +31,20 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
     <Flex>
       {url && (
         <IconButton
-          // data-testid={`${dataTestId}-view-foreign-key`}
+          data-testid={`${fileId}-open-file`}
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
           icon={<PiEyeThin />}
           variant="ghost"
           onClick={handleOpenFile}
-          // className={styles.SelectForeignKeyButton}
         />
       )}
       {showUploadFile && (
         <>
           <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
           <IconButton
+            data-testid={`${fileId}-upload-file`}
             as="label"
             htmlFor={`file-${fileId}`}
             cursor="pointer"
@@ -53,7 +53,6 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
             height="24px"
             icon={<PiUploadThin />}
             variant="ghost"
-            // className={styles.SelectForeignKeyButton}
           />
         </>
       )}

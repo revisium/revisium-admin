@@ -1,11 +1,11 @@
 .Field {
   width: 100%;
 
-  .RemoveButton {
+  .Action {
     visibility: hidden;
   }
 
-  &:hover .RemoveButton {
+  &:hover .Action {
     visibility: visible;
   }
 }

@@ -42,6 +42,7 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
               <>
                 {item.$ref === SystemSchemaIds.File && (
                   <FilePluginActions
+                    dataTestId={childDataTestId}
                     readonly={readonly}
                     store={item as JsonObjectValueStore}
                     onUpload={actions.onUploadFile}

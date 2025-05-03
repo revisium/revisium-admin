@@ -1,11 +1,11 @@
 .Field {
-  width: 100%;
+  flex: 1;
 
-  .Action {
+  .Actions {
     visibility: hidden;
   }
 
-  &:hover .Action {
+  &:hover .Actions {
     visibility: visible;
   }
 }

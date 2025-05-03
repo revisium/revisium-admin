@@ -8,9 +8,10 @@ interface FilePluginActionsProps {
   store: JsonObjectValueStore
   readonly?: boolean
   onUpload?: (fileId: string, file: File) => void
+  dataTestId?: string
 }
 
-export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store, onUpload }) => {
+export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store, onUpload, dataTestId }) => {
   const status = (store.value['status'] as JsonStringValueStore).getPlainValue()
   const fileId = (store.value['fileId'] as JsonStringValueStore).getPlainValue()
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
@@ -31,7 +32,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
     <Flex>
       {url && (
         <IconButton
-          data-testid={`${fileId}-open-file`}
+          data-testid={`${dataTestId}-open-file`}
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
@@ -44,7 +45,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
         <>
           <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
           <IconButton
-            data-testid={`${fileId}-upload-file`}
+            data-testid={`${dataTestId}-upload-file`}
             as="label"
             htmlFor={`file-${fileId}`}
             cursor="pointer"

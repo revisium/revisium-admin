@@ -1,12 +1,14 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store.ts'
 import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-boolean-value.store.ts'
 import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store.ts'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
+import { FilePluginActions } from 'src/entities/Schema/ui/FilePluginActions/FilePluginActions.tsx'
 import { RowBooleanEditor } from 'src/entities/Schema/ui/RowBooleanEditor/RowBooleanEditor.tsx'
 import { RowFieldEditor } from 'src/entities/Schema/ui/RowFieldEditor/RowFieldEditor.tsx'
 import { RowNumberEditor } from 'src/entities/Schema/ui/RowNumberEditor/RowNumberEditor.tsx'
@@ -83,11 +85,16 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                     aria-label="remove"
                     color="gray.200"
                     _hover={{ color: 'gray.400' }}
-                    className={styles.RemoveButton}
+                    className={styles.Action}
                     onClick={() => {
                       store.removeItem(index)
                     }}
                   />
+                )}
+                {value.type === JsonSchemaTypeName.Object && value.$ref === SystemSchemaIds.File && (
+                  <Box className={styles.Action}>
+                    <FilePluginActions readonly={readonly} store={value} onUpload={actions.onUploadFile} />
+                  </Box>
                 )}
               </Flex>
             }

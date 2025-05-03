@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
@@ -12,6 +12,8 @@ import { RowNumberEditor } from 'src/entities/Schema/ui/RowNumberEditor/RowNumbe
 import { RowObjectEditor } from 'src/entities/Schema/ui/RowObjectEditor/RowObjectEditor.tsx'
 import { RowStringEditor } from 'src/entities/Schema/ui/RowStringEditor/RowStringEditor.tsx'
 import { useRowEditorActions } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
+
+import styles from './TreeDataCard.module.scss'
 
 interface TreeDataCardProps {
   store: RowDataCardStore
@@ -33,7 +35,12 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
             <RowFieldEditor
               colorName="gray.400"
               name="File"
-              value={<FilePluginActions readonly={!isEdit} store={store.root} onUpload={actions.onUploadFile} />}
+              nameAndValueClassName={styles.Field}
+              value={
+                <Box className={styles.Actions}>
+                  <FilePluginActions readonly={!isEdit} store={store.root} onUpload={actions.onUploadFile} />
+                </Box>
+              }
             >
               <RowObjectEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />
             </RowFieldEditor>

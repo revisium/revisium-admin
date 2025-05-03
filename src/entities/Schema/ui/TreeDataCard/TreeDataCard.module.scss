@@ -1,0 +1,11 @@
+.Field {
+  flex: 1;
+
+  .Actions {
+    visibility: hidden;
+  }
+
+  &:hover .Actions {
+    visibility: visible;
+  }
+}

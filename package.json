@@ -1,6 +1,6 @@
 {
   "name": "@revisium/admin",
-  "version": "0.11.0-alpha.2",
+  "version": "0.11.0-alpha.3",
   "description": "Revisium is a tool (UI/API) inspired by JSON (JSON Schema) and Git, designed to provide a flexible and low-level headless CMS solution.",
   "private": false,
   "homepage": "https://revisium.io",
@@ -27,7 +27,9 @@
     "preview": "vite preview",
     "prettier": "prettier . --write",
     "gql:codegen": "graphql-codegen && npm run prettier",
-    "gql:codegen:download": "graphql-codegen --download"
+    "gql:codegen:download": "graphql-codegen --download",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:patch": "npm version patch --no-git-tag-version"
   },
   "dependencies": {
     "@apollo/client": "3.10.4",

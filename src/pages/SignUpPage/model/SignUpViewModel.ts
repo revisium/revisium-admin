@@ -29,6 +29,10 @@ export class SignUpViewModel implements IViewModel {
     return !this.form.isValid
   }
 
+  public get availableEmailSignUp() {
+    return this.configurationService.availableEmailSignUp
+  }
+
   public get availableOauth() {
     return this.configurationService.availableGoogleOauth
   }

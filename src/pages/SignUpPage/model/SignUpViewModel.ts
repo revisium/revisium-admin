@@ -54,8 +54,11 @@ export class SignUpViewModel implements IViewModel {
   }
 
   public async submit() {
-    await this.signUp()
-    await this.routerService.navigate(`/${SIGN_UP_ROUTE}/${SIGN_UP_COMPLETED_ROUTE}`)
+    const result = await this.signUp()
+
+    if (result) {
+      await this.routerService.navigate(`/${SIGN_UP_ROUTE}/${SIGN_UP_COMPLETED_ROUTE}`)
+    }
   }
 
   public dispose(): void {}
@@ -68,8 +71,6 @@ export class SignUpViewModel implements IViewModel {
     try {
       await this.apiService.client.signUp({ data: this.form.values })
       return true
-    } catch (e) {
-      console.error(e)
     } finally {
       this.setIsLoading(false)
     }

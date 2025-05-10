@@ -1,6 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
-import { BRANCH_ROUTE, DRAFT_REVISION_ROUTE, ORGANIZATION_ROUTE, PROJECT_ROUTE } from 'src/shared/config/routes.ts'
+import {
+  APP_ROUTE,
+  BRANCH_ROUTE,
+  DRAFT_REVISION_ROUTE,
+  ORGANIZATION_ROUTE,
+  PROJECT_ROUTE,
+} from 'src/shared/config/routes.ts'
 import { IBranchModel } from 'src/shared/model/BackendStore'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
@@ -73,7 +79,7 @@ const getPostfixLink = (branch: IBranchModel): string => {
 }
 
 const getBaseLink = (organizationId: string, projectName: string, branchName: string): string => {
-  return generatePath(`/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
+  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
     organizationId,
     projectName,
     branchName,

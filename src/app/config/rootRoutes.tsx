@@ -47,6 +47,7 @@ import {
   LOGIN_GOOGLE_ROUTE,
   LOGIN_GITHUB_ROUTE,
   USERNAME_ROUTE,
+  APP_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
@@ -80,6 +81,84 @@ const createTableRouteObject = ({
     },
   ],
 })
+
+const organizationRouteObject = {
+  path: ORGANIZATION_ROUTE,
+  element: <Outlet />,
+  loader: composeLoaders(checkAuth, organizationLoader),
+  id: RouteIds.Organization,
+  children: [
+    {
+      path: PROJECT_ROUTE,
+      element: <Outlet />,
+      loader: composeLoaders(checkAuth, projectLoader),
+      id: RouteIds.Project,
+      children: [
+        {
+          path: BRANCH_ROUTE,
+          element: <BranchPage />,
+          loader: branchLoader,
+          id: RouteIds.Branch,
+          children: [
+            {
+              loader: headRevisionLoader,
+              id: RouteIds.HeadRevision,
+              errorElement: <RevisionPageErrorWidget />,
+              children: [
+                {
+                  index: true,
+                  element: <RevisionPage />,
+                },
+                createTableRouteObject({
+                  tableLoader: headTableLoader,
+                  tableId: RouteIds.HeadTable,
+                  rowLoader: headRowLoader,
+                  rowId: RouteIds.HeadRow,
+                }),
+              ],
+            },
+            {
+              path: DRAFT_REVISION_ROUTE,
+              loader: draftRevisionLoader,
+              id: RouteIds.DraftRevision,
+              errorElement: <RevisionPageErrorWidget />,
+              children: [
+                {
+                  index: true,
+                  element: <RevisionPage />,
+                },
+                createTableRouteObject({
+                  tableLoader: draftTableLoader,
+                  tableId: RouteIds.DraftTable,
+                  rowLoader: draftRowLoader,
+                  rowId: RouteIds.DraftRow,
+                }),
+              ],
+            },
+            {
+              path: SPECIFIC_REVISION_ROUTE,
+              loader: specificRevisionLoader,
+              id: RouteIds.SpecificRevision,
+              errorElement: <RevisionPageErrorWidget />,
+              children: [
+                {
+                  index: true,
+                  element: <RevisionPage />,
+                },
+                createTableRouteObject({
+                  tableLoader: specificTableLoader,
+                  tableId: RouteIds.SpecificTable,
+                  rowLoader: specificRowLoader,
+                  rowId: RouteIds.SpecificRow,
+                }),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
 
 export const ROOT_ROUTES: RouteObject[] = [
   {
@@ -140,81 +219,8 @@ export const ROOT_ROUTES: RouteObject[] = [
         ],
       },
       {
-        path: ORGANIZATION_ROUTE,
-        element: <Outlet />,
-        loader: composeLoaders(checkAuth, organizationLoader),
-        id: RouteIds.Organization,
-        children: [
-          {
-            path: PROJECT_ROUTE,
-            element: <Outlet />,
-            loader: composeLoaders(checkAuth, projectLoader),
-            id: RouteIds.Project,
-            children: [
-              {
-                path: BRANCH_ROUTE,
-                element: <BranchPage />,
-                loader: branchLoader,
-                id: RouteIds.Branch,
-                children: [
-                  {
-                    loader: headRevisionLoader,
-                    id: RouteIds.HeadRevision,
-                    errorElement: <RevisionPageErrorWidget />,
-                    children: [
-                      {
-                        index: true,
-                        element: <RevisionPage />,
-                      },
-                      createTableRouteObject({
-                        tableLoader: headTableLoader,
-                        tableId: RouteIds.HeadTable,
-                        rowLoader: headRowLoader,
-                        rowId: RouteIds.HeadRow,
-                      }),
-                    ],
-                  },
-                  {
-                    path: DRAFT_REVISION_ROUTE,
-                    loader: draftRevisionLoader,
-                    id: RouteIds.DraftRevision,
-                    errorElement: <RevisionPageErrorWidget />,
-                    children: [
-                      {
-                        index: true,
-                        element: <RevisionPage />,
-                      },
-                      createTableRouteObject({
-                        tableLoader: draftTableLoader,
-                        tableId: RouteIds.DraftTable,
-                        rowLoader: draftRowLoader,
-                        rowId: RouteIds.DraftRow,
-                      }),
-                    ],
-                  },
-                  {
-                    path: SPECIFIC_REVISION_ROUTE,
-                    loader: specificRevisionLoader,
-                    id: RouteIds.SpecificRevision,
-                    errorElement: <RevisionPageErrorWidget />,
-                    children: [
-                      {
-                        index: true,
-                        element: <RevisionPage />,
-                      },
-                      createTableRouteObject({
-                        tableLoader: specificTableLoader,
-                        tableId: RouteIds.SpecificTable,
-                        rowLoader: specificRowLoader,
-                        rowId: RouteIds.SpecificRow,
-                      }),
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+        path: APP_ROUTE,
+        children: [organizationRouteObject],
       },
     ],
   },

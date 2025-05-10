@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
 import {
+  APP_ROUTE,
   BRANCH_ROUTE,
   DRAFT_REVISION_ROUTE,
   ORGANIZATION_ROUTE,
@@ -106,7 +107,7 @@ const getBaseLink = (
   revision: RevisionOptionType,
 ): string => {
   if (revision.isHead) {
-    return generatePath(`/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
       organizationId,
       projectName,
       branchName,
@@ -114,17 +115,23 @@ const getBaseLink = (
   }
 
   if (revision.isDraft) {
-    return generatePath(`/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`, {
+    return generatePath(
+      `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`,
+      {
+        organizationId,
+        projectName,
+        branchName,
+      },
+    )
+  }
+
+  return generatePath(
+    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${SPECIFIC_REVISION_ROUTE}`,
+    {
       organizationId,
       projectName,
       branchName,
-    })
-  }
-
-  return generatePath(`/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${SPECIFIC_REVISION_ROUTE}`, {
-    organizationId,
-    projectName,
-    branchName,
-    revisionId: revision.id,
-  })
+      revisionId: revision.id,
+    },
+  )
 }

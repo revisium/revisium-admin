@@ -1,6 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
-import { BRANCH_ROUTE, DRAFT_REVISION_ROUTE, ORGANIZATION_ROUTE, PROJECT_ROUTE } from 'src/shared/config/routes.ts'
+import {
+  APP_ROUTE,
+  BRANCH_ROUTE,
+  DRAFT_REVISION_ROUTE,
+  ORGANIZATION_ROUTE,
+  PROJECT_ROUTE,
+} from 'src/shared/config/routes.ts'
 import { IProjectModel } from 'src/shared/model/BackendStore'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 
@@ -56,7 +62,7 @@ export class MeProjectListModel {
 
 const createLink = (project: IProjectModel): string => {
   return generatePath(
-    `/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}${project.rootBranch.touched ? `/${DRAFT_REVISION_ROUTE}` : ''}`,
+    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}${project.rootBranch.touched ? `/${DRAFT_REVISION_ROUTE}` : ''}`,
     {
       organizationId: project.organization.id,
       projectName: project.name,

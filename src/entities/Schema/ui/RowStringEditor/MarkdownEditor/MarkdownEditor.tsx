@@ -1,8 +1,11 @@
 import { Box } from '@chakra-ui/react'
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import CodeMirror, { EditorView } from '@uiw/react-codemirror'
+import * as themes from '@uiw/codemirror-themes-all'
+
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
 
 export interface MarkdownEditorProps {
   store: JsonStringValueStore
@@ -11,27 +14,22 @@ export interface MarkdownEditorProps {
 }
 
 export const MarkdownEditor: FC<MarkdownEditorProps> = observer(({ store, readonly, dataTestId }) => {
-  const handleChange = useCallback(
-    (value: string) => {
-      store.setValue(value)
-    },
-    [store],
-  )
-
   return (
-    <Box ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
-      {readonly ? (
-        `"${store.getPlainValue()}"`
-      ) : (
-        <ContentEditable
-          allowNewLines
-          dataTestId={dataTestId}
-          prefix='"'
-          postfix='"'
-          initValue={store.getPlainValue()}
-          onChange={handleChange}
-        />
-      )}
+    <Box width="100%" ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" data-testid={dataTestId}>
+      <CodeMirror
+        value={store.getPlainValue()}
+        extensions={[markdown({ base: markdownLanguage }), EditorView.lineWrapping]}
+        editable={!readonly}
+        theme={themes.githubLight}
+        maxWidth="100%"
+        basicSetup={{
+          lineNumbers: false,
+          foldGutter: false,
+        }}
+        onChange={(value) => {
+          store.setValue(value)
+        }}
+      />
     </Box>
   )
 })

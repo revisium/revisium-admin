@@ -16,7 +16,6 @@ interface ContentEditableBoxProps {
   prefix?: string
   postfix?: string
   dataTestId?: string
-  allowNewLines?: boolean
 }
 
 const allowed = ['Backspace', 'Escape', 'Enter', 'ArrowRight', 'ArrowLeft', 'Delete']

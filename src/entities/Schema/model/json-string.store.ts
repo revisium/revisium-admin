@@ -9,6 +9,7 @@ export class JsonStringStore implements JsonStringSchema {
 
   public default: string = ''
   public foreignKey?: string
+  public contentMediaType?: JsonStringSchema['contentMediaType']
   public readOnly?: boolean
 
   constructor(public readonly nodeId: string = nanoid()) {
@@ -23,6 +24,10 @@ export class JsonStringStore implements JsonStringSchema {
 
     if (this.foreignKey) {
       schema.foreignKey = this.foreignKey
+    }
+
+    if (this.contentMediaType) {
+      schema.contentMediaType = this.contentMediaType
     }
 
     return schema

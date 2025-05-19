@@ -2,6 +2,18 @@ import { Schema } from 'ajv/dist/2020'
 
 // https://json-schema.org/specification#single-vocabulary-meta-schemas
 
+export const sharedFields: Schema = {
+  deprecated: {
+    type: 'boolean',
+  },
+  title: {
+    type: 'string',
+  },
+  description: {
+    type: 'string',
+  },
+}
+
 export const refMetaSchema: Schema = {
   type: 'object',
   properties: {
@@ -13,18 +25,60 @@ export const refMetaSchema: Schema = {
   required: ['$ref'],
 }
 
+export const baseStringFields: Schema = {
+  type: {
+    const: 'string',
+  },
+  default: {
+    type: 'string',
+  },
+  readOnly: {
+    type: 'boolean',
+  },
+  pattern: {
+    type: 'string',
+    format: 'regex',
+  },
+  enum: {
+    type: 'array',
+    items: { type: 'string' },
+    minItems: 1,
+    uniqueItems: true,
+  },
+  format: {
+    type: 'string',
+    enum: ['date-time', 'date', 'time', 'email', 'regex'],
+  },
+  contentMediaType: {
+    type: 'string',
+    enum: [
+      'text/plain',
+      'text/markdown',
+      'text/html',
+      'application/json',
+      'application/schema+json',
+      'application/yaml',
+    ],
+  },
+  ...sharedFields,
+}
+
 export const stringMetaSchema: Schema = {
   type: 'object',
   properties: {
-    type: {
-      const: 'string',
-    },
-    default: {
-      type: 'string',
-    },
+    ...baseStringFields,
     foreignKey: {
       type: 'string',
     },
+  },
+  additionalProperties: false,
+  required: ['type', 'default'],
+}
+
+export const noForeignKeyStringMetaSchema: Schema = {
+  type: 'object',
+  properties: {
+    ...baseStringFields,
   },
   additionalProperties: false,
   required: ['type', 'default'],
@@ -39,6 +93,10 @@ export const numberMetaSchema: Schema = {
     default: {
       type: 'number',
     },
+    readOnly: {
+      type: 'boolean',
+    },
+    ...sharedFields,
   },
   additionalProperties: false,
   required: ['type', 'default'],
@@ -53,6 +111,10 @@ export const booleanMetaSchema: Schema = {
     default: {
       type: 'boolean',
     },
+    readOnly: {
+      type: 'boolean',
+    },
+    ...sharedFields,
   },
   additionalProperties: false,
   required: ['type', 'default'],
@@ -64,6 +126,7 @@ export const objectMetaSchema: Schema = {
     type: {
       const: 'object',
     },
+    ...sharedFields,
     properties: {
       type: 'object',
       additionalProperties: { $dynamicRef: '#meta' },
@@ -82,6 +145,7 @@ export const arrayMetaSchema: Schema = {
     type: {
       const: 'array',
     },
+    ...sharedFields,
     items: {
       oneOf: [
         { $ref: '#/$defs/refSchema' },
@@ -98,6 +162,7 @@ export const arrayMetaSchema: Schema = {
 }
 
 export const metaSchema: Schema = {
+  $id: 'meta-schema.json',
   type: 'object',
   $dynamicAnchor: 'meta',
   oneOf: [
@@ -118,6 +183,33 @@ export const metaSchema: Schema = {
     refSchema: refMetaSchema,
     objectSchema: objectMetaSchema,
     stringSchema: stringMetaSchema,
+    numberSchema: numberMetaSchema,
+    booleanSchema: booleanMetaSchema,
+    arraySchema: arrayMetaSchema,
+  },
+}
+
+export const notForeignKeyMetaSchema: Schema = {
+  type: 'object',
+  $dynamicAnchor: 'meta',
+  oneOf: [
+    { $ref: '#/$defs/refSchema' },
+    { $ref: '#/$defs/objectSchema' },
+    { $ref: '#/$defs/arraySchema' },
+    { $ref: '#/$defs/stringSchema' },
+    { $ref: '#/$defs/numberSchema' },
+    { $ref: '#/$defs/booleanSchema' },
+  ],
+  $defs: {
+    stringArray: {
+      type: 'array',
+      items: { type: 'string' },
+      uniqueItems: true,
+      default: [],
+    },
+    refSchema: refMetaSchema,
+    objectSchema: objectMetaSchema,
+    stringSchema: noForeignKeyStringMetaSchema,
     numberSchema: numberMetaSchema,
     booleanSchema: booleanMetaSchema,
     arraySchema: arrayMetaSchema,

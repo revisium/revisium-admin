@@ -31,6 +31,10 @@ export class JsonStringValueStore {
     return this.schema.foreignKey
   }
 
+  public get contentMediaType() {
+    return this.schema.contentMediaType
+  }
+
   public get touched(): boolean {
     return this.baseValue !== this.value
   }

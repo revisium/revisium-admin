@@ -10,6 +10,7 @@ import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/Strin
 type StringNodeStoreState = {
   id: string
   foreignKey: StringForeignKeyNodeStore | null
+  contentMediaType: JsonStringSchema['contentMediaType'] | null
   parent: ParentSchemaNode | null
   connectedToParent: boolean
 }
@@ -29,6 +30,7 @@ export class StringNodeStore {
       observable({
         id: '',
         foreignKey: null,
+        contentMediaType: null,
         parent: null,
         connectedToParent: false,
       }),
@@ -42,6 +44,10 @@ export class StringNodeStore {
   public get label() {
     if (this.draftForeignKey) {
       return `foreign key`
+    }
+
+    if (this.state.contentMediaType) {
+      return this.state.contentMediaType
     }
 
     return getLabelByRef(this.$ref) ?? this.type
@@ -99,6 +105,10 @@ export class StringNodeStore {
       schema.foreignKey = this.state.foreignKey?.draftForeignKey
     }
 
+    if (this.state.contentMediaType) {
+      schema.contentMediaType = this.state.contentMediaType
+    }
+
     return schema
   }
 
@@ -137,6 +147,10 @@ export class StringNodeStore {
     if (value) {
       value.setParent(this)
     }
+  }
+
+  public setContentMediaType(value: JsonStringSchema['contentMediaType'] | null): void {
+    this.state.contentMediaType = value
   }
 
   public submitChanges(): void {

@@ -46,6 +46,8 @@ const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
         stringNode.setForeignKey(stringForeignKeyNode)
       }
 
+      stringNode.setContentMediaType(schema.contentMediaType ?? null)
+
       return stringNode
     }
     case JsonSchemaTypeName.Number: {

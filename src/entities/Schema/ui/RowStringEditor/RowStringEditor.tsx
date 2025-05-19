@@ -1,12 +1,13 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react'
+import { Flex, IconButton } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { PiEyeThin, PiLinkThin } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
+import { MarkdownEditor } from 'src/entities/Schema/ui/RowStringEditor/MarkdownEditor/MarkdownEditor.tsx'
+import { PlainTextEditor } from 'src/entities/Schema/ui/RowStringEditor/PlainTextEditor/PlainTextEditor.tsx'
 import { RowEditorMode, useRowEditorActions } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
 
 import styles from './RowStringEditor.module.scss'
 
@@ -23,13 +24,6 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
   const [isLoading, setIsLoading] = useState(false)
 
   const { onSelectForeignKey, mode } = useRowEditorActions()
-
-  const handleChange = useCallback(
-    (value: string) => {
-      store.setValue(value)
-    },
-    [store],
-  )
 
   const handleSelectForeignKey = useCallback(async () => {
     setIsLoading(true)
@@ -53,19 +47,11 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
 
   return (
     <Flex className={styles.Field}>
-      <Box ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
-        {readonly ? (
-          `"${store.getPlainValue()}"`
-        ) : (
-          <ContentEditable
-            dataTestId={dataTestId}
-            prefix='"'
-            postfix='"'
-            initValue={store.getPlainValue()}
-            onChange={handleChange}
-          />
-        )}
-      </Box>
+      {store.contentMediaType === 'text/markdown' ? (
+        <MarkdownEditor store={store} dataTestId={dataTestId} readonly={readonly} />
+      ) : (
+        <PlainTextEditor store={store} dataTestId={dataTestId} readonly={readonly} />
+      )}
       {showViewForeignKey && (
         <IconButton
           data-testid={`${dataTestId}-view-foreign-key`}

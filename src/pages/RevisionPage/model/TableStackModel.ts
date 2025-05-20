@@ -111,6 +111,23 @@ export class TableStackModel {
     }
   }
 
+  public toCloningTable(copyTableVersionId: string) {
+    const table = this.rootStore.cache.getTable(copyTableVersionId)
+
+    if (!table) {
+      throw new Error(`Not found table.versionId ${copyTableVersionId}`)
+    }
+
+    const root = createSchemaNode(table.schema as JsonSchema)
+    const store = new RootNodeStore(root, table.id)
+
+    this.state = {
+      type: TableStackModelStateType.CreatingTable,
+      store,
+      isSelectingForeignKey: false,
+    }
+  }
+
   public toUpdatingTableFromConnectingForeignKeyTable() {
     if (this.state.type !== TableStackModelStateType.ConnectingForeignKeyTable) {
       throw new Error('Invalid state')

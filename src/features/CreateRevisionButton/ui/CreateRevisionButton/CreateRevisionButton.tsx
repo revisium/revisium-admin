@@ -3,7 +3,9 @@ import {
   Flex,
   IconButton,
   Popover,
+  PopoverArrow,
   PopoverBody,
+  PopoverCloseButton,
   PopoverContent,
   PopoverTrigger,
   Textarea,
@@ -46,7 +48,9 @@ export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onCl
         />
       </PopoverTrigger>
       <PopoverContent>
-        <PopoverBody p="1rem">
+        <PopoverArrow />
+        <PopoverCloseButton color="gray.400" />
+        <PopoverBody p="1rem 2rem 1rem 1rem">
           <Flex flexDirection="column" alignItems="end" justifyContent="flex-start" gap="0.5rem">
             <Textarea _placeholder={{ color: 'gray.300' }} placeholder="Comment (optional)" onChange={handleComment} />
             <div>

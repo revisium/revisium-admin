@@ -8,9 +8,10 @@ import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem.tsx'
 interface RowListProps {
   table: ITableModel
   onSelect?: (rowId: string) => void
+  onCopy?: (rowVersionId: string) => void
 }
 
-export const RowList: React.FC<RowListProps> = observer(({ table, onSelect }) => {
+export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCopy }) => {
   const store = useRowListModel(table)
 
   return (
@@ -27,7 +28,7 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect }) =>
           return undefined
         }
 
-        return <RowListItem row={row} store={store} onSelect={onSelect} />
+        return <RowListItem row={row} store={store} onSelect={onSelect} onCopy={onCopy} />
       }}
     />
   )

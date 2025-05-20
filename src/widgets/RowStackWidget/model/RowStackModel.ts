@@ -144,6 +144,29 @@ export class RowStackModel {
     }
   }
 
+  public toCloneRow(copyRowVersionId: string) {
+    const row = this.rootStore.cache.getRow(copyRowVersionId)
+
+    if (!row) {
+      throw new Error(`Not found row.versionId ${copyRowVersionId}`)
+    }
+
+    const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
+
+    const store = new RowDataCardStore(
+      createJsonValueStore(createJsonSchemaStore(this.schema)),
+      rowId,
+      row,
+      this.projectPageModel,
+    )
+
+    this.state = {
+      type: RowStackModelStateType.CreatingRow,
+      isSelectingForeignKey: this.state.isSelectingForeignKey,
+      store,
+    }
+  }
+
   public toCreatingRow() {
     const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
     const store =

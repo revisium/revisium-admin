@@ -13,10 +13,7 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data }) => {
   const text = JSON.stringify(data, null, 3)
 
   const handleClick = useCallback(async () => {
-    const type = 'text/plain'
-    const blob = new Blob([text], { type })
-    const data = [new ClipboardItem({ [type]: blob })]
-    await navigator.clipboard.write(data)
+    await navigator.clipboard.writeText(text)
 
     standaloneToast({
       status: 'success',

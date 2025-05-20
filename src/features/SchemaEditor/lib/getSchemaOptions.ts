@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { JsonSchema, JsonSchemaTypeName, JsonRefSchema } from 'src/entities/Schema'
+import { JsonSchema, JsonSchemaTypeName, JsonRefSchema, JsonStringSchema } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
@@ -12,6 +12,7 @@ export enum SchemaIds {
   Array = 'Array',
   ForeignKeyString = 'ForeignKeyString',
   File = 'File',
+  Markdown = 'Markdown',
 }
 
 type OptionSchemas = { label: string; getSchemaNode: (currentSchema: JsonSchema) => SchemaNode; id: SchemaIds }
@@ -117,6 +118,23 @@ const schemas: OptionSchemas[] = [
       const schema: JsonRefSchema = {
         $ref: SystemSchemaIds.File,
       }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.Markdown,
+    label: 'Markdown',
+    getSchemaNode: (currentSchema) => {
+      const schema: JsonStringSchema = {
+        type: JsonSchemaTypeName.String,
+        default: '',
+        contentMediaType: 'text/markdown',
+      }
+
+      if (!('$ref' in currentSchema) && currentSchema.type === JsonSchemaTypeName.String) {
+        schema.default = currentSchema.default
+      }
+
       return createSchemaNode(schema)
     },
   },

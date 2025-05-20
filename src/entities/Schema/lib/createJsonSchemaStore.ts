@@ -46,6 +46,7 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
   if (schema.type === JsonSchemaTypeName.String) {
     const stringStore = new JsonStringStore()
     stringStore.foreignKey = schema.foreignKey
+    stringStore.contentMediaType = schema.contentMediaType
     stringStore.readOnly = schema.readOnly
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {

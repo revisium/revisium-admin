@@ -27,7 +27,7 @@ export class RowDataCardStore {
     this.root = root
     this.name.baseValue = name
     this.name.value = name
-    this.originData = this.originRow?.data || null
+    this.originData = this.originRow?.data ?? null
 
     this.reset()
 
@@ -72,7 +72,7 @@ export class RowDataCardStore {
   }
 
   public reset() {
-    if (this.originData) {
+    if (this.originData !== null) {
       this.root.updateBaseValue(this.originData)
       this.name.value = this.name.baseValue
     }

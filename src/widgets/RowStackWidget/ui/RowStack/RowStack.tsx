@@ -82,15 +82,13 @@ export const RowStack: React.FC = observer(() => {
     const schemaStore = item.state.store
 
     return (
-      <>
-        <ShortRowEditor
-          previousType={item.state.previousType}
-          foreignKeyPath={item.currentForeignKeyPath}
-          onCancel={handleCancelSelectForeignKey}
-          tableId={item.table.id}
-          rowId={schemaStore.name.getPlainValue()}
-        />
-      </>
+      <ShortRowEditor
+        previousType={item.state.previousType}
+        foreignKeyPath={item.currentForeignKeyPath}
+        onCancel={handleCancelSelectForeignKey}
+        tableId={item.table.id}
+        rowId={schemaStore.name.getPlainValue()}
+      />
     )
   }
 
@@ -100,7 +98,11 @@ export const RowStack: React.FC = observer(() => {
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <CreateRowButton onClick={item.toCreatingRow} />
         <Box paddingTop="0.5rem" paddingBottom="1rem">
-          <RowList table={item.table} onSelect={item.state.isSelectingForeignKey ? handleSelectRow : undefined} />
+          <RowList
+            table={item.table}
+            onSelect={item.state.isSelectingForeignKey ? handleSelectRow : undefined}
+            onCopy={item.toCloneRow}
+          />
         </Box>
       </>
     )

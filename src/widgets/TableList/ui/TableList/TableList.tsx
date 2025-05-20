@@ -6,10 +6,11 @@ import { TableListItem } from 'src/widgets/TableList/ui/TableListItem/TableListI
 
 interface TableListProps {
   onSettings: (tableVersionId: string) => void
+  onCopy: (tableVersionId: string) => void
   onSelect?: (tableId: string) => void
 }
 
-export const TableList: React.FC<TableListProps> = observer(({ onSettings, onSelect }) => {
+export const TableList: React.FC<TableListProps> = observer(({ onSettings, onCopy, onSelect }) => {
   const store = useTableListModel()
 
   return (
@@ -32,6 +33,7 @@ export const TableList: React.FC<TableListProps> = observer(({ onSettings, onSel
             table={table}
             store={store}
             onSettings={onSettings}
+            onCopy={onCopy}
             onSelect={onSelect}
           />
         )

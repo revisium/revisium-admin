@@ -83,6 +83,7 @@ export const TableStack: React.FC = observer(() => {
         <Box paddingTop="0.5rem" paddingBottom="1rem">
           <TableList
             onSettings={item.toUpdatingTable}
+            onCopy={item.toCloningTable}
             onSelect={item.state.isSelectingForeignKey ? handleSelectTable : undefined}
           />
         </Box>

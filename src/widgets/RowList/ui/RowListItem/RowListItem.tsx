@@ -1,7 +1,8 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Flex, Text } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { RemoveRowButton } from 'src/features/RemoveRowButton'
+import { CopyButton } from 'src/shared/ui/CopyButton/CopyButton.tsx'
 import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
@@ -9,12 +10,17 @@ interface RowListItemProps {
   row: RowListItemType
   store: RowListModel
   onSelect?: (rowId: string) => void
+  onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onSelect }) => {
+export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, onSelect }) => {
   const handleClickOnRowId = useCallback(() => {
     onSelect?.(row.id)
   }, [onSelect, row.id])
+
+  const handleCopyRow = useCallback(() => {
+    onCopy?.(row.versionId)
+  }, [onCopy, row.versionId])
 
   const isSelectMode = Boolean(onSelect)
 
@@ -67,9 +73,10 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onSelect }
           {row.data}
         </Text>
         {!isSelectMode && store.isEdit && (
-          <Box className={styles.RemoveRowButton}>
+          <Flex className={styles.RemoveRowButton}>
+            <CopyButton aria-label="" onClick={handleCopyRow} dataTestId={`copy-row-${row.id}`} />
             <RemoveRowButton rowId={row.id} onRemove={store.deleteRow} dataTestId={`remove-row-${row.id}`} />
-          </Box>
+          </Flex>
         )}
       </Flex>
     </Flex>

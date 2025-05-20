@@ -1,8 +1,10 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
-import { JsonObjectSchema } from 'src/entities/Schema'
+import { JsonObjectSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
+import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
@@ -15,6 +17,7 @@ import { UploadFileCommand } from 'src/shared/model/BackendStore/handlers/mutati
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { FileService } from 'src/shared/model/FileService.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { fileSchema } from 'src/shared/schema/file-schema.ts'
 
 export enum RowStackModelStateType {
   List = 'List',
@@ -156,9 +159,18 @@ export class RowStackModel {
     const store = new RowDataCardStore(
       createJsonValueStore(createJsonSchemaStore(this.schema)),
       rowId,
-      row,
+      null,
       this.projectPageModel,
     )
+    store.root.updateBaseValue(row.data)
+
+    // reset files
+    const emptyFile = createJsonValueStore(createJsonSchemaStore(fileSchema))
+    traverseValue(store.root, (item) => {
+      if (item.$ref === SystemSchemaIds.File && item.type === JsonSchemaTypeName.Object) {
+        item.updateBaseValue(emptyFile.getPlainValue())
+      }
+    })
 
     this.state = {
       type: RowStackModelStateType.CreatingRow,

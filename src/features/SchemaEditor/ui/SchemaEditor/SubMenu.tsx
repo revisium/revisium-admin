@@ -1,4 +1,4 @@
-import { Box, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Flex, Menu, MenuButton, MenuItem, MenuList, useDisclosure } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import React from 'react'
 
@@ -13,57 +13,55 @@ interface SubMenuProps {
 export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRequestClose, dataTestIdPrefix }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const handleSelect = (id: string) => {
+  const handleClick = (id: string) => {
     onSelect(id)
-    if (onRequestClose) onRequestClose()
+    onRequestClose?.()
+    onClose()
   }
 
   return (
     <Box onMouseEnter={onOpen} onMouseLeave={onClose} position="relative">
-      <Box
-        px="16px"
-        py="8px"
-        fontWeight="600"
-        fontSize="14px"
-        display="flex"
-        color="rgb(26, 32, 44)"
-        justifyContent="space-between"
-        alignItems="center"
-        cursor="pointer"
-        _hover={{ bg: 'gray.100' }}
+      <Menu
+        isOpen={isOpen}
+        placement="right-start"
+        modifiers={[
+          {
+            name: 'offset',
+            options: {
+              offset: [-8, -8],
+            },
+          },
+        ]}
       >
-        <Text>{label}</Text>
-        <ChevronRightIcon />
-      </Box>
-
-      {isOpen && (
-        <Box
-          position="absolute"
-          top="0"
-          left="100%"
-          bg="white"
-          border="1px solid"
-          borderColor="gray.200"
-          borderRadius="md"
-          boxShadow="md"
-          zIndex="overlay"
-          minW="180px"
+        <MenuButton
+          as={Box}
+          px="12px"
+          py="8px"
+          width="100%"
+          cursor="pointer"
+          fontWeight="600"
+          fontSize="14px"
+          color="rgb(26, 32, 44)"
+          _hover={{ bg: 'gray.100' }}
         >
+          <Flex justifyContent="space-between" alignItems="center">
+            {label}
+            <ChevronRightIcon />
+          </Flex>
+        </MenuButton>
+
+        <MenuList>
           {options.map((opt) => (
-            <Box
+            <MenuItem
               key={opt.id}
-              px="12px"
-              py="8px"
-              _hover={{ bg: 'gray.100' }}
-              cursor="pointer"
               data-testid={`${dataTestIdPrefix}-submenu-${opt.id}`}
-              onClick={() => handleSelect(opt.id)}
+              onClick={() => handleClick(opt.id)}
             >
               {opt.label}
-            </Box>
+            </MenuItem>
           ))}
-        </Box>
-      )}
+        </MenuList>
+      </Menu>
     </Box>
   )
 }

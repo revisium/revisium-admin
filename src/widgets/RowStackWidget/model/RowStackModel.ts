@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
-import { JsonObjectSchema, JsonSchemaTypeName } from 'src/entities/Schema'
-import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
+import { JsonObjectSchema, schemaRefsMapper } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
@@ -17,7 +16,6 @@ import { UploadFileCommand } from 'src/shared/model/BackendStore/handlers/mutati
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { FileService } from 'src/shared/model/FileService.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
-import { fileSchema } from 'src/shared/schema/plugins/file-schema.ts'
 
 export enum RowStackModelStateType {
   List = 'List',
@@ -74,10 +72,6 @@ export class RowStackModel {
     return this.table.schema as JsonObjectSchema
   }
 
-  private get branch() {
-    return this.projectPageModel.branchOrThrow
-  }
-
   public get isEditableRevision() {
     return this.projectPageModel.isEditableRevision
   }
@@ -87,6 +81,10 @@ export class RowStackModel {
       return createJsonValuePathByStore(this.state.foreignKeyNode)
     }
     return ''
+  }
+
+  private get branch() {
+    return this.projectPageModel.branchOrThrow
   }
 
   public async createRow(rowId: string, data: JsonValue): Promise<IRowModel | null> {
@@ -164,11 +162,15 @@ export class RowStackModel {
     )
     store.root.updateBaseValue(row.data)
 
-    // reset files
-    const emptyFile = createJsonValueStore(createJsonSchemaStore(fileSchema))
+    // reset ref nodes
     traverseValue(store.root, (item) => {
-      if (item.$ref === SystemSchemaIds.File && item.type === JsonSchemaTypeName.Object) {
-        item.updateBaseValue(emptyFile.getPlainValue())
+      if (item.$ref) {
+        const refSchema = schemaRefsMapper[item.$ref]
+
+        if (refSchema) {
+          const valueStore = createJsonValueStore(createJsonSchemaStore(refSchema))
+          item.updateBaseValue(valueStore.getPlainValue())
+        }
       }
     })
 

@@ -139,6 +139,9 @@ const schemas: OptionSchemas[] = [
       return createSchemaNode(schema)
     },
   },
+]
+
+const systemFields: OptionSchemas[] = [
   {
     id: SchemaIds.RowId,
     label: getLabelByRef(SystemSchemaIds.RowId),
@@ -166,6 +169,11 @@ export const menuSchemaGroups: Group[] = [
     id: nanoid(),
     label: 'Schemas',
     options: schemas,
+  },
+  {
+    id: nanoid(),
+    label: 'System fields',
+    options: systemFields,
   },
 ]
 

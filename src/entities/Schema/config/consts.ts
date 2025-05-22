@@ -10,7 +10,7 @@ export enum SystemSchemaIds {
 }
 
 const labels = {
-  [SystemSchemaIds.RowId]: 'row.id',
+  [SystemSchemaIds.RowId]: 'id',
   [SystemSchemaIds.File]: 'File',
 }
 

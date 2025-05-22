@@ -22,7 +22,22 @@ export enum SchemaIds {
   Markdown = 'Markdown',
 }
 
-type OptionSchemas = { label: string; getSchemaNode: (currentSchema: JsonSchema) => SchemaNode; id: SchemaIds }
+type BaseOption = {
+  id: string
+  label: string
+  type?: 'item' | 'submenu'
+}
+
+type OptionSchemas =
+  | (BaseOption & {
+      type?: 'item'
+      getSchemaNode: (currentSchema: JsonSchema) => SchemaNode
+    })
+  | (BaseOption & {
+      type: 'submenu'
+      items: OptionSchemas[]
+    })
+
 type Group = { id: string; label: string; options: OptionSchemas[] }
 
 const typesSchemas: OptionSchemas[] = [
@@ -119,104 +134,83 @@ const foreignKeySchemas: OptionSchemas[] = [
 
 const schemas: OptionSchemas[] = [
   {
-    id: SchemaIds.File,
-    label: getLabelByRef(SystemSchemaIds.File),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.File,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.Markdown,
-    label: 'Markdown',
-    getSchemaNode: (currentSchema) => {
-      const schema: JsonStringSchema = {
-        type: JsonSchemaTypeName.String,
-        default: '',
-        contentMediaType: 'text/markdown',
-      }
+    id: 'schemas-submenu',
+    label: 'Schemas',
+    type: 'submenu',
+    items: [
+      {
+        id: SchemaIds.File,
+        label: getLabelByRef(SystemSchemaIds.File),
+        getSchemaNode: () => {
+          const schema: JsonRefSchema = {
+            $ref: SystemSchemaIds.File,
+          }
+          return createSchemaNode(schema)
+        },
+      },
+      {
+        id: SchemaIds.Markdown,
+        label: 'Markdown',
+        getSchemaNode: (currentSchema) => {
+          const schema: JsonStringSchema = {
+            type: JsonSchemaTypeName.String,
+            default: '',
+            contentMediaType: 'text/markdown',
+          }
 
-      if (!('$ref' in currentSchema) && currentSchema.type === JsonSchemaTypeName.String) {
-        schema.default = currentSchema.default
-      }
+          if (!('$ref' in currentSchema) && currentSchema.type === JsonSchemaTypeName.String) {
+            schema.default = currentSchema.default
+          }
 
-      return createSchemaNode(schema)
-    },
+          return createSchemaNode(schema)
+        },
+      },
+    ],
   },
 ]
 
 const systemFields: OptionSchemas[] = [
   {
-    id: SchemaIds.RowId,
-    label: getLabelByRef(SystemSchemaIds.RowId),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowId,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowCreatedAt,
-    label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowCreatedAt,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowUpdatedAt,
-    label: getLabelByRef(SystemSchemaIds.RowUpdatedAt),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowUpdatedAt,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowVersionId,
-    label: getLabelByRef(SystemSchemaIds.RowVersionId),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowVersionId,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowCreatedId,
-    label: getLabelByRef(SystemSchemaIds.RowCreatedId),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowCreatedId,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowHash,
-    label: getLabelByRef(SystemSchemaIds.RowHash),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowHash,
-      }
-      return createSchemaNode(schema)
-    },
-  },
-  {
-    id: SchemaIds.RowSchemaHash,
-    label: getLabelByRef(SystemSchemaIds.RowSchemaHash),
-    getSchemaNode: () => {
-      const schema: JsonRefSchema = {
-        $ref: SystemSchemaIds.RowSchemaHash,
-      }
-      return createSchemaNode(schema)
-    },
+    id: 'system-fields-submenu',
+    label: 'System fields',
+    type: 'submenu',
+    items: [
+      {
+        id: SchemaIds.RowId,
+        label: getLabelByRef(SystemSchemaIds.RowId),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowId }),
+      },
+      {
+        id: SchemaIds.RowCreatedAt,
+        label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedAt }),
+      },
+      {
+        id: SchemaIds.RowUpdatedAt,
+        label: getLabelByRef(SystemSchemaIds.RowUpdatedAt),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowUpdatedAt }),
+      },
+      {
+        id: SchemaIds.RowVersionId,
+        label: getLabelByRef(SystemSchemaIds.RowVersionId),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowVersionId }),
+      },
+      {
+        id: SchemaIds.RowCreatedId,
+        label: getLabelByRef(SystemSchemaIds.RowCreatedId),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedId }),
+      },
+      {
+        id: SchemaIds.RowHash,
+        label: getLabelByRef(SystemSchemaIds.RowHash),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowHash }),
+      },
+      {
+        id: SchemaIds.RowSchemaHash,
+        label: getLabelByRef(SystemSchemaIds.RowSchemaHash),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowSchemaHash }),
+      },
+    ],
   },
 ]
 
@@ -244,8 +238,22 @@ export const menuSchemaGroups: Group[] = [
 ]
 
 export const getSchemaByMenuId = (id: string, currentSchema: JsonSchema): SchemaNode | undefined => {
-  return menuSchemaGroups
-    .flatMap((item) => item.options)
-    .find((option) => option.id === id)
-    ?.getSchemaNode(currentSchema)
+  const findInOptions = (options: OptionSchemas[]): SchemaNode | undefined => {
+    for (const option of options) {
+      if (option.type === 'submenu') {
+        const found = findInOptions(option.items)
+        if (found) return found
+      } else if (option.id === id) {
+        return option.getSchemaNode(currentSchema)
+      }
+    }
+    return undefined
+  }
+
+  for (const group of menuSchemaGroups) {
+    const result = findInOptions(group.options)
+    if (result) return result
+  }
+
+  return undefined
 }

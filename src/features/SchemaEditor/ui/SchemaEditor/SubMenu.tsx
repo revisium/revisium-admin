@@ -1,10 +1,10 @@
-import { Box, Flex, Menu, MenuButton, MenuItem, MenuList, useDisclosure } from '@chakra-ui/react'
+import { Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, useDisclosure } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import React from 'react'
 
 interface SubMenuProps {
   label: string
-  options: { id: string; label: string }[]
+  options: { id: string; label: string; addDividerAfter?: boolean }[]
   onSelect: (id: string) => void
   onRequestClose?: () => void
   dataTestIdPrefix?: string
@@ -20,7 +20,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
   }
 
   return (
-    <Box onMouseEnter={onOpen} onMouseLeave={onClose} position="relative">
+    <Box onMouseEnter={onOpen} onMouseLeave={onClose}>
       <Menu
         isOpen={isOpen}
         placement="right-start"
@@ -51,14 +51,13 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
         </MenuButton>
 
         <MenuList>
-          {options.map((opt) => (
-            <MenuItem
-              key={opt.id}
-              data-testid={`${dataTestIdPrefix}-submenu-${opt.id}`}
-              onClick={() => handleClick(opt.id)}
-            >
-              {opt.label}
-            </MenuItem>
+          {options.map((option) => (
+            <React.Fragment key={option.id}>
+              <MenuItem data-testid={`${dataTestIdPrefix}-submenu-${option.id}`} onClick={() => handleClick(option.id)}>
+                {option.label}
+              </MenuItem>
+              {option.addDividerAfter && <MenuDivider />}
+            </React.Fragment>
           ))}
         </MenuList>
       </Menu>

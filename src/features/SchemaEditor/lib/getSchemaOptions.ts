@@ -31,6 +31,7 @@ type BaseOption = {
 type OptionSchemas =
   | (BaseOption & {
       type?: 'item'
+      addDividerAfter?: boolean
       getSchemaNode: (currentSchema: JsonSchema) => SchemaNode
     })
   | (BaseOption & {
@@ -38,7 +39,7 @@ type OptionSchemas =
       items: OptionSchemas[]
     })
 
-type Group = { id: string; label: string; options: OptionSchemas[] }
+type Group = { id: string; label: string; options: OptionSchemas[]; addDividerAfter?: boolean }
 
 const typesSchemas: OptionSchemas[] = [
   {
@@ -104,12 +105,9 @@ const typesSchemas: OptionSchemas[] = [
       })
     },
   },
-]
-
-const foreignKeySchemas: OptionSchemas[] = [
   {
     id: SchemaIds.ForeignKeyString,
-    label: JsonSchemaTypeName.String,
+    label: 'foreign key',
     getSchemaNode: (currentSchema) => {
       let schema: JsonSchema = {
         type: JsonSchemaTypeName.String,
@@ -181,16 +179,6 @@ const systemFields: OptionSchemas[] = [
         getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowId }),
       },
       {
-        id: SchemaIds.RowCreatedAt,
-        label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
-        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedAt }),
-      },
-      {
-        id: SchemaIds.RowUpdatedAt,
-        label: getLabelByRef(SystemSchemaIds.RowUpdatedAt),
-        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowUpdatedAt }),
-      },
-      {
         id: SchemaIds.RowVersionId,
         label: getLabelByRef(SystemSchemaIds.RowVersionId),
         getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowVersionId }),
@@ -199,6 +187,18 @@ const systemFields: OptionSchemas[] = [
         id: SchemaIds.RowCreatedId,
         label: getLabelByRef(SystemSchemaIds.RowCreatedId),
         getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedId }),
+        addDividerAfter: true,
+      },
+      {
+        id: SchemaIds.RowCreatedAt,
+        label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedAt }),
+      },
+      {
+        id: SchemaIds.RowUpdatedAt,
+        label: getLabelByRef(SystemSchemaIds.RowUpdatedAt),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowUpdatedAt }),
+        addDividerAfter: true,
       },
       {
         id: SchemaIds.RowHash,
@@ -219,16 +219,13 @@ export const menuSchemaGroups: Group[] = [
     id: nanoid(),
     label: 'Types',
     options: typesSchemas,
-  },
-  {
-    id: nanoid(),
-    label: 'Foreign key',
-    options: foreignKeySchemas,
+    addDividerAfter: true,
   },
   {
     id: nanoid(),
     label: 'Schemas',
     options: schemas,
+    addDividerAfter: true,
   },
   {
     id: nanoid(),

@@ -19,7 +19,7 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
 
     const handleChangeTypeAddingNode = useCallback(
       (id: string | string[]) => {
-        if (typeof id === 'string') {
+        if (!Array.isArray(id)) {
           const schemaNode = getSchemaByMenuId(id, currentSchema)
           if (schemaNode) {
             onSelect(schemaNode)

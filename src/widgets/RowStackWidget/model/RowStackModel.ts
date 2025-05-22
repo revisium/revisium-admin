@@ -17,7 +17,7 @@ import { UploadFileCommand } from 'src/shared/model/BackendStore/handlers/mutati
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { FileService } from 'src/shared/model/FileService.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
-import { fileSchema } from 'src/shared/schema/file-schema.ts'
+import { fileSchema } from 'src/shared/schema/plugins/file-schema.ts'
 
 export enum RowStackModelStateType {
   List = 'List',

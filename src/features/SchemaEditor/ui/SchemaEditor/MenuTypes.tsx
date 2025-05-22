@@ -1,9 +1,10 @@
-import { Menu, MenuItemOption, MenuList, MenuOptionGroup, Portal } from '@chakra-ui/react'
+import { Menu, MenuDivider, MenuItemOption, MenuList, MenuOptionGroup, Portal, useDisclosure } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonSchema } from 'src/entities/Schema'
 import { getSchemaByMenuId, menuSchemaGroups } from 'src/features/SchemaEditor/lib/getSchemaOptions.ts'
 import { SchemaNode } from 'src/features/SchemaEditor/model/NodeStore.ts'
+import { SubMenu } from 'src/features/SchemaEditor/ui/SchemaEditor/SubMenu.tsx'
 
 interface TypesMenuListProps {
   currentSchema: JsonSchema
@@ -14,42 +15,73 @@ interface TypesMenuListProps {
 
 export const MenuTypes: React.FC<TypesMenuListProps> = observer(
   ({ currentSchema, menuButton, onSelect, dataTestId }) => {
-    const handleChangeTypeAddingNode = useCallback(
-      async (id: string | string[]) => {
-        if (!Array.isArray(id)) {
-          const schemaMode = getSchemaByMenuId(id, currentSchema)
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
-          if (schemaMode) {
-            onSelect(schemaMode)
+    const handleChangeTypeAddingNode = useCallback(
+      (id: string | string[]) => {
+        if (!Array.isArray(id)) {
+          const schemaNode = getSchemaByMenuId(id, currentSchema)
+          if (schemaNode) {
+            onSelect(schemaNode)
+            onClose()
           }
         }
       },
-      [currentSchema, onSelect],
+      [currentSchema, onClose, onSelect],
+    )
+
+    const handleSubmenuSelect = useCallback(
+      (id: string) => {
+        const schemaNode = getSchemaByMenuId(id, currentSchema)
+        if (schemaNode) {
+          onSelect(schemaNode)
+          onClose()
+        }
+      },
+      [currentSchema, onClose, onSelect],
     )
 
     return (
-      <Menu>
+      <Menu isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
         {menuButton}
         <Portal>
-          <MenuList width="100px">
-            {menuSchemaGroups.map((menuSchemaGroup) => (
-              <MenuOptionGroup
-                value=""
-                key={menuSchemaGroup.id}
-                title={menuSchemaGroup.label}
-                onChange={handleChangeTypeAddingNode}
-              >
-                {menuSchemaGroup.options.map((option) => (
-                  <MenuItemOption
-                    data-testid={`${dataTestId}-menu-type-${option.id}`}
-                    key={option.id}
-                    value={option.id}
+          <MenuList>
+            {menuSchemaGroups.map((group) => {
+              const hasOnlySubmenu = group.options.every((o) => o.type === 'submenu')
+
+              return (
+                <React.Fragment key={group.id}>
+                  <MenuOptionGroup
+                    key={group.id}
+                    value=""
+                    title={hasOnlySubmenu ? undefined : group.label}
+                    onChange={handleChangeTypeAddingNode}
                   >
-                    {option.label}
-                  </MenuItemOption>
-                ))}
-              </MenuOptionGroup>
-            ))}
+                    {group.options.map((option) =>
+                      option.type === 'submenu' ? (
+                        <SubMenu
+                          key={option.id}
+                          label={option.label}
+                          options={option.items}
+                          onSelect={handleSubmenuSelect}
+                          onRequestClose={onClose}
+                          dataTestIdPrefix={`${dataTestId}-menu-sub`}
+                        />
+                      ) : (
+                        <MenuItemOption
+                          key={option.id}
+                          value={option.id}
+                          data-testid={`${dataTestId}-menu-type-${option.id}`}
+                        >
+                          {option.label}
+                        </MenuItemOption>
+                      ),
+                    )}
+                  </MenuOptionGroup>
+                  {group.addDividerAfter && <MenuDivider />}
+                </React.Fragment>
+              )
+            })}
           </MenuList>
         </Portal>
       </Menu>

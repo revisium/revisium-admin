@@ -13,6 +13,12 @@ export enum SchemaIds {
   ForeignKeyString = 'ForeignKeyString',
   File = 'File',
   RowId = 'RowId',
+  RowVersionId = 'RowVersionId',
+  RowCreatedId = 'RowCreatedId',
+  RowCreatedAt = 'RowCreatedAt',
+  RowUpdatedAt = 'RowUpdatedAt',
+  RowHash = 'RowHash',
+  RowSchemaHash = 'RowSchemaHash',
   Markdown = 'Markdown',
 }
 
@@ -148,6 +154,66 @@ const systemFields: OptionSchemas[] = [
     getSchemaNode: () => {
       const schema: JsonRefSchema = {
         $ref: SystemSchemaIds.RowId,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowCreatedAt,
+    label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowCreatedAt,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowUpdatedAt,
+    label: getLabelByRef(SystemSchemaIds.RowUpdatedAt),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowUpdatedAt,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowVersionId,
+    label: getLabelByRef(SystemSchemaIds.RowVersionId),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowVersionId,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowCreatedId,
+    label: getLabelByRef(SystemSchemaIds.RowCreatedId),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowCreatedId,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowHash,
+    label: getLabelByRef(SystemSchemaIds.RowHash),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowHash,
+      }
+      return createSchemaNode(schema)
+    },
+  },
+  {
+    id: SchemaIds.RowSchemaHash,
+    label: getLabelByRef(SystemSchemaIds.RowSchemaHash),
+    getSchemaNode: () => {
+      const schema: JsonRefSchema = {
+        $ref: SystemSchemaIds.RowSchemaHash,
       }
       return createSchemaNode(schema)
     },

@@ -50,6 +50,8 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
             }}
             key={value.nodeId}
             name={`[${index}]`}
+            title={`${value.title}[${index}]`}
+            description={value.description}
             colorName="gray.400"
             nameAndValueClassName={styles.Field}
             value={

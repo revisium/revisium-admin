@@ -41,6 +41,8 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
             colorName="gray.400"
             key={name}
             name={name}
+            title={item.title}
+            description={item.description}
             nameAndValueClassName={styles.Field}
             value={
               <>

@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box, Flex, Text, Tooltip } from '@chakra-ui/react'
 import { ColorProps } from '@chakra-ui/styled-system'
 import React from 'react'
 import { PiDotOutlineFill } from 'react-icons/pi'
@@ -7,6 +7,8 @@ interface RowFieldEditorProps {
   name?: string
   value?: React.ReactNode
   nameAndValueClassName?: string
+  title?: string
+  description?: string
   colorName?: ColorProps['color']
   onOverLabel?: () => void
   onOutLabel?: () => void
@@ -17,6 +19,8 @@ export const RowFieldEditor: React.FC<RowFieldEditorProps & React.PropsWithChild
   value,
   children,
   nameAndValueClassName,
+  title,
+  description,
   colorName,
   onOverLabel,
   onOutLabel,
@@ -38,7 +42,14 @@ export const RowFieldEditor: React.FC<RowFieldEditorProps & React.PropsWithChild
         {name ? (
           <Flex className={nameAndValueClassName} flex={1}>
             <Text color={colorName} fontWeight="300">
-              {name}:
+              {description ? (
+                <Tooltip hasArrow placement="right" label={description}>
+                  {title ?? name}
+                </Tooltip>
+              ) : (
+                title ?? name
+              )}
+              :
             </Text>
             <Flex gap="4px" flex={1}>
               {value}

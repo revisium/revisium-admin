@@ -3,14 +3,15 @@ import {
   JsonSchema,
   JsonSchemaPrimitives,
   JsonSchemaTypeName,
+  JsonSchemaWithoutRef,
   schemaRefsMapper,
 } from 'src/entities/Schema'
 import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
 import { JsonBooleanStore } from 'src/entities/Schema/model/json-boolean.store.ts'
 import { JsonNumberStore } from 'src/entities/Schema/model/json-number.store.ts'
 import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
-import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 import { JsonSchemaStore, JsonSchemaStorePrimitives } from 'src/entities/Schema/model/json-schema.store.ts'
+import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
 
 export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
   if ('$ref' in schema) {
@@ -24,11 +25,22 @@ export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
     store.$ref = schema.$ref
     return store
   } else if (schema.type === JsonSchemaTypeName.Object) {
-    return createJsonObjectSchemaStore(schema)
+    const objectStore = createJsonObjectSchemaStore(schema)
+    saveSharedFields(objectStore, schema)
+
+    return objectStore
   } else if (schema.type === JsonSchemaTypeName.Array) {
-    return new JsonArrayStore(createJsonSchemaStore(schema.items))
+    const itemsStore = createJsonSchemaStore(schema.items)
+    const arrayStore = new JsonArrayStore(itemsStore)
+    saveSharedFields(arrayStore, schema)
+
+    return arrayStore
   } else {
-    return createPrimitiveStoreBySchema(schema)
+    const primitivesStore = createPrimitiveStoreBySchema(schema)
+    saveSharedFields(primitivesStore, schema)
+    primitivesStore.readOnly = schema.readOnly
+
+    return primitivesStore
   }
 }
 
@@ -47,17 +59,18 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
     const stringStore = new JsonStringStore()
     stringStore.foreignKey = schema.foreignKey
     stringStore.contentMediaType = schema.contentMediaType
-    stringStore.readOnly = schema.readOnly
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {
-    const numberStore = new JsonNumberStore()
-    numberStore.readOnly = schema.readOnly
-    return numberStore
+    return new JsonNumberStore()
   } else if (schema.type === JsonSchemaTypeName.Boolean) {
-    const booleanStore = new JsonBooleanStore()
-    booleanStore.readOnly = schema.readOnly
-    return booleanStore
+    return new JsonBooleanStore()
   } else {
     throw new Error('this type is not allowed')
   }
+}
+
+export const saveSharedFields = (store: JsonSchemaStore, schema: JsonSchemaWithoutRef) => {
+  store.title = schema.title
+  store.description = schema.description
+  store.deprecated = schema.deprecated
 }

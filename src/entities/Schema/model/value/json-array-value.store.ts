@@ -16,12 +16,24 @@ export class JsonArrayValueStore {
   public baseValue: JsonValueStore[] = []
   public value: JsonValueStore[] = []
 
-  constructor(private schema: JsonArrayStore) {
+  constructor(private readonly schema: JsonArrayStore) {
     makeAutoObservable(this)
   }
 
   public get $ref() {
     return this.schema.$ref
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get touched(): boolean {

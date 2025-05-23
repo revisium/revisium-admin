@@ -12,6 +12,10 @@ export class JsonStringStore implements JsonStringSchema {
   public contentMediaType?: JsonStringSchema['contentMediaType']
   public readOnly?: boolean
 
+  public title?: string
+  public description?: string
+  public deprecated?: boolean
+
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)
   }

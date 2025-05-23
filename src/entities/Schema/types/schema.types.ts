@@ -60,3 +60,5 @@ export type JsonRefSchema = {
 }
 
 export type JsonSchema = JsonObjectSchema | JsonArraySchema | JsonSchemaPrimitives | JsonRefSchema
+
+export type JsonSchemaWithoutRef = JsonObjectSchema | JsonArraySchema | JsonSchemaPrimitives

@@ -12,6 +12,10 @@ export class JsonObjectStore implements JsonObjectSchema {
   public readonly required: string[] = []
   public readonly properties: Record<string, JsonSchemaStore> = {}
 
+  public title?: string
+  public description?: string
+  public deprecated?: boolean
+
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)
   }

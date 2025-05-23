@@ -15,7 +15,7 @@ export class JsonObjectValueStore {
 
   public value: Record<string, JsonValueStore> = {}
 
-  constructor(private schema: JsonObjectStore) {
+  constructor(private readonly schema: JsonObjectStore) {
     makeAutoObservable(this)
 
     this.init()
@@ -23,6 +23,18 @@ export class JsonObjectValueStore {
 
   public get $ref() {
     return this.schema.$ref
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get touched(): boolean {

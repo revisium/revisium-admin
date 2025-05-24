@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { EndpointType } from 'src/__generated__/globalTypes.ts'
+import { SANDBOX_ROUTE } from 'src/shared/config/routes.ts'
 import { getEnv } from 'src/shared/env/getEnv.ts'
 import { IEndpointModel } from 'src/shared/model/BackendStore'
 import { CreateEndpointCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateEndpointCommand.ts'
@@ -9,7 +10,7 @@ import { rootStore } from 'src/shared/model/RootStore.ts'
 
 const BASE_URL = getEnv('REACT_APP_ENDPOINT_SERVER_URL')
 
-const URL_MAPPER = {
+export const URL_MAPPER = {
   [EndpointType.GRAPHQL]: 'graphql',
   [EndpointType.REST_API]: 'swagger',
 }
@@ -77,6 +78,10 @@ export class BranchEndpointsCardItemModel {
   }
 
   private get baseUrl() {
+    if (this.endpointType === EndpointType.GRAPHQL) {
+      return `/${SANDBOX_ROUTE}`
+    }
+
     return `${BASE_URL}/${URL_MAPPER[this.endpointType]}`
   }
 }

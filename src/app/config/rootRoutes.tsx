@@ -16,6 +16,7 @@ import { specificRowLoader } from 'src/app/lib/rowLoaders/specificRowLoader.ts'
 import { draftTableLoader } from 'src/app/lib/tableLoaders/draftTableLoader.ts'
 import { headTableLoader } from 'src/app/lib/tableLoaders/headTableLoader.ts'
 import { specificTableLoader } from 'src/app/lib/tableLoaders/specificTableLoader.ts'
+import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
 import { ConfirmEmailCodePage } from 'src/pages/ConfirmEmailCodePage/ui/ConfirmEmailCodePage/ConfirmEmailCodePage.tsx'
@@ -48,6 +49,7 @@ import {
   LOGIN_GITHUB_ROUTE,
   USERNAME_ROUTE,
   APP_ROUTE,
+  SANDBOX_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
@@ -161,6 +163,10 @@ const organizationRouteObject = {
 }
 
 export const ROOT_ROUTES: RouteObject[] = [
+  {
+    path: `${SANDBOX_ROUTE}/*`,
+    element: <ApolloSandboxPage />,
+  },
   {
     path: '/',
     element: <Layout />,

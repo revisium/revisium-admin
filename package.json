@@ -91,9 +91,6 @@
     "typescript": "5.4.2",
     "vite-tsconfig-paths": "5.1.4"
   },
-  "engines": {
-    "node": "20.11.1"
-  },
   "browserslist": {
     "development": [
       "last 1 version"

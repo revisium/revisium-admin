@@ -1,5 +1,5 @@
 import { ApolloSandbox } from '@apollo/sandbox/react'
-import { Box } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import { ApolloSandboxPageModel } from 'src/pages/ApolloSandboxPage/model/ApolloSandboxPageModel.ts'
 import { useViewModel } from 'src/shared/lib'
@@ -11,11 +11,15 @@ export const ApolloSandboxPage = () => {
   const url = `${model.baseUrl}/${endpointPath}`
 
   return (
-    <Box
+    <Flex
       w="100%"
-      h="100%"
-      css={{
-        '& > div': { height: '100%' },
+      h="100vh"
+      flexDirection="column"
+      sx={{
+        '& > div': {
+          flex: 1,
+          minH: 0,
+        },
       }}
     >
       <ApolloSandbox
@@ -25,6 +29,6 @@ export const ApolloSandboxPage = () => {
           headers: { ...(model.token ? { Authorization: `Bearer ${model.token}` } : {}) },
         }}
       />
-    </Box>
+    </Flex>
   )
 }

@@ -1,4 +1,5 @@
 export const ROOT_ROUTE = '/'
+export const SANDBOX_ROUTE = 'sandbox'
 export const LOGIN_ROUTE = 'login'
 export const LOGOUT_ROUTE = 'logout'
 export const SIGN_UP_ROUTE = 'signup'

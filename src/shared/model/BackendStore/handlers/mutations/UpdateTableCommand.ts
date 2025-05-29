@@ -1,10 +1,10 @@
-import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
 import { IBranchModel } from 'src/shared/model/BackendStore'
 import { TableMstFragment } from 'src/shared/model/BackendStore/api/fragments/__generated__/table.generated.ts'
 import { renameTableMstRequest } from 'src/shared/model/BackendStore/api/renameTableMstRequest.ts'
 import { updateTableMstRequest } from 'src/shared/model/BackendStore/api/updateTableMstRequest.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { transformTableFragment } from 'src/shared/model/BackendStore/utils/transformTableFragment.ts'
+import { RootNodeStore } from 'src/widgets/SchemaEditor'
 
 export class UpdateTableCommand {
   constructor(

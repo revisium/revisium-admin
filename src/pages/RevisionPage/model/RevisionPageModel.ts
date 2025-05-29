@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
+import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor'
 import {
   TableStackModel,
   TableStackModelState,

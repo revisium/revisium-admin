@@ -1,10 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonSchema } from 'src/entities/Schema'
-import { createSchemaNode } from 'src/features/SchemaEditor/lib/createSchemaNode.ts'
-import { getJsonDraftPathByNode } from 'src/features/SchemaEditor/lib/getJsonDraftPathByNode.ts'
-import { RootNodeStore } from 'src/features/SchemaEditor/model/RootNodeStore.ts'
-import { StringForeignKeyNodeStore } from 'src/features/SchemaEditor/model/StringForeignKeyNodeStore.ts'
+import {
+  RootNodeStore,
+  StringForeignKeyNodeStore,
+  createSchemaNode,
+  getJsonDraftPathByNode,
+} from 'src/widgets/SchemaEditor'
 import { CreateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateTableCommand.ts'
 import { UpdateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/UpdateTableCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'

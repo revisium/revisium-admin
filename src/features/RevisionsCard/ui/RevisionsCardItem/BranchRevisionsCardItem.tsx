@@ -1,4 +1,4 @@
-import { Box, Icon, IconButton, VStack } from '@chakra-ui/react'
+import { Box, IconButton, VStack } from '@chakra-ui/react'
 import { Tooltip } from '@chakra-ui/react/tooltip'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
@@ -20,19 +20,19 @@ const getIcon = (icon: IconType): React.ReactElement => {
     case IconType.Child:
       return <PiArrowCircleDownThin size="24" />
     case IconType.Draft:
-      return <PiCircleDashedThin size="24" />
+      return <PiCircleDashedThin />
     case IconType.Start:
-      return <PiCircleThin size="24" />
+      return <PiCircleThin />
     case IconType.Head:
-      return <PiDatabaseThin size="24" />
+      return <PiDatabaseThin />
     case IconType.Revision:
-      return <PiCircleThin size="24" />
+      return <PiCircleThin />
     case IconType.Parent:
-      return <PiArrowCircleRightThin size="24" />
+      return <PiArrowCircleRightThin />
     case IconType.PreviousPage:
-      return <PiDotsThree size="24" />
+      return <PiDotsThree />
     case IconType.NextPage:
-      return <PiDotsThree size="24" />
+      return <PiDotsThree />
   }
 }
 
@@ -69,7 +69,7 @@ export const BranchRevisionsCardItemBase: React.FC<BranchRevisionsCardItemBasePr
             opacity={PAGE_ICONS.includes(data.icon) ? 0.7 : 0.2}
             variant="ghost"
           >
-            <Icon size="lg">{getIcon(data.icon)}</Icon>
+            {getIcon(data.icon)}
           </IconButton>
           {data.isThereEndpoint && (
             <Box position="absolute" right="0px" top="0px" opacity="0.4">

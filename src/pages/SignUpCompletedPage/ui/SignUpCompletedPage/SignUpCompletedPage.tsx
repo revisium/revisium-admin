@@ -9,9 +9,11 @@ export const SignUpCompletedPage: FC = () => {
     <Page hideSidebar>
       <Flex alignItems="center" flexDirection="column" justifyContent="center" flex={1} gap="8px">
         <Text color="gray.400">Check your email to confirm your account</Text>
-        <ChakraLink color="gray.400" alignSelf="center" as={Link} to={`/${LOGIN_ROUTE}`}>
-          Log in
-        </ChakraLink>
+        <Link to={`/${LOGIN_ROUTE}`}>
+          <ChakraLink color="gray.400" alignSelf="center">
+            Log in
+          </ChakraLink>
+        </Link>
       </Flex>
     </Page>
   )

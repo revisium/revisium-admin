@@ -1,10 +1,10 @@
-import { SettingsIcon } from '@chakra-ui/icons'
-import { ColorProps, IconButton } from '@chakra-ui/react'
+import { IconButton } from '@chakra-ui/react'
 import { FC, useCallback, useState } from 'react'
+import { PiGear } from 'react-icons/pi'
 
 interface SettingsButtonProps {
   onClick?: () => Promise<unknown> | void
-  color?: ColorProps['color']
+  color?: string
   dataTestId?: string
 }
 
@@ -23,10 +23,11 @@ export const SettingsButton: FC<SettingsButtonProps> = ({ onClick, color, dataTe
       data-testid={dataTestId}
       aria-label=""
       color={color || 'gray.400'}
-      icon={<SettingsIcon />}
-      isLoading={loading}
+      loading={loading}
       variant="ghost"
       onClick={handleClick}
-    />
+    >
+      <PiGear />
+    </IconButton>
   )
 }

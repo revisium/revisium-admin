@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/clien
 import { setContext } from '@apollo/client/link/context'
 import { onError } from '@apollo/client/link/error'
 import { getEnv } from 'src/shared/lib/getEnv.ts'
-import { standaloneToast } from 'src/shared/ui'
+import { toaster } from 'src/shared/ui'
 
 const httpLink = createHttpLink({ uri: getEnv('REACT_APP_GRAPHQL_SERVER_URL') })
 
@@ -15,13 +15,8 @@ const auth = setContext(async () => ({
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
     for (const err of graphQLErrors) {
-      standaloneToast({
-        status: 'error',
-        variant: 'left-accent',
-        colorScheme: 'red',
+      toaster.info({
         duration: 3000,
-        isClosable: true,
-        position: 'top',
         description: err.message,
       })
     }

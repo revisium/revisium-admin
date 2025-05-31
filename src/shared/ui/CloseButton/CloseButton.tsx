@@ -1,19 +1,19 @@
-import { CloseIcon } from '@chakra-ui/icons'
-import { Button } from '@chakra-ui/react'
+import { Button, Icon } from '@chakra-ui/react'
 import React from 'react'
+import { PiX } from 'react-icons/pi'
 
 interface CloseButtonProps {
   onClick?: () => void
-  isDisabled?: boolean
+  disabled?: boolean
   height?: string
   dataTestId?: string
 }
 
-export const CloseButton: React.FC<CloseButtonProps> = ({ height = '2.5rem', onClick, isDisabled, dataTestId }) => {
+export const CloseButton: React.FC<CloseButtonProps> = ({ height = '2.5rem', onClick, disabled, dataTestId }) => {
   return (
     <Button
       data-testid={dataTestId}
-      isDisabled={isDisabled}
+      disabled={disabled}
       _hover={{ backgroundColor: 'gray.50' }}
       alignSelf="flex-start"
       color="gray.400"
@@ -22,7 +22,9 @@ export const CloseButton: React.FC<CloseButtonProps> = ({ height = '2.5rem', onC
       onClick={onClick}
       width="48px"
     >
-      <CloseIcon boxSize={3} />
+      <Icon size="md">
+        <PiX />
+      </Icon>
     </Button>
   )
 }

@@ -1,4 +1,5 @@
-import { Box, IconButton, Tooltip, VStack } from '@chakra-ui/react'
+import { Box, IconButton, VStack } from '@chakra-ui/react'
+import { Tooltip } from '@chakra-ui/react/tooltip'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import {
@@ -19,19 +20,19 @@ const getIcon = (icon: IconType): React.ReactElement => {
     case IconType.Child:
       return <PiArrowCircleDownThin size="24" />
     case IconType.Draft:
-      return <PiCircleDashedThin size="24" />
+      return <PiCircleDashedThin />
     case IconType.Start:
-      return <PiCircleThin size="24" />
+      return <PiCircleThin />
     case IconType.Head:
-      return <PiDatabaseThin size="24" />
+      return <PiDatabaseThin />
     case IconType.Revision:
-      return <PiCircleThin size="24" />
+      return <PiCircleThin />
     case IconType.Parent:
-      return <PiArrowCircleRightThin size="24" />
+      return <PiArrowCircleRightThin />
     case IconType.PreviousPage:
-      return <PiDotsThree size="24" />
+      return <PiDotsThree />
     case IconType.NextPage:
-      return <PiDotsThree size="24" />
+      return <PiDotsThree />
   }
 }
 
@@ -54,37 +55,39 @@ export const BranchRevisionsCardItemBase: React.FC<BranchRevisionsCardItemBasePr
   }, [data.icon, onClick])
 
   return (
-    <Tooltip
-      textAlign="center"
-      label={
-        <VStack>
-          {data.tooltip.map((tooltip, index) => (
-            <span key={index}>{tooltip}</span>
-          ))}
-        </VStack>
-      }
-      openDelay={750}
-    >
-      <Box position="relative">
-        <IconButton
-          data-testid={data.dataTestId}
-          isLoading={isLoading}
-          onClick={handleClick}
-          _disabled={isLoading ? { opacity: 0.2 } : { opacity: 1 }}
-          _hover={data.disabled ? { opacity: 1.0 } : { opacity: 0.4 }}
-          aria-label=""
-          icon={getIcon(data.icon)}
-          isDisabled={data.disabled}
-          opacity={PAGE_ICONS.includes(data.icon) ? 0.7 : 0.2}
-          variant="ghost"
-        />
-        {data.isThereEndpoint && (
-          <Box position="absolute" right="0px" top="0px" opacity="0.4">
-            <PiDotOutlineThin />
-          </Box>
-        )}
-      </Box>
-    </Tooltip>
+    <Tooltip.Root openDelay={750}>
+      <Tooltip.Trigger asChild>
+        <Box position="relative">
+          <IconButton
+            data-testid={data.dataTestId}
+            loading={isLoading}
+            onClick={handleClick}
+            _disabled={isLoading ? { opacity: 0.2 } : { opacity: 1 }}
+            _hover={data.disabled ? { opacity: 1.0 } : { opacity: 0.4 }}
+            aria-label=""
+            disabled={data.disabled}
+            opacity={PAGE_ICONS.includes(data.icon) ? 0.7 : 0.2}
+            variant="ghost"
+          >
+            {getIcon(data.icon)}
+          </IconButton>
+          {data.isThereEndpoint && (
+            <Box position="absolute" right="0px" top="0px" opacity="0.4">
+              <PiDotOutlineThin />
+            </Box>
+          )}
+        </Box>
+      </Tooltip.Trigger>
+      <Tooltip.Positioner>
+        <Tooltip.Content textAlign="center">
+          <VStack>
+            {data.tooltip.map((tooltip, index) => (
+              <span key={index}>{tooltip}</span>
+            ))}
+          </VStack>
+        </Tooltip.Content>
+      </Tooltip.Positioner>
+    </Tooltip.Root>
   )
 })
 

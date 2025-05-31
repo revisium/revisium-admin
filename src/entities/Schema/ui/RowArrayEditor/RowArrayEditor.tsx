@@ -120,7 +120,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
       })}
       <CreateButton
         dataTestId={`${dataTestId}-create-button`}
-        isDisabled={readonly}
+        disabled={readonly}
         title="Item"
         onClick={handleCreate}
       />

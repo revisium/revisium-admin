@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Link, Switch, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Link, Text } from '@chakra-ui/react'
+import { Switch } from '@chakra-ui/react/switch'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { PiShareFatThin } from 'react-icons/pi'
@@ -26,20 +27,25 @@ export const BranchEndpointsCardItem: React.FC<BranchEndpointsCardItemProps> = o
         {getLabelByEndpointType(type)}
       </Text>
       <Flex width="120px" gap="0.5rem" alignItems="center">
-        <Switch
+        <Switch.Root
           data-testid={`endpoint-switch-${type}`}
-          colorScheme="gray"
-          isChecked={Boolean(store.href)}
-          onChange={store.switch}
-        />
+          colorPalette="gray"
+          checked={Boolean(store.href)}
+          onCheckedChange={store.switch}
+        >
+          <Switch.HiddenInput />
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+        </Switch.Root>
         {store.href && (
-          <Link isExternal href={store.href}>
+          <Link href={store.href} target="_blank" rel="noopener noreferrer">
             <Button
               data-testid={`endpoint-button-${type}`}
               size="sm"
               aria-label="removeRow"
               color="gray.500"
-              isDisabled={!store.href}
+              disabled={!store.href}
               variant="ghost"
               padding={0}
               minWidth="20px"

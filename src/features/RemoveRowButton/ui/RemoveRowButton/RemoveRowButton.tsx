@@ -1,4 +1,4 @@
-import { DeleteIcon } from '@chakra-ui/icons'
+import { PiTrash } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { FC, useCallback, useState } from 'react'
 
@@ -22,10 +22,11 @@ export const RemoveRowButton: FC<RemoveRowButtonProps> = ({ rowId, onRemove, dat
       data-testid={dataTestId}
       aria-label=""
       color="gray.400"
-      icon={<DeleteIcon />}
-      isLoading={isLoading}
+      loading={isLoading}
       variant="ghost"
       onClick={handleClick}
-    />
+    >
+      <PiTrash />
+    </IconButton>
   )
 }

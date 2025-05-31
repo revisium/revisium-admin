@@ -1,4 +1,4 @@
-import { Button } from '@chakra-ui/react'
+import { IconButton } from '@chakra-ui/react'
 import React from 'react'
 
 interface SelectedIconButtonProps {
@@ -10,17 +10,18 @@ interface SelectedIconButtonProps {
 
 export const SelectedIconButton: React.FC<SelectedIconButtonProps> = ({ isSelected, onClick, icon, dataTestId }) => {
   return (
-    <Button
+    <IconButton
       data-testid={dataTestId}
-      _disabled={isSelected ? { backgroundColor: 'gray.50', cursor: 'not-allowed' } : undefined}
+      _disabled={isSelected ? { backgroundColor: 'gray.100', cursor: 'not-allowed' } : undefined}
       _hover={{ backgroundColor: 'gray.50' }}
-      isDisabled={isSelected}
+      disabled={isSelected}
       alignSelf="flex-start"
       variant="ghost"
       onClick={onClick}
       width="48px"
+      size="sm"
     >
       {icon}
-    </Button>
+    </IconButton>
   )
 }

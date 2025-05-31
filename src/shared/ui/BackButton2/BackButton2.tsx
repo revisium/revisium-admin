@@ -1,6 +1,6 @@
-import { Button } from '@chakra-ui/react'
+import { Button, Icon } from '@chakra-ui/react'
 import React from 'react'
-import { PiCaretLeftThin } from 'react-icons/pi'
+import { PiCaretLeft } from 'react-icons/pi'
 
 interface BackButton2Props {
   onClick?: () => void
@@ -13,14 +13,16 @@ export const BackButton2: React.FC<BackButton2Props> = ({ height = '2.5rem', onC
   return (
     <Button
       data-testid={dataTestId}
-      isDisabled={isDisabled}
+      disabled={isDisabled}
       _hover={{ backgroundColor: 'gray.50' }}
       alignSelf="flex-start"
       height={height}
       variant="ghost"
       onClick={onClick}
     >
-      <PiCaretLeftThin />
+      <Icon size="sm" color="gray.500">
+        <PiCaretLeft />
+      </Icon>
     </Button>
   )
 }

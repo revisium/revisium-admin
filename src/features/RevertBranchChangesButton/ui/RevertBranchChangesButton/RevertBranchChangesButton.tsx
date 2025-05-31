@@ -1,15 +1,5 @@
-import {
-  ButtonGroup,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { ButtonGroup, IconButton, useDisclosure } from '@chakra-ui/react'
+import { Popover } from '@chakra-ui/react/popover'
 import React, { useCallback, useState } from 'react'
 import { PiArrowCounterClockwiseBold } from 'react-icons/pi'
 import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
@@ -20,7 +10,7 @@ interface RevertBranchChangesButtonProps {
 
 export const RevertBranchChangesButton: React.FC<RevertBranchChangesButtonProps> = ({ onClick }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const { onOpen, onClose, isOpen } = useDisclosure()
+  const { onOpen, onClose, open } = useDisclosure()
 
   const handleClick = useCallback(async () => {
     setIsLoading(true)
@@ -30,28 +20,32 @@ export const RevertBranchChangesButton: React.FC<RevertBranchChangesButtonProps>
   }, [onClick, onClose])
 
   return (
-    <Popover isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-      <PopoverTrigger>
+    <Popover.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
+      <Popover.Trigger asChild>
         <IconButton
           data-testid="revert-revision-button"
           _hover={{ backgroundColor: 'gray.50' }}
-          isLoading={isLoading}
+          loading={isLoading}
           aria-label=""
-          icon={<PiArrowCounterClockwiseBold size="16" />}
           variant="ghost"
           color="gray.300"
-        />
-      </PopoverTrigger>
-      <PopoverContent width="200px">
-        <PopoverArrow />
-        <PopoverCloseButton color="gray.400" />
-        <PopoverHeader color="gray.500">Revert all changes?</PopoverHeader>
-        <PopoverFooter width="100%" border="0" display="flex" justifyContent="flex-end">
-          <ButtonGroup>
-            <GrayButton onClick={handleClick} title="Revert"></GrayButton>
-          </ButtonGroup>
-        </PopoverFooter>
-      </PopoverContent>
-    </Popover>
+          size="sm"
+        >
+          <PiArrowCounterClockwiseBold />
+        </IconButton>
+      </Popover.Trigger>
+      <Popover.Positioner>
+        <Popover.Content width="200px">
+          <Popover.Arrow />
+          <Popover.CloseTrigger color="gray.400" />
+          <Popover.Header color="gray.500">Revert all changes?</Popover.Header>
+          <Popover.Footer width="100%" border="0" display="flex" justifyContent="flex-end">
+            <ButtonGroup>
+              <GrayButton onClick={handleClick} title="Revert"></GrayButton>
+            </ButtonGroup>
+          </Popover.Footer>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   )
 }

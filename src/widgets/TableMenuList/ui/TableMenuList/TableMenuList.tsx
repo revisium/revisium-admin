@@ -1,4 +1,4 @@
-import { Button, Flex, Text, VStack } from '@chakra-ui/react'
+import { Flex, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -30,13 +30,11 @@ export const TableMenuList: React.FC = observer(() => {
               {table.id}
             </Text>
           ) : (
-            <Button minWidth={0} variant="link">
-              <Text textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-                <Link key={table.id} to={table.link} data-testid={`sidebar-table-${table.id}`}>
-                  {table.id}
-                </Link>
-              </Text>
-            </Button>
+            <Text color="gray.500" fontWeight="600" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+              <Link key={table.id} to={table.link} data-testid={`sidebar-table-${table.id}`}>
+                {table.id}
+              </Link>
+            </Text>
           )}
           {table.touched && <Text color="gray.600">*</Text>}
         </Flex>

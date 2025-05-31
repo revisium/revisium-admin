@@ -1,16 +1,6 @@
-import { CheckIcon } from '@chakra-ui/icons'
-import {
-  Flex,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverTrigger,
-  Textarea,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { PiCheckBold } from 'react-icons/pi'
+import { Flex, IconButton, Textarea, useDisclosure } from '@chakra-ui/react'
+import { Popover } from '@chakra-ui/react/popover'
 import React, { useCallback, useState } from 'react'
 import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
 
@@ -20,7 +10,7 @@ interface CreateRevisionButtonProps {
 
 export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onClick }) => {
   const [comment, setComment] = useState('')
-  const { onOpen, onClose, isOpen } = useDisclosure()
+  const { onOpen, onClose, open } = useDisclosure()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -35,30 +25,38 @@ export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onCl
   }, [])
 
   return (
-    <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-      <PopoverTrigger>
+    <Popover.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
+      <Popover.Trigger asChild>
         <IconButton
           data-testid="create-revision-button"
           _hover={{ backgroundColor: 'gray.50' }}
-          isLoading={isLoading}
+          loading={isLoading}
           aria-label=""
-          icon={<CheckIcon boxSize={3} />}
           variant="ghost"
           color="gray.300"
-        />
-      </PopoverTrigger>
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverCloseButton color="gray.400" />
-        <PopoverBody p="1rem 2rem 1rem 1rem">
-          <Flex flexDirection="column" alignItems="end" justifyContent="flex-start" gap="0.5rem">
-            <Textarea _placeholder={{ color: 'gray.300' }} placeholder="Comment (optional)" onChange={handleComment} />
-            <div>
-              <GrayButton onClick={handleClick} title="Commit"></GrayButton>
-            </div>
-          </Flex>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+          size="sm"
+        >
+          <PiCheckBold />
+        </IconButton>
+      </Popover.Trigger>
+      <Popover.Positioner>
+        <Popover.Content>
+          <Popover.Arrow />
+          <Popover.CloseTrigger color="gray.400" />
+          <Popover.Body p="1rem 2rem 1rem 1rem">
+            <Flex flexDirection="column" alignItems="end" justifyContent="flex-start" gap="0.5rem">
+              <Textarea
+                _placeholder={{ color: 'gray.300' }}
+                placeholder="Comment (optional)"
+                onChange={handleComment}
+              />
+              <div>
+                <GrayButton onClick={handleClick} title="Commit"></GrayButton>
+              </div>
+            </Flex>
+          </Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   )
 }

@@ -13,7 +13,7 @@ export const CreateTableButton: React.FC<CreateTableButtonProps> = observer(({ o
   return (
     <CreateButton
       dataTestId="create-table-button"
-      isDisabled={!projectPageModel.isEditableRevision}
+      disabled={!projectPageModel.isEditableRevision}
       title="Table"
       onClick={onClick}
     />

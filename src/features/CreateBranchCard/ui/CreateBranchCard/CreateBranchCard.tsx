@@ -36,7 +36,7 @@ export const CreateBranchCard: React.FC<CreateBranchCardProps> = ({ onCancel, on
         padding="0 0.5rem"
         placeholder="branch-name"
         ref={autofocusRef}
-        variant="unstyled"
+        variant="outline"
         onChange={handleChange}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {

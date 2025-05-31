@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Flex, Heading, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,11 +10,9 @@ export const BranchMenuList: FC = observer(() => {
   return (
     <VStack alignItems="flex-start" gap="1rem">
       <Link to="/">
-        <Button variant="link" data-testid="sidebar-back-to-projects-button">
-          <Heading color="gray" size="md">
-            <b>{store.projectName}</b>
-          </Heading>
-        </Button>
+        <Heading color="gray" size="xl" data-testid="sidebar-back-to-projects-button">
+          <b>{store.projectName}</b>
+        </Heading>
       </Link>
       <VStack
         alignItems="flex-start"
@@ -44,13 +42,11 @@ export const BranchMenuList: FC = observer(() => {
                 {branchLink.title}
               </Text>
             ) : (
-              <Button minWidth={0} variant="link">
-                <Text>
-                  <Link key={branchLink.id} to={branchLink.link} data-testid={`sidebar-branch-${branchLink.name}`}>
-                    {branchLink.title}
-                  </Link>
-                </Text>
-              </Button>
+              <Text color="gray.500" fontWeight="600">
+                <Link key={branchLink.id} to={branchLink.link} data-testid={`sidebar-branch-${branchLink.name}`}>
+                  {branchLink.title}
+                </Link>
+              </Text>
             )}
 
             {branchLink.touched && <Text color="gray.600">*</Text>}

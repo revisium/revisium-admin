@@ -13,7 +13,7 @@ export const CreateRowButton: React.FC<CreateRowButtonProps> = observer(({ onCli
   return (
     <CreateButton
       dataTestId="create-row-button"
-      isDisabled={!projectPageModel.isEditableRevision}
+      disabled={!projectPageModel.isEditableRevision}
       title="Row"
       onClick={onClick}
     />

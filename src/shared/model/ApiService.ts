@@ -2,7 +2,7 @@ import { GraphQLClient } from 'graphql-request'
 import { getSdk, Sdk } from 'src/__generated__/graphql-request.ts'
 import { container } from 'src/shared/lib'
 import { EnvironmentService } from 'src/shared/model/EnvironmentService.ts'
-import { standaloneToast } from 'src/shared/ui'
+import { toaster } from 'src/shared/ui'
 
 export class ApiService {
   private readonly graphQLClient: GraphQLClient
@@ -20,13 +20,8 @@ export class ApiService {
         const error = response['response']?.errors[0].message
 
         if (error) {
-          standaloneToast({
-            status: 'error',
-            variant: 'left-accent',
-            colorScheme: 'red',
+          toaster.info({
             duration: 3000,
-            isClosable: true,
-            position: 'top',
             description: error,
           })
         }

@@ -1,4 +1,4 @@
-import { DeleteIcon } from '@chakra-ui/icons'
+import { PiTrash } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useState } from 'react'
@@ -26,10 +26,11 @@ export const DeleteProjectButton: FC<RemoveTableButtonProps> = observer(({ organ
       _hover={{ backgroundColor: 'gray.100' }}
       aria-label="removeTable"
       color="gray.400"
-      icon={<DeleteIcon />}
-      isLoading={isLoading}
+      loading={isLoading}
       variant="ghost"
       onClick={handleClick}
-    />
+    >
+      <PiTrash />
+    </IconButton>
   )
 })

@@ -1,5 +1,6 @@
-import { Box, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, useDisclosure } from '@chakra-ui/react'
-import { ChevronRightIcon } from '@chakra-ui/icons'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
+import { Menu } from '@chakra-ui/react/menu'
+import { PiCaretRightThin } from 'react-icons/pi'
 import React from 'react'
 
 interface SubMenuProps {
@@ -11,7 +12,7 @@ interface SubMenuProps {
 }
 
 export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRequestClose, dataTestIdPrefix }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { open, onOpen, onClose } = useDisclosure()
 
   const handleClick = (id: string) => {
     onSelect(id)
@@ -21,46 +22,42 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
 
   return (
     <Box onMouseEnter={onOpen} onMouseLeave={onClose}>
-      <Menu
-        isOpen={isOpen}
-        placement="right-start"
-        modifiers={[
-          {
-            name: 'offset',
-            options: {
-              offset: [-8, -8],
-            },
-          },
-        ]}
-      >
-        <MenuButton
-          as={Box}
-          px="12px"
-          py="8px"
-          width="100%"
-          cursor="pointer"
-          fontWeight="600"
-          fontSize="14px"
-          color="rgb(26, 32, 44)"
-          _hover={{ bg: 'gray.100' }}
-        >
-          <Flex justifyContent="space-between" alignItems="center">
-            {label}
-            <ChevronRightIcon />
-          </Flex>
-        </MenuButton>
+      <Menu.Root open={open} positioning={{ placement: 'right-start', gutter: -8 }}>
+        <Menu.Trigger asChild>
+          <Box
+            px="12px"
+            py="8px"
+            width="100%"
+            cursor="pointer"
+            fontWeight="600"
+            fontSize="14px"
+            color="rgb(26, 32, 44)"
+            _hover={{ bg: 'gray.100' }}
+          >
+            <Flex justifyContent="space-between" alignItems="center">
+              {label}
+              <PiCaretRightThin />
+            </Flex>
+          </Box>
+        </Menu.Trigger>
 
-        <MenuList>
-          {options.map((option) => (
-            <React.Fragment key={option.id}>
-              <MenuItem data-testid={`${dataTestIdPrefix}-submenu-${option.id}`} onClick={() => handleClick(option.id)}>
-                {option.label}
-              </MenuItem>
-              {option.addDividerAfter && <MenuDivider />}
-            </React.Fragment>
-          ))}
-        </MenuList>
-      </Menu>
+        <Menu.Positioner>
+          <Menu.Content>
+            {options.map((option) => (
+              <React.Fragment key={option.id}>
+                <Menu.Item
+                  value={option.id}
+                  data-testid={`${dataTestIdPrefix}-submenu-${option.id}`}
+                  onClick={() => handleClick(option.id)}
+                >
+                  {option.label}
+                </Menu.Item>
+                {option.addDividerAfter && <Menu.Separator />}
+              </React.Fragment>
+            ))}
+          </Menu.Content>
+        </Menu.Positioner>
+      </Menu.Root>
     </Box>
   )
 }

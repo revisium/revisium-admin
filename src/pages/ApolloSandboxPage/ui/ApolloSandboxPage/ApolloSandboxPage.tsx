@@ -15,10 +15,10 @@ export const ApolloSandboxPage = () => {
       w="100%"
       h="100vh"
       flexDirection="column"
-      sx={{
+      css={{
         '& > div': {
           flex: 1,
-          minH: 0,
+          minHeight: 0,
         },
       }}
     >

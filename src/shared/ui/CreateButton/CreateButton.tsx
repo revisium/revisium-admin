@@ -11,5 +11,5 @@ interface CreateButtonProps {
 }
 
 export const CreateButton: React.FC<CreateButtonProps> = (props) => {
-  return <GrayButton {...props} icon={<PiPlusBold />}></GrayButton>
+  return <GrayButton {...props} icon={<PiPlusBold />} />
 }

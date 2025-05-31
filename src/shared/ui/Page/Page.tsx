@@ -33,11 +33,13 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
           position="sticky"
         >
           <Box>{sidebar}</Box>
-          <Link to={`/${LOGOUT_ROUTE}`}>
-            <ChakraLink color="gray.400" alignSelf="center">
-              Logout
-            </ChakraLink>
-          </Link>
+          <Box alignSelf="center">
+            <Link to={`/${LOGOUT_ROUTE}`}>
+              <ChakraLink color="gray.400" alignSelf="center">
+                Logout
+              </ChakraLink>
+            </Link>
+          </Box>
         </Flex>
       )}
 

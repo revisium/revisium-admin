@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react'
+import { Button, Flex, Icon, Text } from '@chakra-ui/react'
 import React from 'react'
 
 interface GrayButtonProps {
@@ -25,11 +25,12 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
   return (
     <Button
       data-testid={dataTestId}
-      _hover={{ color: 'gray.400' }}
+      _hover={{ color: 'gray.400', backgroundColor: 'white' }}
       _disabled={isSelected ? { backgroundColor: 'gray.50', cursor: 'not-allowed' } : undefined}
       alignSelf="flex-start"
       color="gray.300"
       fontWeight="500"
+      fontSize={16}
       height={height}
       disabled={isDisabled || isSelected}
       loading={isLoading}
@@ -37,7 +38,7 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
       onClick={onClick}
     >
       <Flex alignItems="center" gap="0.5rem">
-        {icon}
+        {icon && <Icon size="sm">{icon}</Icon>}
         <Text>{title}</Text>
       </Flex>
     </Button>

@@ -1,10 +1,5 @@
 import { PiCheckThin } from 'react-icons/pi'
-import {
-  Flex,
-  IconButton,
-  Textarea,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Flex, IconButton, Textarea, useDisclosure } from '@chakra-ui/react'
 import { Popover } from '@chakra-ui/react/popover'
 import React, { useCallback, useState } from 'react'
 import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
@@ -30,7 +25,7 @@ export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onCl
   }, [])
 
   return (
-    <Popover.Root open={open} onOpenChange={({ open }) => open ? onOpen() : onClose()}>
+    <Popover.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
       <Popover.Trigger asChild>
         <IconButton
           data-testid="create-revision-button"
@@ -49,7 +44,11 @@ export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onCl
           <Popover.CloseTrigger color="gray.400" />
           <Popover.Body p="1rem 2rem 1rem 1rem">
             <Flex flexDirection="column" alignItems="end" justifyContent="flex-start" gap="0.5rem">
-              <Textarea _placeholder={{ color: 'gray.300' }} placeholder="Comment (optional)" onChange={handleComment} />
+              <Textarea
+                _placeholder={{ color: 'gray.300' }}
+                placeholder="Comment (optional)"
+                onChange={handleComment}
+              />
               <div>
                 <GrayButton onClick={handleClick} title="Commit"></GrayButton>
               </div>

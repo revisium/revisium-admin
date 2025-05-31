@@ -1,5 +1,5 @@
 import React from 'react'
-import { PiPlusThin } from 'react-icons/pi'
+import { PiPlusBold } from 'react-icons/pi'
 import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
 
 interface CreateButtonProps {
@@ -11,5 +11,5 @@ interface CreateButtonProps {
 }
 
 export const CreateButton: React.FC<CreateButtonProps> = (props) => {
-  return <GrayButton {...props} icon={<PiPlusThin size={12} />}></GrayButton>
+  return <GrayButton {...props} icon={<PiPlusBold />}></GrayButton>
 }

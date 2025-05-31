@@ -111,7 +111,7 @@ export const SignUpPage: FC = observer(() => {
               <Box visibility={model.disableSubmitButton ? 'hidden' : 'visible'}>
                 <GrayButton
                   onClick={handleEnter}
-                  isDisabled={model.disableSubmitButton}
+                  disabled={model.disableSubmitButton}
                   isLoading={model.isLoading}
                   title="Sign up"
                 />

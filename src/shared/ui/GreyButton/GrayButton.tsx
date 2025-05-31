@@ -4,7 +4,7 @@ import React from 'react'
 interface GrayButtonProps {
   title: string
   onClick?: () => void
-  isDisabled?: boolean
+  disabled?: boolean
   isSelected?: boolean
   isLoading?: boolean
   icon?: React.ReactNode
@@ -16,7 +16,7 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
   height = '2.5rem',
   title,
   onClick,
-  isDisabled,
+  disabled,
   isSelected,
   isLoading,
   icon,
@@ -32,7 +32,7 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
       fontWeight="500"
       fontSize={16}
       height={height}
-      disabled={isDisabled || isSelected}
+      disabled={disabled || isSelected}
       loading={isLoading}
       variant="ghost"
       onClick={onClick}

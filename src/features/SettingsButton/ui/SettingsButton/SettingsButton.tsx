@@ -1,6 +1,6 @@
 import { IconButton } from '@chakra-ui/react'
 import { FC, useCallback, useState } from 'react'
-import { PiGearThin } from 'react-icons/pi'
+import { PiGear } from 'react-icons/pi'
 
 interface SettingsButtonProps {
   onClick?: () => Promise<unknown> | void
@@ -27,7 +27,7 @@ export const SettingsButton: FC<SettingsButtonProps> = ({ onClick, color, dataTe
       variant="ghost"
       onClick={handleClick}
     >
-      <PiGearThin />
+      <PiGear />
     </IconButton>
   )
 }

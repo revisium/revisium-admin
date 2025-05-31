@@ -1,4 +1,4 @@
-import { PiTrashThin } from 'react-icons/pi'
+import { PiTrash } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { FC, useCallback, useState } from 'react'
 
@@ -26,7 +26,7 @@ export const RemoveTableButton: FC<RemoveTableButtonProps> = ({ onRemove, dataTe
       variant="ghost"
       onClick={handleClick}
     >
-      <PiTrashThin />
+      <PiTrash />
     </IconButton>
   )
 }

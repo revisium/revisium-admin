@@ -1,5 +1,5 @@
 import { IconButtonProps } from '@chakra-ui/react'
-import { PiTrashThin } from 'react-icons/pi'
+import { PiTrash } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { FC } from 'react'
 
@@ -16,7 +16,7 @@ export const RemoveButton: FC<RemoveButtonProps> = ({ dataTestId, ...props }) =>
       variant="ghost"
       {...props}
     >
-      <PiTrashThin />
+      <PiTrash />
     </IconButton>
   )
 }

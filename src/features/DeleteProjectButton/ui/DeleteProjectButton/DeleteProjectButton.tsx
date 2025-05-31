@@ -1,4 +1,4 @@
-import { PiTrashThin } from 'react-icons/pi'
+import { PiTrash } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useState } from 'react'
@@ -30,7 +30,7 @@ export const DeleteProjectButton: FC<RemoveTableButtonProps> = observer(({ organ
       variant="ghost"
       onClick={handleClick}
     >
-      <PiTrashThin />
+      <PiTrash />
     </IconButton>
   )
 })

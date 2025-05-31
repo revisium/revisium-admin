@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps } from '@chakra-ui/react'
 import { FC } from 'react'
-import { PiCopyThin } from 'react-icons/pi'
+import { PiCopy } from 'react-icons/pi'
 
 interface CopyButtonProps extends IconButtonProps {
   dataTestId?: string
@@ -15,7 +15,7 @@ export const CopyButton: FC<CopyButtonProps> = ({ dataTestId, ...props }) => {
       variant="ghost"
       {...props}
     >
-      <PiCopyThin />
+      <PiCopy />
     </IconButton>
   )
 }

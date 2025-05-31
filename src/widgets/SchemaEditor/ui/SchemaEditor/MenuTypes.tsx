@@ -43,10 +43,8 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
     )
 
     return (
-      <Menu.Root open={open} onOpenChange={({ open }) => open ? onOpen() : onClose()}>
-        <Menu.Trigger asChild>
-          {menuButton}
-        </Menu.Trigger>
+      <Menu.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
+        <Menu.Trigger asChild>{menuButton}</Menu.Trigger>
         <Portal>
           <Menu.Positioner>
             <Menu.Content>
@@ -56,7 +54,9 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
                 return (
                   <React.Fragment key={group.id}>
                     {!hasOnlySubmenu && group.label && (
-                      <Menu.ItemGroupLabel>{group.label}</Menu.ItemGroupLabel>
+                      <Menu.ItemGroup>
+                        <Menu.ItemGroupLabel>{group.label}</Menu.ItemGroupLabel>
+                      </Menu.ItemGroup>
                     )}
                     {group.options.map((option) =>
                       option.type === 'submenu' ? (

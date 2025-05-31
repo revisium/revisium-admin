@@ -1,4 +1,4 @@
-import { Flex, IconButton, Text, useDisclosure } from '@chakra-ui/react'
+import { Flex, Icon, IconButton, Text, useDisclosure } from '@chakra-ui/react'
 import { Popover } from '@chakra-ui/react/popover'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
@@ -23,9 +23,10 @@ export const BranchEndpointsCard: React.FC = observer(() => {
           aria-label=""
           opacity={0.5}
           _hover={{ opacity: 1.0 }}
-          variant="ghost"
+          variant="plain"
+          size="xl"
         >
-          {store.isThereEndpoint ? <PiPlugsConnectedThin size="24" /> : <PiPlugsThin size="24" />}
+          <Icon size="lg">{store.isThereEndpoint ? <PiPlugsConnectedThin /> : <PiPlugsThin />}</Icon>
         </IconButton>
       </Popover.Trigger>
       <Popover.Positioner>

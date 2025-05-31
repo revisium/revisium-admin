@@ -33,6 +33,7 @@ export const BranchEndpointsCardItem: React.FC<BranchEndpointsCardItemProps> = o
           checked={Boolean(store.href)}
           onCheckedChange={store.switch}
         >
+          <Switch.HiddenInput />
           <Switch.Control>
             <Switch.Thumb />
           </Switch.Control>

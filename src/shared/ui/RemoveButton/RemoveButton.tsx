@@ -14,6 +14,7 @@ export const RemoveButton: FC<RemoveButtonProps> = ({ dataTestId, ...props }) =>
       _hover={{ backgroundColor: 'gray.50' }}
       color="gray.400"
       variant="ghost"
+      size="sm"
       {...props}
     >
       <PiTrash />

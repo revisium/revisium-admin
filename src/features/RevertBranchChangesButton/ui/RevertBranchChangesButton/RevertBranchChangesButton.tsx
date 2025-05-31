@@ -29,8 +29,9 @@ export const RevertBranchChangesButton: React.FC<RevertBranchChangesButtonProps>
           aria-label=""
           variant="ghost"
           color="gray.300"
+          size="sm"
         >
-          <PiArrowCounterClockwiseBold size="16" />
+          <PiArrowCounterClockwiseBold />
         </IconButton>
       </Popover.Trigger>
       <Popover.Positioner>

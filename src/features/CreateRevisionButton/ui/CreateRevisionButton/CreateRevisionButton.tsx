@@ -1,4 +1,4 @@
-import { PiCheckThin } from 'react-icons/pi'
+import { PiCheckBold } from 'react-icons/pi'
 import { Flex, IconButton, Textarea, useDisclosure } from '@chakra-ui/react'
 import { Popover } from '@chakra-ui/react/popover'
 import React, { useCallback, useState } from 'react'
@@ -34,8 +34,9 @@ export const CreateRevisionButton: React.FC<CreateRevisionButtonProps> = ({ onCl
           aria-label=""
           variant="ghost"
           color="gray.300"
+          size="sm"
         >
-          <PiCheckThin size={12} />
+          <PiCheckBold />
         </IconButton>
       </Popover.Trigger>
       <Popover.Positioner>

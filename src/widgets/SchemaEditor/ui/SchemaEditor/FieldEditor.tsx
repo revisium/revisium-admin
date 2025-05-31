@@ -1,5 +1,5 @@
-import { PiDotsSixVerticalThin } from 'react-icons/pi'
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { PiDotsSixVerticalBold } from 'react-icons/pi'
+import { Box, Flex, Icon, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
@@ -129,10 +129,11 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                   alignItems="center"
                   justifyContent="center"
                   borderRadius="4px"
-                  pl="2px"
-                  pr="2px"
+                  marginLeft="-6px"
                 >
-                  <PiDotsSixVerticalThin size={14} color="gray.300" />
+                  <Icon size="lg" color="gray.300">
+                    <PiDotsSixVerticalBold />
+                  </Icon>
                 </Flex>
               )}
               <ContentEditable

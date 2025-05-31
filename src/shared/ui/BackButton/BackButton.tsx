@@ -1,6 +1,6 @@
 import { IconButton } from '@chakra-ui/react'
 import React from 'react'
-import { PiArrowLeftThin } from 'react-icons/pi'
+import { PiArrowLeft } from 'react-icons/pi'
 
 interface BackButtonProps {
   onClick?: () => void
@@ -17,7 +17,7 @@ export const BackButton: React.FC<BackButtonProps> = ({ onClick, dataTestId }) =
       variant="outline"
       onClick={onClick}
     >
-      <PiArrowLeftThin />
+      <PiArrowLeft />
     </IconButton>
   )
 }

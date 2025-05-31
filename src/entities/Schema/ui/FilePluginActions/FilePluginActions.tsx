@@ -38,6 +38,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
           height="24px"
           variant="ghost"
           onClick={handleOpenFile}
+          size="sm"
         >
           <PiEyeThin />
         </IconButton>
@@ -54,6 +55,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
               height="24px"
               variant="ghost"
               as="span"
+              size="sm"
             >
               <PiUploadThin />
             </IconButton>

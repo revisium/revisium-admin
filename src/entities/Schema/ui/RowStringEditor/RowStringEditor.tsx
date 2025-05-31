@@ -61,6 +61,7 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
           variant="ghost"
           onClick={handleViewForeignKey}
           className={styles.SelectForeignKeyButton}
+          size="sm"
         >
           <PiEyeThin />
         </IconButton>
@@ -75,6 +76,7 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
           variant="ghost"
           onClick={handleSelectForeignKey}
           className={styles.SelectForeignKeyButton}
+          size="sm"
         >
           <PiLinkThin />
         </IconButton>

@@ -1,5 +1,5 @@
-import { PiCheckThin } from 'react-icons/pi'
-import { Button } from '@chakra-ui/react'
+import { PiCheckBold } from 'react-icons/pi'
+import { Button, Icon } from '@chakra-ui/react'
 import React from 'react'
 
 interface ApproveButtonProps {
@@ -32,7 +32,9 @@ export const ApproveButton: React.FC<ApproveButtonProps> = ({
       onClick={onClick}
       width="48px"
     >
-      <PiCheckThin size={12} style={{ marginRight: title ? 8 : 0 }} />
+      <Icon size="sm" mr={title ? 8 : 0}>
+        <PiCheckBold />
+      </Icon>
       {title}
     </Button>
   )

@@ -1,4 +1,4 @@
-import { Box, IconButton, VStack } from '@chakra-ui/react'
+import { Box, Icon, IconButton, VStack } from '@chakra-ui/react'
 import { Tooltip } from '@chakra-ui/react/tooltip'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
@@ -69,7 +69,7 @@ export const BranchRevisionsCardItemBase: React.FC<BranchRevisionsCardItemBasePr
             opacity={PAGE_ICONS.includes(data.icon) ? 0.7 : 0.2}
             variant="ghost"
           >
-            {getIcon(data.icon)}
+            <Icon size="lg">{getIcon(data.icon)}</Icon>
           </IconButton>
           {data.isThereEndpoint && (
             <Box position="absolute" right="0px" top="0px" opacity="0.4">

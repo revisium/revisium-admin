@@ -1,6 +1,6 @@
 import { Box, Code } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
-import { standaloneToast } from 'src/shared/ui'
+import { toaster } from 'src/shared/ui'
 import { CopyButton } from 'src/shared/ui/CopyButton/CopyButton.tsx'
 
 import styles from './CopyButton.module.scss'
@@ -15,14 +15,8 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data }) => {
   const handleClick = useCallback(async () => {
     await navigator.clipboard.writeText(text)
 
-    standaloneToast({
-      status: 'success',
-      variant: 'subtle',
-      icon: false,
-      colorScheme: 'gray',
+    toaster.info({
       duration: 1500,
-      isClosable: true,
-      position: 'top',
       description: 'Copied to clipboard',
     })
   }, [text])

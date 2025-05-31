@@ -7,7 +7,7 @@ import { GqlProvider } from 'src/entities/Gql'
 import { system } from 'src/theme'
 
 import { useViewModel } from 'src/shared/lib'
-import { StandaloneToastContainer } from 'src/shared/ui'
+import { ToasterProvider } from 'src/shared/ui'
 
 export const App: FC = observer(() => {
   const model = useViewModel(AppViewModel)
@@ -18,7 +18,7 @@ export const App: FC = observer(() => {
         <Center w="100%" h="100%">
           <Spinner />
         </Center>
-        <StandaloneToastContainer />
+        <ToasterProvider />
       </ChakraProvider>
     )
   }
@@ -27,7 +27,7 @@ export const App: FC = observer(() => {
     <GqlProvider>
       <ChakraProvider value={system}>
         <RouterProvider router={model.router} />
-        <StandaloneToastContainer />
+        <ToasterProvider />
       </ChakraProvider>
     </GqlProvider>
   )

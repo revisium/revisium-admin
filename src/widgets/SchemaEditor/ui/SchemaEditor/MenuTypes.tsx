@@ -1,4 +1,4 @@
-import { Portal, useDisclosure } from '@chakra-ui/react'
+import { Portal } from '@chakra-ui/react'
 import { Menu } from '@chakra-ui/react/menu'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
@@ -16,19 +16,16 @@ interface TypesMenuListProps {
 
 export const MenuTypes: React.FC<TypesMenuListProps> = observer(
   ({ currentSchema, menuButton, onSelect, dataTestId }) => {
-    const { open, onOpen, onClose } = useDisclosure()
-
     const handleChangeTypeAddingNode = useCallback(
       (id: string | string[]) => {
         if (!Array.isArray(id)) {
           const schemaNode = getSchemaByMenuId(id, currentSchema)
           if (schemaNode) {
             onSelect(schemaNode)
-            onClose()
           }
         }
       },
-      [currentSchema, onClose, onSelect],
+      [currentSchema, onSelect],
     )
 
     const handleSubmenuSelect = useCallback(
@@ -36,28 +33,20 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
         const schemaNode = getSchemaByMenuId(id, currentSchema)
         if (schemaNode) {
           onSelect(schemaNode)
-          onClose()
         }
       },
-      [currentSchema, onClose, onSelect],
+      [currentSchema, onSelect],
     )
 
     return (
-      <Menu.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
+      <Menu.Root>
         <Menu.Trigger asChild>{menuButton}</Menu.Trigger>
         <Portal>
           <Menu.Positioner>
             <Menu.Content>
               {menuSchemaGroups.map((group) => {
-                const hasOnlySubmenu = group.options.every((o) => o.type === 'submenu')
-
                 return (
                   <React.Fragment key={group.id}>
-                    {!hasOnlySubmenu && group.label && (
-                      <Menu.ItemGroup>
-                        <Menu.ItemGroupLabel>{group.label}</Menu.ItemGroupLabel>
-                      </Menu.ItemGroup>
-                    )}
                     {group.options.map((option) =>
                       option.type === 'submenu' ? (
                         <SubMenu
@@ -65,7 +54,6 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
                           label={option.label}
                           options={option.items}
                           onSelect={handleSubmenuSelect}
-                          onRequestClose={onClose}
                           dataTestIdPrefix={`${dataTestId}-menu-sub`}
                         />
                       ) : (

@@ -1,4 +1,4 @@
-import { Box, Flex, useDisclosure } from '@chakra-ui/react'
+import { Portal } from '@chakra-ui/react'
 import { Menu } from '@chakra-ui/react/menu'
 import { PiCaretRightThin } from 'react-icons/pi'
 import React from 'react'
@@ -7,40 +7,18 @@ interface SubMenuProps {
   label: string
   options: { id: string; label: string; addDividerAfter?: boolean }[]
   onSelect: (id: string) => void
-  onRequestClose?: () => void
   dataTestIdPrefix?: string
 }
 
-export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRequestClose, dataTestIdPrefix }) => {
-  const { open, onOpen, onClose } = useDisclosure()
-
-  const handleClick = (id: string) => {
-    onSelect(id)
-    onRequestClose?.()
-    onClose()
-  }
-
+export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, dataTestIdPrefix }) => {
   return (
-    <Box onMouseEnter={onOpen} onMouseLeave={onClose}>
-      <Menu.Root open={open} positioning={{ placement: 'right-start', gutter: -8 }}>
-        <Menu.Trigger asChild>
-          <Box
-            px="12px"
-            py="8px"
-            width="100%"
-            cursor="pointer"
-            fontWeight="600"
-            fontSize="14px"
-            color="rgb(26, 32, 44)"
-            _hover={{ bg: 'gray.100' }}
-          >
-            <Flex justifyContent="space-between" alignItems="center">
-              {label}
-              <PiCaretRightThin />
-            </Flex>
-          </Box>
-        </Menu.Trigger>
+    <Menu.Root positioning={{ placement: 'right-start', gutter: -8 }}>
+      <Menu.TriggerItem justifyContent="space-between">
+        {label}
+        <PiCaretRightThin />
+      </Menu.TriggerItem>
 
+      <Portal>
         <Menu.Positioner>
           <Menu.Content>
             {options.map((option) => (
@@ -48,7 +26,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
                 <Menu.Item
                   value={option.id}
                   data-testid={`${dataTestIdPrefix}-submenu-${option.id}`}
-                  onClick={() => handleClick(option.id)}
+                  onClick={() => onSelect(option.id)}
                 >
                   {option.label}
                 </Menu.Item>
@@ -57,7 +35,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
             ))}
           </Menu.Content>
         </Menu.Positioner>
-      </Menu.Root>
-    </Box>
+      </Portal>
+    </Menu.Root>
   )
 }

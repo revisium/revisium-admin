@@ -1,4 +1,5 @@
-import { Menu, MenuDivider, MenuItemOption, MenuList, MenuOptionGroup, Portal, useDisclosure } from '@chakra-ui/react'
+import { Portal, useDisclosure } from '@chakra-ui/react'
+import { Menu } from '@chakra-ui/react/menu'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonSchema } from 'src/entities/Schema'
@@ -15,7 +16,7 @@ interface TypesMenuListProps {
 
 export const MenuTypes: React.FC<TypesMenuListProps> = observer(
   ({ currentSchema, menuButton, onSelect, dataTestId }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { open, onOpen, onClose } = useDisclosure()
 
     const handleChangeTypeAddingNode = useCallback(
       (id: string | string[]) => {
@@ -42,21 +43,21 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
     )
 
     return (
-      <Menu isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-        {menuButton}
+      <Menu.Root open={open} onOpenChange={({ open }) => open ? onOpen() : onClose()}>
+        <Menu.Trigger asChild>
+          {menuButton}
+        </Menu.Trigger>
         <Portal>
-          <MenuList>
-            {menuSchemaGroups.map((group) => {
-              const hasOnlySubmenu = group.options.every((o) => o.type === 'submenu')
+          <Menu.Positioner>
+            <Menu.Content>
+              {menuSchemaGroups.map((group) => {
+                const hasOnlySubmenu = group.options.every((o) => o.type === 'submenu')
 
-              return (
-                <React.Fragment key={group.id}>
-                  <MenuOptionGroup
-                    key={group.id}
-                    value=""
-                    title={hasOnlySubmenu ? undefined : group.label}
-                    onChange={handleChangeTypeAddingNode}
-                  >
+                return (
+                  <React.Fragment key={group.id}>
+                    {!hasOnlySubmenu && group.label && (
+                      <Menu.ItemGroupLabel>{group.label}</Menu.ItemGroupLabel>
+                    )}
                     {group.options.map((option) =>
                       option.type === 'submenu' ? (
                         <SubMenu
@@ -68,23 +69,24 @@ export const MenuTypes: React.FC<TypesMenuListProps> = observer(
                           dataTestIdPrefix={`${dataTestId}-menu-sub`}
                         />
                       ) : (
-                        <MenuItemOption
+                        <Menu.Item
                           key={option.id}
                           value={option.id}
                           data-testid={`${dataTestId}-menu-type-${option.id}`}
+                          onClick={() => handleChangeTypeAddingNode(option.id)}
                         >
                           {option.label}
-                        </MenuItemOption>
+                        </Menu.Item>
                       ),
                     )}
-                  </MenuOptionGroup>
-                  {group.addDividerAfter && <MenuDivider />}
-                </React.Fragment>
-              )
-            })}
-          </MenuList>
+                    {group.addDividerAfter && <Menu.Separator />}
+                  </React.Fragment>
+                )
+              })}
+            </Menu.Content>
+          </Menu.Positioner>
         </Portal>
-      </Menu>
+      </Menu.Root>
     )
   },
 )

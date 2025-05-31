@@ -13,7 +13,7 @@ export const BackButton2: React.FC<BackButton2Props> = ({ height = '2.5rem', onC
   return (
     <Button
       data-testid={dataTestId}
-      isDisabled={isDisabled}
+      disabled={isDisabled}
       _hover={{ backgroundColor: 'gray.50' }}
       alignSelf="flex-start"
       height={height}

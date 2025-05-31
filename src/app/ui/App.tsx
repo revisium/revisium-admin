@@ -4,6 +4,7 @@ import { FC } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { AppViewModel } from 'src/app/model/AppViewModel.ts'
 import { GqlProvider } from 'src/entities/Gql'
+import { system } from 'src/theme'
 
 import { useViewModel } from 'src/shared/lib'
 import { StandaloneToastContainer } from 'src/shared/ui'
@@ -13,7 +14,7 @@ export const App: FC = observer(() => {
 
   if (!model.isLoaded || !model.router) {
     return (
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <Center w="100%" h="100%">
           <Spinner />
         </Center>
@@ -24,7 +25,7 @@ export const App: FC = observer(() => {
 
   return (
     <GqlProvider>
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <RouterProvider router={model.router} />
         <StandaloneToastContainer />
       </ChakraProvider>

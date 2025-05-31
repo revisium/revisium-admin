@@ -1,4 +1,4 @@
-import { CheckIcon } from '@chakra-ui/icons'
+import { PiCheckThin } from 'react-icons/pi'
 import { Button } from '@chakra-ui/react'
 import React from 'react'
 
@@ -26,13 +26,13 @@ export const ApproveButton: React.FC<ApproveButtonProps> = ({
       alignSelf="flex-start"
       color="gray.400"
       height={height}
-      isLoading={loading}
-      isDisabled={isDisabled}
+      loading={loading}
+      disabled={isDisabled}
       variant="ghost"
       onClick={onClick}
       width="48px"
     >
-      <CheckIcon boxSize={3} mr={title ? 2 : 0} />
+      <PiCheckThin size={12} style={{ marginRight: title ? 8 : 0 }} />
       {title}
     </Button>
   )

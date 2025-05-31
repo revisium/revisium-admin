@@ -30,7 +30,7 @@ export const TableMenuList: React.FC = observer(() => {
               {table.id}
             </Text>
           ) : (
-            <Button minWidth={0} variant="link">
+            <Button minWidth={0} variant="ghost">
               <Text textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
                 <Link key={table.id} to={table.link} data-testid={`sidebar-table-${table.id}`}>
                   {table.id}

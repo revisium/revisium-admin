@@ -1,4 +1,4 @@
-import { Box, Flex, MenuButton, Text } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
@@ -63,9 +63,8 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
                 backgroundColor={isDraggedOver ? 'gray.200' : undefined}
                 color={isDisabledDrop ? 'gray.300' : undefined}
               >
-                <MenuButton
+                <Text
                   data-testid={`${dataTestId}-select-type-button`}
-                  as={Text}
                   color={isDrop ? undefined : 'gray.300'}
                   cursor="pointer"
                   outline={0}
@@ -76,7 +75,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
                 >
                   {node.draftItems.label}
                   {mode === SchemaEditorMode.Updating && node.draftItems.isDirtyItself && <span>*</span>}
-                </MenuButton>
+                </Text>
               </Box>
             }
           />

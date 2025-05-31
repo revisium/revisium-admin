@@ -49,9 +49,11 @@ export const SignUpPage: FC = observer(() => {
     <Page hideSidebar>
       <Flex width="100%" gap="8px" justifyContent="flex-end">
         <Text color="gray.300">Already have an account?</Text>
-        <ChakraLink color="gray.300" alignSelf="center" as={Link} to={`/${LOGIN_ROUTE}`}>
-          Log in
-        </ChakraLink>
+        <Link to={`/${LOGIN_ROUTE}`}>
+          <ChakraLink color="gray.300" alignSelf="center">
+            Log in
+          </ChakraLink>
+        </Link>
       </Flex>
       <Flex alignItems="center" justifyContent="center" flex={1}>
         <Flex flexDirection="column" width="16rem" gap="1rem" alignItems="center">

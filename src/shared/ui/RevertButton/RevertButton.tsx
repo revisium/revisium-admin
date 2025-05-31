@@ -12,7 +12,7 @@ export const RevertButton: React.FC<RevertButtonProps> = ({ onClick, isDisabled,
   return (
     <Button
       data-testid={dataTestId}
-      isDisabled={isDisabled}
+      disabled={isDisabled}
       _hover={{ backgroundColor: 'gray.50' }}
       alignSelf="flex-start"
       color="gray.400"

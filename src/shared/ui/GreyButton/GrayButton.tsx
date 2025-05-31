@@ -31,8 +31,8 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
       color="gray.300"
       fontWeight="500"
       height={height}
-      isDisabled={isDisabled || isSelected}
-      isLoading={isLoading}
+      disabled={isDisabled || isSelected}
+      loading={isLoading}
       variant="ghost"
       onClick={onClick}
     >

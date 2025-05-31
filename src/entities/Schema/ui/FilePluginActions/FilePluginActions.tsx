@@ -36,25 +36,28 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
-          icon={<PiEyeThin />}
           variant="ghost"
           onClick={handleOpenFile}
-        />
+        >
+          <PiEyeThin />
+        </IconButton>
       )}
       {showUploadFile && (
         <>
           <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
-          <IconButton
-            data-testid={`${dataTestId}-upload-file`}
-            as="label"
-            htmlFor={`file-${fileId}`}
-            cursor="pointer"
-            _hover={{ backgroundColor: 'gray.100' }}
-            aria-label=""
-            height="24px"
-            icon={<PiUploadThin />}
-            variant="ghost"
-          />
+          <label htmlFor={`file-${fileId}`}>
+            <IconButton
+              data-testid={`${dataTestId}-upload-file`}
+              cursor="pointer"
+              _hover={{ backgroundColor: 'gray.100' }}
+              aria-label=""
+              height="24px"
+              variant="ghost"
+              as="span"
+            >
+              <PiUploadThin />
+            </IconButton>
+          </label>
         </>
       )}
     </Flex>

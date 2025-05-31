@@ -84,7 +84,7 @@ export const ObjectNode: React.FC<ObjectNodeProps> = observer(({ node, dataTestI
           <CreateButton
             dataTestId={`${dataTestId}-create-field-button`}
             title="Field"
-            isDisabled={node.isDisabledCreateField}
+            disabled={node.isDisabledCreateField}
             onClick={handleCreateClick}
           />
         </Box>

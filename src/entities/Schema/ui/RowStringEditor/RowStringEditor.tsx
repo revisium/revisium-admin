@@ -58,24 +58,26 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
-          icon={<PiEyeThin />}
           variant="ghost"
           onClick={handleViewForeignKey}
           className={styles.SelectForeignKeyButton}
-        />
+        >
+          <PiEyeThin />
+        </IconButton>
       )}
       {showSelectForeignKey && (
         <IconButton
           data-testid={`${dataTestId}-select-foreign-key`}
-          isLoading={isLoading}
+          loading={isLoading}
           _hover={{ backgroundColor: 'gray.100' }}
           aria-label=""
           height="24px"
-          icon={<PiLinkThin />}
           variant="ghost"
           onClick={handleSelectForeignKey}
           className={styles.SelectForeignKeyButton}
-        />
+        >
+          <PiLinkThin />
+        </IconButton>
       )}
     </Flex>
   )

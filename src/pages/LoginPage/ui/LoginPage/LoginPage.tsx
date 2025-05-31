@@ -43,9 +43,11 @@ export const LoginPage: FC = observer(() => {
       {model.availableSignUp && (
         <Flex width="100%" gap="8px" justifyContent="flex-end">
           <Text color="gray.300">New to Revisium?</Text>
-          <ChakraLink color="gray.300" alignSelf="center" as={Link} to={`/${SIGN_UP_ROUTE}`}>
-            Sign up
-          </ChakraLink>
+          <Link to={`/${SIGN_UP_ROUTE}`}>
+            <ChakraLink color="gray.300" alignSelf="center">
+              Sign up
+            </ChakraLink>
+          </Link>
         </Flex>
       )}
       <Flex alignItems="center" justifyContent="center" flex={1}>

@@ -14,9 +14,10 @@ export const BackButton: React.FC<BackButtonProps> = ({ onClick, dataTestId }) =
       _hover={{ backgroundColor: 'gray.50' }}
       aria-label="back"
       color="gray.400"
-      icon={<PiArrowLeftThin />}
       variant="outline"
       onClick={onClick}
-    ></IconButton>
+    >
+      <PiArrowLeftThin />
+    </IconButton>
   )
 }

@@ -10,7 +10,7 @@ export const BranchMenuList: FC = observer(() => {
   return (
     <VStack alignItems="flex-start" gap="1rem">
       <Link to="/">
-        <Button variant="link" data-testid="sidebar-back-to-projects-button">
+        <Button variant="ghost" data-testid="sidebar-back-to-projects-button">
           <Heading color="gray" size="md">
             <b>{store.projectName}</b>
           </Heading>
@@ -44,7 +44,7 @@ export const BranchMenuList: FC = observer(() => {
                 {branchLink.title}
               </Text>
             ) : (
-              <Button minWidth={0} variant="link">
+              <Button minWidth={0} variant="ghost">
                 <Text>
                   <Link key={branchLink.id} to={branchLink.link} data-testid={`sidebar-branch-${branchLink.name}`}>
                     {branchLink.title}

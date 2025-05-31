@@ -1,6 +1,6 @@
-import { AddIcon } from '@chakra-ui/icons'
 import { Button, Flex, Text } from '@chakra-ui/react'
 import React from 'react'
+import { PiPlusThin } from 'react-icons/pi'
 
 interface CreateBranchButtonProps {
   onClick: () => void
@@ -18,7 +18,7 @@ export const CreateBranchButton: React.FC<CreateBranchButtonProps> = ({ onClick 
       onClick={onClick}
     >
       <Flex alignItems="center" gap="0.5rem">
-        <AddIcon boxSize={3} />
+        <PiPlusThin size={12} />
         <Text>Branch</Text>
       </Flex>
     </Button>

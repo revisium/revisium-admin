@@ -1,5 +1,5 @@
 import { IconButtonProps } from '@chakra-ui/react'
-import { DeleteIcon } from '@chakra-ui/icons'
+import { PiTrashThin } from 'react-icons/pi'
 import { IconButton } from '@chakra-ui/react'
 import { FC } from 'react'
 
@@ -13,9 +13,10 @@ export const RemoveButton: FC<RemoveButtonProps> = ({ dataTestId, ...props }) =>
       data-testid={dataTestId}
       _hover={{ backgroundColor: 'gray.50' }}
       color="gray.400"
-      icon={<DeleteIcon />}
       variant="ghost"
       {...props}
-    />
+    >
+      <PiTrashThin />
+    </IconButton>
   )
 }

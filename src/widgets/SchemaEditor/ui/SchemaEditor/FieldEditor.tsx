@@ -1,5 +1,5 @@
-import { DragHandleIcon } from '@chakra-ui/icons'
-import { Box, Flex, MenuButton, Text } from '@chakra-ui/react'
+import { PiDotsSixVerticalThin } from 'react-icons/pi'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
@@ -132,7 +132,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                   pl="2px"
                   pr="2px"
                 >
-                  <DragHandleIcon boxSize={'14px'} color="gray.300" />
+                  <PiDotsSixVerticalThin size={14} color="gray.300" />
                 </Flex>
               )}
               <ContentEditable
@@ -158,16 +158,15 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             currentSchema={store.getSchema({ skipObjectProperties: true })}
             onSelect={handleSelect}
             menuButton={
-              <MenuButton
+              <Text
                 data-testid={`${dataTestId}-select-type-button`}
-                as={Text}
                 color="gray.300"
                 textDecoration="underline"
                 cursor="pointer"
                 className={applyTypeClassName ? typeClassName : undefined}
               >
                 {store.label}
-              </MenuButton>
+              </Text>
             }
           />
         )}

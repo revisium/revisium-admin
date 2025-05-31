@@ -1,9 +1,4 @@
-import {
-  Flex,
-  IconButton,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Flex, IconButton, Text, useDisclosure } from '@chakra-ui/react'
 import { Popover } from '@chakra-ui/react/popover'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
@@ -20,7 +15,7 @@ export const BranchEndpointsCard: React.FC = observer(() => {
   const store = useBranchEndpointsCardModel()
 
   return (
-    <Popover.Root open={open} onOpenChange={({ open }) => open ? onOpen() : onClose()}>
+    <Popover.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
       <Popover.Trigger asChild>
         <IconButton
           data-testid="revision-endpoint-button"
@@ -34,21 +29,21 @@ export const BranchEndpointsCard: React.FC = observer(() => {
         </IconButton>
       </Popover.Trigger>
       <Popover.Positioner>
-          <Popover.Content maxWidth="240px">
-            <Popover.Arrow />
-            <Popover.Body>
-              <Flex flexDirection="column" gap="1rem">
-                <BranchEndpointsCardItem type={EndpointType.GRAPHQL} />
-                <BranchEndpointsCardItem type={EndpointType.REST_API} />
-              </Flex>
-            </Popover.Body>
-            <Popover.Footer justifyContent="center">
-              <Text color="gray.400" opacity="0.7" fontSize="xs" as="samp">
-                {store.branchTitle}
-              </Text>
-            </Popover.Footer>
-          </Popover.Content>
-        </Popover.Positioner>
+        <Popover.Content maxWidth="240px">
+          <Popover.Arrow />
+          <Popover.Body>
+            <Flex flexDirection="column" gap="1rem">
+              <BranchEndpointsCardItem type={EndpointType.GRAPHQL} />
+              <BranchEndpointsCardItem type={EndpointType.REST_API} />
+            </Flex>
+          </Popover.Body>
+          <Popover.Footer justifyContent="center">
+            <Text color="gray.400" opacity="0.7" fontSize="xs" as="samp">
+              {store.branchTitle}
+            </Text>
+          </Popover.Footer>
+        </Popover.Content>
+      </Popover.Positioner>
     </Popover.Root>
   )
 })

@@ -22,10 +22,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
 
   return (
     <Box onMouseEnter={onOpen} onMouseLeave={onClose}>
-      <Menu.Root
-        open={open}
-        positioning={{ placement: "right-start", gutter: -8 }}
-      >
+      <Menu.Root open={open} positioning={{ placement: 'right-start', gutter: -8 }}>
         <Menu.Trigger asChild>
           <Box
             px="12px"
@@ -48,9 +45,9 @@ export const SubMenu: React.FC<SubMenuProps> = ({ label, options, onSelect, onRe
           <Menu.Content>
             {options.map((option) => (
               <React.Fragment key={option.id}>
-                <Menu.Item 
+                <Menu.Item
                   value={option.id}
-                  data-testid={`${dataTestIdPrefix}-submenu-${option.id}`} 
+                  data-testid={`${dataTestIdPrefix}-submenu-${option.id}`}
                   onClick={() => handleClick(option.id)}
                 >
                   {option.label}

@@ -1,8 +1,4 @@
-import {
-  ButtonGroup,
-  IconButton,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { ButtonGroup, IconButton, useDisclosure } from '@chakra-ui/react'
 import { Popover } from '@chakra-ui/react/popover'
 import React, { useCallback, useState } from 'react'
 import { PiArrowCounterClockwiseBold } from 'react-icons/pi'
@@ -24,7 +20,7 @@ export const RevertBranchChangesButton: React.FC<RevertBranchChangesButtonProps>
   }, [onClick, onClose])
 
   return (
-    <Popover.Root open={open} onOpenChange={({ open }) => open ? onOpen() : onClose()}>
+    <Popover.Root open={open} onOpenChange={({ open }) => (open ? onOpen() : onClose())}>
       <Popover.Trigger asChild>
         <IconButton
           data-testid="revert-revision-button"

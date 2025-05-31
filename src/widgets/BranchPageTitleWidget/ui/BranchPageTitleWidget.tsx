@@ -15,9 +15,7 @@ export const BranchPageTitleWidget = observer(() => {
         {store.breadcrumbs.map((breadcrumb) => (
           <Breadcrumb.Item key={breadcrumb.href}>
             {breadcrumb.isCurrentPage ? (
-              <Breadcrumb.CurrentLink data-testid={breadcrumb.dataTestId}>
-                {breadcrumb.title}
-              </Breadcrumb.CurrentLink>
+              <Breadcrumb.CurrentLink data-testid={breadcrumb.dataTestId}>{breadcrumb.title}</Breadcrumb.CurrentLink>
             ) : (
               <Breadcrumb.Link asChild>
                 <Link to={breadcrumb.href} data-testid={breadcrumb.dataTestId}>

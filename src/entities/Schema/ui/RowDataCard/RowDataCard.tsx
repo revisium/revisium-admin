@@ -46,7 +46,12 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         </>
       )}
       {store.viewMode === ViewerSwitcherMode.Json && (
-        <JsonCard schema={store.schemaStore.getPlainSchema()} readonly={!isEdit} data={store.root.getPlainValue()} />
+        <JsonCard
+          schema={store.schemaStore.getPlainSchema()}
+          readonly={!isEdit}
+          data={store.root.getPlainValue()}
+          onChange={store.updateValue}
+        />
       )}
       {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && (
         <ForeignKeysByDataCard row={store.originRow} />

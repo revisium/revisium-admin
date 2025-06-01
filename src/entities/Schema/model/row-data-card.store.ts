@@ -113,4 +113,8 @@ export class RowDataCardStore {
     this.root.updateBaseValue(this.originData)
     this.name.updateBaseValue(this.name.value)
   }
+
+  public updateValue(value: JsonValue) {
+    this.root.updateValue(value)
+  }
 }

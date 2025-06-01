@@ -51,6 +51,14 @@ export class JsonObjectValueStore {
     })
   }
 
+  public updateValue(data: JsonValue): void {
+    Object.entries(this.value).map(([name, store]) => {
+      if (name in (data as unknown as object)) {
+        store.updateValue((data as unknown as object)[name])
+      }
+    })
+  }
+
   private init(): void {
     Object.entries(this.schema.properties).forEach(([id, schema]) => {
       const item = createJsonValueStore(schema)

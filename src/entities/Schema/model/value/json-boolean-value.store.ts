@@ -47,4 +47,8 @@ export class JsonBooleanValueStore {
     this.baseValue = data as unknown as boolean
     this.value = data as unknown as boolean
   }
+
+  public updateValue(data: JsonValue): void {
+    this.value = data as unknown as boolean
+  }
 }

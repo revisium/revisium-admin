@@ -1,6 +1,7 @@
-import { Flex, IconButton } from '@chakra-ui/react'
+import { Box, Flex, IconButton } from '@chakra-ui/react'
+import { Tooltip } from 'src/shared/ui'
 import { FC, useCallback } from 'react'
-import { PiEyeThin, PiUploadThin } from 'react-icons/pi'
+import { PiFile, PiInfo, PiUploadThin } from 'react-icons/pi'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 
@@ -9,19 +10,31 @@ interface FilePluginActionsProps {
   readonly?: boolean
   onUpload?: (fileId: string, file: File) => void
   dataTestId?: string
+  hoverClassName?: string
 }
 
-export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store, onUpload, dataTestId }) => {
+export const FilePluginActions: FC<FilePluginActionsProps> = ({
+  hoverClassName,
+  readonly,
+  store,
+  onUpload,
+  dataTestId,
+}) => {
   const status = (store.value['status'] as JsonStringValueStore).getPlainValue()
   const fileId = (store.value['fileId'] as JsonStringValueStore).getPlainValue()
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
+  const showViewFile = Boolean(url)
   const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
+  const showInfo = !showViewFile && !showUploadFile
+  const hoverLogic = showViewFile
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     onUpload?.(fileId, file)
+
+    event.target.value = ''
   }
 
   const handleOpenFile = useCallback(() => {
@@ -29,28 +42,42 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
   }, [url])
 
   return (
-    <Flex>
-      {url && (
+    <Flex alignItems="center">
+      {showInfo && (
+        <Tooltip
+          openDelay={50}
+          closeDelay={50}
+          positioning={{ placement: 'right' }}
+          content="To upload this file, you must first save this row."
+        >
+          <Flex width="24px" height="24px" alignItems="center" justifyContent="center" color="gray.400">
+            <PiInfo />
+          </Flex>
+        </Tooltip>
+      )}
+      {showViewFile && (
         <IconButton
           data-testid={`${dataTestId}-open-file`}
-          _hover={{ backgroundColor: 'gray.100' }}
+          _hover={{ backgroundColor: 'gray.100', color: 'black' }}
+          color="gray.400"
           aria-label=""
           height="24px"
           variant="ghost"
           onClick={handleOpenFile}
           size="sm"
         >
-          <PiEyeThin />
+          <PiFile />
         </IconButton>
       )}
       {showUploadFile && (
-        <>
+        <Box className={hoverLogic ? hoverClassName : undefined}>
           <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
           <label htmlFor={`file-${fileId}`}>
             <IconButton
               data-testid={`${dataTestId}-upload-file`}
               cursor="pointer"
-              _hover={{ backgroundColor: 'gray.100' }}
+              _hover={{ backgroundColor: 'gray.100', color: 'black' }}
+              color={showViewFile ? 'gray.300' : undefined}
               aria-label=""
               height="24px"
               variant="ghost"
@@ -60,7 +87,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
               <PiUploadThin />
             </IconButton>
           </label>
-        </>
+        </Box>
       )}
     </Flex>
   )

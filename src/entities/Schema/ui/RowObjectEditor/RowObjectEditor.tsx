@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
@@ -20,7 +19,7 @@ interface RowObjectProps {
   dataTestId?: string
 }
 
-export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: store, readonly, dataTestId }) => {
+export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, readonly, dataTestId }) => {
   const fields = Object.entries(store.value)
 
   const actions = useRowEditorActions()
@@ -32,6 +31,7 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
 
         return (
           <RowFieldEditor
+            store={item}
             onOverLabel={() => {
               actions.onOverNode(item)
             }}
@@ -45,14 +45,13 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
             value={
               <>
                 {item.$ref === SystemSchemaIds.File && (
-                  <Box className={styles.Action}>
-                    <FilePluginActions
-                      dataTestId={childDataTestId}
-                      readonly={readonly}
-                      store={item as JsonObjectValueStore}
-                      onUpload={actions.onUploadFile}
-                    />
-                  </Box>
+                  <FilePluginActions
+                    hoverClassName={styles.Action}
+                    dataTestId={childDataTestId}
+                    readonly={readonly}
+                    store={item as JsonObjectValueStore}
+                    onUpload={actions.onUploadFile}
+                  />
                 )}
                 {item.type === JsonSchemaTypeName.String && (
                   <RowStringEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />

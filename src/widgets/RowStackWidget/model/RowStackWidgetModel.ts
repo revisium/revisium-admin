@@ -140,8 +140,10 @@ export class RowStackWidgetModel {
   private createStore() {
     const schema = this.projectPageModel.tableOrThrow.schema as JsonObjectSchema
 
+    const schemaStore = isValidSchema(schema) ? createJsonSchemaStore(schema) : new JsonObjectStore()
     return new RowDataCardStore(
-      createJsonValueStore(isValidSchema(schema) ? createJsonSchemaStore(schema) : new JsonObjectStore()),
+      schemaStore,
+      createJsonValueStore(schemaStore),
       this.projectPageModel.rowOrThrow.id,
       this.projectPageModel.rowOrThrow,
       this.projectPageModel,

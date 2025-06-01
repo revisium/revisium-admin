@@ -11,12 +11,15 @@ export class JsonObjectValueStore {
   public parent: JsonValueStore | null = null
   public readonly nodeId: string = nanoid()
 
+  public isCollapsible = true
+  public isCollapsed = false
+
   public readonly type = JsonSchemaTypeName.Object
 
   public value: Record<string, JsonValueStore> = {}
 
   constructor(private schema: JsonObjectStore) {
-    makeAutoObservable(this)
+    makeAutoObservable(this, {}, { autoBind: true })
 
     this.init()
   }
@@ -55,5 +58,13 @@ export class JsonObjectValueStore {
       item.id = id
       this.value[id] = item
     })
+
+    if (this.$ref) {
+      this.isCollapsed = true
+    }
+  }
+
+  public toggleCollapsed(): void {
+    this.isCollapsed = !this.isCollapsed
   }
 }

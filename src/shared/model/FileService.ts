@@ -25,6 +25,10 @@ export class FileService {
     const url = `${this.environmentService.get('REACT_APP_SWAGGER_SERVER_URL')}/revision/${revisionId}/tables/${tableId}/rows/${rowId}/upload/${fileId}`
     const response = await this.upload(url, file)
 
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+
     return response.json()
   }
 

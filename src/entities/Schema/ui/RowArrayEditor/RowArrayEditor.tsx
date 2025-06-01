@@ -42,6 +42,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
 
         return (
           <RowFieldEditor
+            store={value}
             onOverLabel={() => {
               actions.onOverNode(value)
             }}

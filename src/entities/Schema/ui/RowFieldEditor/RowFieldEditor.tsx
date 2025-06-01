@@ -49,7 +49,15 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
 
     return (
       <Flex flexDirection="column" flex={1} width="100%" _hover={hoverStyles}>
-        <Flex gap="4px" minHeight="28px" alignItems="flex-start" onMouseOver={onOverLabel} onMouseOut={onOutLabel}>
+        <Flex
+          className={nameAndValueClassName}
+          gap="4px"
+          minHeight="28px"
+          alignItems="flex-start"
+          onMouseOver={onOverLabel}
+          onMouseOut={onOutLabel}
+        >
+          <Box /* For hover */ position="absolute" ml="-60px" width="60px" height="28px" />
           <Flex
             color="gray.300"
             height="28px"
@@ -68,6 +76,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
               }}
               ml="-8px"
               position="absolute"
+              zIndex={1}
               size="xs"
               color="gray.300"
               variant="ghost"
@@ -81,8 +90,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
             </IconButton>
           )}
           {name ? (
-            <Flex className={nameAndValueClassName} flex={1}>
-              <Box /* For hover */ position="absolute" ml="-60px" width="60px" height="28px" />
+            <Flex flex={1}>
               <Text color={colorName} fontWeight="300">
                 {name}:
               </Text>
@@ -91,7 +99,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
               </Flex>
             </Flex>
           ) : (
-            <Flex className={nameAndValueClassName}>
+            <Flex>
               <Text>{value}</Text>
               <Box>:</Box>
             </Flex>

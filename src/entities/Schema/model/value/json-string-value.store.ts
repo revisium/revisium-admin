@@ -59,4 +59,8 @@ export class JsonStringValueStore {
     this.baseValue = data as unknown as string
     this.value = data as unknown as string
   }
+
+  public updateValue(data: JsonValue): void {
+    this.value = data as unknown as string
+  }
 }

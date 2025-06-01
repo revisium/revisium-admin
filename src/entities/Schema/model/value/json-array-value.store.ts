@@ -92,6 +92,29 @@ export class JsonArrayValueStore {
     this.value = this.baseValue
   }
 
+  public updateValue(data: JsonValue): void {
+    const itemValues: JsonArray = data as JsonArray
+
+    if (this.value.length !== this.baseValue.length) {
+      this.value = this.baseValue.slice()
+    }
+
+    this.value.length = Math.min(this.value.length, itemValues.length)
+
+    itemValues.forEach((itemValue, index) => {
+      let item = this.value[index]
+
+      if (!item) {
+        item = createJsonValueStore(this.schema.items)
+        this.value.push(item)
+      }
+
+      item.parent = this
+      item.id = index.toString()
+      item.updateValue(itemValue)
+    })
+  }
+
   public toggleCollapsed(): void {
     this.isCollapsed = !this.isCollapsed
   }

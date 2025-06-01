@@ -11,13 +11,16 @@ export class JsonArrayValueStore {
   public parent: JsonValueStore | null = null
   public readonly nodeId: string = nanoid()
 
+  public isCollapsible = true
+  public isCollapsed = false
+
   public readonly type = JsonSchemaTypeName.Array
 
   public baseValue: JsonValueStore[] = []
   public value: JsonValueStore[] = []
 
   constructor(private schema: JsonArrayStore) {
-    makeAutoObservable(this)
+    makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get $ref() {
@@ -82,5 +85,9 @@ export class JsonArrayValueStore {
     })
 
     this.value = this.baseValue
+  }
+
+  public toggleCollapsed(): void {
+    this.isCollapsed = !this.isCollapsed
   }
 }

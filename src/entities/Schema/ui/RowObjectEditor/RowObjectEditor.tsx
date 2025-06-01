@@ -20,7 +20,7 @@ interface RowObjectProps {
   dataTestId?: string
 }
 
-export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: store, readonly, dataTestId }) => {
+export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, readonly, dataTestId }) => {
   const fields = Object.entries(store.value)
 
   const actions = useRowEditorActions()
@@ -32,6 +32,7 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store: stor
 
         return (
           <RowFieldEditor
+            store={item}
             onOverLabel={() => {
               actions.onOverNode(item)
             }}

@@ -1,7 +1,8 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { PropsWithChildren } from 'react'
-import { PiCaretDownBold, PiCaretRightBold, PiDotOutlineFill } from 'react-icons/pi'
+import { PiDotOutlineFill } from 'react-icons/pi'
+import { MdOutlineChevronRight } from 'react-icons/md'
 
 interface NodeStore {
   nodeId: string
@@ -64,7 +65,9 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
               width="26px"
               height="26px"
             >
-              {isCollapsed ? <PiCaretRightBold /> : <PiCaretDownBold />}
+              <Box rotate={isCollapsed ? '0' : '90deg'}>
+                <MdOutlineChevronRight />
+              </Box>
             </IconButton>
           )}
           {field}

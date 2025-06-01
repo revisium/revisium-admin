@@ -65,12 +65,12 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
               >
                 <Text
                   data-testid={`${dataTestId}-select-type-button`}
-                  color={isDrop ? undefined : 'gray.300'}
+                  color={isDrop ? undefined : 'gray.400'}
                   cursor="pointer"
                   outline={0}
                   _hover={{
                     textDecoration: 'underline',
-                    textDecorationColor: 'gray.300',
+                    textDecorationColor: 'gray.400',
                   }}
                 >
                   {node.draftItems.label}

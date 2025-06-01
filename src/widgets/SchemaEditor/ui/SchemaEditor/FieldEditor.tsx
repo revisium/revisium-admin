@@ -87,12 +87,12 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             borderWidth={1}
             borderStyle="dashed"
             borderColor={'#00000000'}
-            color={'gray.300'}
+            color={'gray.400'}
             whiteSpace="nowrap"
           >
             <Box userSelect="none">{store.draftId}</Box>
           </Flex>
-          <Text color="gray.300" className={typeClassName}>
+          <Text color="gray.400" className={typeClassName}>
             {store.label}
           </Text>
         </Flex>
@@ -161,7 +161,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             menuButton={
               <Text
                 data-testid={`${dataTestId}-select-type-button`}
-                color="gray.300"
+                color="gray.400"
                 textDecoration="underline"
                 cursor="pointer"
                 className={applyTypeClassName ? typeClassName : undefined}
@@ -176,7 +176,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             data-testid={`${dataTestId}-remove-button`}
             height="26px"
             aria-label="remove"
-            color="gray.200"
+            color="gray.400"
             _hover={{ color: 'gray.400' }}
             className={applyTypeClassName ? typeClassName : undefined}
             onClick={handleRemove}

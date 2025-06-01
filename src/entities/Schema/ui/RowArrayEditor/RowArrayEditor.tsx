@@ -83,7 +83,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                     dataTestId={`${childDataTestId}-remove-button`}
                     height="26px"
                     aria-label="remove"
-                    color="gray.200"
+                    color="gray.400"
                     _hover={{ color: 'gray.400' }}
                     className={styles.Action}
                     onClick={() => {

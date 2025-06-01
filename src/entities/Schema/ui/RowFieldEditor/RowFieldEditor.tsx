@@ -82,6 +82,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
           )}
           {name ? (
             <Flex className={nameAndValueClassName} flex={1}>
+              <Box /* For hover */ position="absolute" ml="-60px" width="60px" height="28px" />
               <Text color={colorName} fontWeight="300">
                 {name}:
               </Text>

@@ -74,8 +74,6 @@ export const createSchemaNode = (
     const countNodes = getCountNodes(node)
     const max = options.collapseComplexity ?? DEFAULT_COLLAPSE_COMPLEXITY
 
-    console.log('collapse', countNodes, max)
-
     if (countNodes >= max) {
       collapseNode(node)
     }
@@ -87,7 +85,6 @@ export const createSchemaNode = (
 export const collapseRefs = (node: SchemaNode) => {
   forEachDraftNode(node, (item) => {
     if (item.isCollapsible && Boolean(item.$ref)) {
-      console.log('collapse ref', item.$ref)
       item.isCollapsed = true
     }
     return true

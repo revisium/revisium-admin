@@ -154,8 +154,10 @@ export class RowStackModel {
 
     const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
 
+    const schemaStore = createJsonSchemaStore(this.schema)
     const store = new RowDataCardStore(
-      createJsonValueStore(createJsonSchemaStore(this.schema)),
+      schemaStore,
+      createJsonValueStore(schemaStore),
       rowId,
       null,
       this.projectPageModel,
@@ -183,10 +185,12 @@ export class RowStackModel {
 
   public toCreatingRow() {
     const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
+
+    const schemaStore = createJsonSchemaStore(this.schema)
     const store =
       this.state.type === RowStackModelStateType.ConnectingForeignKeyRow
         ? this.state.store
-        : new RowDataCardStore(createJsonValueStore(createJsonSchemaStore(this.schema)), rowId)
+        : new RowDataCardStore(schemaStore, createJsonValueStore(schemaStore), rowId)
 
     this.state = {
       type: RowStackModelStateType.CreatingRow,

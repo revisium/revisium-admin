@@ -60,11 +60,11 @@ export const RowStack: React.FC = observer(() => {
       const result = await item.updateRow(store)
       if (result) {
         store.save()
-        root.updateStore()
+        store.syncFiles()
         navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
       }
     }
-  }, [item, linkMaker, navigate, root])
+  }, [item, linkMaker, navigate])
 
   const handleUploadFile = useCallback(
     async (fileId: string, file: File) => {
@@ -81,7 +81,7 @@ export const RowStack: React.FC = observer(() => {
             title: 'Successfully uploaded!',
             duration: 1500,
           })
-          root.updateStore()
+          store.syncFiles()
           navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
         } else {
           toaster.update(toastId, {
@@ -91,7 +91,7 @@ export const RowStack: React.FC = observer(() => {
         }
       }
     },
-    [item, linkMaker, navigate, root],
+    [item, linkMaker, navigate],
   )
 
   if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {

@@ -1,6 +1,10 @@
 import { makeAutoObservable } from 'mobx'
 import { JsonSchemaTypeName, ViewerSwitcherMode } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
+import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
+import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
+import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
@@ -19,6 +23,7 @@ export class RowDataCardStore {
   private originData: JsonValue | null = null
 
   public constructor(
+    public readonly schemaStore: JsonSchemaStore,
     root: JsonValueStore,
     name: string,
     public readonly originRow: IRowModel | null = null,
@@ -75,6 +80,30 @@ export class RowDataCardStore {
     if (this.originData !== null) {
       this.root.updateBaseValue(this.originData)
       this.name.value = this.name.baseValue
+    }
+  }
+
+  public syncFiles() {
+    if (this.originRow?.data) {
+      const files = new Map<string, JsonValueStore>()
+
+      traverseValue(this.root, (value) => {
+        if (value.$ref === SystemSchemaIds.File) {
+          files.set(value.getPlainValue()['fileId'], value)
+        }
+      })
+
+      const nextData = createJsonValueStore(this.schemaStore)
+      nextData.updateBaseValue(this.originRow.data)
+
+      traverseValue(nextData, (value) => {
+        if (value.$ref === SystemSchemaIds.File) {
+          const file = files.get(value.getPlainValue()['fileId'])
+          if (file) {
+            file.updateBaseValue(value.getPlainValue())
+          }
+        }
+      })
     }
   }
 

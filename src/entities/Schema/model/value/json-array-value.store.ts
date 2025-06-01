@@ -72,20 +72,41 @@ export class JsonArrayValueStore {
   }
 
   public updateBaseValue(data: JsonValue): void {
-    this.baseValue.length = 0
-
     const itemValues: JsonArray = data as JsonArray
 
+    this.baseValue.length = Math.min(this.baseValue.length, itemValues.length)
+
     itemValues.forEach((itemValue, index) => {
-      const item = createJsonValueStore(this.schema.items)
+      let item = this.baseValue[index]
+
+      if (!item) {
+        item = createJsonValueStore(this.schema.items)
+        this.baseValue.push(item)
+      }
+
       item.parent = this
       item.id = index.toString()
       item.updateBaseValue(itemValue)
-      this.baseValue.push(item)
     })
 
     this.value = this.baseValue
   }
+
+  // public updateBaseValue(data: JsonValue): void {
+  //   this.baseValue.length = 0
+  //
+  //   const itemValues: JsonArray = data as JsonArray
+  //
+  //   itemValues.forEach((itemValue, index) => {
+  //     const item = createJsonValueStore(this.schema.items)
+  //     item.parent = this
+  //     item.id = index.toString()
+  //     item.updateBaseValue(itemValue)
+  //     this.baseValue.push(item)
+  //   })
+  //
+  //   this.value = this.baseValue
+  // }
 
   public toggleCollapsed(): void {
     this.isCollapsed = !this.isCollapsed

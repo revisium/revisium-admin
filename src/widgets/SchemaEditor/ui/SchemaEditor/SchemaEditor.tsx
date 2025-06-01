@@ -71,7 +71,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = observer(
               <RootNode store={store} />
             </Box>
           )}
-          {store.viewMode === ViewerSwitcherMode.Json && <JsonCard data={store.getPlainSchema()} />}
+          {store.viewMode === ViewerSwitcherMode.Json && <JsonCard readonly data={store.getPlainSchema()} />}
         </Flex>
       </SchemaEditorActions.Provider>
     )

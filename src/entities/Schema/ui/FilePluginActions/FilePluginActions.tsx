@@ -1,6 +1,7 @@
 import { Flex, IconButton } from '@chakra-ui/react'
+import { Tooltip } from 'src/shared/ui'
 import { FC, useCallback } from 'react'
-import { PiEyeThin, PiUploadThin } from 'react-icons/pi'
+import { PiEyeThin, PiInfo, PiUploadThin } from 'react-icons/pi'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 
@@ -24,6 +25,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
   const showViewFile = Boolean(url)
   const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
+  const showInfo = !showViewFile && !showUploadFile
   const hoverLogic = showViewFile
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +43,18 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
 
   return (
     <Flex className={hoverLogic ? hoverClassName : undefined} alignItems="center">
+      {showInfo && (
+        <Tooltip
+          openDelay={50}
+          closeDelay={50}
+          positioning={{ placement: 'right' }}
+          content="To upload this file, you must first save this row."
+        >
+          <Flex width="24px" height="24px" alignItems="center" justifyContent="center" color="gray.400">
+            <PiInfo />
+          </Flex>
+        </Tooltip>
+      )}
       {showViewFile && (
         <IconButton
           data-testid={`${dataTestId}-open-file`}

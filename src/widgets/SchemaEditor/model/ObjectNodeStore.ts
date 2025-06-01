@@ -18,6 +18,8 @@ type ObjectNodeStoreState = {
 export class ObjectNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Object
+  public isCollapsible = true
+  public isCollapsed = false
 
   public $ref: string = ''
 
@@ -309,6 +311,10 @@ export class ObjectNodeStore {
       this.createIfNeededNextProperties()
       this.state.properties.splice(foundIndex, 1, nextProperty)
     }
+  }
+
+  public toggleCollapsed(): void {
+    this.isCollapsed = !this.isCollapsed
   }
 
   public submitChanges(): void {

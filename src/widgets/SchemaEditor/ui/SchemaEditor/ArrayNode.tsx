@@ -48,6 +48,7 @@ export const ArrayNode: React.FC<ArrayNodeProps> = observer(({ node, dataTestId 
   return (
     <Flex flexDirection="column" width="100%">
       <NodeWrapper
+        node={node}
         field={
           <MenuTypes
             dataTestId={dataTestId}

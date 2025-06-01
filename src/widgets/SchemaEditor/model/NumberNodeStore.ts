@@ -15,6 +15,8 @@ type NumberNodeStoreState = {
 export class NumberNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Number
+  public isCollapsible = false
+  public isCollapsed = false
 
   public $ref: string = ''
 

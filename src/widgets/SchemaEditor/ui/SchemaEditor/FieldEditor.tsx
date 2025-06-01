@@ -123,7 +123,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                   className={applyTypeClassName ? typeClassName : undefined}
                   cursor="grab"
                   _hover={{
-                    backgroundColor: 'gray.100',
+                    backgroundColor: 'gray.50',
                   }}
                   height="100%"
                   alignItems="center"
@@ -131,7 +131,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                   borderRadius="4px"
                   marginLeft="-6px"
                 >
-                  <Icon size="lg" color="gray.300">
+                  <Icon size="md" color="gray.300">
                     <PiDotsSixVerticalBold />
                   </Icon>
                 </Flex>

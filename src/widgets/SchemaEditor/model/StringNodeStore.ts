@@ -18,6 +18,8 @@ type StringNodeStoreState = {
 export class StringNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.String
+  public isCollapsible = false
+  public isCollapsed = false
 
   public $ref: string = ''
 

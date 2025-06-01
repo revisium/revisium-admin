@@ -15,6 +15,8 @@ type BooleanNodeStoreState = {
 export class BooleanNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Boolean
+  public isCollapsible = false
+  public isCollapsed = false
 
   public $ref: string = ''
 

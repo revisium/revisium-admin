@@ -18,6 +18,8 @@ type ArrayNodeStoreState = {
 export class ArrayNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.Array
+  public isCollapsible = true
+  public isCollapsed = false
 
   public $ref: string = ''
 
@@ -146,6 +148,10 @@ export class ArrayNodeStore {
     this.state.submit()
 
     this.state.items.submitChanges()
+  }
+
+  public toggleCollapsed(): void {
+    this.isCollapsed = !this.isCollapsed
   }
 
   public resetChanges(): void {

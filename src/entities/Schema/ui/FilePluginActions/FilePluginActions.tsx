@@ -1,7 +1,7 @@
-import { Flex, IconButton } from '@chakra-ui/react'
+import { Box, Flex, IconButton } from '@chakra-ui/react'
 import { Tooltip } from 'src/shared/ui'
 import { FC, useCallback } from 'react'
-import { PiEyeThin, PiInfo, PiUploadThin } from 'react-icons/pi'
+import { PiFile, PiInfo, PiUploadThin } from 'react-icons/pi'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 
@@ -42,7 +42,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
   }, [url])
 
   return (
-    <Flex className={hoverLogic ? hoverClassName : undefined} alignItems="center">
+    <Flex alignItems="center">
       {showInfo && (
         <Tooltip
           openDelay={50}
@@ -58,24 +58,26 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
       {showViewFile && (
         <IconButton
           data-testid={`${dataTestId}-open-file`}
-          _hover={{ backgroundColor: 'gray.100' }}
+          _hover={{ backgroundColor: 'gray.100', color: 'black' }}
+          color="gray.400"
           aria-label=""
           height="24px"
           variant="ghost"
           onClick={handleOpenFile}
           size="sm"
         >
-          <PiEyeThin />
+          <PiFile />
         </IconButton>
       )}
       {showUploadFile && (
-        <>
+        <Box className={hoverLogic ? hoverClassName : undefined}>
           <input type="file" onChange={handleFileChange} id={`file-${fileId}`} style={{ display: 'none' }} />
           <label htmlFor={`file-${fileId}`}>
             <IconButton
               data-testid={`${dataTestId}-upload-file`}
               cursor="pointer"
-              _hover={{ backgroundColor: 'gray.100' }}
+              _hover={{ backgroundColor: 'gray.100', color: 'black' }}
+              color={showViewFile ? 'gray.300' : undefined}
               aria-label=""
               height="24px"
               variant="ghost"
@@ -85,7 +87,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
               <PiUploadThin />
             </IconButton>
           </label>
-        </>
+        </Box>
       )}
     </Flex>
   )

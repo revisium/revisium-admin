@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { JsonSchemaTypeName, ViewerSwitcherMode } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
+import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
@@ -89,7 +90,7 @@ export class RowDataCardStore {
 
       traverseValue(this.root, (value) => {
         if (value.$ref === SystemSchemaIds.File) {
-          files.set(value.getPlainValue()['fileId'], value)
+          files.set(createJsonValuePathByStore(value), value)
         }
       })
 
@@ -98,7 +99,7 @@ export class RowDataCardStore {
 
       traverseValue(nextData, (value) => {
         if (value.$ref === SystemSchemaIds.File) {
-          const file = files.get(value.getPlainValue()['fileId'])
+          const file = files.get(createJsonValuePathByStore(value))
           if (file) {
             file.updateBaseValue(value.getPlainValue())
           }

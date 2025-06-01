@@ -1,7 +1,9 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react'
+import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store.ts'
+import { FileHoverCard } from 'src/entities/Schema/ui/FilePluginActions/file/FileHoverCard.tsx'
 import { Tooltip } from 'src/shared/ui'
-import { FC, useCallback } from 'react'
-import { PiFile, PiInfo, PiUploadThin } from 'react-icons/pi'
+import { FC } from 'react'
+import { PiInfo, PiUploadThin } from 'react-icons/pi'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 
@@ -23,6 +25,10 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
   const status = (store.value['status'] as JsonStringValueStore).getPlainValue()
   const fileId = (store.value['fileId'] as JsonStringValueStore).getPlainValue()
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
+  const mimeType = (store.value['mimeType'] as JsonStringValueStore).getPlainValue()
+  const width = (store.value['width'] as JsonNumberValueStore).getPlainValue()
+  const height = (store.value['height'] as JsonNumberValueStore).getPlainValue()
+  const availablePreview = mimeType.startsWith('image/')
   const showViewFile = Boolean(url)
   const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
   const showInfo = !showViewFile && !showUploadFile
@@ -36,10 +42,6 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
 
     event.target.value = ''
   }
-
-  const handleOpenFile = useCallback(() => {
-    window.open(url, '_blank')
-  }, [url])
 
   return (
     <Flex alignItems="center">
@@ -56,18 +58,13 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
         </Tooltip>
       )}
       {showViewFile && (
-        <IconButton
-          data-testid={`${dataTestId}-open-file`}
-          _hover={{ backgroundColor: 'gray.100', color: 'black' }}
-          color="gray.400"
-          aria-label=""
-          height="24px"
-          variant="ghost"
-          onClick={handleOpenFile}
-          size="sm"
-        >
-          <PiFile />
-        </IconButton>
+        <FileHoverCard
+          width={width}
+          height={height}
+          availablePreview={availablePreview}
+          dataTestId={`${dataTestId}-open-file`}
+          url={url}
+        />
       )}
       {showUploadFile && (
         <Box className={hoverLogic ? hoverClassName : undefined}>

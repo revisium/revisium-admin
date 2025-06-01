@@ -20,7 +20,6 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
   ({ field, fieldClassName, children, node }) => {
     const isCollapsible = node?.isCollapsible
     const isCollapsed = node?.isCollapsed
-    const onToggleCollapse = node?.toggleCollapsed
     const nodeId = node?.nodeId
 
     const dotOutlineClass = `dot-outline-${nodeId}`
@@ -61,7 +60,7 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
               size="xs"
               color="gray.300"
               variant="ghost"
-              onClick={onToggleCollapse}
+              onClick={node?.toggleCollapsed}
               width="26px"
               height="26px"
             >

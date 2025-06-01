@@ -120,7 +120,7 @@ export class TableStackModel {
       throw new Error(`Not found table.versionId ${copyTableVersionId}`)
     }
 
-    const root = createSchemaNode(table.schema as JsonSchema)
+    const root = createSchemaNode(table.schema as JsonSchema, { collapse: true })
     const store = new RootNodeStore(root, table.id)
 
     this.state = {
@@ -165,7 +165,7 @@ export class TableStackModel {
       throw new Error(`Not found table.versionId ${tableVersionId}`)
     }
 
-    const root = createSchemaNode(table.schema as JsonSchema)
+    const root = createSchemaNode(table.schema as JsonSchema, { collapse: true })
     root.setId(table.id)
     root.submitChanges()
 

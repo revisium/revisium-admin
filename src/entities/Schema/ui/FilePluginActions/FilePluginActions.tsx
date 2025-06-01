@@ -9,19 +9,30 @@ interface FilePluginActionsProps {
   readonly?: boolean
   onUpload?: (fileId: string, file: File) => void
   dataTestId?: string
+  hoverClassName?: string
 }
 
-export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store, onUpload, dataTestId }) => {
+export const FilePluginActions: FC<FilePluginActionsProps> = ({
+  hoverClassName,
+  readonly,
+  store,
+  onUpload,
+  dataTestId,
+}) => {
   const status = (store.value['status'] as JsonStringValueStore).getPlainValue()
   const fileId = (store.value['fileId'] as JsonStringValueStore).getPlainValue()
   const url = (store.value['url'] as JsonStringValueStore).getPlainValue()
+  const showViewFile = Boolean(url)
   const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
+  const hoverLogic = showViewFile
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     onUpload?.(fileId, file)
+
+    event.target.value = ''
   }
 
   const handleOpenFile = useCallback(() => {
@@ -29,8 +40,8 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({ readonly, store,
   }, [url])
 
   return (
-    <Flex>
-      {url && (
+    <Flex className={hoverLogic ? hoverClassName : undefined} alignItems="center">
+      {showViewFile && (
         <IconButton
           data-testid={`${dataTestId}-open-file`}
           _hover={{ backgroundColor: 'gray.100' }}

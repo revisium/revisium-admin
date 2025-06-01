@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
+import { nanoid } from 'nanoid'
 import React, { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
@@ -7,6 +8,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { CreateRowButton } from 'src/features/CreateRowButton'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
+import { toaster } from 'src/shared/ui'
 import { RowList } from 'src/widgets/RowList'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
@@ -68,10 +70,24 @@ export const RowStack: React.FC = observer(() => {
     async (fileId: string, file: File) => {
       if (item.state.type === RowStackModelStateType.UpdatingRow) {
         const store = item.state.store
+
+        const toastId = nanoid()
+        toaster.loading({ id: toastId, title: 'Uploading...' })
         const result = await item.uploadFile(store, fileId, file)
+
         if (result) {
+          toaster.update(toastId, {
+            type: 'info',
+            title: 'Successfully uploaded!',
+            duration: 1500,
+          })
           root.updateStore()
           navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
+        } else {
+          toaster.update(toastId, {
+            type: 'info',
+            title: 'Something wrong with the upload',
+          })
         }
       }
     },

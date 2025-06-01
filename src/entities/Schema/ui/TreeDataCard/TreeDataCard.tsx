@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
@@ -37,9 +37,12 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
               name="File"
               nameAndValueClassName={styles.Field}
               value={
-                <Box className={styles.Actions}>
-                  <FilePluginActions readonly={!isEdit} store={store.root} onUpload={actions.onUploadFile} />
-                </Box>
+                <FilePluginActions
+                  hoverClassName={styles.Actions}
+                  readonly={!isEdit}
+                  store={store.root}
+                  onUpload={actions.onUploadFile}
+                />
               }
             >
               <RowObjectEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />

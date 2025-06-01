@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
@@ -79,6 +79,14 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                     store={value as JsonBooleanValueStore}
                   />
                 )}
+                {value.type === JsonSchemaTypeName.Object && value.$ref === SystemSchemaIds.File && (
+                  <FilePluginActions
+                    hoverClassName={styles.Action}
+                    readonly={readonly}
+                    store={value}
+                    onUpload={actions.onUploadFile}
+                  />
+                )}
                 {!readonly && (
                   <RemoveButton
                     dataTestId={`${childDataTestId}-remove-button`}
@@ -91,11 +99,6 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                       store.removeItem(index)
                     }}
                   />
-                )}
-                {value.type === JsonSchemaTypeName.Object && value.$ref === SystemSchemaIds.File && (
-                  <Box className={styles.Action}>
-                    <FilePluginActions readonly={readonly} store={value} onUpload={actions.onUploadFile} />
-                  </Box>
                 )}
               </Flex>
             }

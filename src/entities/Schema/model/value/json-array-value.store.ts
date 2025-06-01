@@ -95,9 +95,9 @@ export class JsonArrayValueStore {
   public updateValue(data: JsonValue): void {
     const itemValues: JsonArray = data as JsonArray
 
-    // if (this.value === this.baseValue) {
-    //   this.value = this.baseValue.slice()
-    // }
+    if (this.value.length !== this.baseValue.length) {
+      this.value = this.baseValue.slice()
+    }
 
     this.value.length = Math.min(this.value.length, itemValues.length)
 

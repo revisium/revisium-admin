@@ -52,15 +52,15 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data, readonly, onChange, sc
         onChange?.(data)
       } catch (e) {
         console.error(e)
-        setError('Invalid JSON. Please correct it')
+        setError('Invalid JSON')
       }
     },
     [onChange, schema],
   )
 
   return (
-    <Flex width="100%" className={styles.JsonCard} direction="column" gap="1rem">
-      <Box position="relative" p={1}>
+    <Flex position="relative" width="100%" flex={1} className={styles.JsonCard} direction="column" gap="1rem">
+      <Box p={1} flex={1}>
         <CodeMirror
           value={text}
           extensions={[EditorView.lineWrapping, json()]}

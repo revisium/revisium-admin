@@ -95,6 +95,10 @@ export class JsonArrayValueStore {
   public updateValue(data: JsonValue): void {
     const itemValues: JsonArray = data as JsonArray
 
+    // if (this.value === this.baseValue) {
+    //   this.value = this.baseValue.slice()
+    // }
+
     this.value.length = Math.min(this.value.length, itemValues.length)
 
     itemValues.forEach((itemValue, index) => {
@@ -107,7 +111,7 @@ export class JsonArrayValueStore {
 
       item.parent = this
       item.id = index.toString()
-      item.updateBaseValue(itemValue)
+      item.updateValue(itemValue)
     })
   }
 

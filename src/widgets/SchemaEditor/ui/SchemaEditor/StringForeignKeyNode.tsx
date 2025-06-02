@@ -29,11 +29,11 @@ export const StringForeignKeyNode: React.FC<ForeignKeyEditorProps> = observer(({
         outline={0}
         _hover={{
           textDecoration: 'underline',
-          textDecorationColor: 'gray.300',
+          textDecorationColor: 'gray.400',
         }}
         onClick={handleClick}
       >
-        <Text color="gray.300" cursor="pointer" data-testid={`${dataTestId}-connect-foreign-key`}>
+        <Text color="gray.400" cursor="pointer" data-testid={`${dataTestId}-connect-foreign-key`}>
           {node.draftForeignKey || '<Connect table>'}
         </Text>
       </Flex>

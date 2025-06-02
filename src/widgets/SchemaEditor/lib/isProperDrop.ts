@@ -3,6 +3,10 @@ import { areThereNodesUnderArray } from 'src/widgets/SchemaEditor/lib/areThereNo
 import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
 
 export const isProperDrop = (target: SchemaNode, node: SchemaNode): boolean => {
+  if (target.$ref) {
+    return false
+  }
+
   if (!node.draftParent) {
     return false
   }

@@ -1,5 +1,3 @@
-// TODO: use it in 2 more places
-
 import { FC } from 'react'
 import { JsonStringValueStore } from '../../model/value/json-string-value.store'
 import { observer } from 'mobx-react-lite'

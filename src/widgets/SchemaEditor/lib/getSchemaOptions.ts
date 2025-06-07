@@ -4,7 +4,7 @@ import { getLabelByRef, SystemSchemaIds } from 'src/entities/Schema/config/const
 import { createSchemaNode } from 'src/widgets/SchemaEditor/lib/createSchemaNode.ts'
 import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
 
-export enum SchemaIds {
+enum SchemaIds {
   String = 'String',
   Number = 'Number',
   Boolean = 'Boolean',

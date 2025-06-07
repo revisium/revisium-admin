@@ -3,8 +3,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 
 import { useCreateProjectStore } from 'src/features/CreateProjectCard/hooks/useCreateProjectModel.ts'
-import { SettingsButton } from 'src/features/SettingsButton/ui/SettingsButton/SettingsButton.tsx'
-import { ApproveButton, CardInput, CloseButton } from 'src/shared/ui'
+import { ApproveButton, CardInput, CloseButton, SettingsButton } from 'src/shared/ui'
 
 interface CreateProjectCardProps {
   onAdd?: () => void

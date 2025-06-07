@@ -6,15 +6,15 @@ interface SettingsButtonProps extends IconButtonProps {
   dataTestId?: string
 }
 
-export const SettingsButton: FC<SettingsButtonProps> = ({ onClick, color, dataTestId }) => {
+export const SettingsButton: FC<SettingsButtonProps> = ({ dataTestId, ...props }) => {
   return (
     <IconButton
-      _hover={{ backgroundColor: 'gray.100' }}
       data-testid={dataTestId}
-      aria-label=""
-      color={color || 'gray.400'}
+      _hover={{ backgroundColor: 'gray.50' }}
+      color="gray.400"
       variant="ghost"
-      onClick={onClick}
+      size="sm"
+      {...props}
     >
       <PiGear />
     </IconButton>

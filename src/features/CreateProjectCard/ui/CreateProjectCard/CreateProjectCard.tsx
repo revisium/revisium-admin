@@ -3,7 +3,8 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 
 import { useCreateProjectStore } from 'src/features/CreateProjectCard/hooks/useCreateProjectModel.ts'
-import { ApproveButton, CardInput, CloseButton, SettingsButton } from 'src/shared/ui'
+import { ProjectSettingsButton } from 'src/features/CreateProjectCard/ui/ProjectSettingsButton/ProjectSettingsButton.tsx'
+import { ApproveButton, CardInput, CloseButton } from 'src/shared/ui'
 
 interface CreateProjectCardProps {
   onAdd?: () => void
@@ -87,7 +88,7 @@ export const CreateProjectCard: React.FC<CreateProjectCardProps> = observer(({ o
       {store.projectName && (
         <>
           <ApproveButton dataTestId="create-project-approve-button" loading={isLoading} onClick={handleAdd} />
-          <SettingsButton
+          <ProjectSettingsButton
             dataTestId="create-project-settings-button"
             color={store.showingSettings ? 'gray.400' : 'gray.200'}
             onClick={handleSettingsButton}

@@ -9,7 +9,7 @@ import { SchemaEditorMode, useSchemaEditor } from 'src/widgets/SchemaEditor/mode
 import { useDragAndDrop } from 'src/widgets/SchemaEditor/ui/SchemaEditor/hooks/useDragAndDrop.ts'
 import { MenuTypes } from 'src/widgets/SchemaEditor/ui/SchemaEditor/MenuTypes.tsx'
 import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
-import { RemoveButton } from 'src/shared/ui/RemoveButton/RemoveButton.tsx'
+import { NodeMenu } from 'src/widgets/SchemaEditor/ui/SchemaEditor/NodeMenu.tsx'
 
 interface TypeEditorProps {
   store: SchemaNode
@@ -18,7 +18,7 @@ interface TypeEditorProps {
   onEnter?: (node: SchemaNode) => void
   onRemove?: (node: SchemaNode) => void
   onSelect: (node: SchemaNode, schemaNode: SchemaNode) => void
-  dataTestId?: string
+  dataTestId: string
 }
 
 export const FieldEditor: React.FC<TypeEditorProps> = observer(
@@ -26,6 +26,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
     const { root, mode } = useSchemaEditor()
 
     const [isFocused, setIsFocused] = useState(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const handleDrop = useCallback(
       (node: SchemaNode) => {
@@ -76,7 +77,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
       [onSelect, store],
     )
 
-    const applyTypeClassName = !isFocused
+    const applyTypeClassName = !isFocused && !isMenuOpen
 
     if (store.isDisabled) {
       return (
@@ -171,15 +172,13 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             }
           />
         )}
-        {onRemove && store.draftId && (
-          <RemoveButton
-            data-testid={`${dataTestId}-remove-button`}
-            height="26px"
-            aria-label="remove"
-            color="gray.400"
-            _hover={{ color: 'gray.400' }}
+        {store.draftId && (
+          <NodeMenu
+            open={isMenuOpen}
+            setOpen={setIsMenuOpen}
+            onRemove={onRemove ? handleRemove : undefined}
+            dataTestId={`${dataTestId}-setting-button`}
             className={applyTypeClassName ? typeClassName : undefined}
-            onClick={handleRemove}
           />
         )}
       </Flex>

@@ -2,7 +2,8 @@ import { FC } from 'react'
 import { JsonStringValueStore } from '../../model/value/json-string-value.store'
 import { observer } from 'mobx-react-lite'
 import { formatDate } from 'src/shared/lib/helpers/formatDate'
-import { Box } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
+import { RowStringEditor } from '../RowStringEditor/RowStringEditor'
 
 interface RowDatePickerProps {
   store: JsonStringValueStore
@@ -14,14 +15,16 @@ export const RowDatePicker: FC<RowDatePickerProps> = observer(({ store, readonly
   const dateValue = store.value ? formatDate(store.value, "yyyy-MM-dd'T'HH:mm") : ''
 
   return (
-    <Box pl="4px">
+    <Flex pl="4px">
+      <RowStringEditor store={store} />
       <input
+        style={{ width: '20px' }}
         data-testid={`${dataTestId}-select-data`}
         type="datetime-local"
         readOnly={readonly}
         value={dateValue}
         onChange={(e) => store.setValue(new Date(e.target.value).toISOString())}
       />
-    </Box>
+    </Flex>
   )
 })

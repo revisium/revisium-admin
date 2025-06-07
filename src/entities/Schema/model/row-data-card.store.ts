@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx'
 import { JsonSchemaTypeName, ViewerSwitcherMode } from 'src/entities/Schema'
-import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
@@ -84,13 +83,13 @@ export class RowDataCardStore {
     }
   }
 
-  public syncFiles() {
+  public syncReadOnlyStore() {
     if (this.originRow?.data) {
-      const files = new Map<string, JsonValueStore>()
+      const readOnlyStores = new Map<string, JsonValueStore>()
 
       traverseValue(this.root, (value) => {
-        if (value.$ref === SystemSchemaIds.File) {
-          files.set(createJsonValuePathByStore(value), value)
+        if (value.readOnly) {
+          readOnlyStores.set(createJsonValuePathByStore(value), value)
         }
       })
 
@@ -98,10 +97,10 @@ export class RowDataCardStore {
       nextData.updateBaseValue(this.originRow.data)
 
       traverseValue(nextData, (value) => {
-        if (value.$ref === SystemSchemaIds.File) {
-          const file = files.get(createJsonValuePathByStore(value))
-          if (file) {
-            file.updateBaseValue(value.getPlainValue())
+        if (value.readOnly) {
+          const readOnlyStore = readOnlyStores.get(createJsonValuePathByStore(value))
+          if (readOnlyStore) {
+            readOnlyStore.updateBaseValue(value.getPlainValue())
           }
         }
       })

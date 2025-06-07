@@ -8,6 +8,8 @@ export class JsonObjectStore implements JsonObjectSchema {
 
   public $ref = ''
 
+  public readOnly?: boolean
+
   public readonly additionalProperties = false
   public readonly required: string[] = []
   public readonly properties: Record<string, JsonSchemaStore> = {}

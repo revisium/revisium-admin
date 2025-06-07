@@ -8,6 +8,8 @@ export class JsonArrayStore implements JsonArraySchema {
 
   public $ref = ''
 
+  public readOnly?: boolean
+
   constructor(
     public readonly items: JsonSchemaStore,
     public readonly nodeId: string = nanoid(),

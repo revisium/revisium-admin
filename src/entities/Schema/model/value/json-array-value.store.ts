@@ -27,6 +27,10 @@ export class JsonArrayValueStore {
     return this.schema.$ref
   }
 
+  public get readOnly() {
+    return this.schema.readOnly
+  }
+
   public get touched(): boolean {
     if (this.value !== this.baseValue) {
       return true

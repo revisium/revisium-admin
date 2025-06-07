@@ -60,7 +60,7 @@ export const RowStack: React.FC = observer(() => {
       const result = await item.updateRow(store)
       if (result) {
         store.save()
-        store.syncFiles()
+        store.syncReadOnlyStores()
         navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
       }
     }
@@ -81,7 +81,7 @@ export const RowStack: React.FC = observer(() => {
             title: 'Successfully uploaded!',
             duration: 1500,
           })
-          store.syncFiles()
+          store.syncReadOnlyStores()
           navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
         } else {
           toaster.update(toastId, {

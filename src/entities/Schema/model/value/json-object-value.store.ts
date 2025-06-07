@@ -28,6 +28,10 @@ export class JsonObjectValueStore {
     return this.schema.$ref
   }
 
+  public get readOnly() {
+    return this.schema.readOnly
+  }
+
   public get touched(): boolean {
     return Object.values(this.value).some((store) => store.touched)
   }

@@ -83,7 +83,7 @@ export class RowDataCardStore {
     }
   }
 
-  public syncReadOnlyStore() {
+  public syncReadOnlyStores() {
     if (this.originRow?.data) {
       const readOnlyStores = new Map<string, JsonValueStore>()
 

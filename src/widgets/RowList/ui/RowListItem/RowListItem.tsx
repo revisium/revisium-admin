@@ -14,7 +14,7 @@ interface RowListItemProps {
 }
 
 export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, onSelect }) => {
-  const { open, setOpen } = useDisclosure()
+  const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleClickOnRowId = useCallback(() => {
     onSelect?.(row.id)
@@ -33,7 +33,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
   return (
     <Flex
       _hover={{ backgroundColor: 'gray.50' }}
-      backgroundColor={open ? 'gray.50' : undefined}
+      backgroundColor={menuOpen ? 'gray.50' : undefined}
       alignItems="center"
       className={styles.Row}
       key={row.versionId}
@@ -80,19 +80,19 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
           {row.data}
         </Text>
         {!isSelectMode && store.isEdit && (
-          <Flex className={!open ? styles.RemoveRowButton : undefined}>
+          <Flex className={!menuOpen ? styles.Actions : undefined}>
             <Menu.Root
               positioning={{
                 placement: 'bottom-start',
               }}
-              open={open}
+              open={menuOpen}
               onOpenChange={(e) => {
                 setOpen(e.open)
               }}
             >
               <Menu.Trigger>
                 <Box paddingRight="2px">
-                  <DotsThreeButton dataTestId={`settings-row-${row.id}`} />
+                  <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
                 </Box>
               </Menu.Trigger>
               <Portal>

@@ -1,6 +1,5 @@
 import { Flex, Text } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
-import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
   row: { id: string; versionId: string; data: string }
@@ -16,7 +15,6 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, onSelect }) => {
     <Flex
       _hover={{ backgroundColor: 'gray.50' }}
       alignItems="center"
-      className={styles.Row}
       key={row.versionId}
       gap="4px"
       paddingLeft="1rem"

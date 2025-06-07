@@ -10,6 +10,7 @@ import { RowFieldEditor } from 'src/entities/Schema/ui/RowFieldEditor/RowFieldEd
 import { RowNumberEditor } from 'src/entities/Schema/ui/RowNumberEditor/RowNumberEditor.tsx'
 import { RowStringEditor } from 'src/entities/Schema/ui/RowStringEditor/RowStringEditor.tsx'
 import { useRowEditorActions } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
+import { RowDatePicker } from '../RowDatePicker/RowDatePicker'
 
 import styles from './RowObjectEditor.module.scss'
 
@@ -24,10 +25,16 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, read
 
   const actions = useRowEditorActions()
 
+  const getIsPropOrItemReadonly = (itemReadOnly?: boolean) => Boolean(readonly) || Boolean(itemReadOnly)
+
   return (
     <>
       {fields.map(([name, item], index) => {
         const childDataTestId = `${dataTestId}-${index}`
+
+        const isDatePicker = item.type === JsonSchemaTypeName.String && item.$ref === SystemSchemaIds.RowPublishedAt
+        const isRowStringEditor =
+          item.type === JsonSchemaTypeName.String && item.$ref !== SystemSchemaIds.RowPublishedAt
 
         return (
           <RowFieldEditor
@@ -53,14 +60,33 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, read
                     onUpload={actions.onUploadFile}
                   />
                 )}
-                {item.type === JsonSchemaTypeName.String && (
-                  <RowStringEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
+                {isDatePicker && (
+                  <RowDatePicker
+                    dataTestId={childDataTestId}
+                    readonly={getIsPropOrItemReadonly(item.readOnly)}
+                    store={item}
+                  />
+                )}
+                {isRowStringEditor && (
+                  <RowStringEditor
+                    dataTestId={childDataTestId}
+                    readonly={getIsPropOrItemReadonly(item.readOnly)}
+                    store={item}
+                  />
                 )}
                 {item.type === JsonSchemaTypeName.Number && (
-                  <RowNumberEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
+                  <RowNumberEditor
+                    dataTestId={childDataTestId}
+                    readonly={getIsPropOrItemReadonly(item.readOnly)}
+                    store={item}
+                  />
                 )}
                 {item.type === JsonSchemaTypeName.Boolean && (
-                  <RowBooleanEditor dataTestId={childDataTestId} readonly={readonly || item.readOnly} store={item} />
+                  <RowBooleanEditor
+                    dataTestId={childDataTestId}
+                    readonly={getIsPropOrItemReadonly(item.readOnly)}
+                    store={item}
+                  />
                 )}
               </>
             }

@@ -4,7 +4,7 @@ import { getLabelByRef, SystemSchemaIds } from 'src/entities/Schema/config/const
 import { createSchemaNode } from 'src/widgets/SchemaEditor/lib/createSchemaNode.ts'
 import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
 
-export enum SchemaIds {
+enum SchemaIds {
   String = 'String',
   Number = 'Number',
   Boolean = 'Boolean',
@@ -16,6 +16,7 @@ export enum SchemaIds {
   RowVersionId = 'RowVersionId',
   RowCreatedId = 'RowCreatedId',
   RowCreatedAt = 'RowCreatedAt',
+  RowPublishedAt = 'RowPublishedAt',
   RowUpdatedAt = 'RowUpdatedAt',
   RowHash = 'RowHash',
   RowSchemaHash = 'RowSchemaHash',
@@ -193,6 +194,11 @@ const systemFields: OptionSchemas[] = [
         id: SchemaIds.RowCreatedAt,
         label: getLabelByRef(SystemSchemaIds.RowCreatedAt),
         getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowCreatedAt }),
+      },
+      {
+        id: SchemaIds.RowPublishedAt,
+        label: getLabelByRef(SystemSchemaIds.RowPublishedAt),
+        getSchemaNode: () => createSchemaNode({ $ref: SystemSchemaIds.RowPublishedAt }),
       },
       {
         id: SchemaIds.RowUpdatedAt,

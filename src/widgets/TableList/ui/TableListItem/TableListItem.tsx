@@ -1,9 +1,8 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
+import { PiCopy, PiGear, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
-import { RemoveTableButton } from 'src/features/RemoveTableButton'
-import { SettingsButton } from 'src/features/SettingsButton/ui/SettingsButton/SettingsButton.tsx'
-import { CopyButton } from 'src/shared/ui/CopyButton/CopyButton.tsx'
+import { DotsThreeButton } from 'src/shared/ui'
 import { TableListItemType } from 'src/widgets/TableList/config/types.ts'
 import { TableListModel } from 'src/widgets/TableList/model/TableListModel.ts'
 import styles from 'src/widgets/TableList/ui/TableList/TableList.module.scss'
@@ -17,6 +16,8 @@ interface TableListItemProps {
 }
 
 export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSettings, onCopy, onSelect }) => {
+  const { open: menuOpen, setOpen } = useDisclosure()
+
   const handleSettings = useCallback(async () => {
     onSettings(table.versionId)
   }, [onSettings, table.versionId])
@@ -39,6 +40,7 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
     <Box height="2.5rem" key={table.versionId} width="100%" data-testid={`table-${table.id}`}>
       <Flex
         _hover={{ backgroundColor: 'gray.50' }}
+        backgroundColor={menuOpen ? 'gray.50' : undefined}
         alignItems="center"
         className={styles.Row}
         gap="4px"
@@ -78,10 +80,55 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
             {table.count} rows
           </Text>
           {!isSelectMode && store.isEditableRevision && (
-            <Flex className={styles.RemoveRowButton}>
-              <SettingsButton dataTestId={`table-settings-button-${table.id}`} onClick={handleSettings} />
-              <CopyButton aria-label="" dataTestId={`copy-table-button-${table.id}`} onClick={handleCopy} />
-              <RemoveTableButton dataTestId={`remove-table-button-${table.id}`} onRemove={handleDelete} />
+            <Flex className={!menuOpen ? styles.Actions : undefined}>
+              <Menu.Root
+                positioning={{
+                  placement: 'bottom-start',
+                }}
+                open={menuOpen}
+                onOpenChange={(e) => {
+                  setOpen(e.open)
+                }}
+              >
+                <Menu.Trigger>
+                  <Box paddingRight="2px">
+                    <DotsThreeButton dataTestId={`table-list-menu-${table.id}`} />
+                  </Box>
+                </Menu.Trigger>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Menu.Item
+                        color="gray.600"
+                        value="edit-schema"
+                        data-testid={`edit-schema-button-${table.id}`}
+                        onClick={handleSettings}
+                      >
+                        <PiGear />
+                        <Box flex="1">Edit schema</Box>
+                      </Menu.Item>
+                      <Menu.Item
+                        color="gray.600"
+                        value="copy"
+                        data-testid={`copy-table-button-${table.id}`}
+                        onClick={handleCopy}
+                      >
+                        <PiCopy />
+                        <Box flex="1">Copy schema</Box>
+                      </Menu.Item>
+                      <Menu.Item
+                        color="gray.600"
+                        value="delete"
+                        data-restid={`remove-table-button-${table.id}`}
+                        onClick={handleDelete}
+                      >
+                        <PiTrash />
+                        <Box flex={1}>Delete</Box>
+                      </Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
             </Flex>
           )}
         </Flex>

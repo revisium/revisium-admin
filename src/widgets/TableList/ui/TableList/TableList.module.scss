@@ -1,9 +1,9 @@
 .Row {
-  .RemoveRowButton {
+  .Actions {
     visibility: hidden;
   }
 
-  &:hover .RemoveRowButton {
+  &:hover .Actions {
     visibility: visible;
   }
 }

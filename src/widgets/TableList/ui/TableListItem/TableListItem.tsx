@@ -40,6 +40,7 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
     <Box height="2.5rem" key={table.versionId} width="100%" data-testid={`table-${table.id}`}>
       <Flex
         _hover={{ backgroundColor: 'gray.50' }}
+        backgroundColor={menuOpen ? 'gray.50' : undefined}
         alignItems="center"
         className={styles.Row}
         gap="4px"

@@ -177,7 +177,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             open={isMenuOpen}
             setOpen={setIsMenuOpen}
             onRemove={onRemove ? handleRemove : undefined}
-            onSettings={store.toggleSettings}
+            onSettings={!store.$ref ? store.toggleSettings : undefined}
             dataTestId={`${dataTestId}-setting-button`}
             className={applyTypeClassName ? typeClassName : undefined}
           />

@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { CloseButton } from 'src/shared/ui'
 import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
 import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
@@ -12,6 +12,8 @@ interface NodeSettingsProps {
 }
 
 export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId }) => {
+  const [booleanState, setBooleanState] = useState(Boolean(node.draftDeprecated).toString())
+
   const handleTitleChange = useCallback(
     (value: string) => {
       node.setTitle(value.replace('\n', ''))
@@ -25,6 +27,16 @@ export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId 
     },
     [node],
   )
+
+  const handleBooleanChange = useCallback((value: string) => {
+    setBooleanState(value)
+  }, [])
+
+  const handleBooleanBlur = useCallback(() => {
+    const value = booleanState.toLowerCase() === 'false' || booleanState === '0' ? false : Boolean(booleanState)
+    setBooleanState(value.toString())
+    node.setDeprecated(value)
+  }, [booleanState, node])
 
   return (
     <Flex
@@ -53,11 +65,22 @@ export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId 
           <Flex gap="8px">
             <Text color="gray.400">description:</Text>
             <ContentEditable
-              dataTestId={`${dataTestId}-title`}
+              dataTestId={`${dataTestId}-description`}
               prefix='"'
               postfix='"'
               initValue={node.draftDescription ?? ''}
               onChange={handleDescriptionChange}
+            />
+          </Flex>
+          <Flex gap="8px">
+            <Text color="gray.400">deprecated:</Text>
+            <ContentEditable
+              dataTestId={`${dataTestId}-deprecated`}
+              prefix=""
+              postfix=""
+              initValue={booleanState}
+              onChange={handleBooleanChange}
+              onBlur={handleBooleanBlur}
             />
           </Flex>
         </Flex>

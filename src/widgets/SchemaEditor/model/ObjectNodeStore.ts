@@ -15,6 +15,7 @@ type ObjectNodeStoreState = {
   connectedToParent: boolean
   title: string
   description: string
+  deprecated: boolean
 }
 
 export class ObjectNodeStore {
@@ -39,6 +40,7 @@ export class ObjectNodeStore {
         connectedToParent: false,
         title: '',
         description: '',
+        deprecated: false,
       }),
     )
   }
@@ -68,7 +70,7 @@ export class ObjectNodeStore {
   }
 
   public get draftTitle() {
-    return this.state.model.title
+    return this.state.title
   }
 
   public get description() {
@@ -76,7 +78,15 @@ export class ObjectNodeStore {
   }
 
   public get draftDescription() {
-    return this.state.model.description
+    return this.state.description
+  }
+
+  public get deprecated() {
+    return this.state.model.deprecated
+  }
+
+  public get draftDeprecated() {
+    return this.state.deprecated
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -212,6 +222,10 @@ export class ObjectNodeStore {
       schema.description = this.state.description
     }
 
+    if (this.state.deprecated) {
+      schema.deprecated = this.state.deprecated
+    }
+
     return schema
   }
 
@@ -257,6 +271,10 @@ export class ObjectNodeStore {
 
   public setDescription(value: string): void {
     this.state.description = value
+  }
+
+  public setDeprecated(value: boolean): void {
+    this.state.deprecated = value
   }
 
   public setParent(value: ParentSchemaNode | null): void {

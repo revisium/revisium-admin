@@ -9,6 +9,9 @@ export class JsonNumberStore implements JsonNumberSchema {
 
   public default: number = 0
   public readOnly?: boolean
+  public title?: string
+  public description?: string
+  public deprecated?: boolean
 
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)

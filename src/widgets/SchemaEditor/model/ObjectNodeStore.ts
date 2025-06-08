@@ -13,6 +13,9 @@ type ObjectNodeStoreState = {
   properties: SchemaNode[]
   parent: ParentSchemaNode | null
   connectedToParent: boolean
+  title: string
+  description: string
+  deprecated: boolean
 }
 
 export class ObjectNodeStore {
@@ -20,6 +23,7 @@ export class ObjectNodeStore {
   public readonly type: NodeStoreType = NodeStoreType.Object
   public isCollapsible = true
   public isCollapsed = false
+  public showSettings = false
 
   public $ref: string = ''
 
@@ -34,6 +38,9 @@ export class ObjectNodeStore {
         properties: [],
         parent: null,
         connectedToParent: false,
+        title: '',
+        description: '',
+        deprecated: false,
       }),
     )
   }
@@ -56,6 +63,30 @@ export class ObjectNodeStore {
 
   public get draftId(): string {
     return this.state.id
+  }
+
+  public get title() {
+    return this.state.model.title
+  }
+
+  public get draftTitle() {
+    return this.state.title
+  }
+
+  public get description() {
+    return this.state.model.description
+  }
+
+  public get draftDescription() {
+    return this.state.description
+  }
+
+  public get deprecated() {
+    return this.state.model.deprecated
+  }
+
+  public get draftDeprecated() {
+    return this.state.deprecated
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -176,12 +207,26 @@ export class ObjectNodeStore {
 
     const sortedRequired = required.sort((a, b) => a.localeCompare(b))
 
-    return {
+    const schema: JsonObjectSchema = {
       type: JsonSchemaTypeName.Object,
       additionalProperties: false,
       required: sortedRequired,
       properties,
     }
+
+    if (this.state.title) {
+      schema.title = this.state.title
+    }
+
+    if (this.state.description) {
+      schema.description = this.state.description
+    }
+
+    if (this.state.deprecated) {
+      schema.deprecated = this.state.deprecated
+    }
+
+    return schema
   }
 
   public get isValid(): boolean {
@@ -218,6 +263,18 @@ export class ObjectNodeStore {
 
   public setId(value: string): void {
     this.state.id = value
+  }
+
+  public setTitle(value: string): void {
+    this.state.title = value
+  }
+
+  public setDescription(value: string): void {
+    this.state.description = value
+  }
+
+  public setDeprecated(value: boolean): void {
+    this.state.deprecated = value
   }
 
   public setParent(value: ParentSchemaNode | null): void {
@@ -354,5 +411,12 @@ export class ObjectNodeStore {
     }
 
     this.state.resetProperty('properties')
+  }
+
+  public toggleSettings() {
+    this.showSettings = !this.showSettings
+    if (this.showSettings && this.isCollapsible && this.isCollapsed) {
+      this.isCollapsed = false
+    }
   }
 }

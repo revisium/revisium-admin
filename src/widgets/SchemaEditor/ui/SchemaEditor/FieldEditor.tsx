@@ -138,6 +138,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                 </Flex>
               )}
               <ContentEditable
+                textDecoration={store.draftDeprecated ? 'line-through' : undefined}
                 dataTestId={dataTestId}
                 autoFocus={!store.draftId}
                 initValue={store.draftId}
@@ -177,6 +178,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
             open={isMenuOpen}
             setOpen={setIsMenuOpen}
             onRemove={onRemove ? handleRemove : undefined}
+            onSettings={!store.$ref ? store.toggleSettings : undefined}
             dataTestId={`${dataTestId}-setting-button`}
             className={applyTypeClassName ? typeClassName : undefined}
           />

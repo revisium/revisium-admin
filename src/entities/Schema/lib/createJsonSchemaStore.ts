@@ -3,6 +3,7 @@ import {
   JsonSchema,
   JsonSchemaPrimitives,
   JsonSchemaTypeName,
+  JsonSchemaWithoutRef,
   schemaRefsMapper,
 } from 'src/entities/Schema'
 import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
@@ -24,11 +25,21 @@ export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
     store.$ref = schema.$ref
     return store
   } else if (schema.type === JsonSchemaTypeName.Object) {
-    return createJsonObjectSchemaStore(schema)
+    const objectStore = createJsonObjectSchemaStore(schema)
+    saveSharedFields(objectStore, schema)
+
+    return objectStore
   } else if (schema.type === JsonSchemaTypeName.Array) {
-    return new JsonArrayStore(createJsonSchemaStore(schema.items))
+    const itemsStore = createJsonSchemaStore(schema.items)
+    const arrayStore = new JsonArrayStore(itemsStore)
+    saveSharedFields(arrayStore, schema)
+
+    return arrayStore
   } else {
-    return createPrimitiveStoreBySchema(schema)
+    const primitivesStore = createPrimitiveStoreBySchema(schema)
+    saveSharedFields(primitivesStore, schema)
+
+    return primitivesStore
   }
 }
 
@@ -60,4 +71,10 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
   } else {
     throw new Error('this type is not allowed')
   }
+}
+
+export const saveSharedFields = (store: JsonSchemaStore, schema: JsonSchemaWithoutRef) => {
+  store.title = schema.title
+  store.description = schema.description
+  store.deprecated = schema.deprecated
 }

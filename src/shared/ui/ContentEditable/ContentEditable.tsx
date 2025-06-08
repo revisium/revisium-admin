@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box, BoxProps, Flex, Text } from '@chakra-ui/react'
 import React, { DependencyList, KeyboardEventHandler, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { useUpdateEffect } from 'react-use'
 
@@ -16,6 +16,7 @@ interface ContentEditableBoxProps {
   prefix?: string
   postfix?: string
   dataTestId?: string
+  textDecoration?: BoxProps['textDecoration']
 }
 
 const allowed = ['Backspace', 'Escape', 'Enter', 'ArrowRight', 'ArrowLeft', 'Delete']
@@ -34,6 +35,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
   prefix,
   postfix,
   dataTestId,
+  textDecoration,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const cursorPosition = useRef<number | null>(null)
@@ -130,6 +132,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
     <Flex minWidth={0} width={showPlaceholder ? '100%' : undefined} position="relative" onClick={handleParentClick}>
       {!showPlaceholder && prefix}
       <Box
+        textDecoration={textDecoration}
         data-testid={dataTestId}
         autoFocus
         ref={ref}

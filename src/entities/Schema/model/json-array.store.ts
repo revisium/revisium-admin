@@ -9,6 +9,9 @@ export class JsonArrayStore implements JsonArraySchema {
   public $ref = ''
 
   public readOnly?: boolean
+  public title?: string
+  public description?: string
+  public deprecated?: boolean
 
   constructor(
     public readonly items: JsonSchemaStore,

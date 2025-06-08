@@ -1,6 +1,6 @@
 import { Box, Menu, Portal } from '@chakra-ui/react'
 import { FC } from 'react'
-import { PiTrash } from 'react-icons/pi'
+import { PiGear, PiTrash } from 'react-icons/pi'
 import { SettingsButton } from 'src/shared/ui'
 
 interface NodeMenuProps {
@@ -9,10 +9,11 @@ interface NodeMenuProps {
   dataTestId: string
   className?: string
   onRemove?: () => void
+  onSettings?: () => void
 }
 
-export const NodeMenu: FC<NodeMenuProps> = ({ open, setOpen, dataTestId, className, onRemove }) => {
-  if (!onRemove) {
+export const NodeMenu: FC<NodeMenuProps> = ({ open, setOpen, dataTestId, className, onRemove, onSettings }) => {
+  if (!onRemove && !onSettings) {
     return null
   }
 
@@ -24,7 +25,7 @@ export const NodeMenu: FC<NodeMenuProps> = ({ open, setOpen, dataTestId, classNa
         placement: 'bottom-start',
       }}
     >
-      <Menu.Trigger>
+      <Menu.Trigger asChild>
         <SettingsButton
           height="26px"
           color="gray.300"
@@ -36,10 +37,23 @@ export const NodeMenu: FC<NodeMenuProps> = ({ open, setOpen, dataTestId, classNa
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
-            <Menu.Item color="gray.600" value="delete" data-restid={`${dataTestId}-remove-button`} onClick={onRemove}>
-              <PiTrash />
-              <Box flex={1}>Delete</Box>
-            </Menu.Item>
+            {onSettings && (
+              <Menu.Item
+                color="gray.600"
+                value="settings"
+                data-restid={`${dataTestId}-settings-button`}
+                onClick={onSettings}
+              >
+                <PiGear />
+                <Box flex={1}>Settings</Box>
+              </Menu.Item>
+            )}
+            {onRemove && (
+              <Menu.Item color="gray.600" value="delete" data-restid={`${dataTestId}-remove-button`} onClick={onRemove}>
+                <PiTrash />
+                <Box flex={1}>Delete</Box>
+              </Menu.Item>
+            )}
           </Menu.Content>
         </Menu.Positioner>
       </Portal>

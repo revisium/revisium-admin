@@ -30,6 +30,7 @@ export const RootNode: React.FC<RootNodeProps> = observer(({ store }) => {
 
   return (
     <NodeWrapper
+      dataTestId="0"
       fieldClassName={styles.Root}
       field={
         <FieldEditor

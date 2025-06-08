@@ -3,25 +3,22 @@ import { observer } from 'mobx-react-lite'
 import React, { PropsWithChildren } from 'react'
 import { PiDotOutlineFill } from 'react-icons/pi'
 import { MdOutlineChevronRight } from 'react-icons/md'
-
-interface NodeStore {
-  nodeId: string
-  isCollapsible?: boolean
-  isCollapsed?: boolean
-  toggleCollapsed?: () => void
-}
+import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
+import { NodeSettings } from 'src/widgets/SchemaEditor/ui/SchemaEditor/NodeSettings/NodeSettings.tsx'
 
 interface NodeWrapperProps {
   field: React.ReactNode
   fieldClassName?: string
-  node?: NodeStore
+  node?: SchemaNode
+  dataTestId?: string
 }
 
 export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = observer(
-  ({ field, fieldClassName, children, node }) => {
+  ({ dataTestId, field, fieldClassName, children, node }) => {
     const isCollapsible = node?.isCollapsible
     const isCollapsed = node?.isCollapsed
     const nodeId = node?.nodeId
+    const toggleCollapsed = node && 'toggleCollapsed' in node ? node.toggleCollapsed : undefined
 
     const dotOutlineClass = `dot-outline-${nodeId}`
     const collapseButtonClass = `collapse-button-${nodeId}`
@@ -61,7 +58,7 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
               size="xs"
               color="gray.400"
               variant="ghost"
-              onClick={node?.toggleCollapsed}
+              onClick={toggleCollapsed}
               width="26px"
               height="26px"
             >
@@ -72,6 +69,9 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
           )}
           {field}
         </Flex>
+        {node && node.showSettings && !isCollapsed && (
+          <NodeSettings dataTestId={`${dataTestId}-settings`} node={node} />
+        )}
         {children && !isCollapsed && (
           <Flex
             ml="7px"

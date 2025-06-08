@@ -13,6 +13,8 @@ type StringNodeStoreState = {
   contentMediaType: JsonStringSchema['contentMediaType'] | null
   parent: ParentSchemaNode | null
   connectedToParent: boolean
+  title: string
+  description: string
 }
 
 export class StringNodeStore {
@@ -20,6 +22,7 @@ export class StringNodeStore {
   public readonly type: NodeStoreType = NodeStoreType.String
   public isCollapsible = false
   public isCollapsed = false
+  public showSettings = false
 
   public $ref: string = ''
 
@@ -35,6 +38,8 @@ export class StringNodeStore {
         contentMediaType: null,
         parent: null,
         connectedToParent: false,
+        title: '',
+        description: '',
       }),
     )
   }
@@ -65,6 +70,22 @@ export class StringNodeStore {
 
   public get draftId(): string {
     return this.state.id
+  }
+
+  public get title() {
+    return this.state.model.title
+  }
+
+  public get draftTitle() {
+    return this.state.model.title
+  }
+
+  public get description() {
+    return this.state.model.description
+  }
+
+  public get draftDescription() {
+    return this.state.model.description
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -111,6 +132,14 @@ export class StringNodeStore {
       schema.contentMediaType = this.state.contentMediaType
     }
 
+    if (this.state.title) {
+      schema.title = this.state.title
+    }
+
+    if (this.state.description) {
+      schema.description = this.state.description
+    }
+
     return schema
   }
 
@@ -132,6 +161,14 @@ export class StringNodeStore {
 
   public setId(value: string): void {
     this.state.id = value
+  }
+
+  public setTitle(value: string): void {
+    this.state.title = value
+  }
+
+  public setDescription(value: string): void {
+    this.state.description = value
   }
 
   public setParent(value: ParentSchemaNode | null): void {
@@ -169,5 +206,9 @@ export class StringNodeStore {
     if (this.state.foreignKey) {
       this.state.foreignKey.resetChanges()
     }
+  }
+
+  public toggleSettings() {
+    this.showSettings = !this.showSettings
   }
 }

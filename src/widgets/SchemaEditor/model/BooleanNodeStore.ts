@@ -10,6 +10,8 @@ type BooleanNodeStoreState = {
   id: string
   parent: ParentSchemaNode | null
   connectedToParent: boolean
+  title: string
+  description: string
 }
 
 export class BooleanNodeStore {
@@ -17,6 +19,7 @@ export class BooleanNodeStore {
   public readonly type: NodeStoreType = NodeStoreType.Boolean
   public isCollapsible = false
   public isCollapsed = false
+  public showSettings = false
 
   public $ref: string = ''
 
@@ -30,6 +33,8 @@ export class BooleanNodeStore {
         id: '',
         parent: null,
         connectedToParent: false,
+        title: '',
+        description: '',
       }),
     )
   }
@@ -52,6 +57,22 @@ export class BooleanNodeStore {
 
   public get draftId(): string {
     return this.state.id
+  }
+
+  public get title() {
+    return this.state.model.title
+  }
+
+  public get draftTitle() {
+    return this.state.model.title
+  }
+
+  public get description() {
+    return this.state.model.description
+  }
+
+  public get draftDescription() {
+    return this.state.model.description
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -77,10 +98,20 @@ export class BooleanNodeStore {
       }
     }
 
-    return {
+    const schema: JsonBooleanSchema = {
       type: JsonSchemaTypeName.Boolean,
       default: false,
     }
+
+    if (this.state.title) {
+      schema.title = this.state.title
+    }
+
+    if (this.state.description) {
+      schema.description = this.state.description
+    }
+
+    return schema
   }
 
   public get isValid(): boolean {
@@ -99,6 +130,14 @@ export class BooleanNodeStore {
     this.state.id = value
   }
 
+  public setTitle(value: string): void {
+    this.state.title = value
+  }
+
+  public setDescription(value: string): void {
+    this.state.description = value
+  }
+
   public setParent(value: ParentSchemaNode | null): void {
     this.state.parent = value
     this.state.connectedToParent = true
@@ -114,5 +153,9 @@ export class BooleanNodeStore {
 
   public resetChanges(): void {
     this.state.reset()
+  }
+
+  public toggleSettings() {
+    this.showSettings = !this.showSettings
   }
 }

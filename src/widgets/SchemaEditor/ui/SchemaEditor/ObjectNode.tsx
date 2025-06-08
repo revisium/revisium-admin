@@ -61,6 +61,7 @@ export const ObjectNode: React.FC<ObjectNodeProps> = observer(({ node, dataTestI
     <Flex flexDirection="column" width="100%">
       {node.draftProperties.map((property, index) => (
         <NodeWrapper
+          dataTestId={`${dataTestId}-${index}`}
           node={property}
           key={property.nodeId}
           fieldClassName={styles.Root}

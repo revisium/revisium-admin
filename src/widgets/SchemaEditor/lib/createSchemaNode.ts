@@ -1,4 +1,4 @@
-import { JsonSchema, JsonSchemaTypeName, schemaRefsMapper } from 'src/entities/Schema'
+import { JsonSchema, JsonSchemaTypeName, JsonSchemaWithoutRef, schemaRefsMapper } from 'src/entities/Schema'
 import { forEachDraftNode } from 'src/widgets/SchemaEditor/lib/traverseNode.ts'
 import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
 import { BooleanNodeStore } from 'src/widgets/SchemaEditor/model/BooleanNodeStore.ts'
@@ -26,6 +26,7 @@ const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
   switch (schema.type) {
     case JsonSchemaTypeName.Object: {
       const objectNode = new ObjectNodeStore()
+      saveSharedFields(objectNode, schema)
 
       Object.entries(schema.properties).forEach(([id, schema]) => {
         const propertyNode = createSchemaNode(schema)
@@ -37,7 +38,11 @@ const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
     }
     case JsonSchemaTypeName.Array: {
       const items = createSchemaNode(schema.items)
-      return new ArrayNodeStore(items)
+
+      const arrayStore = new ArrayNodeStore(items)
+      saveSharedFields(arrayStore, schema)
+
+      return arrayStore
     }
     case JsonSchemaTypeName.String: {
       const stringNode = new StringNodeStore()
@@ -51,14 +56,34 @@ const internalCreateSchemaNode = (schema: JsonSchema): SchemaNode => {
 
       stringNode.setContentMediaType(schema.contentMediaType ?? null)
 
+      saveSharedFields(stringNode, schema)
+
       return stringNode
     }
     case JsonSchemaTypeName.Number: {
-      return new NumberNodeStore()
+      const numberNode = new NumberNodeStore()
+      saveSharedFields(numberNode, schema)
+      return numberNode
     }
     case JsonSchemaTypeName.Boolean: {
-      return new BooleanNodeStore()
+      const booleanNode = new BooleanNodeStore()
+      saveSharedFields(booleanNode, schema)
+      return booleanNode
     }
+  }
+}
+
+export const saveSharedFields = (node: SchemaNode, schema: JsonSchemaWithoutRef) => {
+  if (schema.title) {
+    node.setTitle(schema.title)
+  }
+
+  if (schema.description) {
+    node.setDescription(schema.description)
+  }
+
+  if (schema.deprecated) {
+    node.setDeprecated(schema.deprecated)
   }
 }
 

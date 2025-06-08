@@ -9,6 +9,9 @@ export class JsonObjectStore implements JsonObjectSchema {
   public $ref = ''
 
   public readOnly?: boolean
+  public title?: string
+  public description?: string
+  public deprecated?: boolean
 
   public readonly additionalProperties = false
   public readonly required: string[] = []

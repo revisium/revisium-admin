@@ -25,7 +25,7 @@ export const NodeMenu: FC<NodeMenuProps> = ({ open, setOpen, dataTestId, classNa
         placement: 'bottom-start',
       }}
     >
-      <Menu.Trigger>
+      <Menu.Trigger asChild>
         <SettingsButton
           height="26px"
           color="gray.300"

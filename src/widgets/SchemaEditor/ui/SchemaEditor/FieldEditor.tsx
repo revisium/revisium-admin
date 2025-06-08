@@ -138,6 +138,7 @@ export const FieldEditor: React.FC<TypeEditorProps> = observer(
                 </Flex>
               )}
               <ContentEditable
+                textDecoration={store.draftDeprecated ? 'line-through' : undefined}
                 dataTestId={dataTestId}
                 autoFocus={!store.draftId}
                 initValue={store.draftId}

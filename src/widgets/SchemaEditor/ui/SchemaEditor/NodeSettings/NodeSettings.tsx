@@ -3,7 +3,10 @@ import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useState } from 'react'
 import { CloseButton } from 'src/shared/ui'
 import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
+import { ObjectNodeStore } from 'src/widgets/SchemaEditor'
+import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
 import { SchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
+import { useSchemaEditor } from 'src/widgets/SchemaEditor/model/SchemaEditorActions.ts'
 import styles from './NodeSettings.module.scss'
 
 interface NodeSettingsProps {
@@ -12,25 +15,48 @@ interface NodeSettingsProps {
 }
 
 export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId }) => {
+  const { root } = useSchemaEditor()
+
   const [booleanState, setBooleanState] = useState(Boolean(node.draftDeprecated).toString())
 
   const handleTitleChange = useCallback(
     (value: string) => {
       node.setTitle(value.replace('\n', ''))
+
+      if (node.parent instanceof ObjectNodeStore) {
+        root.replaceProperty(node.parent, node, node)
+      } else if (node.parent instanceof ArrayNodeStore) {
+        root.replaceItems(node.parent, node)
+      }
     },
-    [node],
+    [node, root],
   )
 
   const handleDescriptionChange = useCallback(
     (value: string) => {
       node.setDescription(value.replace('\n', ''))
+
+      if (node.parent instanceof ObjectNodeStore) {
+        root.replaceProperty(node.parent, node, node)
+      } else if (node.parent instanceof ArrayNodeStore) {
+        root.replaceItems(node.parent, node)
+      }
     },
-    [node],
+    [node, root],
   )
 
-  const handleBooleanChange = useCallback((value: string) => {
-    setBooleanState(value)
-  }, [])
+  const handleBooleanChange = useCallback(
+    (value: string) => {
+      setBooleanState(value)
+
+      if (node.parent instanceof ObjectNodeStore) {
+        root.replaceProperty(node.parent, node, node)
+      } else if (node.parent instanceof ArrayNodeStore) {
+        root.replaceItems(node.parent, node)
+      }
+    },
+    [node, root],
+  )
 
   const handleBooleanBlur = useCallback(() => {
     const value = booleanState.toLowerCase() === 'false' || booleanState === '0' ? false : Boolean(booleanState)

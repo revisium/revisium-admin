@@ -51,6 +51,8 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
             }}
             key={value.nodeId}
             name={`[${index}]`}
+            description={value.description}
+            deprecated={value.deprecated}
             colorName="gray.400"
             nameAndValueClassName={styles.Field}
             value={

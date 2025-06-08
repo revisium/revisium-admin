@@ -15,7 +15,7 @@ export class JsonStringValueStore {
   public baseValue: string = ''
   public value: string | null = null
 
-  constructor(private schema: JsonStringStore) {
+  constructor(private readonly schema: JsonStringStore) {
     makeAutoObservable(this)
   }
 
@@ -25,6 +25,18 @@ export class JsonStringValueStore {
 
   public get readOnly() {
     return this.schema.readOnly
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get foreignKey() {

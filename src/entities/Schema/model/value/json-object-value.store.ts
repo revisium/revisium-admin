@@ -18,7 +18,7 @@ export class JsonObjectValueStore {
 
   public value: Record<string, JsonValueStore> = {}
 
-  constructor(private schema: JsonObjectStore) {
+  constructor(private readonly schema: JsonObjectStore) {
     makeAutoObservable(this, {}, { autoBind: true })
 
     this.init()
@@ -30,6 +30,18 @@ export class JsonObjectValueStore {
 
   public get readOnly() {
     return this.schema.readOnly
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get touched(): boolean {

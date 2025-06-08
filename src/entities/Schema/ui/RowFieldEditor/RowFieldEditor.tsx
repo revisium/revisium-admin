@@ -6,11 +6,14 @@ import { PiDotOutlineFill } from 'react-icons/pi'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store.ts'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
+import { Tooltip } from 'src/shared/ui'
 
 interface RowFieldEditorProps {
   name?: string
   value?: React.ReactNode
   nameAndValueClassName?: string
+  description?: string
+  deprecated?: boolean
   colorName?: string
   onOverLabel?: () => void
   onOutLabel?: () => void
@@ -18,7 +21,18 @@ interface RowFieldEditorProps {
 }
 
 export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = observer(
-  ({ name, value, children, nameAndValueClassName, colorName, onOverLabel, onOutLabel, store }) => {
+  ({
+    name,
+    value,
+    children,
+    nameAndValueClassName,
+    colorName,
+    onOverLabel,
+    onOutLabel,
+    store,
+    description,
+    deprecated,
+  }) => {
     const options =
       store instanceof JsonArrayValueStore || store instanceof JsonObjectValueStore
         ? {
@@ -91,9 +105,25 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
           )}
           {name ? (
             <Flex flex={1}>
-              <Text color={colorName} fontWeight="300">
-                {name}:
-              </Text>
+              {description ? (
+                <Tooltip
+                  openDelay={350}
+                  closeDelay={50}
+                  showArrow
+                  content={description}
+                  positioning={{
+                    placement: 'right-end',
+                  }}
+                >
+                  <Text color={colorName} fontWeight="300" textDecoration={deprecated ? 'line-through' : undefined}>
+                    {name}
+                  </Text>
+                </Tooltip>
+              ) : (
+                <Text color={colorName} fontWeight="300" textDecoration={deprecated ? 'line-through' : undefined}>
+                  {name}
+                </Text>
+              )}
               <Flex gap="4px" flex={1}>
                 {value}
               </Flex>

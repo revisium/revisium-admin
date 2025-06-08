@@ -48,6 +48,8 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, read
             colorName="gray.400"
             key={name}
             name={name}
+            description={item.description}
+            deprecated={item.deprecated}
             nameAndValueClassName={styles.Field}
             value={
               <>

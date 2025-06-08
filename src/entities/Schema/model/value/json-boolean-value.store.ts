@@ -15,7 +15,7 @@ export class JsonBooleanValueStore {
   public baseValue: boolean | null = null
   public value: boolean | null = null
 
-  constructor(private schema: JsonBooleanStore) {
+  constructor(private readonly schema: JsonBooleanStore) {
     makeAutoObservable(this)
   }
 
@@ -25,6 +25,18 @@ export class JsonBooleanValueStore {
 
   public get readOnly() {
     return this.schema.readOnly
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get touched(): boolean {

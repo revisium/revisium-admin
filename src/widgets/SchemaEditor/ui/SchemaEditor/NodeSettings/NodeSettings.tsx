@@ -79,16 +79,6 @@ export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId 
       <Flex>
         <Flex width="100%" direction="column">
           <Flex gap="8px">
-            <Text color="gray.400">title:</Text>
-            <ContentEditable
-              dataTestId={`${dataTestId}-title`}
-              prefix='"'
-              postfix='"'
-              initValue={node.draftTitle ?? ''}
-              onChange={handleTitleChange}
-            />
-          </Flex>
-          <Flex gap="8px">
             <Text color="gray.400">description:</Text>
             <ContentEditable
               dataTestId={`${dataTestId}-description`}
@@ -96,6 +86,16 @@ export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId 
               postfix='"'
               initValue={node.draftDescription ?? ''}
               onChange={handleDescriptionChange}
+            />
+          </Flex>
+          <Flex gap="8px" display="none">
+            <Text color="gray.400">title:</Text>
+            <ContentEditable
+              dataTestId={`${dataTestId}-title`}
+              prefix='"'
+              postfix='"'
+              initValue={node.draftTitle ?? ''}
+              onChange={handleTitleChange}
             />
           </Flex>
           <Flex gap="8px">

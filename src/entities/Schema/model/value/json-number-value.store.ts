@@ -15,7 +15,7 @@ export class JsonNumberValueStore {
   public baseValue: number | null = null
   public value: number | null = null
 
-  constructor(private schema: JsonNumberStore) {
+  constructor(private readonly schema: JsonNumberStore) {
     makeAutoObservable(this)
   }
 
@@ -25,6 +25,18 @@ export class JsonNumberValueStore {
 
   public get readOnly() {
     return this.schema.readOnly
+  }
+
+  public get title() {
+    return this.schema.title
+  }
+
+  public get description() {
+    return this.schema.description
+  }
+
+  public get deprecated() {
+    return this.schema.deprecated
   }
 
   public get touched(): boolean {

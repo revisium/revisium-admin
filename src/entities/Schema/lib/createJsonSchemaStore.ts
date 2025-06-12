@@ -3,7 +3,6 @@ import {
   JsonSchema,
   JsonSchemaPrimitives,
   JsonSchemaTypeName,
-  JsonSchemaWithoutRef,
   schemaRefsMapper,
 } from 'src/entities/Schema'
 import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
@@ -22,6 +21,7 @@ export const createJsonSchemaStore = (schema: JsonSchema): JsonSchemaStore => {
     }
 
     const store = createJsonSchemaStore(refSchema)
+    saveSharedFields(store, schema)
     store.$ref = schema.$ref
     return store
   } else if (schema.type === JsonSchemaTypeName.Object) {
@@ -73,7 +73,7 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
   }
 }
 
-export const saveSharedFields = (store: JsonSchemaStore, schema: JsonSchemaWithoutRef) => {
+export const saveSharedFields = (store: JsonSchemaStore, schema: JsonSchema) => {
   store.title = schema.title
   store.description = schema.description
   store.deprecated = schema.deprecated

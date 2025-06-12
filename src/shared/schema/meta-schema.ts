@@ -17,6 +17,7 @@ export const sharedFields: Schema = {
 export const refMetaSchema: Schema = {
   type: 'object',
   properties: {
+    ...sharedFields,
     $ref: {
       type: 'string',
     },

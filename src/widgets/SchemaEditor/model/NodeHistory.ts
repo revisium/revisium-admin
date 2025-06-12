@@ -70,7 +70,7 @@ export class NodeHistory {
   }
 
   public replace(previousProperty: SchemaNode, nextProperty: SchemaNode): void {
-    if (this.checkIfStringDuplicationInReplace(nextProperty)) {
+    if (this.checkIfStringOrRefDuplicationInReplace(nextProperty)) {
       return
     }
 
@@ -178,8 +178,8 @@ export class NodeHistory {
     })
   }
 
-  private checkIfStringDuplicationInReplace(node: SchemaNode): boolean {
-    if (node.type === NodeStoreType.String) {
+  private checkIfStringOrRefDuplicationInReplace(node: SchemaNode): boolean {
+    if (node.type === NodeStoreType.String || node.$ref) {
       const foundDuplication = this.stack.find((item) => item.node === node)
 
       if (foundDuplication) {

@@ -4,6 +4,7 @@ import { IViewModel } from 'mobx-utils/lib/create-view-model'
 import { nanoid } from 'nanoid'
 import { JsonBooleanSchema, JsonRefSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { getLabelByRef } from 'src/entities/Schema/config/consts.ts'
+import { addSharedFieldsFromState } from 'src/widgets/SchemaEditor/lib/addSharedFieldsFromState.ts'
 import { NodeStoreType, ParentSchemaNode } from 'src/widgets/SchemaEditor/model/NodeStore.ts'
 
 type BooleanNodeStoreState = {
@@ -102,9 +103,12 @@ export class BooleanNodeStore {
 
   public getSchema(): JsonBooleanSchema | JsonRefSchema {
     if (this.$ref) {
-      return {
-        $ref: this.$ref,
-      }
+      return addSharedFieldsFromState(
+        {
+          $ref: this.$ref,
+        },
+        this.state,
+      )
     }
 
     const schema: JsonBooleanSchema = {
@@ -112,19 +116,7 @@ export class BooleanNodeStore {
       default: false,
     }
 
-    if (this.state.title) {
-      schema.title = this.state.title
-    }
-
-    if (this.state.description) {
-      schema.description = this.state.description
-    }
-
-    if (this.state.deprecated) {
-      schema.deprecated = this.state.deprecated
-    }
-
-    return schema
+    return addSharedFieldsFromState(schema, this.state)
   }
 
   public get isValid(): boolean {

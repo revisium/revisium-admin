@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { ItemProps } from 'react-virtuoso'
 import { DotsThreeButton } from 'src/shared/ui'
 import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
+import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
@@ -40,7 +41,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
       data-testid={`row-${row.id}`}
       as="tr"
     >
-      <Flex width="150px" as="td">
+      <Flex minWidth="150px" width="150px" as="td">
         <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
           <Text
             maxWidth="140px"
@@ -57,13 +58,12 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
         {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" minHeight="40px" width="100%" minWidth={0} as="td">
-        <Text ml="16px" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" color="gray.400" fontWeight="300">
-          {row.data}
-        </Text>
-      </Flex>
+      {row.cells.map((cell) => (
+        <Cell store={cell} key={cell?.nodeId} />
+      ))}
+
       {store.isEdit && (
-        <Flex className={!menuOpen ? styles.Actions : undefined} as="td">
+        <Flex className={!menuOpen ? styles.Actions : undefined} as="td" width="100%" justifyContent="flex-end">
           <Menu.Root
             positioning={{
               placement: 'bottom-start',

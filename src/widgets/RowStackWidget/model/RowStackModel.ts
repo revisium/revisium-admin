@@ -5,7 +5,7 @@ import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaS
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
+import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { container } from 'src/shared/lib'
@@ -157,7 +157,7 @@ export class RowStackModel {
     const schemaStore = createJsonSchemaStore(this.schema)
     const store = new RowDataCardStore(
       schemaStore,
-      createJsonValueStore(schemaStore),
+      createEmptyJsonValueStore(schemaStore),
       rowId,
       null,
       this.projectPageModel,
@@ -170,7 +170,7 @@ export class RowStackModel {
         const refSchema = schemaRefsMapper[item.$ref]
 
         if (refSchema) {
-          const valueStore = createJsonValueStore(createJsonSchemaStore(refSchema))
+          const valueStore = createEmptyJsonValueStore(createJsonSchemaStore(refSchema))
           item.updateBaseValue(valueStore.getPlainValue())
         }
       }
@@ -190,7 +190,7 @@ export class RowStackModel {
     const store =
       this.state.type === RowStackModelStateType.ConnectingForeignKeyRow
         ? this.state.store
-        : new RowDataCardStore(schemaStore, createJsonValueStore(schemaStore), rowId)
+        : new RowDataCardStore(schemaStore, createEmptyJsonValueStore(schemaStore), rowId)
 
     this.state = {
       type: RowStackModelStateType.CreatingRow,

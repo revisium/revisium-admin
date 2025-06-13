@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
+import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonObject, JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 
@@ -17,9 +17,27 @@ export class JsonObjectValueStore {
   public readonly type = JsonSchemaTypeName.Object
 
   public value: Record<string, JsonValueStore> = {}
+  public index: number
 
-  constructor(private readonly schema: JsonObjectStore) {
+  constructor(
+    private readonly schema: JsonObjectStore,
+    public readonly rowId: string = '',
+    value: Record<string, JsonValueStore> | null = null,
+  ) {
+    this.index = this.schema.registerValue(this)
+
     makeAutoObservable(this, {}, { autoBind: true })
+
+    if (value) {
+      this.value = value
+    } else {
+      Object.entries(this.schema.properties).forEach(([id, schema]) => {
+        const item = createEmptyJsonValueStore(schema)
+        item.parent = this
+        item.id = id
+        this.value[id] = item
+      })
+    }
 
     this.init()
   }
@@ -76,13 +94,6 @@ export class JsonObjectValueStore {
   }
 
   private init(): void {
-    Object.entries(this.schema.properties).forEach(([id, schema]) => {
-      const item = createJsonValueStore(schema)
-      item.parent = this
-      item.id = id
-      this.value[id] = item
-    })
-
     if (this.$ref) {
       this.isCollapsed = true
     }

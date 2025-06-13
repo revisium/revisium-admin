@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonArrayStore } from 'src/entities/Schema/model/json-array.store.ts'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
+import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { JsonArray, JsonValue } from 'src/entities/Schema/types/json.types.ts'
 
@@ -17,9 +17,18 @@ export class JsonArrayValueStore {
   public readonly type = JsonSchemaTypeName.Array
 
   public baseValue: JsonValueStore[] = []
-  public value: JsonValueStore[] = []
 
-  constructor(private readonly schema: JsonArrayStore) {
+  public index: number
+
+  constructor(
+    private readonly schema: JsonArrayStore,
+    public readonly rowId: string = '',
+    public value: JsonValueStore[] = [],
+  ) {
+    this.index = this.schema.registerValue(this)
+
+    this.baseValue = this.value
+
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -68,7 +77,7 @@ export class JsonArrayValueStore {
       this.value = this.baseValue.slice()
     }
 
-    const item = createJsonValueStore(this.schema.items)
+    const item = createEmptyJsonValueStore(this.schema.items)
     this.value.push(item)
     item.parent = this
     item.id = (this.value.length - 1).toString()
@@ -96,7 +105,7 @@ export class JsonArrayValueStore {
       let item = this.baseValue[index]
 
       if (!item) {
-        item = createJsonValueStore(this.schema.items)
+        item = createEmptyJsonValueStore(this.schema.items)
         this.baseValue.push(item)
       }
 
@@ -121,7 +130,7 @@ export class JsonArrayValueStore {
       let item = this.value[index]
 
       if (!item) {
-        item = createJsonValueStore(this.schema.items)
+        item = createEmptyJsonValueStore(this.schema.items)
         this.value.push(item)
       }
 

@@ -13,9 +13,18 @@ export class JsonBooleanValueStore {
   public readonly type = JsonSchemaTypeName.Boolean
 
   public baseValue: boolean | null = null
-  public value: boolean | null = null
 
-  constructor(private readonly schema: JsonBooleanStore) {
+  public readonly index: number
+
+  constructor(
+    private readonly schema: JsonBooleanStore,
+    public readonly rowId: string = '',
+    public value: boolean | null = null,
+  ) {
+    this.index = this.schema.registerValue(this)
+
+    this.baseValue = this.value ?? null
+
     makeAutoObservable(this)
   }
 

@@ -4,7 +4,7 @@ import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonVa
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
+import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
@@ -93,7 +93,7 @@ export class RowDataCardStore {
         }
       })
 
-      const nextData = createJsonValueStore(this.schemaStore)
+      const nextData = createEmptyJsonValueStore(this.schemaStore)
       nextData.updateBaseValue(this.originRow.data)
 
       traverseValue(nextData, (value) => {

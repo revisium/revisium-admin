@@ -3,7 +3,7 @@ import { JsonObjectSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
 import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
+import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
@@ -143,7 +143,7 @@ export class RowStackWidgetModel {
     const schemaStore = isValidSchema(schema) ? createJsonSchemaStore(schema) : new JsonObjectStore()
     return new RowDataCardStore(
       schemaStore,
-      createJsonValueStore(schemaStore),
+      createEmptyJsonValueStore(schemaStore),
       this.projectPageModel.rowOrThrow.id,
       this.projectPageModel.rowOrThrow,
       this.projectPageModel,

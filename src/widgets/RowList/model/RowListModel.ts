@@ -1,4 +1,9 @@
 import { makeAutoObservable } from 'mobx'
+import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
+import { traverseStoreWithSkipping } from 'src/entities/Schema/lib/traverseStore.ts'
+import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
+import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { DeleteRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteRowCommand.ts'
@@ -12,7 +17,7 @@ export type RowListItemType = {
   title: string
   data: string
   link: string
-  columns: JsonValueStore[]
+  cells: JsonValueStore[]
 }
 
 export class RowListModel {
@@ -37,15 +42,40 @@ export class RowListModel {
   }
 
   public get items(): RowListItemType[] {
-    return this.table.rowsConnection.edges.map(({ node }) => ({
-      id: node.id,
-      versionId: node.versionId,
-      readonly: node.readonly,
-      title: node.id,
-      data: JSON.stringify(node.data, null, 2).replaceAll('\\n', '').substring(0, 10),
-      link: '',
-      columns: [],
-    }))
+    const schemaStore = createJsonSchemaStore(this.table.schema as JsonSchema)
+
+    const list: JsonSchemaStore[] = []
+
+    traverseStoreWithSkipping(schemaStore, (node) => {
+      if (
+        node.type === JsonSchemaTypeName.String ||
+        node.type === JsonSchemaTypeName.Number ||
+        node.type === JsonSchemaTypeName.Boolean
+      ) {
+        list.push(node)
+      } else if (node.type === JsonSchemaTypeName.Object) {
+        if (node.$ref) {
+          list.push(node)
+          return true
+        }
+      } else {
+        return true
+      }
+    })
+
+    return this.table.rowsConnection.edges.map(({ node }) => {
+      createJsonValueStore(schemaStore, node.id, node.data)
+
+      return {
+        id: node.id,
+        versionId: node.versionId,
+        readonly: node.readonly,
+        title: node.id,
+        data: JSON.stringify(node.data, null, 2).replaceAll('\\n', '').substring(0, 10),
+        link: '',
+        cells: list.map((item) => item.getValue(node.id)).filter((value): value is JsonValueStore => Boolean(value)),
+      }
+    })
   }
 
   public setTable(table: ITableModel) {

@@ -22,10 +22,10 @@ export const traverseStoreWithSkipping = (
   if (!needToSkip) {
     if (store.type === JsonSchemaTypeName.Object) {
       Object.values(store.properties).forEach((item) => {
-        traverseStore(item, callback)
+        traverseStoreWithSkipping(item, callback)
       })
     } else if (store.type === JsonSchemaTypeName.Array) {
-      traverseStore(store.items, callback)
+      traverseStoreWithSkipping(store.items, callback)
     }
   }
 }

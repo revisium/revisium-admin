@@ -59,7 +59,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
       </Flex>
 
       {row.cells.map((cell) => (
-        <Cell store={cell} key={cell?.nodeId} />
+        <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} />
       ))}
 
       {store.isEdit && (

@@ -2,17 +2,19 @@ import { Box, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
 import { PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
+import { ItemProps } from 'react-virtuoso'
 import { DotsThreeButton } from 'src/shared/ui'
 import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
+  trProps: ItemProps<unknown>
   row: RowListItemType
   store: RowListModel
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) => {
+export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleCopyRow = useCallback(() => {
@@ -25,6 +27,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) 
 
   return (
     <Flex
+      {...trProps}
       _hover={{ backgroundColor: 'gray.50' }}
       backgroundColor={menuOpen ? 'gray.50' : undefined}
       alignItems="center"
@@ -35,8 +38,9 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) 
       minHeight="2.5rem"
       width="100%"
       data-testid={`row-${row.id}`}
+      as="tr"
     >
-      <Flex width="150px">
+      <Flex width="150px" as="td">
         <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
           <Text
             maxWidth="140px"
@@ -53,49 +57,49 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) 
         {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" minHeight="40px" width="100%" minWidth={0}>
+      <Flex alignItems="center" justifyContent="space-between" minHeight="40px" width="100%" minWidth={0} as="td">
         <Text ml="16px" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" color="gray.400" fontWeight="300">
           {row.data}
         </Text>
-        {store.isEdit && (
-          <Flex className={!menuOpen ? styles.Actions : undefined}>
-            <Menu.Root
-              positioning={{
-                placement: 'bottom-start',
-              }}
-              open={menuOpen}
-              onOpenChange={(e) => {
-                setOpen(e.open)
-              }}
-            >
-              <Menu.Trigger>
-                <Box paddingRight="2px">
-                  <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
-                </Box>
-              </Menu.Trigger>
-              <Portal>
-                <Menu.Positioner>
-                  <Menu.Content>
-                    <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
-                      <PiCopy />
-                      <Box flex="1">Duplicate</Box>
-                    </Menu.Item>
-                    <Menu.Item
-                      color="gray.600"
-                      value="delete"
-                      data-restid={`remove-row-${row.id}`}
-                      onClick={handleDeleteRow}
-                    >
-                      <PiTrash />
-                      <Box flex={1}>Delete</Box>
-                    </Menu.Item>
-                  </Menu.Content>
-                </Menu.Positioner>
-              </Portal>
-            </Menu.Root>
-          </Flex>
-        )}
       </Flex>
+      {store.isEdit && (
+        <Flex className={!menuOpen ? styles.Actions : undefined} as="td">
+          <Menu.Root
+            positioning={{
+              placement: 'bottom-start',
+            }}
+            open={menuOpen}
+            onOpenChange={(e) => {
+              setOpen(e.open)
+            }}
+          >
+            <Menu.Trigger>
+              <Box paddingRight="2px">
+                <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
+              </Box>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>
+                  <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
+                    <PiCopy />
+                    <Box flex="1">Duplicate</Box>
+                  </Menu.Item>
+                  <Menu.Item
+                    color="gray.600"
+                    value="delete"
+                    data-restid={`remove-row-${row.id}`}
+                    onClick={handleDeleteRow}
+                  >
+                    <PiTrash />
+                    <Box flex={1}>Delete</Box>
+                  </Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
+        </Flex>
+      )}
     </Flex>
   )
 }

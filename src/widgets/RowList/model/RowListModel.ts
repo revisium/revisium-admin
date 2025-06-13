@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { DeleteRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteRowCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
@@ -11,6 +12,7 @@ export type RowListItemType = {
   title: string
   data: string
   link: string
+  columns: JsonValueStore[]
 }
 
 export class RowListModel {
@@ -40,8 +42,9 @@ export class RowListModel {
       versionId: node.versionId,
       readonly: node.readonly,
       title: node.id,
-      data: JSON.stringify(node.data, null, 2).replaceAll('\\n', ''),
+      data: JSON.stringify(node.data, null, 2).replaceAll('\\n', '').substring(0, 10),
       link: '',
+      columns: [],
     }))
   }
 

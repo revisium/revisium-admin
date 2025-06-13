@@ -4,6 +4,7 @@ import { Virtuoso } from 'react-virtuoso'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { useRowListModel } from 'src/widgets/RowList/hooks/useRowListModel.ts'
 import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem.tsx'
+import { SelectRowListItem } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem.tsx'
 
 interface RowListProps {
   table: ITableModel
@@ -13,6 +14,8 @@ interface RowListProps {
 
 export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCopy }) => {
   const store = useRowListModel(table)
+
+  const isSelectMode = Boolean(onSelect)
 
   return (
     <Virtuoso
@@ -28,7 +31,11 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
           return undefined
         }
 
-        return <RowListItem row={row} store={store} onSelect={onSelect} onCopy={onCopy} />
+        return isSelectMode ? (
+          <SelectRowListItem row={row} store={store} onSelect={onSelect} />
+        ) : (
+          <RowListItem row={row} store={store} onCopy={onCopy} />
+        )
       }}
     />
   )

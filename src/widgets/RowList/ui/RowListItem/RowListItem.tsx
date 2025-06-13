@@ -9,16 +9,11 @@ import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 interface RowListItemProps {
   row: RowListItemType
   store: RowListModel
-  onSelect?: (rowId: string) => void
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, onSelect }) => {
+export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
-
-  const handleClickOnRowId = useCallback(() => {
-    onSelect?.(row.id)
-  }, [onSelect, row.id])
 
   const handleCopyRow = useCallback(() => {
     onCopy?.(row.versionId)
@@ -27,8 +22,6 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
   const handleDeleteRow = useCallback(async () => {
     await store.deleteRow(row.id)
   }, [row.id, store])
-
-  const isSelectMode = Boolean(onSelect)
 
   return (
     <Flex
@@ -44,33 +37,18 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
       data-testid={`row-${row.id}`}
     >
       <Flex width="150px">
-        {onSelect ? (
+        <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
           <Text
             maxWidth="140px"
+            color="gray.400"
             textDecoration="underline"
-            cursor="pointer"
-            onClick={handleClickOnRowId}
-            data-testid={`row-${row.id}-select`}
             textOverflow="ellipsis"
             whiteSpace="nowrap"
             overflow="hidden"
           >
             {row.id}
           </Text>
-        ) : (
-          <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-            <Text
-              maxWidth="140px"
-              color="gray.400"
-              textDecoration="underline"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              overflow="hidden"
-            >
-              {row.id}
-            </Text>
-          </Link>
-        )}
+        </Link>
 
         {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
       </Flex>
@@ -79,7 +57,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
         <Text ml="16px" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" color="gray.400" fontWeight="300">
           {row.data}
         </Text>
-        {!isSelectMode && store.isEdit && (
+        {store.isEdit && (
           <Flex className={!menuOpen ? styles.Actions : undefined}>
             <Menu.Root
               positioning={{

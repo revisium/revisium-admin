@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx'
+import { makeAutoObservable, observable, toJS } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonArraySchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
@@ -43,7 +43,7 @@ export class JsonArrayStore implements JsonArraySchema {
     let values = this.valuesMap.get(rowId)
 
     if (!values) {
-      values = []
+      values = observable([])
       this.valuesMap.set(rowId, values)
     }
 

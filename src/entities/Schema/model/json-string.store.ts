@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, observable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonSchemaTypeName, JsonStringSchema } from 'src/entities/Schema'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
@@ -52,7 +52,7 @@ export class JsonStringStore implements JsonStringSchema {
     let values = this.valuesMap.get(rowId)
 
     if (!values) {
-      values = []
+      values = observable([])
       this.valuesMap.set(rowId, values)
     }
 

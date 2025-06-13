@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, observable } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonBooleanSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-boolean-value.store.ts'
@@ -40,7 +40,7 @@ export class JsonBooleanStore implements JsonBooleanSchema {
     let values = this.valuesMap.get(rowId)
 
     if (!values) {
-      values = []
+      values = observable([])
       this.valuesMap.set(rowId, values)
     }
 

@@ -51,9 +51,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
           closeDelay={50}
           positioning={{ placement: 'right' }}
           content={
-            readonly
-              ? 'The file has been not upload in this revision'
-              : 'To upload this file, you must first save this row.'
+            readonly ? 'The file was not upload in this revision' : 'To upload this file, you must first save this row.'
           }
         >
           <Flex width="24px" height="24px" alignItems="center" justifyContent="center" color="gray.400">

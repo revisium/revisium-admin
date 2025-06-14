@@ -29,7 +29,8 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
   return (
     <Flex
       {...trProps}
-      _hover={{ backgroundColor: 'gray.50' }}
+      _hover={{ backgroundColor: 'gray.50', borderTopWidth: '1px', borderBottomWidth: '1px' }}
+      borderColor="gray.100"
       backgroundColor={menuOpen ? 'gray.50' : undefined}
       alignItems="center"
       className={styles.Row}
@@ -41,7 +42,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
       data-testid={`row-${row.id}`}
       as="tr"
     >
-      <Flex minWidth="150px" width="150px" as="td">
+      <Flex minWidth="150px" width="150px" as="td" minHeight="40px" alignItems="center">
         <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
           <Text
             maxWidth="140px"

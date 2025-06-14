@@ -7,7 +7,16 @@ interface CellProps {
 
 export const BaseCell: FC<CellProps & PropsWithChildren> = ({ width, children }) => {
   return (
-    <Flex alignItems="center" minHeight="40px" minWidth={width} width={width} as="td">
+    <Flex
+      alignItems="center"
+      minHeight="40px"
+      minWidth={width}
+      width={width}
+      as="td"
+      borderRightWidth="1px"
+      borderColor="gray.100"
+      borderBottomWidth="1px"
+    >
       <Text
         ml="16px"
         whiteSpace="nowrap"

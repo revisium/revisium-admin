@@ -12,10 +12,19 @@ export class JsonStringValueStore {
 
   public readonly type = JsonSchemaTypeName.String
 
-  public baseValue: string = ''
-  public value: string | null = null
+  public baseValue: string
 
-  constructor(private readonly schema: JsonStringStore) {
+  public readonly index: number
+
+  constructor(
+    public readonly schema: JsonStringStore,
+    public readonly rowId: string = '',
+    public value: string | null = null,
+  ) {
+    this.index = this.schema.registerValue(this)
+
+    this.baseValue = this.value ?? ''
+
     makeAutoObservable(this)
   }
 

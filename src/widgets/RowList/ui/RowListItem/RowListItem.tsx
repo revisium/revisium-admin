@@ -4,21 +4,17 @@ import { PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { DotsThreeButton } from 'src/shared/ui'
 import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
+import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
-interface RowListItemProps {
+interface RowListItem2Props {
   row: RowListItemType
   store: RowListModel
-  onSelect?: (rowId: string) => void
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, onSelect }) => {
+export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
-
-  const handleClickOnRowId = useCallback(() => {
-    onSelect?.(row.id)
-  }, [onSelect, row.id])
 
   const handleCopyRow = useCallback(() => {
     onCopy?.(row.versionId)
@@ -28,59 +24,52 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
     await store.deleteRow(row.id)
   }, [row.id, store])
 
-  const isSelectMode = Boolean(onSelect)
+  const lastCellIndex = row.cells.length - 1
 
   return (
-    <Flex
-      _hover={{ backgroundColor: 'gray.50' }}
-      backgroundColor={menuOpen ? 'gray.50' : undefined}
-      alignItems="center"
+    <Box
+      height="40px"
+      as="tr"
+      _hover={{
+        '& td': {
+          bg: 'gray.50',
+        },
+      }}
       className={styles.Row}
-      key={row.versionId}
-      gap="4px"
-      paddingLeft="1rem"
-      minHeight="2.5rem"
-      width="100%"
       data-testid={`row-${row.id}`}
     >
-      <Flex width="150px">
-        {onSelect ? (
+      <Box as="td" position="sticky" left={0} backgroundColor="white" width="200px" maxWidth="200px" pl="8px" pr="24px">
+        <Flex alignItems="center">
           <Text
-            maxWidth="140px"
+            color="gray.400"
             textDecoration="underline"
-            cursor="pointer"
-            onClick={handleClickOnRowId}
-            data-testid={`row-${row.id}-select`}
             textOverflow="ellipsis"
             whiteSpace="nowrap"
             overflow="hidden"
           >
-            {row.id}
-          </Text>
-        ) : (
-          <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-            <Text
-              maxWidth="140px"
-              color="gray.400"
-              textDecoration="underline"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              overflow="hidden"
-            >
+            <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
               {row.id}
-            </Text>
-          </Link>
-        )}
+            </Link>
+          </Text>
+          {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
+        </Flex>
+      </Box>
 
-        {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
-      </Flex>
+      {row.cells.map((cell, index) => (
+        <Cell store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
+      ))}
 
-      <Flex alignItems="center" justifyContent="space-between" minHeight="40px" width="100%" minWidth={0}>
-        <Text ml="16px" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" color="gray.400" fontWeight="300">
-          {row.data}
-        </Text>
-        {!isSelectMode && store.isEdit && (
-          <Flex className={!menuOpen ? styles.Actions : undefined}>
+      <Box as="td" width="100%"></Box>
+      {store.isEdit && (
+        <Box
+          className={!menuOpen ? styles.Actions : undefined}
+          as="td"
+          position="sticky"
+          right={0}
+          backgroundColor="white"
+          width="40px"
+        >
+          <Flex justifyContent="flex-end">
             <Menu.Root
               positioning={{
                 placement: 'bottom-start',
@@ -116,8 +105,8 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy, on
               </Portal>
             </Menu.Root>
           </Flex>
-        )}
-      </Flex>
-    </Flex>
+        </Box>
+      )}
+    </Box>
   )
 }

@@ -1,10 +1,13 @@
-import { makeAutoObservable, toJS } from 'mobx'
+import { makeAutoObservable, observable, toJS } from 'mobx'
 import { nanoid } from 'nanoid'
 import { JsonObjectSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
+import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store.ts'
 
 export class JsonObjectStore implements JsonObjectSchema {
   public readonly type = JsonSchemaTypeName.Object
+
+  public name: string = ''
 
   public $ref = ''
 
@@ -17,8 +20,19 @@ export class JsonObjectStore implements JsonObjectSchema {
   public readonly required: string[] = []
   public readonly properties: Record<string, JsonSchemaStore> = {}
 
+  private readonly valuesMap: Map<string, JsonObjectValueStore[]> = new Map<string, JsonObjectValueStore[]>()
+
   constructor(public readonly nodeId: string = nanoid()) {
     makeAutoObservable(this)
+  }
+
+  public registerValue(value: JsonObjectValueStore): number {
+    const length = this.getOrCreateValues(value.rowId).push(value)
+    return length - 1
+  }
+
+  public getValue(rowId: string, index: number = 0): JsonObjectValueStore | undefined {
+    return this.getOrCreateValues(rowId)[index]
   }
 
   public get empty(): boolean {
@@ -30,8 +44,14 @@ export class JsonObjectStore implements JsonObjectSchema {
       throw new Error('this name already exists')
     }
 
+    store.name = name
+
     this.required.push(name)
     return (this.properties[name] = store)
+  }
+
+  public getProperty(name: string): JsonSchemaStore | undefined {
+    return this.properties[name]
   }
 
   public getPlainSchema(): JsonObjectSchema {
@@ -44,5 +64,16 @@ export class JsonObjectStore implements JsonObjectSchema {
         return result
       }, {}),
     })
+  }
+
+  private getOrCreateValues(rowId: string): JsonObjectValueStore[] {
+    let values = this.valuesMap.get(rowId)
+
+    if (!values) {
+      values = observable([])
+      this.valuesMap.set(rowId, values)
+    }
+
+    return values
   }
 }

@@ -1,4 +1,4 @@
-import { Image, HoverCard } from '@chakra-ui/react'
+import { Image, HoverCard, Portal } from '@chakra-ui/react'
 import { FC } from 'react'
 import { FileIcon } from 'src/entities/Schema/ui/FilePluginActions/file/FileIcon.tsx'
 
@@ -17,14 +17,16 @@ export const FileHoverCard: FC<FileHoverCardProps> = ({ url, dataTestId, availab
         <HoverCard.Trigger>
           <FileIcon dataTestId={dataTestId} url={url} />
         </HoverCard.Trigger>
-        <HoverCard.Positioner>
-          <HoverCard.Content>
-            <HoverCard.Arrow>
-              <HoverCard.ArrowTip />
-            </HoverCard.Arrow>
-            <Image aspectRatio={width / height} width="400px" src={url} />
-          </HoverCard.Content>
-        </HoverCard.Positioner>
+        <Portal>
+          <HoverCard.Positioner>
+            <HoverCard.Content>
+              <HoverCard.Arrow>
+                <HoverCard.ArrowTip />
+              </HoverCard.Arrow>
+              <Image aspectRatio={width / height} width="400px" src={url} />
+            </HoverCard.Content>
+          </HoverCard.Positioner>
+        </Portal>
       </HoverCard.Root>
     )
   }

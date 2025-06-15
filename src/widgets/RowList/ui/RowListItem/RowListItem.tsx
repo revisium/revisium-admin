@@ -38,7 +38,17 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
       className={styles.Row}
       data-testid={`row-${row.id}`}
     >
-      <Box as="td" position="sticky" left={0} backgroundColor="white" width="200px" maxWidth="200px" pl="8px" pr="24px">
+      <Box
+        as="td"
+        position="sticky"
+        left={0}
+        zIndex={1}
+        backgroundColor="white"
+        width="200px"
+        maxWidth="200px"
+        pl="8px"
+        pr="24px"
+      >
         <Flex alignItems="center">
           <Text
             color="gray.400"
@@ -66,6 +76,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
           as="td"
           position="sticky"
           right={0}
+          zIndex={1}
           backgroundColor="white"
           width="40px"
         >

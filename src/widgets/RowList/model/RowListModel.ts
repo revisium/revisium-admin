@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
-import { traverseStoreWithSkipping } from 'src/entities/Schema/lib/traverseStore.ts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
@@ -10,6 +9,7 @@ import { DeleteRowCommand } from 'src/shared/model/BackendStore/handlers/mutatio
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema.ts'
+import { priorityColumnTraverseStore } from 'src/widgets/RowList/lib/priorityColumnTraverseStore.ts'
 
 export type RowListItemType = {
   id: string
@@ -47,7 +47,7 @@ export class RowListModel {
 
     const list: JsonSchemaStore[] = []
 
-    traverseStoreWithSkipping(schemaStore, (node) => {
+    priorityColumnTraverseStore(schemaStore, (node) => {
       if (
         node.type === JsonSchemaTypeName.String ||
         node.type === JsonSchemaTypeName.Number ||

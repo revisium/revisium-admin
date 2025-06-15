@@ -102,7 +102,7 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
                 <Box as="th" backgroundColor="white" width="100%">
                   <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
                 </Box>
-                <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={0} width="40px">
+                <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
                   <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
                 </Box>
               </Box>

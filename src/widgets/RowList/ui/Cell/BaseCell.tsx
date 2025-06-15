@@ -1,15 +1,27 @@
 import { Box, Text } from '@chakra-ui/react'
 import { FC, PropsWithChildren } from 'react'
 
-export const BaseCell: FC<PropsWithChildren> = ({ children }) => {
+interface BaseCellProps extends PropsWithChildren {
+  width: string
+  isLastCell: boolean
+}
+
+export const BaseCell: FC<BaseCellProps> = ({ width, isLastCell, children }) => {
   return (
-    <Box alignItems="center" minHeight="40px" as="td" borderRightWidth="1px" borderColor="gray.100">
+    <Box
+      minHeight="40px"
+      as="td"
+      {...(isLastCell ? {} : { borderRightWidth: '1px', borderColor: 'gray.100' })}
+      width={width}
+      maxWidth={width}
+      pl="16px"
+      pr="16px"
+    >
       <Text
-        ml="16px"
         whiteSpace="nowrap"
         textOverflow="ellipsis"
         overflow="hidden"
-        color="gray.400"
+        color="black"
         _hover={{ color: 'black' }}
         fontWeight="300"
       >

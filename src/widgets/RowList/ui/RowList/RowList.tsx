@@ -4,8 +4,8 @@ import React from 'react'
 import { TableVirtuoso } from 'react-virtuoso'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { useRowListModel } from 'src/widgets/RowList/hooks/useRowListModel.ts'
-import { RowListItem2 } from 'src/widgets/RowList/ui/RowListItem/RowListItem2.tsx'
-import { SelectRowListItem2 } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem2.tsx'
+import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem.tsx'
+import { SelectRowListItem } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem.tsx'
 
 interface RowListProps {
   table: ITableModel
@@ -18,7 +18,7 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
 
   const isSelectMode = Boolean(onSelect)
 
-  const { columns, data } = store.columns
+  const { columns, data, showHeader } = store.columns
 
   return (
     <TableVirtuoso
@@ -48,38 +48,61 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
           const row = data[index]
 
           return isSelectMode ? (
-            <SelectRowListItem2 row={row} store={store} onSelect={onSelect} />
+            <SelectRowListItem row={row} store={store} onSelect={onSelect} />
           ) : (
-            <RowListItem2 row={row} store={store} onCopy={onCopy} />
+            <RowListItem row={row} store={store} onCopy={onCopy} />
           )
         },
       }}
-      fixedHeaderContent={() => (
-        <Box as="tr" height="40px">
-          <Box as="th" backgroundColor="white" position="sticky" left={0} zIndex={1} width="100px" maxWidth="100px">
-            <Box height="30px" borderBottomWidth="1px" borderColor="gray.100"></Box>
-          </Box>
-          {columns.map((column) => (
-            <Box
-              as="th"
-              key={column.id}
-              width={`${column.width}px`}
-              maxWidth={`${column.width}px`}
-              minWidth={`${column.width}px`}
-              backgroundColor="white"
-            >
-              <Text height="30px" borderBottomWidth="1px" borderColor="gray.100" color="gray.400">
-                {column.title}
-              </Text>
-            </Box>
-          ))}
-          {!isSelectMode && (
-            <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={0} width="100%">
-              <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
-            </Box>
-          )}
-        </Box>
-      )}
+      fixedHeaderContent={
+        showHeader
+          ? () => (
+              <Box as="tr" height="40px">
+                <Box
+                  as="th"
+                  backgroundColor="white"
+                  position="sticky"
+                  left={0}
+                  zIndex={1}
+                  width="140px"
+                  maxWidth="140px"
+                  minWidth="140px"
+                >
+                  <Box height="30px" borderBottomWidth="1px" borderColor="gray.100"></Box>
+                </Box>
+                {columns.map((column) => (
+                  <Box
+                    as="th"
+                    key={column.id}
+                    width={`${column.width}px`}
+                    maxWidth={`${column.width}px`}
+                    minWidth={`${column.width}px`}
+                    backgroundColor="white"
+                  >
+                    <Text
+                      pl="16px"
+                      pr="16px"
+                      whiteSpace="nowrap"
+                      textOverflow="ellipsis"
+                      overflow="hidden"
+                      height="30px"
+                      borderBottomWidth="1px"
+                      borderColor="gray.100"
+                      color="gray.400"
+                    >
+                      {column.title}
+                    </Text>
+                  </Box>
+                ))}
+                {!isSelectMode && (
+                  <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={0} width="100%">
+                    <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
+                  </Box>
+                )}
+              </Box>
+            )
+          : undefined
+      }
     />
   )
 })

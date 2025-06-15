@@ -13,11 +13,13 @@ interface FilePluginActionsProps {
   onUpload?: (fileId: string, file: File) => void
   dataTestId?: string
   hoverClassName?: string
+  hideInfo?: boolean
 }
 
 export const FilePluginActions: FC<FilePluginActionsProps> = ({
   hoverClassName,
   readonly,
+  hideInfo,
   store,
   onUpload,
   dataTestId,
@@ -31,7 +33,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
   const availablePreview = mimeType.startsWith('image/')
   const showViewFile = Boolean(url)
   const showUploadFile = !readonly && (status === 'ready' || status === 'uploaded')
-  const showInfo = !showViewFile && !showUploadFile
+  const showInfo = !showViewFile && !showUploadFile && !hideInfo
   const hoverLogic = showViewFile
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {

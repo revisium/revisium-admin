@@ -7,13 +7,13 @@ import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowList
 import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
-interface RowListItemProps {
+interface RowListItem2Props {
   row: RowListItemType
   store: RowListModel
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) => {
+export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleCopyRow = useCallback(() => {
@@ -24,80 +24,80 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) 
     await store.deleteRow(row.id)
   }, [row.id, store])
 
+  const lastCellIndex = row.cells.length - 1
+
   return (
-    <Flex
-      _hover={{ backgroundColor: 'gray.50', borderTopWidth: '1px', borderBottomWidth: '1px' }}
-      borderColor="gray.100"
-      backgroundColor={menuOpen ? 'gray.50' : undefined}
-      alignItems="center"
-      className={styles.Row}
-      key={row.versionId}
-      gap="4px"
-      paddingLeft="1rem"
-      minHeight="2.5rem"
-      width="100%"
-      data-testid={`row-${row.id}`}
+    <Box
+      height="40px"
       as="tr"
+      _hover={{
+        '& td': {
+          bg: 'gray.50',
+        },
+      }}
+      className={styles.Row}
+      data-testid={`row-${row.id}`}
     >
-      <Flex minWidth="150px" width="150px" as="td" minHeight="40px" alignItems="center">
-        <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-          <Text
-            maxWidth="140px"
-            color="gray.400"
-            textDecoration="underline"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            overflow="hidden"
-          >
+      <Box as="td" position="sticky" left={0} backgroundColor="white" width="140px" maxWidth="140px">
+        <Text color="gray.400" textDecoration="underline" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+          <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
             {row.id}
-          </Text>
-        </Link>
+          </Link>
+        </Text>
 
         {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
-      </Flex>
+      </Box>
 
-      {row.cells.map((cell) => (
-        <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} />
+      {row.cells.map((cell, index) => (
+        <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
       ))}
 
       {store.isEdit && (
-        <Flex className={!menuOpen ? styles.Actions : undefined} as="td" width="100%" justifyContent="flex-end">
-          <Menu.Root
-            positioning={{
-              placement: 'bottom-start',
-            }}
-            open={menuOpen}
-            onOpenChange={(e) => {
-              setOpen(e.open)
-            }}
-          >
-            <Menu.Trigger>
-              <Box paddingRight="2px">
-                <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
-              </Box>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
-                    <PiCopy />
-                    <Box flex="1">Duplicate</Box>
-                  </Menu.Item>
-                  <Menu.Item
-                    color="gray.600"
-                    value="delete"
-                    data-restid={`remove-row-${row.id}`}
-                    onClick={handleDeleteRow}
-                  >
-                    <PiTrash />
-                    <Box flex={1}>Delete</Box>
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
-        </Flex>
+        <Box
+          className={!menuOpen ? styles.Actions : undefined}
+          as="td"
+          position="sticky"
+          right={0}
+          backgroundColor="white"
+        >
+          <Flex justifyContent="flex-end">
+            <Menu.Root
+              positioning={{
+                placement: 'bottom-start',
+              }}
+              open={menuOpen}
+              onOpenChange={(e) => {
+                setOpen(e.open)
+              }}
+            >
+              <Menu.Trigger>
+                <Box paddingRight="2px">
+                  <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
+                </Box>
+              </Menu.Trigger>
+              <Portal>
+                <Menu.Positioner>
+                  <Menu.Content>
+                    <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
+                      <PiCopy />
+                      <Box flex="1">Duplicate</Box>
+                    </Menu.Item>
+                    <Menu.Item
+                      color="gray.600"
+                      value="delete"
+                      data-restid={`remove-row-${row.id}`}
+                      onClick={handleDeleteRow}
+                    >
+                      <PiTrash />
+                      <Box flex={1}>Delete</Box>
+                    </Menu.Item>
+                  </Menu.Content>
+                </Menu.Positioner>
+              </Portal>
+            </Menu.Root>
+          </Flex>
+        </Box>
       )}
-    </Flex>
+    </Box>
   )
 }

@@ -8,24 +8,26 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { FilePluginActions } from 'src/entities/Schema/ui/FilePluginActions/FilePluginActions.tsx'
 import styles from 'src/entities/Schema/ui/RowObjectEditor/RowObjectEditor.module.scss'
+import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema.ts'
 import { BaseCell } from 'src/widgets/RowList/ui/Cell/BaseCell.tsx'
 
 interface CellProps {
   isEdit: boolean
   store: JsonValueStore
+  isLastCell: boolean
 }
 
-export const Cell: FC<CellProps> = ({ isEdit, store }) => {
+export const Cell: FC<CellProps> = ({ isLastCell, store }) => {
   if (store instanceof JsonObjectValueStore && store.$ref === SystemSchemaIds.File) {
     return (
-      <BaseCell>
-        <FilePluginActions hoverClassName={styles.Action} readonly={!isEdit} store={store} />
+      <BaseCell isLastCell={isLastCell} width={`${getColumnBySchema(store.schema)}px`}>
+        <FilePluginActions hoverClassName={styles.Action} readonly hideInfo store={store} />
       </BaseCell>
     )
   }
 
   return (
-    <BaseCell>
+    <BaseCell isLastCell={isLastCell} width={`${getColumnBySchema(store.schema)}px`}>
       {store instanceof JsonStringValueStore && store.value}
       {store instanceof JsonNumberValueStore && store.value}
       {store instanceof JsonBooleanValueStore && String(store.getPlainValue())}

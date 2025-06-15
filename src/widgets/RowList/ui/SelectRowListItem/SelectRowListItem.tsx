@@ -48,7 +48,7 @@ export const SelectRowListItem: React.FC<RowListItemProps> = ({ row, store, onSe
       </Box>
 
       {row.cells.map((cell, index) => (
-        <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
+        <Cell store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
       ))}
 
       <Box as="td" width="100%"></Box>

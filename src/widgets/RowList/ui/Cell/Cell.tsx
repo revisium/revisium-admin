@@ -12,7 +12,6 @@ import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema.ts'
 import { BaseCell } from 'src/widgets/RowList/ui/Cell/BaseCell.tsx'
 
 interface CellProps {
-  isEdit: boolean
   store: JsonValueStore
   isLastCell: boolean
 }

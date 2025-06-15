@@ -4,7 +4,7 @@ import React, { useCallback } from 'react'
 import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store.ts'
 import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
 
-const OnlyLatins = /^[.\d]+$/
+const OnlyDigitsDotDash = /^[\d.-]+$/
 
 interface RowNumberEditorProps {
   store: JsonNumberValueStore
@@ -34,7 +34,7 @@ export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store
           dataTestId={dataTestId}
           initValue={store.getPlainValue().toString()}
           onChange={handleChange}
-          restrict={OnlyLatins}
+          restrict={OnlyDigitsDotDash}
         />
       )}
     </Box>

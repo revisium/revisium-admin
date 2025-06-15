@@ -38,14 +38,21 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
       className={styles.Row}
       data-testid={`row-${row.id}`}
     >
-      <Box as="td" position="sticky" left={0} backgroundColor="white" width="140px" maxWidth="140px">
-        <Text color="gray.400" textDecoration="underline" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-            {row.id}
-          </Link>
-        </Text>
-
-        {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
+      <Box as="td" position="sticky" left={0} backgroundColor="white" width="200px" maxWidth="200px" pl="8px" pr="24px">
+        <Flex alignItems="center">
+          <Text
+            color="gray.400"
+            textDecoration="underline"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+            overflow="hidden"
+          >
+            <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
+              {row.id}
+            </Link>
+          </Text>
+          {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
+        </Flex>
       </Box>
 
       {row.cells.map((cell, index) => (

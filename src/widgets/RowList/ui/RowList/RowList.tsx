@@ -73,6 +73,7 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
                 {columns.map((column) => (
                   <Box
                     as="th"
+                    textAlign="start"
                     key={column.id}
                     width={`${column.width}px`}
                     maxWidth={`${column.width}px`}
@@ -94,11 +95,9 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
                     </Text>
                   </Box>
                 ))}
-                {!isSelectMode && (
-                  <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={0} width="100%">
-                    <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
-                  </Box>
-                )}
+                <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={0} width="100%">
+                  <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
+                </Box>
               </Box>
             )
           : undefined

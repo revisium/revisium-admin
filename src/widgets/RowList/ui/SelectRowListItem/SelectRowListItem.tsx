@@ -29,7 +29,7 @@ export const SelectRowListItem: React.FC<RowListItemProps> = ({ row, store, onSe
       className={styles.Row}
       data-testid={`row-${row.id}`}
     >
-      <Box as="td" position="sticky" left={0} backgroundColor="white">
+      <Box as="td" position="sticky" left={0} backgroundColor="white" width="200px" maxWidth="200px">
         <Flex alignItems="center">
           <Text
             textDecoration="underline"
@@ -50,6 +50,8 @@ export const SelectRowListItem: React.FC<RowListItemProps> = ({ row, store, onSe
       {row.cells.map((cell, index) => (
         <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
       ))}
+
+      <Box as="td"></Box>
     </Box>
   )
 }

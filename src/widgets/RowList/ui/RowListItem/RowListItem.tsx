@@ -59,6 +59,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
         <Cell isEdit={store.isEdit} store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
       ))}
 
+      <Box as="td" width="100%"></Box>
       {store.isEdit && (
         <Box
           className={!menuOpen ? styles.Actions : undefined}
@@ -66,6 +67,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
           position="sticky"
           right={0}
           backgroundColor="white"
+          width="40px"
         >
           <Flex justifyContent="flex-end">
             <Menu.Root

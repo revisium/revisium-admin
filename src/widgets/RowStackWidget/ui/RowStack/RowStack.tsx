@@ -113,7 +113,7 @@ export const RowStack: React.FC = observer(() => {
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <CreateRowButton onClick={item.toCreatingRow} />
-        <Box paddingTop="0.5rem" paddingBottom="1rem">
+        <Box paddingTop="0.5rem" paddingBottom="1rem" height="100%">
           <RowList
             table={item.table}
             onSelect={item.state.isSelectingForeignKey ? handleSelectRow : undefined}

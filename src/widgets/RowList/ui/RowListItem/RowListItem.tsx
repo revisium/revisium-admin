@@ -2,20 +2,18 @@ import { Box, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
 import { PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
-import { ItemProps } from 'react-virtuoso'
 import { DotsThreeButton } from 'src/shared/ui'
 import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
 import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
-  trProps: ItemProps<unknown>
   row: RowListItemType
   store: RowListModel
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, onCopy }) => {
+export const RowListItem: React.FC<RowListItemProps> = ({ row, store, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleCopyRow = useCallback(() => {
@@ -28,7 +26,6 @@ export const RowListItem: React.FC<RowListItemProps> = ({ trProps, row, store, o
 
   return (
     <Flex
-      {...trProps}
       _hover={{ backgroundColor: 'gray.50', borderTopWidth: '1px', borderBottomWidth: '1px' }}
       borderColor="gray.100"
       backgroundColor={menuOpen ? 'gray.50' : undefined}

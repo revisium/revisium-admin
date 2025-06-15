@@ -6,6 +6,8 @@ import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-numbe
 export class JsonNumberStore implements JsonNumberSchema {
   public readonly type = JsonSchemaTypeName.Number
 
+  public name: string = ''
+
   public $ref = ''
 
   public default: number = 0

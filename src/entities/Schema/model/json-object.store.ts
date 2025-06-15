@@ -7,6 +7,8 @@ import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-objec
 export class JsonObjectStore implements JsonObjectSchema {
   public readonly type = JsonSchemaTypeName.Object
 
+  public name: string = ''
+
   public $ref = ''
 
   public readOnly?: boolean
@@ -41,6 +43,8 @@ export class JsonObjectStore implements JsonObjectSchema {
     if (this.properties[name] || this.required.includes(name)) {
       throw new Error('this name already exists')
     }
+
+    store.name = name
 
     this.required.push(name)
     return (this.properties[name] = store)

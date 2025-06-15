@@ -1,9 +1,9 @@
 .Row {
   .Actions {
-    visibility: hidden;
+    opacity: 0;
   }
 
   &:hover .Actions {
-    visibility: visible;
+    opacity: 1;
   }
 }

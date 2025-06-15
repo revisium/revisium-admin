@@ -1,22 +1,9 @@
-import { Flex, Text } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
 import { FC, PropsWithChildren } from 'react'
 
-interface CellProps {
-  width?: string
-}
-
-export const BaseCell: FC<CellProps & PropsWithChildren> = ({ width, children }) => {
+export const BaseCell: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <Flex
-      alignItems="center"
-      minHeight="40px"
-      minWidth={width}
-      width={width}
-      as="td"
-      borderRightWidth="1px"
-      borderColor="gray.100"
-      borderBottomWidth="1px"
-    >
+    <Box alignItems="center" minHeight="40px" as="td" borderRightWidth="1px" borderColor="gray.100">
       <Text
         ml="16px"
         whiteSpace="nowrap"
@@ -28,6 +15,6 @@ export const BaseCell: FC<CellProps & PropsWithChildren> = ({ width, children })
       >
         {children}
       </Text>
-    </Flex>
+    </Box>
   )
 }

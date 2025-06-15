@@ -5,7 +5,7 @@ import { traverseStoreWithSkipping } from 'src/entities/Schema/lib/traverseStore
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
-import { ITableModel } from 'src/shared/model/BackendStore'
+import { IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { DeleteRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteRowCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
@@ -39,6 +39,62 @@ export class RowListModel {
 
   public get isEdit() {
     return this.projectPageModel.isEditableRevision
+  }
+
+  public get columns() {
+    const schemaStore = createJsonSchemaStore(this.table.schema as JsonSchema)
+
+    const list: JsonSchemaStore[] = []
+
+    traverseStoreWithSkipping(schemaStore, (node) => {
+      if (
+        node.type === JsonSchemaTypeName.String ||
+        node.type === JsonSchemaTypeName.Number ||
+        node.type === JsonSchemaTypeName.Boolean
+      ) {
+        list.push(node)
+      } else if (node.type === JsonSchemaTypeName.Object) {
+        if (node.$ref) {
+          list.push(node)
+          return true
+        }
+      } else {
+        return true
+      }
+    })
+
+    this.table.rowsConnection.edges.forEach(({ node }) => {
+      createJsonValueStore(schemaStore, node.id, node.data)
+    })
+
+    const data = this.table.rowsConnection.edges.map(({ node }) => {
+      createJsonValueStore(schemaStore, node.id, node.data)
+
+      return {
+        id: node.id,
+        versionId: node.versionId,
+        readonly: node.readonly,
+        title: node.id,
+        data: JSON.stringify(node.data, null, 2).replaceAll('\\n', '').substring(0, 10),
+        link: '',
+        cells: list.map((item) => item.getValue(node.id)).filter((value): value is JsonValueStore => Boolean(value)),
+      }
+    })
+
+    const columns = list.map((item) => ({
+      id: item.nodeId,
+      title: item.name,
+      width: item.type === JsonSchemaTypeName.Number ? 60 : 150,
+    }))
+
+    return {
+      columns,
+      data,
+    }
+  }
+
+  public get data(): IRowModel[] {
+    return this.table.rowsConnection.edges.map((edge) => edge.node)
   }
 
   public get items(): RowListItemType[] {

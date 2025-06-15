@@ -7,6 +7,8 @@ import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-
 export class JsonArrayStore implements JsonArraySchema {
   public readonly type = JsonSchemaTypeName.Array
 
+  public name: string = ''
+
   public $ref = ''
 
   public readOnly?: boolean

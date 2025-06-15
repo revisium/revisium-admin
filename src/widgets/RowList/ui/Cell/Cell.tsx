@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store.ts'
 import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-boolean-value.store.ts'
@@ -16,25 +15,17 @@ interface CellProps {
   store: JsonValueStore
 }
 
-const widths: Record<JsonSchemaTypeName, string> = {
-  string: '150px',
-  number: '80px',
-  boolean: '60px',
-  object: '60px',
-  array: '60px',
-}
-
 export const Cell: FC<CellProps> = ({ isEdit, store }) => {
   if (store instanceof JsonObjectValueStore && store.$ref === SystemSchemaIds.File) {
     return (
-      <BaseCell width={widths[store.type]}>
+      <BaseCell>
         <FilePluginActions hoverClassName={styles.Action} readonly={!isEdit} store={store} />
       </BaseCell>
     )
   }
 
   return (
-    <BaseCell width={widths[store.type]}>
+    <BaseCell>
       {store instanceof JsonStringValueStore && store.value}
       {store instanceof JsonNumberValueStore && store.value}
       {store instanceof JsonBooleanValueStore && String(store.getPlainValue())}

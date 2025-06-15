@@ -6,6 +6,8 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 export class JsonStringStore implements JsonStringSchema {
   public readonly type = JsonSchemaTypeName.String
 
+  public name: string = ''
+
   public $ref = ''
 
   public default: string = ''

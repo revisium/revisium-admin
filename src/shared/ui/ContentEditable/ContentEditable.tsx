@@ -87,7 +87,8 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
         cursorPosition.current = selection.getRangeAt(0).startOffset
       }
 
-      onChange?.(event.currentTarget.innerText)
+      const textValue = event.currentTarget.innerText
+      onChange?.(textValue === '\n' ? '' : textValue)
     },
     [onChange],
   )

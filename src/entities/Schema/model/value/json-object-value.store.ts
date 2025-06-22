@@ -11,7 +11,6 @@ export class JsonObjectValueStore {
   public parent: JsonValueStore | null = null
   public readonly nodeId: string = nanoid()
 
-  public isCollapsible = true
   public isCollapsed = false
 
   public readonly type = JsonSchemaTypeName.Object
@@ -40,6 +39,10 @@ export class JsonObjectValueStore {
     }
 
     this.init()
+  }
+
+  public get isCollapsible() {
+    return Object.keys(this.schema.properties).length > 0
   }
 
   public get $ref() {

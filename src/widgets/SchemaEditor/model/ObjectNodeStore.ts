@@ -11,6 +11,7 @@ import { NodeStoreType, ParentSchemaNode, SchemaNode } from 'src/widgets/SchemaE
 
 type ObjectNodeStoreState = {
   id: string
+  isReplaced: boolean
   properties: SchemaNode[]
   parent: ParentSchemaNode | null
   connectedToParent: boolean
@@ -36,6 +37,7 @@ export class ObjectNodeStore {
     this.state = createViewModel(
       observable({
         id: '',
+        isReplaced: false,
         properties: [],
         parent: null,
         connectedToParent: false,
@@ -257,6 +259,10 @@ export class ObjectNodeStore {
     this.state.id = value
   }
 
+  public setIsReplaced(value: boolean): void {
+    this.state.isReplaced = value
+  }
+
   public setTitle(value: string): void {
     this.state.title = value
   }
@@ -356,6 +362,7 @@ export class ObjectNodeStore {
       nextProperty.setId(previousNode.draftId)
       nextProperty.setNodeId(previousNode.nodeId)
       nextProperty.setParent(this)
+      nextProperty.setIsReplaced(true)
 
       this.createIfNeededNextProperties()
       this.state.properties.splice(foundIndex, 1, nextProperty)

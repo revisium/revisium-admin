@@ -10,6 +10,7 @@ import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor/model/String
 
 type StringNodeStoreState = {
   id: string
+  isReplaced: boolean
   foreignKey: StringForeignKeyNodeStore | null
   contentMediaType: JsonStringSchema['contentMediaType'] | null
   parent: ParentSchemaNode | null
@@ -36,6 +37,7 @@ export class StringNodeStore {
     this.state = createViewModel(
       observable({
         id: '',
+        isReplaced: false,
         foreignKey: null,
         contentMediaType: null,
         parent: null,
@@ -167,6 +169,10 @@ export class StringNodeStore {
 
   public setId(value: string): void {
     this.state.id = value
+  }
+
+  public setIsReplaced(value: boolean): void {
+    this.state.isReplaced = value
   }
 
   public setTitle(value: string): void {

@@ -11,6 +11,7 @@ import { ObjectNodeStore } from 'src/widgets/SchemaEditor/model/ObjectNodeStore.
 
 type ArrayNodeStoreState = {
   id: string
+  isReplaced: boolean
   items: SchemaNode
   parent: ParentSchemaNode | null
   connectedToParent: boolean
@@ -39,6 +40,7 @@ export class ArrayNodeStore {
     this.state = createViewModel(
       observable({
         id: '',
+        isReplaced: false,
         items,
         parent: null,
         connectedToParent: false,
@@ -158,6 +160,10 @@ export class ArrayNodeStore {
 
   public setId(value: string): void {
     this.state.id = value
+  }
+
+  public setIsReplaced(value: boolean): void {
+    this.state.isReplaced = value
   }
 
   public setTitle(value: string): void {

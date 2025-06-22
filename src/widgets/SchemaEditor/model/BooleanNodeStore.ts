@@ -9,6 +9,7 @@ import { NodeStoreType, ParentSchemaNode } from 'src/widgets/SchemaEditor/model/
 
 type BooleanNodeStoreState = {
   id: string
+  isReplaced: boolean
   parent: ParentSchemaNode | null
   connectedToParent: boolean
   title: string
@@ -33,6 +34,7 @@ export class BooleanNodeStore {
     this.state = createViewModel(
       observable({
         id: '',
+        isReplaced: false,
         parent: null,
         connectedToParent: false,
         title: '',
@@ -133,6 +135,10 @@ export class BooleanNodeStore {
 
   public setId(value: string): void {
     this.state.id = value
+  }
+
+  public setIsReplaced(value: boolean): void {
+    this.state.isReplaced = value
   }
 
   public setTitle(value: string): void {

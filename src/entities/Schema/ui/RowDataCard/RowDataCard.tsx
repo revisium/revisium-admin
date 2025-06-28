@@ -10,6 +10,7 @@ import { RowDataCardFooter } from 'src/entities/Schema/ui/RowDataCardFooter/RowD
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { TreeDataCard } from 'src/entities/Schema/ui/TreeDataCard/TreeDataCard.tsx'
 import { JsonCard } from 'src/shared/ui/JsonCard/JsonCard.tsx'
+import { RowAIWidget } from 'src/widgets/RowAIWidget'
 
 interface RowDataCardProps {
   store: RowDataCardStore
@@ -34,6 +35,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         <Box className={styles.Actions}>
           <RowViewerSwitcher
             availableRefByMode={store.areThereForeignKeysBy}
+            isEdit={isEdit}
             mode={store.viewMode || ViewerSwitcherMode.Tree}
             onChange={store.setViewMode}
           />
@@ -56,6 +58,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
       {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && (
         <ForeignKeysByDataCard row={store.originRow} />
       )}
+      {store.viewMode === ViewerSwitcherMode.AI && <RowAIWidget />}
     </Flex>
   )
 })

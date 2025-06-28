@@ -2,6 +2,7 @@ export enum ViewerSwitcherMode {
   Tree = 'Tree',
   Json = 'Json',
   RefBy = 'RefBy',
+  AI = 'AI',
 }
 
 export enum SystemSchemaIds {

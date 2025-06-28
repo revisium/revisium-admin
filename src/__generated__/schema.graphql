@@ -3,6 +3,11 @@ schema {
   mutation: Mutation
 }
 
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
 input AddUserToOrganizationInput {
   organizationId: String!
   roleId: UserOrganizationRoles!
@@ -14,6 +19,11 @@ input AddUserToProjectInput {
   projectName: String!
   roleId: UserProjectRoles!
   userId: String!
+}
+
+input BooleanFilter {
+  equals: Boolean
+  not: Boolean
 }
 
 type BranchModel {
@@ -118,6 +128,16 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DateTimeFilter {
+  equals: String
+  gt: String
+  gte: String
+  in: [String!]
+  lt: String
+  lte: String
+  notIn: [String!]
+}
+
 input DeleteEndpointInput {
   endpointId: String!
 }
@@ -207,11 +227,21 @@ input GetRowInput {
   tableId: String!
 }
 
+input GetRowSuggestionInput {
+  data: JSON!
+  prompt: String!
+  revisionId: String!
+  rowId: String!
+  tableId: String!
+}
+
 input GetRowsInput {
   after: String
   first: Int!
+  orderBy: [OrderBy!]
   revisionId: String!
   tableId: String!
+  where: WhereInput
 }
 
 input GetTableForeignKeysInput {
@@ -263,6 +293,22 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+input JsonFilter {
+  array_contains: [JSON!]
+  array_ends_with: JSON
+  array_starts_with: JSON
+  equals: JSON
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  mode: QueryMode
+  path: [String!]
+  string_contains: String
+  string_ends_with: String
+  string_starts_with: String
+}
+
 input LoginGithubInput {
   code: String!
 }
@@ -297,6 +343,7 @@ type Mutation {
   login(data: LoginInput!): LoginModel!
   loginGithub(data: LoginGithubInput!): LoginModel!
   loginGoogle(data: LoginGoogleInput!): LoginModel!
+  patchRow(data: PatchRowInput!): PatchRowResultModel!
   removeRow(data: RemoveRowInput!): RemoveRowResultModel!
   removeTable(data: RemoveTableInput!): RemoveTableResultModel!
   removeUserFromOrganization(data: RemoveUserFromOrganizationInput!): Boolean!
@@ -312,6 +359,17 @@ type Mutation {
   updateTable(data: UpdateTableInput!): UpdateTableResultModel!
 }
 
+input OrderBy {
+  direction: SortOrder!
+  field: OrderByField!
+}
+
+enum OrderByField {
+  createdAt
+  id
+  updatedAt
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
@@ -322,6 +380,30 @@ type PageInfo {
 type ParentBranchModel {
   branch: BranchModel!
   revision: RevisionModel!
+}
+
+input PatchRow {
+  op: PatchRowOp!
+  path: String!
+  value: JSON!
+}
+
+input PatchRowInput {
+  patches: [PatchRow!]!
+  revisionId: String!
+  rowId: String!
+  tableId: String!
+}
+
+enum PatchRowOp {
+  replace
+}
+
+type PatchRowResultModel {
+  previousVersionRowId: String!
+  previousVersionTableId: String!
+  row: RowModel!
+  table: TableModel!
 }
 
 type PluginsModel {
@@ -360,11 +442,17 @@ type Query {
   projects(data: GetProjectsInput!): ProjectsConnection!
   revision(data: GetRevisionInput!): RevisionModel!
   row(data: GetRowInput!): RowModel
+  rowSuggestion(data: GetRowSuggestionInput!): RowSuggestionResultModel!
   rows(data: GetRowsInput!): RowsConnection!
   table(data: GetTableInput!): TableModel
   tables(data: GetTablesInput!): TablesConnection!
   usersOrganization(data: GetUsersOrganizationInput!): UsersOrganizationConnection!
   usersProject(data: GetUsersProjectInput!): UsersProjectConnection!
+}
+
+enum QueryMode {
+  default
+  insensitive
 }
 
 input RemoveRowInput {
@@ -463,12 +551,23 @@ type RoleModel {
   name: String!
 }
 
+type RowForeignKeyModel {
+  row: RowModel!
+  table: TableModel!
+}
+
+type RowForeignKeyModelEdge {
+  cursor: String!
+  node: RowForeignKeyModel!
+}
+
 type RowModel {
   countForeignKeysTo: Int!
   createdAt: DateTime!
   createdId: String!
   data: JSON!
   id: String!
+  publishedAt: DateTime!
   readonly: Boolean!
   rowForeignKeysBy(data: GetRowForeignKeysInput!): RowsConnection!
   rowForeignKeysTo(data: GetRowForeignKeysInput!): RowsConnection!
@@ -479,6 +578,11 @@ type RowModel {
 type RowModelEdge {
   cursor: String!
   node: RowModel!
+}
+
+type RowSuggestionResultModel {
+  data: JSON!
+  patches: [JSON!]!
 }
 
 type RowsConnection {
@@ -495,6 +599,24 @@ input SignUpInput {
   email: String!
   password: String!
   username: String!
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+input StringFilter {
+  contains: String
+  endsWith: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  mode: QueryMode
+  not: String
+  notIn: [String!]
+  startsWith: String
 }
 
 type TableModel {
@@ -619,4 +741,18 @@ type UsersProjectModel {
 type UsersProjectModelEdge {
   cursor: String!
   node: UsersProjectModel!
+}
+
+input WhereInput {
+  AND: [WhereInput!]
+  NOT: [WhereInput!]
+  OR: [WhereInput!]
+  createdAt: DateTimeFilter
+  createdId: StringFilter
+  data: JsonFilter
+  id: StringFilter
+  publishedAt: DateTimeFilter
+  readonly: BooleanFilter
+  updatedAt: DateTimeFilter
+  versionId: StringFilter
 }

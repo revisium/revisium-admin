@@ -36,6 +36,11 @@ export type AddUserToProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type BooleanFilter = {
+  equals?: InputMaybe<Scalars['Boolean']['input']>
+  not?: InputMaybe<Scalars['Boolean']['input']>
+}
+
 export type BranchModel = {
   createdAt: Scalars['DateTime']['output']
   draft: RevisionModel
@@ -137,6 +142,16 @@ export type CreateUserInput = {
   username: Scalars['String']['input']
 }
 
+export type DateTimeFilter = {
+  equals?: InputMaybe<Scalars['String']['input']>
+  gt?: InputMaybe<Scalars['String']['input']>
+  gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
+  lt?: InputMaybe<Scalars['String']['input']>
+  lte?: InputMaybe<Scalars['String']['input']>
+  notIn?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
 export type DeleteEndpointInput = {
   endpointId: Scalars['String']['input']
 }
@@ -226,11 +241,21 @@ export type GetRowInput = {
   tableId: Scalars['String']['input']
 }
 
+export type GetRowSuggestionInput = {
+  data: Scalars['JSON']['input']
+  prompt: Scalars['String']['input']
+  revisionId: Scalars['String']['input']
+  rowId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
 export type GetRowsInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+  orderBy?: InputMaybe<Array<OrderBy>>
   revisionId: Scalars['String']['input']
   tableId: Scalars['String']['input']
+  where?: InputMaybe<WhereInput>
 }
 
 export type GetTableForeignKeysInput = {
@@ -277,6 +302,22 @@ export type GoogleOauth = {
   clientId?: Maybe<Scalars['String']['output']>
 }
 
+export type JsonFilter = {
+  array_contains?: InputMaybe<Array<Scalars['JSON']['input']>>
+  array_ends_with?: InputMaybe<Scalars['JSON']['input']>
+  array_starts_with?: InputMaybe<Scalars['JSON']['input']>
+  equals?: InputMaybe<Scalars['JSON']['input']>
+  gt?: InputMaybe<Scalars['Float']['input']>
+  gte?: InputMaybe<Scalars['Float']['input']>
+  lt?: InputMaybe<Scalars['Float']['input']>
+  lte?: InputMaybe<Scalars['Float']['input']>
+  mode?: InputMaybe<QueryMode>
+  path?: InputMaybe<Array<Scalars['String']['input']>>
+  string_contains?: InputMaybe<Scalars['String']['input']>
+  string_ends_with?: InputMaybe<Scalars['String']['input']>
+  string_starts_with?: InputMaybe<Scalars['String']['input']>
+}
+
 export type LoginGithubInput = {
   code: Scalars['String']['input']
 }
@@ -311,6 +352,7 @@ export type Mutation = {
   login: LoginModel
   loginGithub: LoginModel
   loginGoogle: LoginModel
+  patchRow: PatchRowResultModel
   removeRow: RemoveRowResultModel
   removeTable: RemoveTableResultModel
   removeUserFromOrganization: Scalars['Boolean']['output']
@@ -386,6 +428,10 @@ export type MutationLoginGoogleArgs = {
   data: LoginGoogleInput
 }
 
+export type MutationPatchRowArgs = {
+  data: PatchRowInput
+}
+
 export type MutationRemoveRowArgs = {
   data: RemoveRowInput
 }
@@ -438,6 +484,17 @@ export type MutationUpdateTableArgs = {
   data: UpdateTableInput
 }
 
+export type OrderBy = {
+  direction: SortOrder
+  field: OrderByField
+}
+
+export enum OrderByField {
+  CreatedAt = 'createdAt',
+  Id = 'id',
+  UpdatedAt = 'updatedAt',
+}
+
 export type PageInfo = {
   endCursor?: Maybe<Scalars['String']['output']>
   hasNextPage: Scalars['Boolean']['output']
@@ -448,6 +505,30 @@ export type PageInfo = {
 export type ParentBranchModel = {
   branch: BranchModel
   revision: RevisionModel
+}
+
+export type PatchRow = {
+  op: PatchRowOp
+  path: Scalars['String']['input']
+  value: Scalars['JSON']['input']
+}
+
+export type PatchRowInput = {
+  patches: Array<PatchRow>
+  revisionId: Scalars['String']['input']
+  rowId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
+export enum PatchRowOp {
+  Replace = 'replace',
+}
+
+export type PatchRowResultModel = {
+  previousVersionRowId: Scalars['String']['output']
+  previousVersionTableId: Scalars['String']['output']
+  row: RowModel
+  table: TableModel
 }
 
 export type PluginsModel = {
@@ -490,6 +571,7 @@ export type Query = {
   projects: ProjectsConnection
   revision: RevisionModel
   row?: Maybe<RowModel>
+  rowSuggestion: RowSuggestionResultModel
   rows: RowsConnection
   table?: Maybe<TableModel>
   tables: TablesConnection
@@ -529,6 +611,10 @@ export type QueryRowArgs = {
   data: GetRowInput
 }
 
+export type QueryRowSuggestionArgs = {
+  data: GetRowSuggestionInput
+}
+
 export type QueryRowsArgs = {
   data: GetRowsInput
 }
@@ -547,6 +633,11 @@ export type QueryUsersOrganizationArgs = {
 
 export type QueryUsersProjectArgs = {
   data: GetUsersProjectInput
+}
+
+export enum QueryMode {
+  Default = 'default',
+  Insensitive = 'insensitive',
 }
 
 export type RemoveRowInput = {
@@ -649,12 +740,23 @@ export type RoleModel = {
   name: Scalars['String']['output']
 }
 
+export type RowForeignKeyModel = {
+  row: RowModel
+  table: TableModel
+}
+
+export type RowForeignKeyModelEdge = {
+  cursor: Scalars['String']['output']
+  node: RowForeignKeyModel
+}
+
 export type RowModel = {
   countForeignKeysTo: Scalars['Int']['output']
   createdAt: Scalars['DateTime']['output']
   createdId: Scalars['String']['output']
   data: Scalars['JSON']['output']
   id: Scalars['String']['output']
+  publishedAt: Scalars['DateTime']['output']
   readonly: Scalars['Boolean']['output']
   rowForeignKeysBy: RowsConnection
   rowForeignKeysTo: RowsConnection
@@ -675,6 +777,11 @@ export type RowModelEdge = {
   node: RowModel
 }
 
+export type RowSuggestionResultModel = {
+  data: Scalars['JSON']['output']
+  patches: Array<Scalars['JSON']['output']>
+}
+
 export type RowsConnection = {
   edges: Array<RowModelEdge>
   pageInfo: PageInfo
@@ -689,6 +796,24 @@ export type SignUpInput = {
   email: Scalars['String']['input']
   password: Scalars['String']['input']
   username: Scalars['String']['input']
+}
+
+export enum SortOrder {
+  Asc = 'asc',
+  Desc = 'desc',
+}
+
+export type StringFilter = {
+  contains?: InputMaybe<Scalars['String']['input']>
+  endsWith?: InputMaybe<Scalars['String']['input']>
+  gt?: InputMaybe<Scalars['String']['input']>
+  gte?: InputMaybe<Scalars['String']['input']>
+  lt?: InputMaybe<Scalars['String']['input']>
+  lte?: InputMaybe<Scalars['String']['input']>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<Scalars['String']['input']>
+  notIn?: InputMaybe<Array<Scalars['String']['input']>>
+  startsWith?: InputMaybe<Scalars['String']['input']>
 }
 
 export type TableModel = {
@@ -825,6 +950,20 @@ export type UsersProjectModel = {
 export type UsersProjectModelEdge = {
   cursor: Scalars['String']['output']
   node: UsersProjectModel
+}
+
+export type WhereInput = {
+  AND?: InputMaybe<Array<WhereInput>>
+  NOT?: InputMaybe<Array<WhereInput>>
+  OR?: InputMaybe<Array<WhereInput>>
+  createdAt?: InputMaybe<DateTimeFilter>
+  createdId?: InputMaybe<StringFilter>
+  data?: InputMaybe<JsonFilter>
+  id?: InputMaybe<StringFilter>
+  publishedAt?: InputMaybe<DateTimeFilter>
+  readonly?: InputMaybe<BooleanFilter>
+  updatedAt?: InputMaybe<DateTimeFilter>
+  versionId?: InputMaybe<StringFilter>
 }
 
 export type PageInfoFragment = {
@@ -1837,6 +1976,17 @@ export type RowMstQuery = {
   } | null
 }
 
+export type RowSuggestionMstQueryVariables = Exact<{
+  data: GetRowSuggestionInput
+}>
+
+export type RowSuggestionMstQuery = {
+  rowSuggestion: {
+    data: { [key: string]: any } | string | number | boolean | null
+    patches: Array<{ [key: string]: any } | string | number | boolean | null>
+  }
+}
+
 export type RowsMstQueryVariables = Exact<{
   data: GetRowsInput
 }>
@@ -2466,6 +2616,14 @@ export const RowMstDocument = gql`
   }
   ${RowMstFragmentDoc}
 `
+export const RowSuggestionMstDocument = gql`
+  query RowSuggestionMst($data: GetRowSuggestionInput!) {
+    rowSuggestion(data: $data) {
+      data
+      patches
+    }
+  }
+`
 export const RowsMstDocument = gql`
   query RowsMst($data: GetRowsInput!) {
     rows(data: $data) {
@@ -3007,6 +3165,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         (wrappedRequestHeaders) =>
           client.request<RowMstQuery>(RowMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
         'RowMst',
+        'query',
+        variables,
+      )
+    },
+    RowSuggestionMst(
+      variables: RowSuggestionMstQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RowSuggestionMstQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RowSuggestionMstQuery>(RowSuggestionMstDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RowSuggestionMst',
         'query',
         variables,
       )

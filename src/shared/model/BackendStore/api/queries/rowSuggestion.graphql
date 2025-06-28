@@ -1,0 +1,6 @@
+query RowSuggestionMst($data: GetRowSuggestionInput!) {
+  rowSuggestion(data: $data) {
+    data
+    patches
+  }
+}

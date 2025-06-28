@@ -7,8 +7,8 @@ import { ViewerSwitcherMode } from '../../config/consts.ts'
 const modes: { mode: ViewerSwitcherMode; icon: React.ReactNode; dataTestId?: string }[] = [
   { mode: ViewerSwitcherMode.Tree, icon: <PiTreeViewThin />, dataTestId: 'row-editor-mode-tree' },
   { mode: ViewerSwitcherMode.Json, icon: <PiBracketsCurlyThin />, dataTestId: 'row-editor-mode-json' },
-  { mode: ViewerSwitcherMode.RefBy, icon: <PiLinkThin />, dataTestId: 'row-editor-mode-refs' },
   { mode: ViewerSwitcherMode.AI, icon: <PiOpenAiLogoThin />, dataTestId: 'row-editor-mode-ai' },
+  { mode: ViewerSwitcherMode.RefBy, icon: <PiLinkThin />, dataTestId: 'row-editor-mode-refs' },
 ]
 
 interface ViewerSwitcherProps {

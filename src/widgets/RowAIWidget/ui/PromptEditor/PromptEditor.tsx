@@ -6,9 +6,10 @@ import { PromptEditorModel } from 'src/widgets/RowAIWidget/model/PromptEditorMod
 
 interface PromptEditorProps {
   model: PromptEditorModel
+  onEnter?: () => void
 }
 
-export const PromptEditor: FC<PromptEditorProps> = observer(({ model }) => {
+export const PromptEditor: FC<PromptEditorProps> = observer(({ model, onEnter }) => {
   const handleChange = useCallback(
     (value: string) => {
       model.setValue(value)
@@ -19,6 +20,7 @@ export const PromptEditor: FC<PromptEditorProps> = observer(({ model }) => {
   return (
     <Box ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" width="100%">
       <ContentEditable
+        onEnter={onEnter}
         autoFocus
         placeholder="Enter your request (e.g. generate suggestions or fix data)"
         initValue={model.value}

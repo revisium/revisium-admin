@@ -59,7 +59,12 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
         <ForeignKeysByDataCard row={store.originRow} />
       )}
       {store.viewMode === ViewerSwitcherMode.AI && (
-        <RowAIWidget schema={store.schemaStore.getPlainSchema()} data={store.root.getPlainValue()} />
+        <RowAIWidget
+          schema={store.schemaStore.getPlainSchema()}
+          data={store.root.getPlainValue()}
+          rowId={store.name.getPlainValue()}
+          onChange={store.updateValue}
+        />
       )}
     </Flex>
   )

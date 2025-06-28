@@ -58,7 +58,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, rootNa
       {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && (
         <ForeignKeysByDataCard row={store.originRow} />
       )}
-      {store.viewMode === ViewerSwitcherMode.AI && <RowAIWidget />}
+      {store.viewMode === ViewerSwitcherMode.AI && <RowAIWidget store={store} />}
     </Flex>
   )
 })

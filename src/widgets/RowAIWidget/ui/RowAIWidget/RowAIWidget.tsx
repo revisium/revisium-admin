@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react'
+import { Flex, Spinner } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
 import { JsonSchema } from 'src/entities/Schema'
@@ -23,7 +23,10 @@ export const RowAIWidget: FC<RowAIWidgetProps> = observer(({ schema, data, rowId
 
   return (
     <Flex direction="column" width="100%" gap="1rem">
-      <PromptEditor model={model.prompt} onEnter={handleEnter} />
+      <Flex>
+        <PromptEditor model={model.prompt} onEnter={handleEnter} />
+        {model.isLoading && <Spinner color="gray.400" />}
+      </Flex>
       <JsonCard schema={schema} readonly data={model.data} />
     </Flex>
   )

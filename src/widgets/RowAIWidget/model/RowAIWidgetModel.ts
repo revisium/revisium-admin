@@ -5,6 +5,7 @@ import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageM
 import { PromptEditorModel } from 'src/widgets/RowAIWidget/model/PromptEditorModel.ts'
 
 export class RowAIWidgetModel {
+  public isLoading = false
   public prompt: PromptEditorModel
 
   constructor(
@@ -19,21 +20,35 @@ export class RowAIWidgetModel {
   }
 
   async submit() {
-    const result = await rowSuggestionMstRequest({
-      data: {
-        data: this.data,
-        prompt: this.prompt.value,
-        revisionId: this.projectPageModel.revisionOrThrow.id,
-        tableId: this.projectPageModel.tableOrThrow.id,
-        rowId: this.rowId,
-      },
-    })
+    this.setIsLoading(true)
+    try {
+      const prompt = this.prompt.value
+      this.prompt.setValue('')
 
-    this.data = result.rowSuggestion.data
-    this.onChange(this.data)
+      const result = await rowSuggestionMstRequest({
+        data: {
+          data: this.data,
+          prompt,
+          revisionId: this.projectPageModel.revisionOrThrow.id,
+          tableId: this.projectPageModel.tableOrThrow.id,
+          rowId: this.rowId,
+        },
+      })
+
+      this.data = result.rowSuggestion.data
+      this.onChange(this.data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      this.setIsLoading(false)
+    }
   }
 
   public init() {}
 
   public dispose() {}
+
+  public setIsLoading(isLoading: boolean) {
+    this.isLoading = isLoading
+  }
 }

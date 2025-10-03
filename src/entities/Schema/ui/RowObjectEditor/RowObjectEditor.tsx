@@ -92,6 +92,7 @@ export const RowObjectEditor: React.FC<RowObjectProps> = observer(({ store, read
                 )}
               </>
             }
+            dataTestId={childDataTestId}
           >
             {item.type === JsonSchemaTypeName.Object && (
               <RowObjectEditor dataTestId={childDataTestId} readonly={readonly} store={item} />

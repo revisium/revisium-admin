@@ -18,6 +18,7 @@ interface RowFieldEditorProps {
   onOverLabel?: () => void
   onOutLabel?: () => void
   store?: JsonValueStore
+  dataTestId?: string
 }
 
 export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = observer(
@@ -32,6 +33,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
     store,
     description,
     deprecated,
+    dataTestId,
   }) => {
     const options =
       store instanceof JsonArrayValueStore || store instanceof JsonObjectValueStore
@@ -64,6 +66,7 @@ export const RowFieldEditor: FC<RowFieldEditorProps & PropsWithChildren> = obser
     return (
       <Flex flexDirection="column" flex={1} width="100%" _hover={hoverStyles}>
         <Flex
+          data-testid={`${dataTestId}-field`}
           className={nameAndValueClassName}
           gap="4px"
           minHeight="28px"

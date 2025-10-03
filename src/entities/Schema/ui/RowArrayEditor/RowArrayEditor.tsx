@@ -104,6 +104,7 @@ export const RowArrayEditor: React.FC<RowArrayProps> = observer(({ store: store,
                 )}
               </Flex>
             }
+            dataTestId={childDataTestId}
           >
             {store.items.type === JsonSchemaTypeName.Object && (
               <RowObjectEditor

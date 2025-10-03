@@ -46,7 +46,7 @@ export const RowStringEditor: React.FC<RowStringEditorProps> = observer(({ store
   const showViewForeignKey = store.foreignKey && mode !== RowEditorMode.Creating && store.getPlainValue()
 
   return (
-    <Flex className={styles.Field}>
+    <Flex className={styles.Field} data-testid={`${dataTestId}-string`}>
       {store.contentMediaType === 'text/markdown' ? (
         <MarkdownEditor store={store} dataTestId={dataTestId} readonly={readonly} />
       ) : (

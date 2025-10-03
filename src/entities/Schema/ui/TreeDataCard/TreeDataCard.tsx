@@ -30,7 +30,7 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
   return (
     <>
       <Flex flexDirection="column" width="100%" flex={1} marginBottom="8rem">
-        <RowFieldEditor colorName="gray.400" name={rootName} value={rootValue}>
+        <RowFieldEditor colorName="gray.400" name={rootName} value={rootValue} dataTestId={childDataTestId}>
           {store.root.type === JsonSchemaTypeName.Object && store.root.$ref === SystemSchemaIds.File && (
             <RowFieldEditor
               colorName="gray.400"
@@ -44,6 +44,7 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
                   onUpload={actions.onUploadFile}
                 />
               }
+              dataTestId={childDataTestId}
             >
               <RowObjectEditor dataTestId={childDataTestId} readonly={!isEdit} store={store.root} />
             </RowFieldEditor>
@@ -65,6 +66,7 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
                   store={store.root}
                 />
               }
+              dataTestId={childDataTestId}
             />
           )}
           {store.root.type === JsonSchemaTypeName.Number && (
@@ -78,6 +80,7 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
                   store={store.root}
                 />
               }
+              dataTestId={childDataTestId}
             />
           )}
           {store.root.type === JsonSchemaTypeName.Boolean && (
@@ -91,6 +94,7 @@ export const TreeDataCard: React.FC<TreeDataCardProps> = observer(({ rootName, r
                   store={store.root}
                 />
               }
+              dataTestId={childDataTestId}
             />
           )}
         </RowFieldEditor>

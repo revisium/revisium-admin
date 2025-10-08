@@ -1,8 +1,8 @@
 import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
-import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store.ts'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable.tsx'
+import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store'
+import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable'
 
 const OnlyDigitsDotDash = /^[\d.-]+$/
 

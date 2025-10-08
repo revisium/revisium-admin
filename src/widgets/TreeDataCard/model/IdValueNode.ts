@@ -1,0 +1,29 @@
+import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store'
+import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
+import { BaseValueNode } from './BaseValueNode'
+
+export class IdValueNode extends BaseValueNode {
+  constructor(cardStore: RowDataCardStore) {
+    super('<id>', cardStore.name, 'string', `id-${cardStore.name.nodeId}`)
+  }
+
+  get children(): BaseValueNode[] {
+    return []
+  }
+
+  get isExpandable(): boolean {
+    return false
+  }
+
+  get isInitiallyExpanded(): boolean {
+    return false
+  }
+
+  get hasChildren(): boolean {
+    return false
+  }
+
+  getStore(): JsonStringValueStore {
+    return this.store as JsonStringValueStore
+  }
+}

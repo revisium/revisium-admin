@@ -1,0 +1,11 @@
+.Field {
+  flex: 1;
+
+  .SelectForeignKeyButton {
+    visibility: hidden;
+  }
+
+  &:hover .SelectForeignKeyButton {
+    visibility: visible;
+  }
+}

@@ -23,7 +23,7 @@ export const FileHoverCard: FC<FileHoverCardProps> = ({ url, dataTestId, availab
               <HoverCard.Arrow>
                 <HoverCard.ArrowTip />
               </HoverCard.Arrow>
-              <Image aspectRatio={width / height} width="400px" src={url} />
+              <Image aspectRatio={height > 0 ? width / height : 1} width="400px" src={url} />
             </HoverCard.Content>
           </HoverCard.Positioner>
         </Portal>

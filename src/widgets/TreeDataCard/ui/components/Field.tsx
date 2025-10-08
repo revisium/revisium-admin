@@ -1,14 +1,14 @@
 import { Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, PropsWithChildren } from 'react'
+import { FC } from 'react'
 import { Tooltip } from 'src/shared/ui'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 
-interface RowFieldEditor2Props {
+interface RowFieldProps {
   node: BaseValueNode
 }
 
-export const Field: FC<RowFieldEditor2Props & PropsWithChildren> = observer(({ node }) => {
+export const Field: FC<RowFieldProps> = observer(({ node }) => {
   const store = node.getStore()
 
   return (

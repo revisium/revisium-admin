@@ -12,7 +12,7 @@ export const FileRendererComponent: FC<NodeRendererContext> = ({ node, isEdit })
   return (
     <Row node={node} isCollapsible skipMore>
       <FilePluginActions
-        readonly={!isEdit}
+        readonly={!isEdit || nodeStore.readOnly}
         store={nodeStore}
         onUpload={actions.onUploadFile}
         dataTestId={node.dataTestId}

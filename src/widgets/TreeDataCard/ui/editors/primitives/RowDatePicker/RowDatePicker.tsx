@@ -16,7 +16,7 @@ export const RowDatePicker: FC<RowDatePickerProps> = observer(({ store, readonly
 
   return (
     <Flex pl="4px">
-      <RowStringEditor store={store} />
+      <RowStringEditor store={store} readonly={readonly} dataTestId={dataTestId} />
       <input
         style={{ width: '20px' }}
         data-testid={`${dataTestId}-select-date`}

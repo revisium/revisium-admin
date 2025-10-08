@@ -7,7 +7,7 @@ interface FileIcon2Props {
   url: string
 }
 
-export const FileIcon2: FC<FileIcon2Props> = ({ dataTestId, url }) => {
+export const FileIcon: FC<FileIcon2Props> = ({ dataTestId, url }) => {
   const handleOpenFile = useCallback(() => {
     window.open(url, '_blank')
   }, [url])

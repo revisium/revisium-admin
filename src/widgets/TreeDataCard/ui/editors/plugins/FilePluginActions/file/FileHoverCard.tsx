@@ -1,6 +1,6 @@
 import { Image, HoverCard, Portal } from '@chakra-ui/react'
 import { FC } from 'react'
-import { FileIcon2 } from './FileIcon2'
+import { FileIcon } from 'src/widgets/TreeDataCard/ui/editors/plugins/FilePluginActions/file/FileIcon.tsx'
 
 interface FileHoverCard2Props {
   dataTestId: string
@@ -10,12 +10,12 @@ interface FileHoverCard2Props {
   height: number
 }
 
-export const FileHoverCard2: FC<FileHoverCard2Props> = ({ url, dataTestId, availablePreview, width, height }) => {
+export const FileHoverCard: FC<FileHoverCard2Props> = ({ url, dataTestId, availablePreview, width, height }) => {
   if (availablePreview) {
     return (
       <HoverCard.Root lazyMount unmountOnExit openDelay={350} closeDelay={100} positioning={{ gutter: 16 }}>
         <HoverCard.Trigger>
-          <FileIcon2 dataTestId={dataTestId} url={url} />
+          <FileIcon dataTestId={dataTestId} url={url} />
         </HoverCard.Trigger>
         <Portal>
           <HoverCard.Positioner>
@@ -31,5 +31,5 @@ export const FileHoverCard2: FC<FileHoverCard2Props> = ({ url, dataTestId, avail
     )
   }
 
-  return <FileIcon2 dataTestId={dataTestId} url={url} />
+  return <FileIcon dataTestId={dataTestId} url={url} />
 }

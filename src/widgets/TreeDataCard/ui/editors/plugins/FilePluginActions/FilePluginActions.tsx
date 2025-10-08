@@ -1,6 +1,6 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react'
 import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store'
-import { FileHoverCard2 } from './file/FileHoverCard2'
+import { FileHoverCard } from 'src/widgets/TreeDataCard/ui/editors/plugins/FilePluginActions/file/FileHoverCard.tsx'
 import { Tooltip } from 'src/shared/ui'
 import { FC } from 'react'
 import { PiInfo, PiUploadThin } from 'react-icons/pi'
@@ -64,7 +64,7 @@ export const FilePluginActions: FC<FilePluginActionsProps> = ({
         </Tooltip>
       )}
       {showViewFile && (
-        <FileHoverCard2
+        <FileHoverCard
           width={width}
           height={height}
           availablePreview={availablePreview}

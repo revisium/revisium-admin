@@ -31,7 +31,7 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   get isExpandable(): boolean {
-    return true // Arrays are always expandable (at least for CreateButton)
+    return true
   }
 
   get isInitiallyExpanded(): boolean {

@@ -2,12 +2,12 @@ import { IconButton } from '@chakra-ui/react'
 import { FC, useCallback } from 'react'
 import { PiFile } from 'react-icons/pi'
 
-interface FileIcon2Props {
+interface FileIconProps {
   dataTestId: string
   url: string
 }
 
-export const FileIcon: FC<FileIcon2Props> = ({ dataTestId, url }) => {
+export const FileIcon: FC<FileIconProps> = ({ dataTestId, url }) => {
   const handleOpenFile = useCallback(() => {
     window.open(url, '_blank')
   }, [url])

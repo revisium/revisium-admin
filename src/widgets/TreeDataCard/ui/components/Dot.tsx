@@ -45,7 +45,7 @@ export const Dot: FC<DotProps> = ({ isCollapsed, isCollapsible, toggleCollapsed 
           cursor="pointer"
         >
           <Box rotate={isCollapsed ? '0' : '90deg'}>
-            <MdOutlineChevronRight size={isCollapsed ? 16 : 16} />
+            <MdOutlineChevronRight size={16} />
           </Box>
         </Flex>
       )}

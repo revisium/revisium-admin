@@ -29,7 +29,7 @@ export class ForeignKeyValueNode extends BaseValueNode {
   }
 
   get currentValue(): string {
-    return this.stringStore.getPlainValue() as string
+    return this.stringStore.getPlainValue()
   }
 
   private get stringStore(): JsonStringValueStore {

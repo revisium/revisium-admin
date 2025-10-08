@@ -19,7 +19,6 @@ import { DatePickerRendererComponent } from './DatePickerRenderer'
 
 import { JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
-import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
 
 interface RendererEntry {
@@ -58,10 +57,7 @@ export class NodeRendererRegistry {
         Component: FileRendererComponent,
         canRender: (node) => {
           const nodeStore = node.getStore()
-          return (
-            nodeStore.type === JsonSchemaTypeName.Object &&
-            (nodeStore as JsonObjectValueStore).$ref === SystemSchemaIds.File
-          )
+          return nodeStore.type === JsonSchemaTypeName.Object && nodeStore.$ref === SystemSchemaIds.File
         },
       },
       {
@@ -72,7 +68,7 @@ export class NodeRendererRegistry {
         Component: ForeignKeyRendererComponent,
         canRender: (node) => {
           const nodeStore = node.getStore()
-          return nodeStore.type === JsonSchemaTypeName.String && Boolean((nodeStore as JsonStringValueStore).foreignKey)
+          return nodeStore.type === JsonSchemaTypeName.String && Boolean(nodeStore.foreignKey)
         },
       },
       {

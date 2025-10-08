@@ -3,7 +3,7 @@ import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
 
 export class PrimitiveRootNode extends BaseValueNode {
-  private primitiveStore: JsonValueStore
+  private readonly primitiveStore: JsonValueStore
   private _children: BaseValueNode[] | null = null
 
   constructor(primitiveStore: JsonValueStore) {

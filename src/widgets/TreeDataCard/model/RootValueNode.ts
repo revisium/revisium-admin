@@ -43,13 +43,7 @@ export class RootValueNode extends BaseValueNode {
 
   get children(): BaseValueNode[] {
     if (!this._children) {
-      this._children = [this.idNode]
-
-      if (!this.isPrimitive()) {
-        this._children.push(this.valueNode)
-      } else {
-        this._children.push(this.valueNode)
-      }
+      this._children = [this.idNode, this.valueNode]
     }
 
     return this._children
@@ -76,20 +70,20 @@ export class RootValueNode extends BaseValueNode {
       }
 
       if (node.expanded && node.hasChildren) {
-        node.children.forEach((child) => {
+        for (const child of node.children) {
           const shouldSkip = child instanceof PrimitiveRootNode
           traverse(child, shouldSkip)
-        })
+        }
       }
     }
 
-    this.children.forEach((child) => {
+    for (const child of this.children) {
       if (child instanceof IdValueNode) {
         traverse(child)
       } else {
         traverse(child, true)
       }
-    })
+    }
 
     return result
   }

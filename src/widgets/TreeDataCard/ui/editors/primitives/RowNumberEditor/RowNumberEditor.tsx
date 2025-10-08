@@ -15,8 +15,8 @@ interface RowNumberEditorProps {
 export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store, readonly, dataTestId }) => {
   const handleChange = useCallback(
     (value: string) => {
-      const parsedValue = parseFloat(value)
-      if (!isNaN(parsedValue)) {
+      const parsedValue = Number.parseFloat(value)
+      if (!Number.isNaN(parsedValue)) {
         store.setValue(parsedValue)
       } else {
         store.setValue(store.default)

@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import { RootValueNode } from 'src/widgets/TreeDataCard'
+import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { nodeRendererRegistry } from './renderers'
 
 export interface TreeDataCardWidgetProps {
@@ -11,22 +12,21 @@ export interface TreeDataCardWidgetProps {
 
 export const TreeDataCardWidget: React.FC<TreeDataCardWidgetProps> = observer(({ store, isEdit = false }) => {
   const renderer = useCallback(
-    (index: number) => {
-      const node = store.flattenedNodes[index]
-
+    (_: number, node: BaseValueNode) => {
       return nodeRendererRegistry.render({
         node,
         isEdit,
       })
     },
-    [store.flattenedNodes, isEdit],
+    [isEdit],
   )
 
   return (
     <Virtuoso
-      style={{ width: '100%', height: `${store.flattenedNodes.length * 28}px` }}
+      style={{ width: '100%' }}
       useWindowScroll
       totalCount={store.flattenedNodes.length}
+      data={store.flattenedNodes}
       itemContent={renderer}
       overscan={10}
     />

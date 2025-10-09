@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { ViewerSwitcherMode } from 'src/entities/Schema'
+import { toSortedJsonValue, ViewerSwitcherMode } from 'src/entities/Schema'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { ForeignKeysByDataCard } from 'src/entities/Schema/ui/ForeignKeysByDataCard/ForeignKeysByDataCard.tsx'
 
@@ -51,7 +51,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit
         <JsonCard
           schema={store.schemaStore.getPlainSchema()}
           readonly={!isEdit}
-          data={store.root.getPlainValue()}
+          data={toSortedJsonValue(store.root)}
           onChange={store.updateValue}
         />
       )}

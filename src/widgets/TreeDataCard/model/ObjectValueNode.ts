@@ -1,4 +1,4 @@
-import { priorityObjectValueSorting } from 'src/entities/Schema'
+import { jsonValueStoreSorting } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
@@ -14,7 +14,7 @@ export class ObjectValueNode extends BaseValueNode {
   }
 
   public get children(): BaseValueNode[] {
-    const currentEntries = priorityObjectValueSorting(this.objectStore)
+    const currentEntries = jsonValueStoreSorting(this.objectStore)
 
     if (!this.childrenCache) {
       this.childrenCache = currentEntries.map(([, childStore]) => {

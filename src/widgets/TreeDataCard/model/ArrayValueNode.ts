@@ -49,10 +49,10 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   private buildChildren() {
-    const itemNodes = this.arrayStore.value.map((itemStore, index) => {
+    const itemNodes = this.arrayStore.value.map((itemStore) => {
       const childNode = createNodeForStore(itemStore)
       childNode.setParent(this)
-      childNode.onDelete = () => this.deleteChild(index)
+      childNode.onDelete = () => this.deleteChild(childNode)
       return childNode
     })
 
@@ -60,10 +60,9 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   private addNewItem(store: JsonValueStore) {
-    const newIndex = this.arrayStore.value.length - 1
     const newNode = createNodeForStore(store)
     newNode.setParent(this)
-    newNode.onDelete = () => this.deleteChild(newIndex)
+    newNode.onDelete = () => this.deleteChild(newNode)
 
     this._children.splice(-1, 0, newNode)
   }
@@ -72,14 +71,10 @@ export class ArrayValueNode extends BaseValueNode {
     this.addNewItem(this.arrayStore.createItem())
   }
 
-  public deleteChild(index: number) {
+  public deleteChild(child: BaseValueNode) {
+    const index = this.arrayStore.value.findIndex((item) => item === child.getStore())
+
     this.arrayStore.removeItem(index)
     this._children.splice(index, 1)
-
-    this._children.forEach((child, i) => {
-      if (i < this._children.length - 1) {
-        child.onDelete = () => this.deleteChild(i)
-      }
-    })
   }
 }

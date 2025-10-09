@@ -81,7 +81,7 @@ export class JsonObjectValueStore {
   }
 
   public save() {
-    Object.entries(this.value).map(([_, store]) => {
+    Object.values(this.value).forEach((store) => {
       store.save()
     })
   }

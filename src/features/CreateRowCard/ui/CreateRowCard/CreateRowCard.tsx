@@ -4,7 +4,6 @@ import { useEffectOnce } from 'react-use'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowDataCard } from 'src/entities/Schema/ui/RowDataCard/RowDataCard.tsx'
-import { RowStringEditor } from 'src/entities/Schema/ui/RowStringEditor/RowStringEditor.tsx'
 import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
 
 import { ApproveButton, CloseButton } from 'src/shared/ui'
@@ -52,7 +51,6 @@ export const CreateRowCard: React.FC<CreateRowCardProps> = observer(
         <RowDataCard
           store={store}
           rootName="<id>"
-          rootValue={<RowStringEditor dataTestId="0" store={store.name} />}
           actions={
             <>
               <CloseButton dataTestId="close-create-row-button" onClick={onCancel} />

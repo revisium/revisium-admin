@@ -5,7 +5,6 @@ import { useEffectOnce } from 'react-use'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowDataCard } from 'src/entities/Schema/ui/RowDataCard/RowDataCard.tsx'
-import { RowStringEditor } from 'src/entities/Schema/ui/RowStringEditor/RowStringEditor.tsx'
 import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
 import { ApproveButton } from 'src/shared/ui'
 import { BackButton2 } from 'src/shared/ui/BackButton2/BackButton2.tsx'
@@ -70,7 +69,6 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
         <RowDataCard
           store={store}
           rootName="<id>"
-          rootValue={<RowStringEditor dataTestId="0" store={store.name} readonly={!isEdit} />}
           actions={
             <>
               <BackButton2 dataTestId="back-to-row-list-button" onClick={handleBack} />

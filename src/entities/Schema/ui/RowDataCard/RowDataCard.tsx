@@ -15,7 +15,6 @@ interface RowDataCardProps {
   store: RowDataCardStore
   isEdit: boolean
   rootName?: string
-  rootValue?: React.ReactNode
   actions?: React.ReactNode
 }
 

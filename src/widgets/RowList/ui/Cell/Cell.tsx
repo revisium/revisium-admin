@@ -7,7 +7,7 @@ import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-objec
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { FilePluginActions } from 'src/entities/Schema/ui/FilePluginActions/FilePluginActions.tsx'
-import styles from 'src/entities/Schema/ui/RowObjectEditor/RowObjectEditor.module.scss'
+import styles from './Cell.module.scss'
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema.ts'
 import { BaseCell } from 'src/widgets/RowList/ui/Cell/BaseCell.tsx'
 

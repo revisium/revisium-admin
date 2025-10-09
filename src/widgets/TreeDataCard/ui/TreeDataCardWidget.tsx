@@ -1,36 +1,32 @@
 import { observer } from 'mobx-react-lite'
-import React, { useMemo, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { Virtuoso } from 'react-virtuoso'
-import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store'
-import { buildTreeStore } from 'src/widgets/TreeDataCard/lib/buildTreeStore.ts'
+import { RootValueNode } from 'src/widgets/TreeDataCard'
+import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { nodeRendererRegistry } from './renderers'
 
 export interface TreeDataCardWidgetProps {
-  store: RowDataCardStore
+  store: RootValueNode
   isEdit?: boolean
 }
 
 export const TreeDataCardWidget: React.FC<TreeDataCardWidgetProps> = observer(({ store, isEdit = false }) => {
-  const tree = useMemo(() => buildTreeStore(store), [store])
-  const flattenedNodes = tree.flattenedNodes
-
   const renderer = useCallback(
-    (index: number) => {
-      const node = flattenedNodes[index]
-
+    (_: number, node: BaseValueNode) => {
       return nodeRendererRegistry.render({
         node,
         isEdit,
       })
     },
-    [flattenedNodes, isEdit],
+    [isEdit],
   )
 
   return (
     <Virtuoso
-      style={{ width: '100%', height: `${flattenedNodes.length * 28}px` }}
+      style={{ width: '100%' }}
       useWindowScroll
-      totalCount={flattenedNodes.length}
+      totalCount={store.flattenedNodes.length}
+      data={store.flattenedNodes}
       itemContent={renderer}
       overscan={10}
     />

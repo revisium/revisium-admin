@@ -11,9 +11,7 @@ export class RootValueNode extends BaseValueNode {
   private _children: BaseValueNode[] | null = null
 
   constructor(cardStore: RowDataCardStore) {
-    const actualRootName = cardStore.name.value || 'root'
-    const rootId = `root-${cardStore.root.nodeId}`
-    super(actualRootName, cardStore.root, 'root', rootId)
+    super(cardStore.root, 'root')
 
     this.cardStore = cardStore
 
@@ -32,7 +30,7 @@ export class RootValueNode extends BaseValueNode {
     if (this.isPrimitive()) {
       return new PrimitiveRootNode(rootStore)
     } else {
-      return createNodeForStore('', rootStore)
+      return createNodeForStore(rootStore)
     }
   }
 
@@ -88,25 +86,34 @@ export class RootValueNode extends BaseValueNode {
     return result
   }
 
-  public findNodeById(id: string): BaseValueNode | null {
-    const traverse = (node: BaseValueNode): BaseValueNode | null => {
-      if (node.id === id) return node
+  public saveExpandedState(): Map<string, boolean> {
+    const expandedState = new Map<string, boolean>()
 
-      for (const child of node.children) {
-        const found = traverse(child)
-        if (found) return found
+    const traverse = (node: BaseValueNode) => {
+      if (node.isExpandable) {
+        expandedState.set(node.dataTestId, node.expanded)
       }
 
-      return null
+      for (const child of node.children) {
+        traverse(child)
+      }
     }
 
-    return traverse(this)
+    traverse(this)
+    return expandedState
   }
 
-  public toggleNode(id: string) {
-    const node = this.findNodeById(id)
-    if (node?.isExpandable) {
-      node.toggleExpanded()
+  public restoreExpandedState(expandedState: Map<string, boolean>) {
+    const traverse = (node: BaseValueNode) => {
+      if (node.isExpandable && expandedState.has(node.dataTestId)) {
+        node.expanded = expandedState.get(node.dataTestId)!
+      }
+
+      for (const child of node.children) {
+        traverse(child)
+      }
     }
+
+    traverse(this)
   }
 }

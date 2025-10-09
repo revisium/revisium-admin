@@ -5,24 +5,19 @@ export type NodeType = 'root' | 'object' | 'array' | 'string' | 'number' | 'bool
 
 export abstract class BaseValueNode {
   public expanded: boolean = false
-  public fieldName: string
   public parent: BaseValueNode | null = null
+  public onDelete?: () => void
 
   protected store: JsonValueStore
   public readonly nodeType: NodeType
-  public readonly id: string
 
-  protected constructor(fieldName: string, store: JsonValueStore, nodeType: NodeType, customId?: string) {
-    this.fieldName = fieldName
+  protected constructor(store: JsonValueStore, nodeType: NodeType) {
     this.store = store
     this.nodeType = nodeType
-    this.id = customId || store.nodeId
 
     makeObservable(this, {
       expanded: observable,
-      fieldName: observable,
       parent: observable,
-      depth: computed,
       indexPath: computed,
       isLastSibling: computed,
       guides: computed,
@@ -36,14 +31,15 @@ export abstract class BaseValueNode {
     })
   }
 
-  get depth(): number {
-    let depth = 0
-    let current: BaseValueNode | null = this.parent
-    while (current) {
-      depth++
-      current = current.parent
+  public get fieldName() {
+    if (!this.store.id) {
+      return '<root value>'
     }
-    return depth
+
+    if (this.parent?.nodeType === 'array') {
+      return `[${this.store.id}]`
+    }
+    return this.store.id
   }
 
   get indexPath(): number[] {

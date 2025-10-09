@@ -1,5 +1,6 @@
 import { makeObservable, observable, action } from 'mobx'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store'
+import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
 import { CreateItemValueNode } from './CreateItemValueNode'
@@ -8,10 +9,10 @@ export class ArrayValueNode extends BaseValueNode {
   public _children: BaseValueNode[] = []
   private readonly createButtonNode: CreateItemValueNode
 
-  constructor(fieldName: string, store: JsonArrayValueStore) {
-    super(fieldName, store, 'array')
+  constructor(store: JsonArrayValueStore) {
+    super(store, 'array')
 
-    this.createButtonNode = new CreateItemValueNode('+ Add Item', this.arrayStore, () => {
+    this.createButtonNode = new CreateItemValueNode(this.arrayStore, () => {
       this.buildChildren()
     })
     this.createButtonNode.setParent(this)
@@ -19,6 +20,7 @@ export class ArrayValueNode extends BaseValueNode {
     makeObservable(this, {
       _children: observable,
       createItem: action,
+      deleteChild: action,
     })
 
     this.buildChildren()
@@ -47,17 +49,32 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   private buildChildren() {
-    const itemNodes = this.arrayStore.value.map((itemStore, index) => {
-      const childNode = createNodeForStore(`[${index}]`, itemStore)
+    const itemNodes = this.arrayStore.value.map((itemStore) => {
+      const childNode = createNodeForStore(itemStore)
       childNode.setParent(this)
+      childNode.onDelete = () => this.deleteChild(childNode)
       return childNode
     })
 
     this._children = [...itemNodes, this.createButtonNode]
   }
 
+  private addNewItem(store: JsonValueStore) {
+    const newNode = createNodeForStore(store)
+    newNode.setParent(this)
+    newNode.onDelete = () => this.deleteChild(newNode)
+
+    this._children.splice(-1, 0, newNode)
+  }
+
   public createItem() {
-    this.arrayStore.createItem()
-    this.buildChildren()
+    this.addNewItem(this.arrayStore.createItem())
+  }
+
+  public deleteChild(child: BaseValueNode) {
+    const index = this.arrayStore.value.findIndex((item) => item === child.getStore())
+
+    this.arrayStore.removeItem(index)
+    this._children.splice(index, 1)
   }
 }

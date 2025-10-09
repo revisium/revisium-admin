@@ -80,6 +80,12 @@ export class JsonObjectValueStore {
     }, {})
   }
 
+  public save() {
+    Object.values(this.value).forEach((store) => {
+      store.save()
+    })
+  }
+
   public updateBaseValue(data: JsonValue): void {
     Object.entries(this.value).map(([name, store]) => {
       if (name in (data as unknown as object)) {

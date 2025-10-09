@@ -10,10 +10,13 @@ import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { IRowModel } from 'src/shared/model/BackendStore'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { RootValueNode } from 'src/widgets/TreeDataCard'
 
 export class RowDataCardStore {
   public readonly name = new JsonStringValueStore(new JsonStringStore())
   public readonly root: JsonValueStore
+
+  public node: RootValueNode
 
   public overNode: JsonValueStore | null = null
   public viewMode: ViewerSwitcherMode = ViewerSwitcherMode.Tree
@@ -34,7 +37,12 @@ export class RowDataCardStore {
     this.name.value = name
     this.originData = this.originRow?.data ?? null
 
-    this.reset()
+    if (this.originData) {
+      this.root.updateBaseValue(this.originData)
+      this.name.value = this.name.baseValue
+    }
+
+    this.node = new RootValueNode(this)
 
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -78,8 +86,13 @@ export class RowDataCardStore {
 
   public reset() {
     if (this.originData !== null) {
+      const expandedState = this.node.saveExpandedState()
+
       this.root.updateBaseValue(this.originData)
       this.name.value = this.name.baseValue
+
+      this.node = new RootValueNode(this)
+      this.node.restoreExpandedState(expandedState)
     }
   }
 
@@ -109,8 +122,8 @@ export class RowDataCardStore {
 
   public save() {
     this.originData = this.root.getPlainValue()
-    this.root.updateBaseValue(this.originData)
-    this.name.updateBaseValue(this.name.value)
+    this.root.save()
+    this.name.save()
   }
 
   public updateValue(value: JsonValue) {

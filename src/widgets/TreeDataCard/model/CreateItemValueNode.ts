@@ -5,12 +5,15 @@ import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-
 export class CreateItemValueNode extends BaseValueNode {
   private readonly onItemCreated?: () => void
 
-  constructor(fieldName: string, arrayStore: JsonArrayValueStore, onItemCreated?: () => void) {
-    const createButtonId = `${arrayStore.nodeId}-create-button`
-    super(fieldName, arrayStore, 'createButton', createButtonId)
+  constructor(arrayStore: JsonArrayValueStore, onItemCreated?: () => void) {
+    super(arrayStore, 'createButton')
 
     this.onItemCreated = onItemCreated
     this.expanded = this.isInitiallyExpanded
+  }
+
+  get dataTestId(): string {
+    return `${this.parent?.dataTestId}`
   }
 
   get children(): BaseValueNode[] {

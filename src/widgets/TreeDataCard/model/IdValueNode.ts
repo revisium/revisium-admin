@@ -4,7 +4,11 @@ import { BaseValueNode } from './BaseValueNode'
 
 export class IdValueNode extends BaseValueNode {
   constructor(cardStore: RowDataCardStore) {
-    super('<id>', cardStore.name, 'string', `id-${cardStore.name.nodeId}`)
+    super(cardStore.name, 'string')
+  }
+
+  public get fieldName() {
+    return '<id>'
   }
 
   get children(): BaseValueNode[] {

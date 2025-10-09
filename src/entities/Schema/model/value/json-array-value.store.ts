@@ -94,6 +94,18 @@ export class JsonArrayValueStore {
     item.parent = null
     item.id = ''
     this.value.splice(index, 1)
+
+    for (let i = index; i < this.value.length; i++) {
+      this.value[i].id = i.toString()
+    }
+  }
+
+  public save() {
+    this.baseValue = this.value
+
+    for (const item of this.baseValue) {
+      item.save()
+    }
   }
 
   public updateBaseValue(data: JsonValue): void {

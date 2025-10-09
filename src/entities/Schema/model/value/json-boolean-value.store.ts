@@ -64,6 +64,10 @@ export class JsonBooleanValueStore {
     this.value = value
   }
 
+  public save() {
+    this.baseValue = this.value
+  }
+
   public updateBaseValue(data: JsonValue): void {
     this.baseValue = data as unknown as boolean
     this.value = data as unknown as boolean

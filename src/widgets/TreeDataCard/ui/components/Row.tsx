@@ -1,5 +1,7 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
+import styles from 'src/entities/Schema/ui/RowArrayEditor/RowArrayEditor.module.scss'
+import { RemoveButton } from 'src/shared/ui/RemoveButton/RemoveButton.tsx'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { Dot } from './Dot'
 import { Field } from './Field'
@@ -35,6 +37,7 @@ export const Row: FC<IndentedRowProps> = ({
       onMouseLeave={() => actions.onOverNode(null)}
       position="relative"
       className="group"
+      data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
       <Flex width="100%">
@@ -44,6 +47,24 @@ export const Row: FC<IndentedRowProps> = ({
         {!skipField && <Field node={node} />}
         {!skipMore && isCollapsed && <More onClick={() => node.toggleExpanded()} />}
         {children}
+        {node.onDelete && (
+          <Box
+            display="none"
+            _groupHover={{
+              display: 'block',
+            }}
+          >
+            <RemoveButton
+              dataTestId={`${node.dataTestId}-remove-button`}
+              height="26px"
+              aria-label="remove"
+              color="gray.400"
+              _hover={{ color: 'gray.400' }}
+              className={styles.Action}
+              onClick={node.onDelete}
+            />
+          </Box>
+        )}
       </Flex>
     </Flex>
   )

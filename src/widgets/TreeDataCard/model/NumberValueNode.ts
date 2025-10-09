@@ -2,8 +2,8 @@ import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-numbe
 import { BaseValueNode } from './BaseValueNode'
 
 export class NumberValueNode extends BaseValueNode {
-  constructor(fieldName: string, store: JsonNumberValueStore) {
-    super(fieldName, store, 'number')
+  constructor(store: JsonNumberValueStore) {
+    super(store, 'number')
 
     this.expanded = this.isInitiallyExpanded
   }

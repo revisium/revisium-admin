@@ -6,8 +6,8 @@ import { BaseValueNode } from './BaseValueNode'
 export class ObjectValueNode extends BaseValueNode {
   private childrenCache: BaseValueNode[] | null = null
 
-  constructor(fieldName: string, store: JsonObjectValueStore) {
-    super(fieldName, store, 'object')
+  constructor(store: JsonObjectValueStore) {
+    super(store, 'object')
 
     this.expanded = this.isInitiallyExpanded
   }
@@ -16,8 +16,8 @@ export class ObjectValueNode extends BaseValueNode {
     const currentEntries = Object.entries(this.objectStore.value)
 
     if (!this.childrenCache) {
-      this.childrenCache = currentEntries.map(([key, childStore]) => {
-        const childNode = createNodeForStore(key, childStore)
+      this.childrenCache = currentEntries.map(([, childStore]) => {
+        const childNode = createNodeForStore(childStore)
         childNode.setParent(this)
         return childNode
       })

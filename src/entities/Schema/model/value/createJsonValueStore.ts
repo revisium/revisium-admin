@@ -66,11 +66,11 @@ export const createPrimitiveValueStore = (
   rawValue: JsonPrimitives,
 ): JsonValueStorePrimitives => {
   if (schema.type === JsonSchemaTypeName.String) {
-    return new JsonStringValueStore(schema, rowId, rawValue as string | null)
+    return new JsonStringValueStore(schema, rowId, rawValue as string)
   } else if (schema.type === JsonSchemaTypeName.Number) {
-    return new JsonNumberValueStore(schema, rowId, rawValue as number | null)
+    return new JsonNumberValueStore(schema, rowId, rawValue as number)
   } else if (schema.type === JsonSchemaTypeName.Boolean) {
-    return new JsonBooleanValueStore(schema, rowId, rawValue as boolean | null)
+    return new JsonBooleanValueStore(schema, rowId, rawValue as boolean)
   } else {
     throw new Error('this type is not allowed')
   }

@@ -7,7 +7,7 @@ export class PrimitiveRootNode extends BaseValueNode {
   private _children: BaseValueNode[] | null = null
 
   constructor(primitiveStore: JsonValueStore) {
-    super('', primitiveStore, primitiveStore.type)
+    super(primitiveStore, primitiveStore.type)
     this.primitiveStore = primitiveStore
     this.expanded = this.isInitiallyExpanded
   }
@@ -16,7 +16,7 @@ export class PrimitiveRootNode extends BaseValueNode {
     if (!this._children) {
       this._children = []
 
-      const valueNode = createNodeForStore('<root value>', this.primitiveStore)
+      const valueNode = createNodeForStore(this.primitiveStore)
       valueNode.setParent(this)
       this._children.push(valueNode)
     }

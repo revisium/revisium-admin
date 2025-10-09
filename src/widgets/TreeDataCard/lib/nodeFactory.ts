@@ -8,29 +8,29 @@ import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.
 import { ObjectValueNode } from 'src/widgets/TreeDataCard/model/ObjectValueNode.ts'
 import { StringValueNode } from 'src/widgets/TreeDataCard/model/StringValueNode.ts'
 
-export function createNodeForStore(fieldName: string, store: JsonValueStore): BaseValueNode {
+export function createNodeForStore(store: JsonValueStore): BaseValueNode {
   switch (store.type) {
     case JsonSchemaTypeName.Object:
-      return new ObjectValueNode(fieldName, store)
+      return new ObjectValueNode(store)
 
     case JsonSchemaTypeName.Array:
-      return new ArrayValueNode(fieldName, store)
+      return new ArrayValueNode(store)
 
     case JsonSchemaTypeName.String: {
       const stringStore = store
       if (stringStore.foreignKey) {
-        return new ForeignKeyValueNode(fieldName, stringStore)
+        return new ForeignKeyValueNode(stringStore)
       }
-      return new StringValueNode(fieldName, stringStore)
+      return new StringValueNode(stringStore)
     }
 
     case JsonSchemaTypeName.Number:
-      return new NumberValueNode(fieldName, store)
+      return new NumberValueNode(store)
 
     case JsonSchemaTypeName.Boolean:
-      return new BooleanValueNode(fieldName, store)
+      return new BooleanValueNode(store)
 
     default:
-      return new StringValueNode(fieldName, store)
+      return new StringValueNode(store)
   }
 }

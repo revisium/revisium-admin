@@ -19,11 +19,11 @@ export class JsonStringValueStore {
   constructor(
     public readonly schema: JsonStringStore,
     public readonly rowId: string = '',
-    public value: string | null = null,
+    public value: string = '',
   ) {
     this.index = this.schema.registerValue(this)
 
-    this.baseValue = this.value ?? ''
+    this.baseValue = this.value
 
     makeAutoObservable(this)
   }
@@ -74,6 +74,10 @@ export class JsonStringValueStore {
 
   public setValue(value: string) {
     this.value = value
+  }
+
+  public save() {
+    this.baseValue = this.value
   }
 
   public updateBaseValue(data: JsonValue): void {

@@ -2,8 +2,8 @@ import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-bool
 import { BaseValueNode } from './BaseValueNode'
 
 export class BooleanValueNode extends BaseValueNode {
-  constructor(fieldName: string, store: JsonBooleanValueStore) {
-    super(fieldName, store, 'boolean')
+  constructor(store: JsonBooleanValueStore) {
+    super(store, 'boolean')
 
     this.expanded = this.isInitiallyExpanded
   }

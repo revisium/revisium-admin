@@ -1,6 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
-import styles from 'src/entities/Schema/ui/RowArrayEditor/RowArrayEditor.module.scss'
 import { RemoveButton } from 'src/shared/ui/RemoveButton/RemoveButton.tsx'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { Dot } from './Dot'
@@ -60,7 +59,6 @@ export const Row: FC<IndentedRowProps> = ({
               aria-label="remove"
               color="gray.400"
               _hover={{ color: 'gray.400' }}
-              className={styles.Action}
               onClick={node.onDelete}
             />
           </Box>

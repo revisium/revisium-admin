@@ -1,3 +1,4 @@
+import { jsonValueStoreSorting } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
@@ -12,8 +13,8 @@ export class ObjectValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
-  get children(): BaseValueNode[] {
-    const currentEntries = Object.entries(this.objectStore.value)
+  public get children(): BaseValueNode[] {
+    const currentEntries = jsonValueStoreSorting(this.objectStore)
 
     if (!this.childrenCache) {
       this.childrenCache = currentEntries.map(([, childStore]) => {
@@ -26,24 +27,20 @@ export class ObjectValueNode extends BaseValueNode {
     return this.childrenCache
   }
 
-  get isExpandable(): boolean {
+  public get isExpandable(): boolean {
     return Object.keys(this.objectStore.value).length > 0
   }
 
-  get isInitiallyExpanded(): boolean {
+  public get isInitiallyExpanded(): boolean {
     const isFile = this.objectStore.$ref === SystemSchemaIds.File
     return !isFile
   }
 
-  get hasChildren(): boolean {
+  public get hasChildren(): boolean {
     return Object.keys(this.objectStore.value).length > 0
   }
 
   private get objectStore(): JsonObjectValueStore {
     return this.store as JsonObjectValueStore
-  }
-
-  invalidateChildrenCache() {
-    this.childrenCache = null
   }
 }

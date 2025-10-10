@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useState } from 'react'
 import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-boolean-value.store'
 import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
+import { BooleanMenu } from 'src/widgets/TreeDataCard/ui/editors/primitives/RowBooleanEditor/BooleanMenu.tsx'
 
 interface RowBooleanEditorProps {
   store: JsonBooleanValueStore
@@ -27,13 +28,25 @@ export const RowBooleanEditor: React.FC<RowBooleanEditorProps> = observer(({ sto
     store.setValue(value)
   }, [store, state])
 
+  const handleBooleanSelect = useCallback(
+    (value: boolean) => {
+      setState(value.toString())
+      store.setValue(value)
+    },
+    [store],
+  )
+
   return (
-    <PrimitiveBox
-      value={state}
-      readonly={readonly}
-      dataTestId={dataTestId}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    />
+    <>
+      <BooleanMenu value={state} onChange={handleBooleanSelect} disabled={readonly}>
+        <PrimitiveBox
+          value={state}
+          readonly={readonly}
+          dataTestId={dataTestId}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      </BooleanMenu>
+    </>
   )
 })

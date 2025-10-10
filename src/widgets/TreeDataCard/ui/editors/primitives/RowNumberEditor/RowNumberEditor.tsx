@@ -1,8 +1,7 @@
-import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable'
+import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
 
 const OnlyDigitsDotDash = /^[\d.-]+$/
 
@@ -25,18 +24,15 @@ export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store
     [store],
   )
 
+  const value = store.getPlainValue().toString()
+
   return (
-    <Box ml="2px" pl="4px" pr="4px" height="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
-      {readonly ? (
-        store.getPlainValue() ?? '""'
-      ) : (
-        <ContentEditable
-          dataTestId={dataTestId}
-          initValue={store.getPlainValue().toString()}
-          onChange={handleChange}
-          restrict={OnlyDigitsDotDash}
-        />
-      )}
-    </Box>
+    <PrimitiveBox
+      value={value}
+      readonly={readonly}
+      dataTestId={dataTestId}
+      onChange={handleChange}
+      restrict={OnlyDigitsDotDash}
+    />
   )
 })

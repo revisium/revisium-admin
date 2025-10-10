@@ -1,8 +1,7 @@
-import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-boolean-value.store'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable'
+import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
 
 interface RowBooleanEditorProps {
   store: JsonBooleanValueStore
@@ -24,12 +23,12 @@ export const RowBooleanEditor: React.FC<RowBooleanEditorProps> = observer(({ sto
   }, [store, state])
 
   return (
-    <Box ml="2px" pl="4px" pr="4px" height="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
-      {readonly ? (
-        store.getPlainValue().toString() ?? '""'
-      ) : (
-        <ContentEditable dataTestId={dataTestId} initValue={state} onChange={handleChange} onBlur={handleBlur} />
-      )}
-    </Box>
+    <PrimitiveBox
+      value={state}
+      readonly={readonly}
+      dataTestId={dataTestId}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    />
   )
 })

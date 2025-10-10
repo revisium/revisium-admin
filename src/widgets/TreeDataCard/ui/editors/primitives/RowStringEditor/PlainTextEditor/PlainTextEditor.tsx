@@ -1,8 +1,7 @@
-import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable'
+import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
 
 export interface PlainTextEditorProps {
   store: JsonStringValueStore
@@ -19,18 +18,13 @@ export const PlainTextEditor: FC<PlainTextEditorProps> = observer(({ store, read
   )
 
   return (
-    <Box ml="2px" pl="4px" pr="4px" minHeight="24px" minWidth="15px" cursor={readonly ? 'not-allowed' : undefined}>
-      {readonly ? (
-        `"${store.getPlainValue()}"`
-      ) : (
-        <ContentEditable
-          dataTestId={dataTestId}
-          prefix='"'
-          postfix='"'
-          initValue={store.getPlainValue()}
-          onChange={handleChange}
-        />
-      )}
-    </Box>
+    <PrimitiveBox
+      prefix='"'
+      postfix='"'
+      value={store.getPlainValue()}
+      readonly={readonly}
+      dataTestId={dataTestId}
+      onChange={handleChange}
+    />
   )
 })

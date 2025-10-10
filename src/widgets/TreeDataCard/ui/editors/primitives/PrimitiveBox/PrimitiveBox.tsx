@@ -41,7 +41,7 @@ export const PrimitiveBox: FC<PrimitiveBoxProps> = observer(
         pr="4px"
         minHeight="24px"
         minWidth="15px"
-        cursor={readonly ? 'not-allowed' : undefined}
+        cursor={readonly ? 'text' : undefined}
       >
         {readonly ? (
           `${prefix}${value}${postfix}`

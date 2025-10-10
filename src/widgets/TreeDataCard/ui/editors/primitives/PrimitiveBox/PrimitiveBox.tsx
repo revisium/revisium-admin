@@ -39,7 +39,7 @@ export const PrimitiveBox: FC<PrimitiveBoxProps> = observer(
         ml="2px"
         pl="4px"
         pr="4px"
-        minHeight="24px"
+        height="24px"
         minWidth="15px"
         cursor={readonly ? 'text' : undefined}
       >

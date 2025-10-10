@@ -1,5 +1,6 @@
 import { Popover, Portal, Box } from '@chakra-ui/react'
 import { FC, ReactNode, useRef, useState, useCallback, useEffect } from 'react'
+import { BooleanMenuItem } from 'src/widgets/TreeDataCard/ui/editors/primitives/RowBooleanEditor/BooleanMenuItem.tsx'
 
 interface BooleanMenuProps {
   children: ReactNode
@@ -70,28 +71,8 @@ export const BooleanMenu: FC<BooleanMenuProps> = ({ children, onChange, disabled
           <Portal>
             <Popover.Positioner>
               <Popover.Content width="60px" p={1}>
-                <Box
-                  px={2}
-                  py={1.5}
-                  cursor="pointer"
-                  borderRadius="md"
-                  fontSize="sm"
-                  _hover={{ bg: 'gray.100' }}
-                  onClick={() => handleSelect('true')}
-                >
-                  true
-                </Box>
-                <Box
-                  px={2}
-                  py={1.5}
-                  cursor="pointer"
-                  borderRadius="md"
-                  fontSize="sm"
-                  _hover={{ bg: 'gray.100' }}
-                  onClick={() => handleSelect('false')}
-                >
-                  false
-                </Box>
+                <BooleanMenuItem onClick={() => handleSelect('true')}>true</BooleanMenuItem>
+                <BooleanMenuItem onClick={() => handleSelect('false')}>false</BooleanMenuItem>
               </Popover.Content>
             </Popover.Positioner>
           </Portal>

@@ -28,6 +28,6 @@ export class IdValueNode extends BaseValueNode {
   }
 
   getStore(): JsonStringValueStore {
-    return this.store as JsonStringValueStore
+    return this._store as JsonStringValueStore
   }
 }

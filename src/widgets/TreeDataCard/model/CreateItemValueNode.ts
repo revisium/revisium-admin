@@ -33,7 +33,7 @@ export class CreateItemValueNode extends BaseValueNode {
   }
 
   get arrayStore(): JsonArrayValueStore {
-    return this.store as JsonArrayValueStore
+    return this._store as JsonArrayValueStore
   }
 
   createItem() {

@@ -8,31 +8,23 @@ export class ForeignKeyValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
-  get children(): BaseValueNode[] {
+  public get children(): BaseValueNode[] {
     return []
   }
 
-  get isExpandable(): boolean {
+  public get isExpandable(): boolean {
     return false
   }
 
-  get isInitiallyExpanded(): boolean {
+  public get isInitiallyExpanded(): boolean {
     return false
   }
 
-  get hasChildren(): boolean {
+  public get hasChildren(): boolean {
     return false
   }
 
-  get foreignKeyValue(): string | null {
-    return this.stringStore.foreignKey || null
-  }
-
-  get currentValue(): string {
-    return this.stringStore.getPlainValue()
-  }
-
-  private get stringStore(): JsonStringValueStore {
-    return this.store as JsonStringValueStore
+  public get store() {
+    return this.getStore() as JsonStringValueStore
   }
 }

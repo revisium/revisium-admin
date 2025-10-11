@@ -45,7 +45,7 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   private get arrayStore(): JsonArrayValueStore {
-    return this.store as JsonArrayValueStore
+    return this._store as JsonArrayValueStore
   }
 
   private buildChildren() {

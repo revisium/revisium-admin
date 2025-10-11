@@ -8,11 +8,11 @@ export abstract class BaseValueNode {
   public parent: BaseValueNode | null = null
   public onDelete?: () => void
 
-  protected store: JsonValueStore
+  protected _store: JsonValueStore
   public readonly nodeType: NodeType
 
   protected constructor(store: JsonValueStore, nodeType: NodeType) {
-    this.store = store
+    this._store = store
     this.nodeType = nodeType
 
     makeObservable(this, {
@@ -32,11 +32,11 @@ export abstract class BaseValueNode {
   }
 
   public get fieldName() {
-    if (!this.store.id) {
+    if (!this._store.id) {
       return '<root value>'
     }
 
-    return this.store.id
+    return this._store.id
   }
 
   public get indexPath(): number[] {
@@ -99,6 +99,6 @@ export abstract class BaseValueNode {
   abstract get hasChildren(): boolean
 
   public getStore(): JsonValueStore {
-    return this.store
+    return this._store
   }
 }

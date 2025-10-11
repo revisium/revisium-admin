@@ -41,6 +41,6 @@ export class ObjectValueNode extends BaseValueNode {
   }
 
   private get objectStore(): JsonObjectValueStore {
-    return this.store as JsonObjectValueStore
+    return this._store as JsonObjectValueStore
   }
 }

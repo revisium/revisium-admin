@@ -45,3 +45,5 @@ container.register(
   },
   { scope: 'singleton' },
 )
+
+export const client = container.get(ApiService).client

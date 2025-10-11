@@ -36,13 +36,10 @@ export abstract class BaseValueNode {
       return '<root value>'
     }
 
-    if (this.parent?.nodeType === 'array') {
-      return `[${this.store.id}]`
-    }
     return this.store.id
   }
 
-  get indexPath(): number[] {
+  public get indexPath(): number[] {
     const path: number[] = []
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let current: BaseValueNode | null = this
@@ -60,17 +57,17 @@ export abstract class BaseValueNode {
     return path
   }
 
-  get dataTestId(): string {
+  public get dataTestId(): string {
     return this.indexPath.join('-')
   }
 
-  get isLastSibling(): boolean {
+  public get isLastSibling(): boolean {
     if (!this.parent) return true
     const siblings = this.parent.children
     return siblings[siblings.length - 1] === this
   }
 
-  get guides(): boolean[] {
+  public get guides(): boolean[] {
     const guides: boolean[] = []
     let current: BaseValueNode | null = this.parent
 
@@ -82,17 +79,17 @@ export abstract class BaseValueNode {
     return guides
   }
 
-  setExpanded(expanded: boolean) {
+  public setExpanded(expanded: boolean) {
     if (this.isExpandable) {
       this.expanded = expanded
     }
   }
 
-  toggleExpanded() {
+  public toggleExpanded() {
     this.setExpanded(!this.expanded)
   }
 
-  setParent(parent: BaseValueNode | null) {
+  public setParent(parent: BaseValueNode | null) {
     this.parent = parent
   }
 
@@ -101,7 +98,7 @@ export abstract class BaseValueNode {
   abstract get isInitiallyExpanded(): boolean
   abstract get hasChildren(): boolean
 
-  getStore(): JsonValueStore {
+  public getStore(): JsonValueStore {
     return this.store
   }
 }

@@ -1,10 +1,8 @@
 import { CodegenConfig } from '@graphql-codegen/cli'
-import { loadEnv } from 'vite'
+import dotenv from 'dotenv'
+import path from 'path'
 
-const ENV_DIR = '.env'
-const ENV_PREFIX = 'REACT_APP_'
-
-const env = loadEnv('DEVELOPMENT', ENV_DIR, ENV_PREFIX)
+dotenv.config({ path: path.resolve(__dirname, '.env/.env.development') })
 
 const args = process.argv.slice(2)
 const isDownload = args.includes('--download')
@@ -24,7 +22,7 @@ console.log('isDownload', isDownload)
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: `http://${env.REACT_APP_GRAPHQL_SERVER_HOST}:${env.REACT_APP_GRAPHQL_SERVER_PORT}${env.REACT_APP_GRAPHQL_SERVER_URL}`,
+  schema: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}${process.env.REACT_APP_GRAPHQL_SERVER_URL}`,
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
     [`./src/__generated__/schema.graphql`]: {

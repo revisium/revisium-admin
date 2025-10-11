@@ -38,6 +38,7 @@ export type RowStackModelStateConnectingForeignKeyTable = {
   isSelectingForeignKey: boolean
   store: RowDataCardStore
   foreignKeyNode: JsonStringValueStore
+  isCreating?: boolean
 }
 
 export type RowStackModelStateUpdatingTable = {
@@ -128,7 +129,7 @@ export class RowStackModel {
     }
   }
 
-  public toConnectingForeignKeyRow(foreignKeyNode: JsonStringValueStore) {
+  public toConnectingForeignKeyRow(foreignKeyNode: JsonStringValueStore, isCreating?: boolean) {
     if (
       this.state.type === RowStackModelStateType.CreatingRow ||
       this.state.type === RowStackModelStateType.UpdatingRow
@@ -139,6 +140,7 @@ export class RowStackModel {
         isSelectingForeignKey: this.state.isSelectingForeignKey,
         store: this.state.store,
         foreignKeyNode,
+        isCreating,
       }
     } else {
       throw new Error('Invalid state')

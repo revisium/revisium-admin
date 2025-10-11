@@ -42,22 +42,25 @@ export class RowStackWidgetModel {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public async selectForeignKey(item: RowStackModel, node: JsonStringValueStore): Promise<void> {
+  public async selectForeignKey(item: RowStackModel, node: JsonStringValueStore, isCreating?: boolean): Promise<void> {
     if (!node.foreignKey) {
       throw new Error('Invalid foreign key')
     }
 
     const customTable = await this.getFetchedTableWithRows(node.foreignKey)
 
-    item.toConnectingForeignKeyRow(node)
+    item.toConnectingForeignKeyRow(node, isCreating)
 
     runInAction(() => {
-      this.stack.push(
-        new RowStackModel(this.rootStore, this.projectPageModel, customTable, {
-          type: RowStackModelStateType.List,
-          isSelectingForeignKey: true,
-        }),
-      )
+      const selectingForeignKey = new RowStackModel(this.rootStore, this.projectPageModel, customTable, {
+        type: RowStackModelStateType.List,
+        isSelectingForeignKey: true,
+      })
+      this.stack.push(selectingForeignKey)
+
+      if (isCreating) {
+        selectingForeignKey.toCreatingRow()
+      }
     })
   }
 

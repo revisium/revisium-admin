@@ -12,7 +12,7 @@ interface CreateRowCardProps {
   store: RowDataCardStore
   onCancel?: () => void
   onAdd: () => Promise<void>
-  onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
 }
 
 export const CreateRowCard: React.FC<CreateRowCardProps> = observer(
@@ -33,9 +33,9 @@ export const CreateRowCard: React.FC<CreateRowCardProps> = observer(
     })
 
     const handleSelectForeignKey = useCallback(
-      async (node: JsonStringValueStore) => {
+      async (node: JsonStringValueStore, isCreating?: boolean) => {
         store.setScrollPosition(window.scrollY)
-        await onSelectForeignKey(node)
+        await onSelectForeignKey(node, isCreating)
       },
       [onSelectForeignKey, store],
     )

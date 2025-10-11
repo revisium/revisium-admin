@@ -39,7 +39,7 @@ export const Row: FC<IndentedRowProps> = ({
       data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
-      <Flex width="100%">
+      <Flex width="100%" alignItems="center">
         {!skipDot && (
           <Dot isCollapsed={isCollapsed} isCollapsible={isCollapsible} toggleCollapsed={() => node.toggleExpanded()} />
         )}

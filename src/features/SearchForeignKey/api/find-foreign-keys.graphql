@@ -1,0 +1,14 @@
+query findForeignKey($data: GetRowsInput!) {
+  rows(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      cursor
+      node {
+        id
+      }
+    }
+  }
+}

@@ -311,6 +311,10 @@ export type JsonFilter = {
   lte?: InputMaybe<Scalars['Float']['input']>
   mode?: InputMaybe<QueryMode>
   path?: InputMaybe<Array<Scalars['String']['input']>>
+  search?: InputMaybe<Scalars['String']['input']>
+  searchIn?: InputMaybe<SearchIn>
+  searchLanguage?: InputMaybe<Scalars['String']['input']>
+  searchType?: InputMaybe<SearchType>
   string_contains?: InputMaybe<Scalars['String']['input']>
   string_ends_with?: InputMaybe<Scalars['String']['input']>
   string_starts_with?: InputMaybe<Scalars['String']['input']>
@@ -806,6 +810,20 @@ export type RowsConnection = {
   edges: Array<RowModelEdge>
   pageInfo: PageInfo
   totalCount: Scalars['Int']['output']
+}
+
+export enum SearchIn {
+  ALL = 'all',
+  BOOLEANS = 'booleans',
+  KEYS = 'keys',
+  NUMBERS = 'numbers',
+  STRINGS = 'strings',
+  VALUES = 'values',
+}
+
+export enum SearchType {
+  PHRASE = 'phrase',
+  PLAIN = 'plain',
 }
 
 export type SetUsernameInput = {

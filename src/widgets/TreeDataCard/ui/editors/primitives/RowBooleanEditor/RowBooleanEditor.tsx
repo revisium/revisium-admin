@@ -37,16 +37,14 @@ export const RowBooleanEditor: React.FC<RowBooleanEditorProps> = observer(({ sto
   )
 
   return (
-    <>
-      <BooleanMenu value={state} onChange={handleBooleanSelect} disabled={readonly}>
-        <PrimitiveBox
-          value={state}
-          readonly={readonly}
-          dataTestId={dataTestId}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-      </BooleanMenu>
-    </>
+    <BooleanMenu onChange={handleBooleanSelect} disabled={readonly}>
+      <PrimitiveBox
+        value={state}
+        readonly={readonly}
+        dataTestId={dataTestId}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+    </BooleanMenu>
   )
 })

@@ -23,7 +23,7 @@ export const TreeDataCardWidget: React.FC<TreeDataCardWidgetProps> = observer(({
 
   return (
     <Virtuoso
-      style={{ width: '100%' }}
+      style={{ width: '100%', marginBottom: '8rem' }}
       useWindowScroll
       totalCount={store.flattenedNodes.length}
       data={store.flattenedNodes}

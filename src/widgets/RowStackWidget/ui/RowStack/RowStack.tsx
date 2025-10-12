@@ -22,8 +22,8 @@ export const RowStack: React.FC = observer(() => {
   const { root, item } = useRowStackModel()
 
   const handleSelectForeignKey = useCallback(
-    async (node: JsonStringValueStore) => {
-      await root.selectForeignKey(item, node)
+    async (node: JsonStringValueStore, isCreating?: boolean) => {
+      await root.selectForeignKey(item, node, isCreating)
     },
     [item, root],
   )

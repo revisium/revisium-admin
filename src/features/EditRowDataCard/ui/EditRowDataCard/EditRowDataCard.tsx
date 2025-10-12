@@ -14,7 +14,7 @@ interface EditRowDataCardProps {
   store: RowDataCardStore
   isEdit: boolean
   onUpdate: () => Promise<void>
-  onSelectForeignKey: (node: JsonStringValueStore) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
   onUploadFile: (fileId: string, file: File) => Promise<void>
 }
 
@@ -50,9 +50,9 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
     })
 
     const handleSelectForeignKey = useCallback(
-      async (node: JsonStringValueStore) => {
+      async (node: JsonStringValueStore, isCreating?: boolean) => {
         store.setScrollPosition(window.scrollY)
-        await onSelectForeignKey(node)
+        await onSelectForeignKey(node, isCreating)
       },
       [onSelectForeignKey, store],
     )

@@ -305,6 +305,10 @@ export type JsonFilter = {
   lte?: InputMaybe<Scalars['Float']['input']>
   mode?: InputMaybe<QueryMode>
   path?: InputMaybe<Array<Scalars['String']['input']>>
+  search?: InputMaybe<Scalars['String']['input']>
+  searchIn?: InputMaybe<SearchIn>
+  searchLanguage?: InputMaybe<Scalars['String']['input']>
+  searchType?: InputMaybe<SearchType>
   string_contains?: InputMaybe<Scalars['String']['input']>
   string_ends_with?: InputMaybe<Scalars['String']['input']>
   string_starts_with?: InputMaybe<Scalars['String']['input']>
@@ -781,6 +785,20 @@ export type RowsConnection = {
   totalCount: Scalars['Int']['output']
 }
 
+export enum SearchIn {
+  All = 'all',
+  Booleans = 'booleans',
+  Keys = 'keys',
+  Numbers = 'numbers',
+  Strings = 'strings',
+  Values = 'values',
+}
+
+export enum SearchType {
+  Phrase = 'phrase',
+  Plain = 'plain',
+}
+
 export type SetUsernameInput = {
   username: Scalars['String']['input']
 }
@@ -964,6 +982,18 @@ export type PageInfoFragment = {
   hasNextPage: boolean
   hasPreviousPage: boolean
   endCursor?: string | null
+}
+
+export type FindForeignKeyQueryVariables = Exact<{
+  data: GetRowsInput
+}>
+
+export type FindForeignKeyQuery = {
+  rows: {
+    totalCount: number
+    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    edges: Array<{ cursor: string; node: { id: string } }>
+  }
 }
 
 export type ConfirmEmailCodeMutationVariables = Exact<{
@@ -2236,6 +2266,23 @@ export const BranchRevisionMstFragmentDoc = gql`
   ${RevisionMstFragmentDoc}
   ${EndpointMstFragmentDoc}
 `
+export const FindForeignKeyDocument = gql`
+  query findForeignKey($data: GetRowsInput!) {
+    rows(data: $data) {
+      totalCount
+      pageInfo {
+        ...PageInfo
+      }
+      edges {
+        cursor
+        node {
+          id
+        }
+      }
+    }
+  }
+  ${PageInfoFragmentDoc}
+`
 export const ConfirmEmailCodeDocument = gql`
   mutation confirmEmailCode($data: ConfirmEmailCodeInput!) {
     confirmEmailCode(data: $data) {
@@ -2675,6 +2722,21 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    findForeignKey(
+      variables: FindForeignKeyQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<FindForeignKeyQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FindForeignKeyQuery>(FindForeignKeyDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'findForeignKey',
+        'query',
+        variables,
+      )
+    },
     confirmEmailCode(
       variables: ConfirmEmailCodeMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,

@@ -1,6 +1,7 @@
-import { Box, Flex } from '@chakra-ui/react'
-import { FC, useCallback, useState } from 'react'
-import { PiArrowSquareUpRightThin, PiInfo, PiListBulletsThin } from 'react-icons/pi'
+import { Flex } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
+import { FC, useCallback } from 'react'
+import { PiArrowSquareUpRightThin, PiInfo } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { RowEditorMode, useRowEditorActions } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
@@ -13,21 +14,13 @@ interface ForeignKeyActionsProps {
   readonly?: boolean
 }
 
-export const ForeignKeyActions: FC<ForeignKeyActionsProps> = ({ node, readonly }) => {
+export const ForeignKeyActions: FC<ForeignKeyActionsProps> = observer(({ node, readonly }) => {
   const store = node.store
 
   const linkMaker = useLinkMaker()
   const navigate = useNavigate()
 
-  const [_, setIsLoading] = useState(false)
-
-  const { onSelectForeignKey, mode } = useRowEditorActions()
-
-  const handleSelectForeignKey = useCallback(async () => {
-    setIsLoading(true)
-    await onSelectForeignKey(store)
-    setIsLoading(false)
-  }, [onSelectForeignKey, store])
+  const { mode } = useRowEditorActions()
 
   const handleViewForeignKey = useCallback(async () => {
     navigate(
@@ -40,7 +33,6 @@ export const ForeignKeyActions: FC<ForeignKeyActionsProps> = ({ node, readonly }
     )
   }, [linkMaker, navigate, store])
 
-  const showSelectForeignKey = store.foreignKey && !readonly
   const showWarningViewForeignKey = store.foreignKey && !readonly && !store.getPlainValue()
   const showViewForeignKey = store.foreignKey && mode !== RowEditorMode.Creating && store.getPlainValue()
 
@@ -73,13 +65,6 @@ export const ForeignKeyActions: FC<ForeignKeyActionsProps> = ({ node, readonly }
           </Flex>
         </Tooltip>
       )}
-      {showSelectForeignKey && (
-        <Box display="none" _groupHover={{ display: 'block' }}>
-          <IconBox data-testid={`${node.dataTestId}-select-foreign-key`} onClick={handleSelectForeignKey}>
-            <PiListBulletsThin />
-          </IconBox>
-        </Box>
-      )}
     </Flex>
   )
-}
+})

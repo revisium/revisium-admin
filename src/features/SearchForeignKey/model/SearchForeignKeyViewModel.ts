@@ -57,11 +57,11 @@ export class SearchForeignKeyViewModel implements IViewModel {
     return this.findForeignKey.data?.rows.edges.map((edge) => edge.node.id) ?? []
   }
 
-  public async init(revisionId: string, tableId: string) {
+  public init(revisionId: string, tableId: string) {
     this.revisionId = revisionId
     this.tableId = tableId
 
-    await this.request(true)
+    void this.request(true)
   }
 
   public dispose(): void {

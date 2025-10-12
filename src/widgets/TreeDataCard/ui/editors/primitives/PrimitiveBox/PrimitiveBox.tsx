@@ -36,10 +36,11 @@ export const PrimitiveBox: FC<PrimitiveBoxProps> = observer(
         _hover={{
           bgColor: readonly ? undefined : 'blackAlpha.50',
         }}
+        mt="2px"
         ml="2px"
         pl="4px"
         pr="4px"
-        height="24px"
+        minHeight="24px"
         minWidth="15px"
         cursor={readonly ? 'text' : undefined}
       >

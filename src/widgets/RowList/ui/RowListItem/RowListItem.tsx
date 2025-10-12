@@ -35,6 +35,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
           bg: 'gray.50',
         },
       }}
+      bg="white"
       className={styles.Row}
       data-testid={`row-${row.id}`}
     >
@@ -50,13 +51,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
         pr="24px"
       >
         <Flex alignItems="center">
-          <Text
-            color="gray.400"
-            textDecoration="underline"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            overflow="hidden"
-          >
+          <Text textDecoration="underline" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
             <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
               {row.id}
             </Link>

@@ -1,7 +1,8 @@
-import { Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Heading, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { SidebarLink } from 'src/shared/ui'
 import { useMenuListModel } from 'src/widgets/BranchMenuList/hooks/useMenuListModel.ts'
 
 export const BranchMenuList: FC = observer(() => {
@@ -11,7 +12,7 @@ export const BranchMenuList: FC = observer(() => {
     <VStack alignItems="flex-start" gap="1rem">
       <Link to="/">
         <Heading color="gray" size="xl" data-testid="sidebar-back-to-projects-button">
-          <b>{store.projectName}</b>
+          {store.projectName}
         </Heading>
       </Link>
       <VStack
@@ -23,34 +24,15 @@ export const BranchMenuList: FC = observer(() => {
         pt="1rem"
         width="100%"
       >
-        <Text color="gray" fontSize="sm" mb="0.5rem">
-          Branches:
-        </Text>
         {store.items.map((branchLink) => (
-          <Flex
-            _hover={branchLink.isActive ? {} : { backgroundColor: 'gray.200' }}
-            alignItems="center"
-            backgroundColor={branchLink.isActive ? 'gray.100' : undefined}
-            borderRadius="0.25rem"
-            height="32px"
+          <SidebarLink
+            touched={branchLink.touched}
             key={branchLink.id}
-            paddingLeft="0.5rem"
-            width="100%"
-          >
-            {branchLink.isActive ? (
-              <Text color="gray.500" fontWeight="600">
-                {branchLink.title}
-              </Text>
-            ) : (
-              <Text color="gray.500" fontWeight="600">
-                <Link key={branchLink.id} to={branchLink.link} data-testid={`sidebar-branch-${branchLink.name}`}>
-                  {branchLink.title}
-                </Link>
-              </Text>
-            )}
-
-            {branchLink.touched && <Text color="gray.600">*</Text>}
-          </Flex>
+            dataTestId={`sidebar-branch-${branchLink.name}`}
+            label={branchLink.title}
+            link={branchLink.link}
+            isActive={branchLink.isActive}
+          />
         ))}
       </VStack>
     </VStack>

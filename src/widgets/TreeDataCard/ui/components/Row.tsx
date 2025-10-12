@@ -40,12 +40,18 @@ export const Row: FC<IndentedRowProps> = ({
     >
       <Guides guides={node.guides} />
       <Flex width="100%" alignItems="center">
-        {!skipDot && (
-          <Dot isCollapsed={isCollapsed} isCollapsible={isCollapsible} toggleCollapsed={() => node.toggleExpanded()} />
-        )}
-        {!skipField && <Field node={node} />}
+        <Flex>
+          {!skipDot && (
+            <Dot
+              isCollapsed={isCollapsed}
+              isCollapsible={isCollapsible}
+              toggleCollapsed={() => node.toggleExpanded()}
+            />
+          )}
+          {!skipField && <Field node={node} />}
+          {children}
+        </Flex>
         {!skipMore && isCollapsed && <More onClick={() => node.toggleExpanded()} />}
-        {children}
         {node.onDelete && (
           <Box
             display="none"

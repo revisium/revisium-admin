@@ -12,7 +12,7 @@ export const Field: FC<RowFieldProps> = observer(({ node }) => {
   const store = node.getStore()
 
   return (
-    <Flex>
+    <Flex height="28px" alignItems="center">
       {store.description ? (
         <Tooltip
           openDelay={350}

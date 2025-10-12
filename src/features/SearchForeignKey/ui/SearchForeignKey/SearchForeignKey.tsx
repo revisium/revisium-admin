@@ -41,7 +41,7 @@ export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
 
         {model.showLoading && (
           <Flex justify="center" align="center" height="100%" width="100%">
-            <Spinner size="md" color="blue.500" />
+            <Spinner size="md" color="gray.400" />
           </Flex>
         )}
 

@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: FC<FooterProps> = ({ onTable, onCreate }) => {
   return (
-    <HStack mt="4px" p="4px" gap={2} borderTopWidth="1px" borderTopStyle="solid" borderTopColor="gray.100">
+    <HStack mt="4px" p="4px" gap={2} borderTopWidth="1px" borderTopStyle="solid" borderTopColor="gray.200">
       <Button size="xs" variant="ghost" color="gray.500" onClick={onTable} flex={1}>
         <PiMagnifyingGlassBold />
         Open Table Search

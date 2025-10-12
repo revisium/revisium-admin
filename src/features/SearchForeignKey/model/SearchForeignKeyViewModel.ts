@@ -28,7 +28,7 @@ export class SearchForeignKeyViewModel implements IViewModel {
   }
 
   public get showInput() {
-    const allowedStates: State[] = [State.list, State.notFound, State.error]
+    const allowedStates: State[] = [State.list, State.notFound]
     return allowedStates.includes(this.state)
   }
 
@@ -43,6 +43,10 @@ export class SearchForeignKeyViewModel implements IViewModel {
 
   public get showNotFound() {
     return this.state === State.notFound
+  }
+
+  public get showError() {
+    return this.state === State.error
   }
 
   public get showEmpty() {
@@ -123,7 +127,9 @@ export class SearchForeignKeyViewModel implements IViewModel {
         }
       })
     } catch (e) {
-      this.state = State.error
+      runInAction(() => {
+        this.state = State.error
+      })
       console.error(e)
     }
   }

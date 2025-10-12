@@ -53,6 +53,14 @@ export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
           </Flex>
         )}
 
+        {model.showError && (
+          <Flex justify="center" align="center" height="100%" width="100%">
+            <Text fontSize="sm" color="gray.500">
+              Could not load data. Please retry later.
+            </Text>
+          </Flex>
+        )}
+
         {model.showEmpty && <Empty />}
 
         {model.showList && <List ids={model.items} onSelect={handleSelect} />}

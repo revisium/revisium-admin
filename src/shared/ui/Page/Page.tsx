@@ -21,9 +21,8 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
     <Flex minHeight="100vh">
       {!hideSidebar && (
         <Flex
-          backgroundColor="gray.50"
           borderRight="1px solid"
-          borderRightColor="gray.200"
+          borderRightColor="orange.900/5"
           flexDirection="column"
           justifyContent={sidebar ? 'space-between' : 'flex-end'}
           padding="1rem"
@@ -32,8 +31,8 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
           top={0}
           position="sticky"
         >
-          <Box>{sidebar}</Box>
-          <Box alignSelf="center">
+          {sidebar}
+          <Box alignSelf="center" mt="1rem">
             <Link to={`/${LOGOUT_ROUTE}`}>
               <ChakraLink color="gray.400" alignSelf="center">
                 Logout

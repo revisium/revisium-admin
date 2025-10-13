@@ -3,7 +3,7 @@ import { BaseValueNode } from './BaseValueNode'
 import { MarkdownChildValueNode } from './MarkdownChildValueNode'
 
 export class MarkdownParentValueNode extends BaseValueNode {
-  private _childNode: MarkdownChildValueNode
+  private readonly _childNode: MarkdownChildValueNode
 
   constructor(store: JsonStringValueStore) {
     super(store, 'string')

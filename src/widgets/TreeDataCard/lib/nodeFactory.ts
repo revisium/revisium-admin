@@ -1,6 +1,5 @@
 import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
 import { ArrayValueNode } from 'src/widgets/TreeDataCard/model/ArrayValueNode.ts'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { BooleanValueNode } from 'src/widgets/TreeDataCard/model/BooleanValueNode.ts'
@@ -19,14 +18,13 @@ export function createNodeForStore(store: JsonValueStore): BaseValueNode {
       return new ArrayValueNode(store)
 
     case JsonSchemaTypeName.String: {
-      const stringStore = store as JsonStringValueStore
-      if (stringStore.foreignKey) {
-        return new ForeignKeyValueNode(stringStore)
+      if (store.foreignKey) {
+        return new ForeignKeyValueNode(store)
       }
-      if (stringStore.contentMediaType === 'text/markdown') {
-        return new MarkdownParentValueNode(stringStore)
+      if (store.contentMediaType === 'text/markdown') {
+        return new MarkdownParentValueNode(store)
       }
-      return new StringValueNode(stringStore)
+      return new StringValueNode(store)
     }
 
     case JsonSchemaTypeName.Number:

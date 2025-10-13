@@ -133,6 +133,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
     <Flex minWidth={0} width={showPlaceholder ? '100%' : undefined} position="relative" onClick={handleParentClick}>
       {!showPlaceholder && prefix}
       <Box
+        color="blackAlpha.800"
         textDecoration={textDecoration}
         data-testid={dataTestId}
         autoFocus

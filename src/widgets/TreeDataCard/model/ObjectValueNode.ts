@@ -13,6 +13,12 @@ export class ObjectValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get collapseChildrenLabel() {
+    const count = this.childrenCache?.length ?? 0
+
+    return `<${count} ${count === 1 ? 'key' : 'keys'}>`
+  }
+
   public get children(): BaseValueNode[] {
     const currentEntries = jsonValueStoreSorting(this.objectStore)
 

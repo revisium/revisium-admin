@@ -28,6 +28,12 @@ export class ArrayValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get collapseChildrenLabel() {
+    const count = (this._store as JsonArrayValueStore).value.length
+
+    return `<${count} ${count === 1 ? 'item' : 'items'}>`
+  }
+
   get children(): BaseValueNode[] {
     return this._children
   }

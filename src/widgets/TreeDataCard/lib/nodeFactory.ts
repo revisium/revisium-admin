@@ -7,6 +7,7 @@ import { ForeignKeyValueNode } from 'src/widgets/TreeDataCard/model/ForeignKeyVa
 import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.ts'
 import { ObjectValueNode } from 'src/widgets/TreeDataCard/model/ObjectValueNode.ts'
 import { StringValueNode } from 'src/widgets/TreeDataCard/model/StringValueNode.ts'
+import { MarkdownParentValueNode } from 'src/widgets/TreeDataCard/model/MarkdownParentValueNode.ts'
 
 export function createNodeForStore(store: JsonValueStore): BaseValueNode {
   switch (store.type) {
@@ -17,11 +18,13 @@ export function createNodeForStore(store: JsonValueStore): BaseValueNode {
       return new ArrayValueNode(store)
 
     case JsonSchemaTypeName.String: {
-      const stringStore = store
-      if (stringStore.foreignKey) {
-        return new ForeignKeyValueNode(stringStore)
+      if (store.foreignKey) {
+        return new ForeignKeyValueNode(store)
       }
-      return new StringValueNode(stringStore)
+      if (store.contentMediaType === 'text/markdown') {
+        return new MarkdownParentValueNode(store)
+      }
+      return new StringValueNode(store)
     }
 
     case JsonSchemaTypeName.Number:

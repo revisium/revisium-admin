@@ -1,7 +1,7 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
-import { RemoveButton } from 'src/shared/ui/RemoveButton/RemoveButton.tsx'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
+import { MenuTrigger } from 'src/widgets/TreeDataCard/ui/components/MenuTrigger.tsx'
 import { Dot } from './Dot'
 import { Field } from './Field'
 import { Guides } from './Guides'
@@ -39,6 +39,7 @@ export const Row: FC<IndentedRowProps> = ({
       data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
+      {node.showMenu && <MenuTrigger node={node} />}
       <Flex width="100%" alignItems="center">
         <Flex>
           {!skipDot && (
@@ -52,23 +53,6 @@ export const Row: FC<IndentedRowProps> = ({
           {children}
         </Flex>
         {!skipMore && isCollapsed && <More onClick={() => node.toggleExpanded()} label={node.collapseChildrenLabel} />}
-        {node.onDelete && (
-          <Box
-            display="none"
-            _groupHover={{
-              display: 'block',
-            }}
-          >
-            <RemoveButton
-              dataTestId={`${node.dataTestId}-remove-button`}
-              height="26px"
-              aria-label="remove"
-              color="gray.400"
-              _hover={{ color: 'gray.400' }}
-              onClick={node.onDelete}
-            />
-          </Box>
-        )}
       </Flex>
     </Flex>
   )

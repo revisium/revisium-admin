@@ -12,6 +12,10 @@ export class CreateItemValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get showMenu() {
+    return false
+  }
+
   get dataTestId(): string {
     return `${this.parent?.dataTestId}`
   }

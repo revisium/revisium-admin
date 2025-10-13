@@ -31,6 +31,10 @@ export abstract class BaseValueNode {
     })
   }
 
+  public get showMenu() {
+    return true
+  }
+
   public get fieldName() {
     if (!this._store.id) {
       return '<root value>'

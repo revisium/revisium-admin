@@ -17,11 +17,14 @@ export const PlainTextEditor: FC<PlainTextEditorProps> = observer(({ store, read
     [store],
   )
 
+  const value = store.getPlainValue()
+  const prefix = value ? '' : '"'
+
   return (
     <PrimitiveBox
-      prefix='"'
-      postfix='"'
-      value={store.getPlainValue()}
+      prefix={prefix}
+      postfix={prefix}
+      value={value}
       readonly={readonly}
       dataTestId={dataTestId}
       onChange={handleChange}

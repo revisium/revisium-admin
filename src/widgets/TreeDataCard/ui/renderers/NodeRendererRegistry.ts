@@ -5,6 +5,8 @@ import { CreateItemValueNode } from 'src/widgets/TreeDataCard/model/CreateItemVa
 import { IdValueNode } from 'src/widgets/TreeDataCard/model/IdValueNode.ts'
 import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.ts'
 import { StringValueNode } from 'src/widgets/TreeDataCard/model/StringValueNode.ts'
+import { MarkdownParentValueNode } from 'src/widgets/TreeDataCard/model/MarkdownParentValueNode.ts'
+import { MarkdownChildValueNode } from 'src/widgets/TreeDataCard/model/MarkdownChildValueNode.ts'
 import { NodeRendererContext } from './types'
 
 import { CreateItemRendererComponent } from './CreateItemRenderer'
@@ -13,6 +15,8 @@ import { FileRendererComponent } from './FileRenderer'
 import { ContainerRendererComponent } from './ContainerRenderer'
 import { ForeignKeyRendererComponent } from './ForeignKeyRenderer'
 import { StringRendererComponent } from './StringRenderer'
+import { MarkdownParentRendererComponent } from './MarkdownParentRenderer'
+import { MarkdownChildRendererComponent } from './MarkdownChildRenderer'
 import { NumberRendererComponent } from './NumberRenderer'
 import { BooleanRendererComponent } from './BooleanRenderer'
 import { DatePickerRendererComponent } from './DatePickerRenderer'
@@ -70,6 +74,14 @@ export class NodeRendererRegistry {
           const nodeStore = node.getStore()
           return nodeStore.type === JsonSchemaTypeName.String && Boolean(nodeStore.foreignKey)
         },
+      },
+      {
+        Component: MarkdownParentRendererComponent,
+        canRender: (node) => node instanceof MarkdownParentValueNode,
+      },
+      {
+        Component: MarkdownChildRendererComponent,
+        canRender: (node) => node instanceof MarkdownChildValueNode,
       },
       {
         Component: StringRendererComponent,

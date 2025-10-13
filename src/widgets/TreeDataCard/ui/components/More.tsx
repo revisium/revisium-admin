@@ -1,12 +1,19 @@
-import { Flex } from '@chakra-ui/react'
+import { Flex, Text } from '@chakra-ui/react'
 import { FC } from 'react'
 import { PiDotsThreeOutlineFill } from 'react-icons/pi'
 
 interface MoreProps {
   onClick?: () => void
+  label: string
 }
 
-export const More: FC<MoreProps> = ({ onClick }) => {
+export const More: FC<MoreProps> = ({ onClick, label }) => {
+  return (
+    <Text ml="8px" color="gray.300" onClick={onClick} cursor="pointer">
+      {label}
+    </Text>
+  )
+
   return (
     <Flex ml="8px" width="24px" height="100%" alignItems="center">
       <Flex

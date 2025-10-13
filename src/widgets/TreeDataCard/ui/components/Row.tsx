@@ -51,7 +51,7 @@ export const Row: FC<IndentedRowProps> = ({
           {!skipField && <Field node={node} />}
           {children}
         </Flex>
-        {!skipMore && isCollapsed && <More onClick={() => node.toggleExpanded()} />}
+        {!skipMore && isCollapsed && <More onClick={() => node.toggleExpanded()} label={node.collapseChildrenLabel} />}
         {node.onDelete && (
           <Box
             display="none"

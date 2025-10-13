@@ -39,6 +39,10 @@ export abstract class BaseValueNode {
     return this._store.id
   }
 
+  public get collapseChildrenLabel() {
+    return ''
+  }
+
   public get indexPath(): number[] {
     const path: number[] = []
     // eslint-disable-next-line @typescript-eslint/no-this-alias

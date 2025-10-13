@@ -1,3 +1,5 @@
 export { TreeDataCardWidget } from './ui/TreeDataCardWidget'
 export { RootValueNode } from './model/RootValueNode'
+export { MarkdownParentValueNode } from './model/MarkdownParentValueNode'
+export { MarkdownChildValueNode } from './model/MarkdownChildValueNode'
 export type { TreeDataCardWidgetProps } from './ui/TreeDataCardWidget'

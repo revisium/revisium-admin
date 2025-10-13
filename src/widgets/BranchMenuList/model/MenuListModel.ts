@@ -43,9 +43,7 @@ export class MenuListModel {
       return {
         id: branch.id,
         name: branch.name,
-        link: isActive
-          ? ''
-          : `${getBaseLink(this.organizationId, this.projectName, branch.name)}${getPostfixLink(branch)}`,
+        link: `${getBaseLink(this.organizationId, this.projectName, branch.name)}${getPostfixLink(branch)}`,
         title: `${branch.name}`,
         isActive,
         touched: branch.touched,

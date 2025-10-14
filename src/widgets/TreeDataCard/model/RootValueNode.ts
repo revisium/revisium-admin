@@ -15,11 +15,11 @@ export class RootValueNode extends BaseValueNode {
 
     this.cardStore = cardStore
 
-    this.idNode = new IdValueNode(this.cardStore)
-    this.idNode.setParent(this)
-
     this.valueNode = this.createValueNode()
     this.valueNode.setParent(this)
+
+    this.idNode = new IdValueNode(this.cardStore, this.valueNode)
+    this.idNode.setParent(this)
 
     this.expanded = true
   }
@@ -48,7 +48,7 @@ export class RootValueNode extends BaseValueNode {
   }
 
   get isExpandable(): boolean {
-    return true
+    return this.valueNode.isExpandable
   }
 
   get isInitiallyExpanded(): boolean {

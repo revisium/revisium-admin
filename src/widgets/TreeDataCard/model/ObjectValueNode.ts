@@ -5,32 +5,24 @@ import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
 
 export class ObjectValueNode extends BaseValueNode {
-  private childrenCache: BaseValueNode[] | null = null
+  private _children: BaseValueNode[] = []
 
   constructor(store: JsonObjectValueStore) {
     super(store, 'object')
+
+    this.buildChildren()
 
     this.expanded = this.isInitiallyExpanded
   }
 
   public get collapseChildrenLabel() {
-    const count = this.childrenCache?.length ?? 0
+    const count = this._children?.length ?? 0
 
     return `<${count} ${count === 1 ? 'key' : 'keys'}>`
   }
 
   public get children(): BaseValueNode[] {
-    const currentEntries = jsonValueStoreSorting(this.objectStore)
-
-    if (!this.childrenCache) {
-      this.childrenCache = currentEntries.map(([, childStore]) => {
-        const childNode = createNodeForStore(childStore)
-        childNode.setParent(this)
-        return childNode
-      })
-    }
-
-    return this.childrenCache
+    return this._children
   }
 
   public get isExpandable(): boolean {
@@ -48,5 +40,41 @@ export class ObjectValueNode extends BaseValueNode {
 
   private get objectStore(): JsonObjectValueStore {
     return this._store as JsonObjectValueStore
+  }
+
+  public override expandAll(options?: { skipItself?: boolean }) {
+    if (!options?.skipItself) {
+      this.expanded = true
+    }
+
+    for (const child of this._children) {
+      if (child.isExpandable) {
+        child.setExpanded(true)
+        child.expandAll()
+      }
+    }
+  }
+
+  public override collapseAll(options?: { skipItself?: boolean }) {
+    if (!options?.skipItself) {
+      this.expanded = false
+    }
+
+    for (const child of this._children) {
+      if (child.isExpandable) {
+        child.setExpanded(false)
+        child.collapseAll()
+      }
+    }
+  }
+
+  private buildChildren() {
+    const currentEntries = jsonValueStoreSorting(this.objectStore)
+
+    this._children = currentEntries.map(([, childStore]) => {
+      const childNode = createNodeForStore(childStore)
+      childNode.setParent(this)
+      return childNode
+    })
   }
 }

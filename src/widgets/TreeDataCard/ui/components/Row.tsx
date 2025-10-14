@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
-import { MenuTrigger } from 'src/widgets/TreeDataCard/ui/components/MenuTrigger.tsx'
+import { MenuRow } from 'src/widgets/TreeDataCard/ui/components/MenuRow.tsx'
 import { Dot } from './Dot'
 import { Field } from './Field'
 import { Guides } from './Guides'
@@ -39,7 +39,7 @@ export const Row: FC<IndentedRowProps> = ({
       data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
-      {node.showMenu && <MenuTrigger node={node} />}
+      {node.showMenu && <MenuRow node={node} />}
       <Flex width="100%" alignItems="center">
         <Flex>
           {!skipDot && (

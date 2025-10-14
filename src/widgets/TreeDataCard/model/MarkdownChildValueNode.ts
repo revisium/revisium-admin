@@ -8,6 +8,10 @@ export class MarkdownChildValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get showMenu() {
+    return false
+  }
+
   get fieldName() {
     return ''
   }

@@ -25,10 +25,15 @@ export abstract class BaseValueNode {
       isExpandable: computed,
       isInitiallyExpanded: computed,
       hasChildren: computed,
+      showMenu: computed,
       setExpanded: action,
       toggleExpanded: action,
       setParent: action,
     })
+  }
+
+  public get showMenu() {
+    return true
   }
 
   public get fieldName() {

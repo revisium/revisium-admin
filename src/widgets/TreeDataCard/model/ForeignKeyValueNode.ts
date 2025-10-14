@@ -8,6 +8,10 @@ export class ForeignKeyValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get showMenu() {
+    return Boolean(this.onDelete)
+  }
+
   public get children(): BaseValueNode[] {
     return []
   }

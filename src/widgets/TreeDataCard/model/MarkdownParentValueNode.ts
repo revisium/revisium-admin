@@ -14,6 +14,10 @@ export class MarkdownParentValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get showMenu() {
+    return false
+  }
+
   public get collapseChildrenLabel() {
     return `<markdown>`
   }

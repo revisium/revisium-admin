@@ -7,6 +7,10 @@ export class IdValueNode extends BaseValueNode {
     super(cardStore.name, 'string')
   }
 
+  public get showMenu() {
+    return false
+  }
+
   public get fieldName() {
     return '<id>'
   }

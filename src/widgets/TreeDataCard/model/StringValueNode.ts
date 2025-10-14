@@ -8,6 +8,10 @@ export class StringValueNode extends BaseValueNode {
     this.expanded = this.isInitiallyExpanded
   }
 
+  public get showMenu() {
+    return Boolean(this.onDelete)
+  }
+
   get children(): BaseValueNode[] {
     return []
   }

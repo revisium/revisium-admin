@@ -63,11 +63,9 @@ export const MenuTrigger: FC<MenuTriggerProps> = ({ node }) => {
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
-            <Menu.Item value="json">
+            <Menu.Item value="json" onClick={handleJson}>
               <PiBracketsCurlyThin />
-              <Box flex={1} onClick={handleJson}>
-                Copy json
-              </Box>
+              <Box flex={1}>Copy json</Box>
             </Menu.Item>
             {node.onDelete && (
               <Menu.Item value="delete" onClick={node.onDelete}>

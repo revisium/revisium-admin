@@ -25,6 +25,7 @@ export abstract class BaseValueNode {
       isExpandable: computed,
       isInitiallyExpanded: computed,
       hasChildren: computed,
+      showMenu: computed,
       setExpanded: action,
       toggleExpanded: action,
       setParent: action,

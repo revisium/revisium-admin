@@ -8,7 +8,7 @@ export class IdValueNode extends BaseValueNode {
   }
 
   public get showMenu() {
-    return true
+    return false
   }
 
   public get fieldName() {

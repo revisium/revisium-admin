@@ -4,11 +4,11 @@ import { PiDotsThreeVerticalBold, PiTrash } from 'react-icons/pi'
 import { toaster } from 'src/shared/ui'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 
-interface MenuTriggerProps {
+interface MenuRowProps {
   node: BaseValueNode
 }
 
-export const MenuRow: FC<MenuTriggerProps> = ({ node }) => {
+export const MenuRow: FC<MenuRowProps> = ({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleJson = useCallback(async () => {

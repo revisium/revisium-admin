@@ -48,7 +48,7 @@ export class RootValueNode extends BaseValueNode {
   }
 
   get isExpandable(): boolean {
-    return (this._children ?? []).some((child) => child.isExpandable)
+    return this.valueNode.isExpandable
   }
 
   get isInitiallyExpanded(): boolean {

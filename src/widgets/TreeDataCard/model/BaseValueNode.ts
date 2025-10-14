@@ -1,4 +1,5 @@
 import { makeObservable, observable, computed, action } from 'mobx'
+import { toSortedJsonValue } from 'src/entities/Schema'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 
 export type NodeType = 'root' | 'object' | 'array' | 'string' | 'number' | 'boolean' | 'foreignKey' | 'createButton'
@@ -28,6 +29,8 @@ export abstract class BaseValueNode {
       showMenu: computed,
       setExpanded: action,
       toggleExpanded: action,
+      collapseAll: action,
+      expandAll: action,
       setParent: action,
     })
   }
@@ -102,6 +105,9 @@ export abstract class BaseValueNode {
     this.parent = parent
   }
 
+  public collapseAll(_?: { skipItself?: boolean }) {}
+  public expandAll(_?: { skipItself?: boolean }) {}
+
   abstract get children(): BaseValueNode[]
   abstract get isExpandable(): boolean
   abstract get isInitiallyExpanded(): boolean
@@ -109,5 +115,9 @@ export abstract class BaseValueNode {
 
   public getStore(): JsonValueStore {
     return this._store
+  }
+
+  public getJson() {
+    return JSON.stringify(toSortedJsonValue(this.getStore()), null, 4)
   }
 }

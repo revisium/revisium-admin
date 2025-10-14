@@ -3,35 +3,54 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { BaseValueNode } from './BaseValueNode'
 
 export class IdValueNode extends BaseValueNode {
-  constructor(cardStore: RowDataCardStore) {
+  constructor(
+    cardStore: RowDataCardStore,
+    private readonly rootValueNode: BaseValueNode,
+  ) {
     super(cardStore.name, 'string')
   }
 
   public get showMenu() {
-    return false
+    return true
   }
 
   public get fieldName() {
     return '<id>'
   }
 
-  get children(): BaseValueNode[] {
+  public get children(): BaseValueNode[] {
     return []
   }
 
-  get isExpandable(): boolean {
+  public get isExpandable(): boolean {
+    return this.rootValueNode.isExpandable
+  }
+
+  public get isInitiallyExpanded(): boolean {
     return false
   }
 
-  get isInitiallyExpanded(): boolean {
+  public get hasChildren(): boolean {
     return false
   }
 
-  get hasChildren(): boolean {
-    return false
-  }
-
-  getStore(): JsonStringValueStore {
+  public getStore(): JsonStringValueStore {
     return this._store as JsonStringValueStore
+  }
+
+  public getJson(): string {
+    return this.rootValueNode.getJson()
+  }
+
+  public override expandAll() {
+    if (this.rootValueNode.isExpandable) {
+      this.rootValueNode.expandAll({ skipItself: true })
+    }
+  }
+
+  public override collapseAll() {
+    if (this.rootValueNode.isExpandable) {
+      this.rootValueNode.collapseAll({ skipItself: true })
+    }
   }
 }

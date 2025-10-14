@@ -1,6 +1,6 @@
 import { Box, Flex, Icon, Menu, Portal } from '@chakra-ui/react'
 import { FC, useCallback, useState } from 'react'
-import { PiBracketsCurlyThin, PiDotsThreeVerticalBold, PiTrash } from 'react-icons/pi'
+import { PiDotsThreeVerticalBold, PiTrash } from 'react-icons/pi'
 import { toaster } from 'src/shared/ui'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 
@@ -8,11 +8,11 @@ interface MenuTriggerProps {
   node: BaseValueNode
 }
 
-export const MenuTrigger: FC<MenuTriggerProps> = ({ node }) => {
+export const MenuRow: FC<MenuTriggerProps> = ({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleJson = useCallback(async () => {
-    await navigator.clipboard.writeText(JSON.stringify(node.getStore().getPlainValue(), null, 4))
+    await navigator.clipboard.writeText(node.getJson())
 
     toaster.info({
       duration: 1500,
@@ -44,7 +44,7 @@ export const MenuTrigger: FC<MenuTriggerProps> = ({ node }) => {
               backdropFilter="blur(4px)"
               boxShadow="0 0 0 1px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.08)"
               opacity={isOpen ? 1 : 0}
-              transition={isOpen ? 'opacity 0.5s ease 0s' : undefined}
+              transition={isOpen ? 'opacity 1s ease 0s' : undefined}
               _groupHover={{
                 opacity: 1,
                 transition: 'opacity 0.5s ease 0s',
@@ -63,15 +63,28 @@ export const MenuTrigger: FC<MenuTriggerProps> = ({ node }) => {
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
+            {node.isExpandable && (
+              <>
+                <Menu.Item value="collapse-all" onClick={() => node.collapseAll()}>
+                  <Box flex={1}>Collapse all</Box>
+                </Menu.Item>
+                <Menu.Item value="expand-all" onClick={() => node.expandAll()}>
+                  <Box flex={1}>Expand all</Box>
+                </Menu.Item>
+                <Menu.Separator />
+              </>
+            )}
             <Menu.Item value="json" onClick={handleJson}>
-              <PiBracketsCurlyThin />
               <Box flex={1}>Copy json</Box>
             </Menu.Item>
             {node.onDelete && (
-              <Menu.Item value="delete" onClick={node.onDelete}>
-                <PiTrash />
-                <Box flex={1}>Delete</Box>
-              </Menu.Item>
+              <>
+                <Menu.Separator />
+                <Menu.Item value="delete" onClick={node.onDelete}>
+                  <PiTrash />
+                  <Box flex={1}>Delete</Box>
+                </Menu.Item>
+              </>
             )}
           </Menu.Content>
         </Menu.Positioner>

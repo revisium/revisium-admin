@@ -25,7 +25,7 @@ export class PrimitiveRootNode extends BaseValueNode {
   }
 
   get isExpandable(): boolean {
-    return true
+    return false
   }
 
   get isInitiallyExpanded(): boolean {

@@ -83,4 +83,30 @@ export class ArrayValueNode extends BaseValueNode {
     this.arrayStore.removeItem(index)
     this._children.splice(index, 1)
   }
+
+  public override expandAll(options?: { skipItself?: boolean }) {
+    if (!options?.skipItself) {
+      this.expanded = true
+    }
+
+    for (const child of this._children) {
+      if (child.isExpandable) {
+        child.setExpanded(true)
+        child.expandAll()
+      }
+    }
+  }
+
+  public override collapseAll(options?: { skipItself?: boolean }) {
+    if (!options?.skipItself) {
+      this.expanded = false
+    }
+
+    for (const child of this._children) {
+      if (child.isExpandable) {
+        child.setExpanded(false)
+        child.collapseAll()
+      }
+    }
+  }
 }

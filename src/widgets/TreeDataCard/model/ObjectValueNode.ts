@@ -43,10 +43,6 @@ export class ObjectValueNode extends BaseValueNode {
   }
 
   public override expandAll(options?: { skipItself?: boolean }) {
-    // if (this.skipOnExpandAll) {
-    //   return
-    // }
-
     if (!options?.skipItself) {
       this.expanded = true
     }

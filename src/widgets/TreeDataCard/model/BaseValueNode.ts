@@ -107,6 +107,9 @@ export abstract class BaseValueNode {
 
   public collapseAll(_?: { skipItself?: boolean }) {}
   public expandAll(_?: { skipItself?: boolean }) {}
+  public get skipOnExpandAll(): boolean {
+    return false
+  }
 
   abstract get children(): BaseValueNode[]
   abstract get isExpandable(): boolean

@@ -65,11 +65,11 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
           <Menu.Content>
             {node.isExpandable && (
               <>
-                <Menu.Item value="collapse-all" onClick={() => node.collapseAll()}>
-                  <Box flex={1}>Collapse all</Box>
-                </Menu.Item>
                 <Menu.Item value="expand-all" onClick={() => node.expandAll()}>
                   <Box flex={1}>Expand all</Box>
+                </Menu.Item>
+                <Menu.Item value="collapse-all" onClick={() => node.collapseAll()}>
+                  <Box flex={1}>Collapse all</Box>
                 </Menu.Item>
                 <Menu.Separator />
               </>

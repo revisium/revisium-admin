@@ -48,11 +48,15 @@ export class ObjectValueNode extends BaseValueNode {
     }
 
     for (const child of this._children) {
-      if (child.isExpandable) {
+      if (child.isExpandable && !child.skipOnExpandAll) {
         child.setExpanded(true)
         child.expandAll()
       }
     }
+  }
+
+  public override get skipOnExpandAll(): boolean {
+    return this.objectStore.$ref === SystemSchemaIds.File
   }
 
   public override collapseAll(options?: { skipItself?: boolean }) {

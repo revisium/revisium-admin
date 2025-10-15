@@ -43,7 +43,7 @@ export class IdValueNode extends BaseValueNode {
   }
 
   public override expandAll() {
-    if (this.rootValueNode.isExpandable) {
+    if (this.rootValueNode.isExpandable && !this.rootValueNode.skipOnExpandAll) {
       this.rootValueNode.expandAll({ skipItself: true })
     }
   }

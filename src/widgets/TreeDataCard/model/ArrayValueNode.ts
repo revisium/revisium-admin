@@ -90,7 +90,7 @@ export class ArrayValueNode extends BaseValueNode {
     }
 
     for (const child of this._children) {
-      if (child.isExpandable) {
+      if (child.isExpandable && !child.skipOnExpandAll) {
         child.setExpanded(true)
         child.expandAll()
       }

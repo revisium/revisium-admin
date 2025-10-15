@@ -27,15 +27,15 @@ export class MarkdownParentValueNode extends BaseValueNode {
   }
 
   get isInitiallyExpanded(): boolean {
-    return true
+    return false
   }
 
   get hasChildren(): boolean {
     return true
   }
 
-  public override expandAll() {
-    this.expanded = true
+  public override get skipOnExpandAll(): boolean {
+    return true
   }
 
   public override collapseAll() {

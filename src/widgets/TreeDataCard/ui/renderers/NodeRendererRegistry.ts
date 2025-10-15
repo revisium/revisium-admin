@@ -4,9 +4,10 @@ import { BooleanValueNode } from 'src/widgets/TreeDataCard/model/BooleanValueNod
 import { CreateItemValueNode } from 'src/widgets/TreeDataCard/model/CreateItemValueNode.ts'
 import { IdValueNode } from 'src/widgets/TreeDataCard/model/IdValueNode.ts'
 import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.ts'
-import { StringValueNode } from 'src/widgets/TreeDataCard/model/StringValueNode.ts'
 import { MarkdownParentValueNode } from 'src/widgets/TreeDataCard/model/MarkdownParentValueNode.ts'
 import { MarkdownChildValueNode } from 'src/widgets/TreeDataCard/model/MarkdownChildValueNode.ts'
+import { StringParentValueNode } from 'src/widgets/TreeDataCard/model/StringParentValueNode.ts'
+import { StringChildValueNode } from 'src/widgets/TreeDataCard/model/StringChildValueNode.ts'
 import { NodeRendererContext } from './types'
 
 import { CreateItemRendererComponent } from './CreateItemRenderer'
@@ -14,9 +15,10 @@ import { IdRendererComponent } from './IdRenderer'
 import { FileRendererComponent } from './FileRenderer'
 import { ContainerRendererComponent } from './ContainerRenderer'
 import { ForeignKeyRendererComponent } from './ForeignKeyRenderer'
-import { StringRendererComponent } from './StringRenderer'
 import { MarkdownParentRendererComponent } from './MarkdownParentRenderer'
 import { MarkdownChildRendererComponent } from './MarkdownChildRenderer'
+import { StringParentRendererComponent } from './StringParentRenderer'
+import { StringChildRendererComponent } from './StringChildRenderer'
 import { NumberRendererComponent } from './NumberRenderer'
 import { BooleanRendererComponent } from './BooleanRenderer'
 import { DatePickerRendererComponent } from './DatePickerRenderer'
@@ -84,8 +86,12 @@ export class NodeRendererRegistry {
         canRender: (node) => node instanceof MarkdownChildValueNode,
       },
       {
-        Component: StringRendererComponent,
-        canRender: (node) => node instanceof StringValueNode,
+        Component: StringParentRendererComponent,
+        canRender: (node) => node instanceof StringParentValueNode,
+      },
+      {
+        Component: StringChildRendererComponent,
+        canRender: (node) => node instanceof StringChildValueNode,
       },
       {
         Component: NumberRendererComponent,

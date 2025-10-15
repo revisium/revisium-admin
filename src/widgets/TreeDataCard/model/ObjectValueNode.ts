@@ -5,7 +5,7 @@ import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
 
 export class ObjectValueNode extends BaseValueNode {
-  private _children: BaseValueNode[] = []
+  public _children: BaseValueNode[] = []
 
   constructor(store: JsonObjectValueStore) {
     super(store, 'object')

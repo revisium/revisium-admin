@@ -6,8 +6,8 @@ import { BooleanValueNode } from 'src/widgets/TreeDataCard/model/BooleanValueNod
 import { ForeignKeyValueNode } from 'src/widgets/TreeDataCard/model/ForeignKeyValueNode.ts'
 import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.ts'
 import { ObjectValueNode } from 'src/widgets/TreeDataCard/model/ObjectValueNode.ts'
-import { StringValueNode } from 'src/widgets/TreeDataCard/model/StringValueNode.ts'
 import { MarkdownParentValueNode } from 'src/widgets/TreeDataCard/model/MarkdownParentValueNode.ts'
+import { StringParentValueNode } from 'src/widgets/TreeDataCard/model/StringParentValueNode.ts'
 
 export function createNodeForStore(store: JsonValueStore): BaseValueNode {
   switch (store.type) {
@@ -24,7 +24,8 @@ export function createNodeForStore(store: JsonValueStore): BaseValueNode {
       if (store.contentMediaType === 'text/markdown') {
         return new MarkdownParentValueNode(store)
       }
-      return new StringValueNode(store)
+
+      return new StringParentValueNode(store)
     }
 
     case JsonSchemaTypeName.Number:
@@ -34,6 +35,6 @@ export function createNodeForStore(store: JsonValueStore): BaseValueNode {
       return new BooleanValueNode(store)
 
     default:
-      return new StringValueNode(store)
+      return new StringParentValueNode(store)
   }
 }

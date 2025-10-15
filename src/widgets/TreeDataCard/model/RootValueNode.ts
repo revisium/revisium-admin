@@ -10,7 +10,7 @@ export class RootValueNode extends BaseValueNode {
   private readonly cardStore: RowDataCardStore
   private readonly idNode: IdValueNode
   private readonly valueNode: BaseValueNode
-  private _children: BaseValueNode[] | null = null
+  public _children: BaseValueNode[] | null = null
 
   constructor(cardStore: RowDataCardStore) {
     super(cardStore.root, 'root')

@@ -1,15 +1,13 @@
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
 import { BaseValueNode } from './BaseValueNode'
 
-export class StringValueNode extends BaseValueNode {
+export class StringChildValueNode extends BaseValueNode {
   constructor(store: JsonStringValueStore) {
     super(store, 'string')
-
-    this.expanded = this.isInitiallyExpanded
   }
 
   public get showMenu() {
-    return Boolean(this.onDelete)
+    return false
   }
 
   get children(): BaseValueNode[] {
@@ -26,5 +24,9 @@ export class StringValueNode extends BaseValueNode {
 
   get hasChildren(): boolean {
     return false
+  }
+
+  public get fieldName() {
+    return ''
   }
 }

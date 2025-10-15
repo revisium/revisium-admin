@@ -15,7 +15,16 @@ export class MarkdownParentValueNode extends BaseValueNode {
   }
 
   public get collapseChildrenLabel() {
-    return `<markdown>`
+    const store = this._store as JsonStringValueStore
+    const text = store.value || ''
+
+    if (!text.trim()) {
+      return `<empty markdown>`
+    }
+
+    const wordCount = text.trim().split(/\s+/).length
+    const word = wordCount === 1 ? 'word' : 'words'
+    return `<markdown: ${wordCount} ${word}>`
   }
 
   get children(): BaseValueNode[] {

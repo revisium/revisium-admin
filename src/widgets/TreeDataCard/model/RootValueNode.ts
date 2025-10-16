@@ -4,6 +4,8 @@ import { BaseValueNode } from './BaseValueNode'
 import { IdValueNode } from './IdValueNode'
 import { PrimitiveRootNode } from './PrimitiveRootNode'
 
+const AUTO_COLLAPSE_THRESHOLD = 40
+
 export class RootValueNode extends BaseValueNode {
   private readonly cardStore: RowDataCardStore
   private readonly idNode: IdValueNode
@@ -22,6 +24,10 @@ export class RootValueNode extends BaseValueNode {
     this.idNode.setParent(this)
 
     this.expanded = true
+
+    if (this.flattenedNodes.length > AUTO_COLLAPSE_THRESHOLD) {
+      this.valueNode.collapseAll({ skipItself: true })
+    }
   }
 
   private createValueNode(): BaseValueNode {

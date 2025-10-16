@@ -20,6 +20,15 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
     })
   }, [node])
 
+  const handlePath = useCallback(async () => {
+    await navigator.clipboard.writeText(node.path)
+
+    toaster.info({
+      duration: 1500,
+      description: 'Copied to clipboard',
+    })
+  }, [node])
+
   return (
     <Menu.Root onOpenChange={({ open }) => setIsOpen(open)}>
       <Menu.Trigger asChild>
@@ -77,6 +86,11 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
             <Menu.Item value="json" onClick={handleJson}>
               <Box flex={1}>Copy json</Box>
             </Menu.Item>
+            {node.path && (
+              <Menu.Item value="path" onClick={handlePath}>
+                <Box flex={1}>Copy path</Box>
+              </Menu.Item>
+            )}
             {node.onDelete && (
               <>
                 <Menu.Separator />

@@ -3,7 +3,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { observer } from 'mobx-react-lite'
 import { formatDate } from 'src/shared/lib/helpers/formatDate'
 import { Flex } from '@chakra-ui/react'
-import { RowStringEditor } from '../RowStringEditor/RowStringEditor'
+import { PlainTextEditor } from '../RowStringEditor/PlainTextEditor/PlainTextEditor'
 
 interface RowDatePickerProps {
   store: JsonStringValueStore
@@ -16,7 +16,7 @@ export const RowDatePicker: FC<RowDatePickerProps> = observer(({ store, readonly
 
   return (
     <Flex pl="4px">
-      <RowStringEditor store={store} readonly={readonly} dataTestId={dataTestId} />
+      <PlainTextEditor store={store} readonly={readonly} dataTestId={dataTestId} />
       <input
         style={{ width: '20px' }}
         data-testid={`${dataTestId}-select-date`}

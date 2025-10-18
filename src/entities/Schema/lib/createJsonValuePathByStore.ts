@@ -32,5 +32,5 @@ export const createJsonValuePathByStore = (store: JsonValueStore): string => {
     return ''
   }
 
-  return `${path}`
+  return path
 }

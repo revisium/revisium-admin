@@ -1,55 +1,39 @@
-import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useEffect, useState } from 'react'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
-import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode'
-import { StringParentValueNode } from 'src/widgets/TreeDataCard/model/StringParentValueNode'
 import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
 
 export interface PlainTextEditorProps {
-  node?: BaseValueNode
-  store?: JsonStringValueStore
+  value: string
+  setValue: (value: string) => void
   readonly?: boolean
   dataTestId?: string
 }
 
-export const PlainTextEditor: FC<PlainTextEditorProps> = observer(({ node, store, readonly, dataTestId }) => {
-  const actualStore = node ? (node.getStore() as JsonStringValueStore) : store!
-  const storeValue = actualStore.getPlainValue()
-  const [value, setValue] = useState(storeValue)
+export const PlainTextEditor: FC<PlainTextEditorProps> = ({ value, setValue, readonly, dataTestId }) => {
+  const [internalValue, setInternalValue] = useState(value)
 
   useEffect(() => {
-    setValue(storeValue)
-  }, [storeValue])
+    setInternalValue(value)
+  }, [value])
 
   const handleChange = useCallback((newValue: string) => {
-    setValue(newValue)
+    setInternalValue(newValue)
   }, [])
 
   const handleBlur = useCallback(() => {
-    if (node && node instanceof StringParentValueNode) {
-      const wasCollapsible = node.isCollapsible
+    setValue(internalValue)
+  }, [internalValue, setValue])
 
-      actualStore.setValue(value)
-
-      if (!wasCollapsible && node.isCollapsible) {
-        node.expanded = true
-      }
-    } else {
-      actualStore.setValue(value)
-    }
-  }, [actualStore, value, node])
-
-  const prefix = value ? '' : '"'
+  const prefix = internalValue ? '' : '"'
 
   return (
     <PrimitiveBox
       prefix={prefix}
       postfix={prefix}
-      value={value}
+      value={internalValue}
       readonly={readonly}
       dataTestId={dataTestId}
       onChange={handleChange}
       onBlur={handleBlur}
     />
   )
-})
+}

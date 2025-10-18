@@ -2,29 +2,15 @@ import { JsonBooleanValueStore } from 'src/entities/Schema/model/value/json-bool
 import { BaseValueNode } from './BaseValueNode'
 
 export class BooleanValueNode extends BaseValueNode {
-  constructor(store: JsonBooleanValueStore) {
+  constructor(private readonly store: JsonBooleanValueStore) {
     super(store, 'boolean')
-
-    this.expanded = this.isInitiallyExpanded
   }
 
-  public get showMenu() {
-    return Boolean(this.onDelete)
+  public get value() {
+    return this.store.getPlainValue()
   }
 
-  get children(): BaseValueNode[] {
-    return []
-  }
-
-  get isExpandable(): boolean {
-    return false
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  get hasChildren(): boolean {
-    return false
+  public setValue(value: boolean) {
+    this.store.setValue(value)
   }
 }

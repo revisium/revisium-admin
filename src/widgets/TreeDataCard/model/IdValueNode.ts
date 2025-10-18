@@ -1,55 +1,43 @@
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
+import { IStringValueNode } from 'src/widgets/TreeDataCard/config/interface.ts'
 import { BaseValueNode } from './BaseValueNode'
 
-export class IdValueNode extends BaseValueNode {
+export class IdValueNode extends BaseValueNode implements IStringValueNode {
   constructor(
-    cardStore: RowDataCardStore,
+    private readonly cardStore: RowDataCardStore,
     private readonly rootValueNode: BaseValueNode,
   ) {
     super(cardStore.name, 'string')
   }
 
-  public get showMenu() {
-    return true
+  public get value() {
+    return this.cardStore.name.getPlainValue()
   }
 
   public get fieldName() {
     return '<id>'
   }
 
-  public get children(): BaseValueNode[] {
-    return []
-  }
-
-  public get isExpandable(): boolean {
-    return this.rootValueNode.isExpandable
-  }
-
-  public get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  public get hasChildren(): boolean {
-    return false
-  }
-
-  public getStore(): JsonStringValueStore {
-    return this._store as JsonStringValueStore
+  public setValue(value: string) {
+    this.cardStore.name.setValue(value)
   }
 
   public getJson(): string {
     return this.rootValueNode.getJson()
   }
 
+  public get isCollapsible() {
+    return this.rootValueNode.isCollapsible
+  }
+
   public override expandAll() {
-    if (this.rootValueNode.isExpandable && !this.rootValueNode.skipOnExpandAll) {
+    if (this.rootValueNode.isCollapsible && !this.rootValueNode.skipOnExpandAll) {
       this.rootValueNode.expandAll({ skipItself: true })
     }
   }
 
   public override collapseAll() {
-    if (this.rootValueNode.isExpandable) {
+    if (this.rootValueNode.isCollapsible) {
       this.rootValueNode.collapseAll({ skipItself: true })
     }
   }

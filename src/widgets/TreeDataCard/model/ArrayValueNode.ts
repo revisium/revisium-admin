@@ -1,4 +1,4 @@
-import { makeObservable, observable, action } from 'mobx'
+import { makeObservable, action } from 'mobx'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
@@ -6,7 +6,6 @@ import { BaseValueNode } from './BaseValueNode'
 import { CreateItemValueNode } from './CreateItemValueNode'
 
 export class ArrayValueNode extends BaseValueNode {
-  public _children: BaseValueNode[] = []
   private readonly createButtonNode: CreateItemValueNode
 
   constructor(store: JsonArrayValueStore) {
@@ -18,36 +17,19 @@ export class ArrayValueNode extends BaseValueNode {
     this.createButtonNode.setParent(this)
 
     makeObservable(this, {
-      _children: observable,
       createItem: action,
       deleteChild: action,
     })
 
     this.buildChildren()
 
-    this.expanded = this.isInitiallyExpanded
+    this.expanded = true
   }
 
   public get collapseChildrenLabel() {
     const count = (this._store as JsonArrayValueStore).value.length
 
     return `<${count} ${count === 1 ? 'item' : 'items'}>`
-  }
-
-  get children(): BaseValueNode[] {
-    return this._children
-  }
-
-  get isExpandable(): boolean {
-    return true
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return true
-  }
-
-  get hasChildren(): boolean {
-    return true
   }
 
   private get arrayStore(): JsonArrayValueStore {
@@ -62,7 +44,7 @@ export class ArrayValueNode extends BaseValueNode {
       return childNode
     })
 
-    this._children = [...itemNodes, this.createButtonNode]
+    this.children = [...itemNodes, this.createButtonNode]
   }
 
   private addNewItem(store: JsonValueStore) {
@@ -70,7 +52,7 @@ export class ArrayValueNode extends BaseValueNode {
     newNode.setParent(this)
     newNode.onDelete = () => this.deleteChild(newNode)
 
-    this._children.splice(-1, 0, newNode)
+    this.children.splice(-1, 0, newNode)
   }
 
   public createItem() {
@@ -81,7 +63,7 @@ export class ArrayValueNode extends BaseValueNode {
     const index = this.arrayStore.value.findIndex((item) => item === child.getStore())
 
     this.arrayStore.removeItem(index)
-    this._children.splice(index, 1)
+    this.children.splice(index, 1)
   }
 
   public override expandAll(options?: { skipItself?: boolean }) {
@@ -89,8 +71,8 @@ export class ArrayValueNode extends BaseValueNode {
       this.expanded = true
     }
 
-    for (const child of this._children) {
-      if (child.isExpandable && !child.skipOnExpandAll) {
+    for (const child of this.children) {
+      if (child.isCollapsible && !child.skipOnExpandAll) {
         child.setExpanded(true)
         child.expandAll()
       }
@@ -102,8 +84,8 @@ export class ArrayValueNode extends BaseValueNode {
       this.expanded = false
     }
 
-    for (const child of this._children) {
-      if (child.isExpandable) {
+    for (const child of this.children) {
+      if (child.isCollapsible) {
         child.setExpanded(false)
         child.collapseAll()
       }

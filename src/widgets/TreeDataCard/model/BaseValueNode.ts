@@ -6,9 +6,12 @@ import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store
 export type NodeType = 'root' | 'object' | 'array' | 'string' | 'number' | 'boolean' | 'foreignKey' | 'createButton'
 
 export abstract class BaseValueNode {
-  public expanded: boolean = false
+  public expanded = false
+
   public parent: BaseValueNode | null = null
   public onDelete?: () => void
+
+  public children: BaseValueNode[] = []
 
   protected _store: JsonValueStore
   public readonly nodeType: NodeType
@@ -20,14 +23,11 @@ export abstract class BaseValueNode {
     makeObservable(this, {
       expanded: observable,
       parent: observable,
+      children: observable,
       indexPath: computed,
       isLastSibling: computed,
       guides: computed,
-      children: computed,
-      isExpandable: computed,
-      isInitiallyExpanded: computed,
-      hasChildren: computed,
-      showMenu: computed,
+      isCollapsible: computed,
       path: computed,
       setExpanded: action,
       toggleExpanded: action,
@@ -35,10 +35,6 @@ export abstract class BaseValueNode {
       expandAll: action,
       setParent: action,
     })
-  }
-
-  public get showMenu() {
-    return true
   }
 
   public get fieldName() {
@@ -93,8 +89,12 @@ export abstract class BaseValueNode {
     return guides
   }
 
+  public get isCollapsible() {
+    return Boolean(this.children.length)
+  }
+
   public setExpanded(expanded: boolean) {
-    if (this.isExpandable) {
+    if (this.isCollapsible) {
       this.expanded = expanded
     }
   }
@@ -112,11 +112,6 @@ export abstract class BaseValueNode {
   public get skipOnExpandAll(): boolean {
     return false
   }
-
-  abstract get children(): BaseValueNode[]
-  abstract get isExpandable(): boolean
-  abstract get isInitiallyExpanded(): boolean
-  abstract get hasChildren(): boolean
 
   public getStore(): JsonValueStore {
     return this._store

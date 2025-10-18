@@ -1,35 +1,32 @@
-import { computed, makeObservable } from 'mobx'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
+import { IStringValueNode } from 'src/widgets/TreeDataCard/config/interface.ts'
 import { BaseValueNode } from './BaseValueNode'
 import { StringChildValueNode } from './StringChildValueNode'
 
 export const STRING_COLLAPSE_THRESHOLD = 64
 
-export class StringParentValueNode extends BaseValueNode {
-  private readonly _childNode: StringChildValueNode
-
-  constructor(store: JsonStringValueStore) {
+export class StringParentValueNode extends BaseValueNode implements IStringValueNode {
+  constructor(private readonly store: JsonStringValueStore) {
     super(store, 'string')
 
-    this._childNode = new StringChildValueNode(store)
-    this._childNode.setParent(this)
-
-    makeObservable(this, {
-      isCollapsible: computed,
+    const childNode = new StringChildValueNode(store, (value) => {
+      this.setValue(value)
     })
+    childNode.setParent(this)
 
-    this.expanded = this.isInitiallyExpanded
+    this.children.push(childNode)
+  }
+
+  public get value(): string {
+    return this.store.getPlainValue()
   }
 
   public get isCollapsible(): boolean {
-    const store = this._store as JsonStringValueStore
-    const text = store.value || ''
-    return text.length > STRING_COLLAPSE_THRESHOLD
+    return this.isLongText
   }
 
   public get collapseChildrenLabel() {
-    const store = this._store as JsonStringValueStore
-    const text = store.value || ''
+    const text = this.store.value || ''
 
     if (!text.trim()) {
       return `<empty text>`
@@ -40,27 +37,28 @@ export class StringParentValueNode extends BaseValueNode {
     return `<text: ${wordCount} ${word}>`
   }
 
-  get children(): BaseValueNode[] {
-    return this.isCollapsible ? [this._childNode] : []
-  }
-
-  get isExpandable(): boolean {
-    return this.isCollapsible
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  get hasChildren(): boolean {
-    return this.isCollapsible
-  }
-
   public override get skipOnExpandAll(): boolean {
     return false
   }
 
+  public setValue(value: string): void {
+    const wasCollapsible = this.isCollapsible
+
+    this.store.setValue(value)
+
+    if (!wasCollapsible && this.isCollapsible) {
+      this.expanded = true
+    } else if (wasCollapsible && !this.isCollapsible) {
+      this.expanded = false
+    }
+  }
+
   public override collapseAll() {
     this.expanded = false
+  }
+
+  private get isLongText() {
+    const text = this.store.getPlainValue()
+    return text.length > STRING_COLLAPSE_THRESHOLD
   }
 }

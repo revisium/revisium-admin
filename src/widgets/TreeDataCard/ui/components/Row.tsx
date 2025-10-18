@@ -27,7 +27,7 @@ export const Row: FC<IndentedRowProps> = ({
 }: IndentedRowProps) => {
   const actions = useRowEditorActions()
 
-  const isCollapsed = node.isExpandable && !node.expanded
+  const isCollapsed = node.isCollapsible && !node.expanded
 
   return (
     <Flex
@@ -39,7 +39,7 @@ export const Row: FC<IndentedRowProps> = ({
       data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
-      {node.showMenu && <MenuRow node={node} />}
+      <MenuRow node={node} />
       <Flex width="100%" alignItems="center">
         <Flex>
           {!skipDot && (

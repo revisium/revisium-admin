@@ -1,32 +1,24 @@
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
+import { IStringValueNode } from 'src/widgets/TreeDataCard/config/interface.ts'
 import { BaseValueNode } from './BaseValueNode'
 
-export class StringChildValueNode extends BaseValueNode {
-  constructor(store: JsonStringValueStore) {
+export class StringChildValueNode extends BaseValueNode implements IStringValueNode {
+  constructor(
+    store: JsonStringValueStore,
+    private readonly onSetValue: (value: string) => void,
+  ) {
     super(store, 'string')
   }
 
-  public get showMenu() {
-    return false
-  }
-
-  get children(): BaseValueNode[] {
-    return []
-  }
-
-  get isExpandable(): boolean {
-    return false
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  get hasChildren(): boolean {
-    return false
+  public get value() {
+    return (this._store as JsonStringValueStore).getPlainValue()
   }
 
   public get fieldName() {
     return ''
+  }
+
+  public setValue(value: string): void {
+    this.onSetValue(value)
   }
 }

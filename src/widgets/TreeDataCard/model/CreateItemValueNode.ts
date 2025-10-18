@@ -9,31 +9,10 @@ export class CreateItemValueNode extends BaseValueNode {
     super(arrayStore, 'createButton')
 
     this.onItemCreated = onItemCreated
-    this.expanded = this.isInitiallyExpanded
-  }
-
-  public get showMenu() {
-    return false
   }
 
   get dataTestId(): string {
     return `${this.parent?.dataTestId}`
-  }
-
-  get children(): BaseValueNode[] {
-    return []
-  }
-
-  get isExpandable(): boolean {
-    return false
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  get hasChildren(): boolean {
-    return false
   }
 
   get arrayStore(): JsonArrayValueStore {

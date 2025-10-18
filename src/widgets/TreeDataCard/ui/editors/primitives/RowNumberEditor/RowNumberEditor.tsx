@@ -1,23 +1,30 @@
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useState } from 'react'
-import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store'
 import { PrimitiveBox } from 'src/widgets/TreeDataCard/ui/editors/primitives/PrimitiveBox/PrimitiveBox.tsx'
 
 const OnlyDigitsDotDash = /^[\d.-]+$/
 
 interface RowNumberEditorProps {
-  store: JsonNumberValueStore
+  value: number
+  setValue: (value: number) => void
+  defaultValue: number
   readonly?: boolean
   dataTestId?: string
 }
 
-export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store, readonly, dataTestId }) => {
-  const storeState = store.getPlainValue().toString()
-  const [state, setState] = useState(storeState)
+export const RowNumberEditor: React.FC<RowNumberEditorProps> = ({
+  value,
+  setValue,
+  defaultValue,
+  readonly,
+  dataTestId,
+}) => {
+  const stringValue = value.toString()
+
+  const [state, setState] = useState(stringValue)
 
   useEffect(() => {
-    setState(storeState)
-  }, [storeState])
+    setState(stringValue)
+  }, [stringValue])
 
   const handleChange = useCallback((value: string) => {
     setState(value)
@@ -26,13 +33,13 @@ export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store
   const handleBlur = useCallback(() => {
     const parsedValue = Number.parseFloat(state)
     if (!Number.isNaN(parsedValue)) {
-      store.setValue(parsedValue)
+      setValue(parsedValue)
       setState(parsedValue.toString())
     } else {
-      store.setValue(store.default)
-      setState(store.default.toString())
+      setValue(defaultValue)
+      setState(defaultValue.toString())
     }
-  }, [store, state])
+  }, [defaultValue, setValue, state])
 
   return (
     <PrimitiveBox
@@ -44,4 +51,4 @@ export const RowNumberEditor: React.FC<RowNumberEditorProps> = observer(({ store
       restrict={OnlyDigitsDotDash}
     />
   )
-})
+}

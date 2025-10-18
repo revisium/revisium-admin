@@ -30,7 +30,7 @@ export const Dot: FC<DotProps> = ({ isCollapsed, isCollapsible, toggleCollapsed 
         <Flex
           _groupHover={{
             display: 'inline-flex',
-            color: 'black',
+            color: 'newGray.500',
           }}
           display={isCollapsed ? 'inline-flex' : 'none'}
           _hover={{

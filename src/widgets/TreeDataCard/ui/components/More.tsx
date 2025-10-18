@@ -8,7 +8,7 @@ interface MoreProps {
 
 export const More: FC<MoreProps> = ({ onClick, label }) => {
   return (
-    <Text ml="8px" color="gray.300" onClick={onClick} cursor="pointer">
+    <Text ml="8px" color="newGray.300" onClick={onClick} cursor="pointer">
       {label}
     </Text>
   )

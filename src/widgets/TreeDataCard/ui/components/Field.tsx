@@ -23,12 +23,12 @@ export const Field: FC<RowFieldProps> = observer(({ node }) => {
             placement: 'right-end',
           }}
         >
-          <Text color="gray.400" textDecoration={store.deprecated ? 'line-through' : undefined}>
+          <Text color="newGray.400" textDecoration={store.deprecated ? 'line-through' : undefined}>
             {node.fieldName}:
           </Text>
         </Tooltip>
       ) : (
-        <Text color="gray.400" textDecoration={store.deprecated ? 'line-through' : undefined}>
+        <Text color="newGray.400" textDecoration={store.deprecated ? 'line-through' : undefined}>
           {node.fieldName}:
         </Text>
       )}

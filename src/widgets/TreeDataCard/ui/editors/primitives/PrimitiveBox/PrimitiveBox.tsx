@@ -32,9 +32,9 @@ export const PrimitiveBox: FC<PrimitiveBoxProps> = observer(
     return (
       <Box
         borderRadius="4px"
-        bgColor={focused ? 'blackAlpha.50' : undefined}
+        bgColor={focused ? 'newGray.100' : undefined}
         _hover={{
-          bgColor: readonly ? undefined : 'blackAlpha.50',
+          bgColor: readonly ? undefined : 'newGray.100',
         }}
         mt="2px"
         ml="2px"

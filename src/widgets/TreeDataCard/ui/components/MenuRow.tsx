@@ -1,4 +1,5 @@
 import { Box, Flex, Icon, Menu, Portal } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
 import { FC, Fragment, useState } from 'react'
 import { LuChevronRight } from 'react-icons/lu'
 import { PiDotsThreeVerticalBold } from 'react-icons/pi'
@@ -8,7 +9,7 @@ interface MenuRowProps {
   node: BaseValueNode
 }
 
-export const MenuRow: FC<MenuRowProps> = ({ node }) => {
+export const MenuRow: FC<MenuRowProps> = observer(({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -93,4 +94,4 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
       </Portal>
     </Menu.Root>
   )
-}
+})

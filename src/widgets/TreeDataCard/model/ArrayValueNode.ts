@@ -1,4 +1,4 @@
-import { makeObservable, action, computed } from 'mobx'
+import { makeObservable, action } from 'mobx'
 import { JsonArrayValueStore } from 'src/entities/Schema/model/value/json-array-value.store'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
@@ -17,7 +17,6 @@ export class ArrayValueNode extends BaseValueNode {
     this.createButtonNode.setParent(this)
 
     makeObservable(this, {
-      menu: computed,
       createItem: action,
       createItemAt: action,
       deleteChild: action,

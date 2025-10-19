@@ -41,6 +41,7 @@ export abstract class BaseValueNode {
         guides: computed,
         json: computed,
         isCollapsible: computed,
+        menu: computed,
         setExpanded: action,
         toggleExpanded: action,
         collapseAll: action,

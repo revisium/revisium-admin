@@ -22,23 +22,19 @@ export class IdValueNode extends BaseValueNode implements IStringValueNode {
     this.cardStore.name.setValue(value)
   }
 
-  public getJson(): string {
-    return this.rootValueNode.getJson()
-  }
-
   public get isCollapsible() {
     return this.rootValueNode.isCollapsible
   }
 
   public override expandAll() {
-    if (this.rootValueNode.isCollapsible && !this.rootValueNode.skipOnExpandAll) {
-      this.rootValueNode.expandAll({ skipItself: true })
-    }
+    this.rootValueNode.expandAll({ skipItself: true })
   }
 
   public override collapseAll() {
-    if (this.rootValueNode.isCollapsible) {
-      this.rootValueNode.collapseAll({ skipItself: true })
-    }
+    this.rootValueNode.collapseAll({ skipItself: true })
+  }
+
+  public get json(): string {
+    return this.rootValueNode.json
   }
 }

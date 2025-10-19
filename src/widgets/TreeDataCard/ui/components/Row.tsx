@@ -39,7 +39,7 @@ export const Row: FC<IndentedRowProps> = ({
       data-testid={`${node.dataTestId}-field`}
     >
       <Guides guides={node.guides} />
-      <MenuRow node={node} />
+      {node.showMenu && <MenuRow node={node} />}
       <Flex width="100%" alignItems="center">
         <Flex>
           {!skipDot && (

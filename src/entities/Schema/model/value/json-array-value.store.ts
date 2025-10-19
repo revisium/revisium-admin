@@ -85,6 +85,22 @@ export class JsonArrayValueStore {
     return item
   }
 
+  public createItemAt(index: number) {
+    if (this.value === this.baseValue) {
+      this.value = this.baseValue.slice()
+    }
+
+    const item = createEmptyJsonValueStore(this.schema.items)
+    item.parent = this
+    this.value.splice(index, 0, item)
+
+    for (let i = index; i < this.value.length; i++) {
+      this.value[i].id = i.toString()
+    }
+
+    return item
+  }
+
   public removeItem(index: number) {
     if (this.value === this.baseValue) {
       this.value = this.baseValue.slice()
@@ -96,6 +112,22 @@ export class JsonArrayValueStore {
     this.value.splice(index, 1)
 
     for (let i = index; i < this.value.length; i++) {
+      this.value[i].id = i.toString()
+    }
+  }
+
+  public moveItem(fromIndex: number, toIndex: number) {
+    if (this.value === this.baseValue) {
+      this.value = this.baseValue.slice()
+    }
+
+    const item = this.value.splice(fromIndex, 1)[0]
+    this.value.splice(toIndex, 0, item)
+
+    const startIndex = Math.min(fromIndex, toIndex)
+    const endIndex = Math.max(fromIndex, toIndex)
+
+    for (let i = startIndex; i <= endIndex; i++) {
       this.value[i].id = i.toString()
     }
   }

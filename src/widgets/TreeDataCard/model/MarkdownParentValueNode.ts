@@ -23,12 +23,4 @@ export class MarkdownParentValueNode extends BaseValueNode {
     const word = wordCount === 1 ? 'word' : 'words'
     return `<markdown: ${wordCount} ${word}>`
   }
-
-  public override get skipOnExpandAll(): boolean {
-    return true
-  }
-
-  public override collapseAll() {
-    this.expanded = false
-  }
 }

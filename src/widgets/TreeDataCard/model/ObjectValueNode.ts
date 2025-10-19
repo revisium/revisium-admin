@@ -23,34 +23,8 @@ export class ObjectValueNode extends BaseValueNode {
     return this._store as JsonObjectValueStore
   }
 
-  public override expandAll(options?: { skipItself?: boolean }) {
-    if (!options?.skipItself) {
-      this.expanded = true
-    }
-
-    for (const child of this.children) {
-      if (child.isCollapsible && !child.skipOnExpandAll) {
-        child.setExpanded(true)
-        child.expandAll()
-      }
-    }
-  }
-
   public override get skipOnExpandAll(): boolean {
     return this.objectStore.$ref === SystemSchemaIds.File
-  }
-
-  public override collapseAll(options?: { skipItself?: boolean }) {
-    if (!options?.skipItself) {
-      this.expanded = false
-    }
-
-    for (const child of this.children) {
-      if (child.isCollapsible) {
-        child.setExpanded(false)
-        child.collapseAll()
-      }
-    }
   }
 
   private buildChildren() {

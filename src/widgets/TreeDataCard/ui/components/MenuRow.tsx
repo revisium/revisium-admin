@@ -1,7 +1,7 @@
 import { Box, Flex, Icon, Menu, Portal } from '@chakra-ui/react'
-import { FC, useCallback, useState } from 'react'
-import { PiDotsThreeVerticalBold, PiTrash } from 'react-icons/pi'
-import { toaster } from 'src/shared/ui'
+import { FC, Fragment, useState } from 'react'
+import { LuChevronRight } from 'react-icons/lu'
+import { PiDotsThreeVerticalBold } from 'react-icons/pi'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 
 interface MenuRowProps {
@@ -10,24 +10,6 @@ interface MenuRowProps {
 
 export const MenuRow: FC<MenuRowProps> = ({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
-
-  const handleJson = useCallback(async () => {
-    await navigator.clipboard.writeText(node.getJson())
-
-    toaster.info({
-      duration: 1500,
-      description: 'Copied to clipboard',
-    })
-  }, [node])
-
-  const handlePath = useCallback(async () => {
-    await navigator.clipboard.writeText(node.path)
-
-    toaster.info({
-      duration: 1500,
-      description: 'Copied to clipboard',
-    })
-  }, [node])
 
   return (
     <Menu.Root onOpenChange={({ open }) => setIsOpen(open)}>
@@ -72,33 +54,39 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
-            {node.isCollapsible && (
-              <>
-                <Menu.Item value="expand-all" onClick={() => node.expandAll()}>
-                  <Box flex={1}>Expand all</Box>
-                </Menu.Item>
-                <Menu.Item value="collapse-all" onClick={() => node.collapseAll()}>
-                  <Box flex={1}>Collapse all</Box>
-                </Menu.Item>
-                <Menu.Separator />
-              </>
-            )}
-            <Menu.Item value="json" onClick={handleJson}>
-              <Box flex={1}>Copy json</Box>
-            </Menu.Item>
-            {node.path && (
-              <Menu.Item value="path" onClick={handlePath}>
-                <Box flex={1}>Copy path</Box>
-              </Menu.Item>
-            )}
-            {node.onDelete && (
-              <>
-                <Menu.Separator />
-                <Menu.Item value="delete" onClick={node.onDelete}>
-                  <PiTrash />
-                  <Box flex={1}>Delete</Box>
-                </Menu.Item>
-              </>
+            {node.menu.map((item) =>
+              item.children ? (
+                <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }}>
+                  {item.beforeSeparator && <Menu.Separator />}
+                  <Menu.TriggerItem width="100%" justifyContent="space-between">
+                    {item.label} <LuChevronRight />
+                  </Menu.TriggerItem>
+                  {item.afterSeparator && <Menu.Separator />}
+                  <Portal>
+                    <Menu.Positioner>
+                      <Menu.Content>
+                        {item.children.map((childItem) => (
+                          <Fragment key={childItem.value}>
+                            {childItem.beforeSeparator && <Menu.Separator />}
+                            <Menu.Item value={childItem.value} onClick={childItem.handler}>
+                              <Box flex={1}>{childItem.label}</Box>
+                            </Menu.Item>
+                            {childItem.afterSeparator && <Menu.Separator />}
+                          </Fragment>
+                        ))}
+                      </Menu.Content>
+                    </Menu.Positioner>
+                  </Portal>
+                </Menu.Root>
+              ) : (
+                <Fragment key={item.value}>
+                  {item.beforeSeparator && <Menu.Separator />}
+                  <Menu.Item value={item.value} onClick={item.handler}>
+                    <Box flex={1}>{item.label}</Box>
+                  </Menu.Item>
+                  {item.afterSeparator && <Menu.Separator />}
+                </Fragment>
+              ),
             )}
           </Menu.Content>
         </Menu.Positioner>

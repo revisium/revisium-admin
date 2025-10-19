@@ -37,10 +37,6 @@ export class StringParentValueNode extends BaseValueNode implements IStringValue
     return `<text: ${wordCount} ${word}>`
   }
 
-  public override get skipOnExpandAll(): boolean {
-    return false
-  }
-
   public setValue(value: string): void {
     const wasCollapsible = this.isCollapsible
 
@@ -51,10 +47,6 @@ export class StringParentValueNode extends BaseValueNode implements IStringValue
     } else if (wasCollapsible && !this.isCollapsible) {
       this.expanded = false
     }
-  }
-
-  public override collapseAll() {
-    this.expanded = false
   }
 
   private get isLongText() {

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
 import { Row } from 'src/widgets/TreeDataCard/ui/components'
 import { PlainTextEditor } from 'src/widgets/TreeDataCard/ui/editors/primitives/RowStringEditor/PlainTextEditor/PlainTextEditor'
@@ -10,12 +10,24 @@ export const StringParentRendererComponent: FC<NodeRendererContext> = observer((
   const stringParentNode = node as StringParentValueNode
   const nodeStore = node.getStore() as JsonStringValueStore
 
+  const handleSetValue = useCallback(
+    (value: string) => {
+      stringParentNode.setValue(value)
+    },
+    [stringParentNode],
+  )
+
   if (stringParentNode.isCollapsible) {
     return <Row node={node} isCollapsible />
   } else {
     return (
       <Row node={node}>
-        <PlainTextEditor node={node} readonly={!isEdit || nodeStore.readOnly} dataTestId={node.dataTestId} />
+        <PlainTextEditor
+          value={stringParentNode.value}
+          setValue={handleSetValue}
+          readonly={!isEdit || nodeStore.readOnly}
+          dataTestId={node.dataTestId}
+        />
       </Row>
     )
   }

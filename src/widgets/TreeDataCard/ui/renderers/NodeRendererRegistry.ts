@@ -68,7 +68,7 @@ export class NodeRendererRegistry {
       },
       {
         Component: ContainerRendererComponent,
-        canRender: (node: BaseValueNode) => node.hasChildren,
+        canRender: (node: BaseValueNode) => node.isCollapsible,
       },
       {
         Component: ForeignKeyRendererComponent,

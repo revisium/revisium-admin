@@ -2,29 +2,19 @@ import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-numbe
 import { BaseValueNode } from './BaseValueNode'
 
 export class NumberValueNode extends BaseValueNode {
-  constructor(store: JsonNumberValueStore) {
+  constructor(private readonly store: JsonNumberValueStore) {
     super(store, 'number')
-
-    this.expanded = this.isInitiallyExpanded
   }
 
-  public get showMenu() {
-    return Boolean(this.onDelete)
+  public get value() {
+    return this.store.getPlainValue()
   }
 
-  get children(): BaseValueNode[] {
-    return []
+  public get defaultValue() {
+    return this.store.default
   }
 
-  get isExpandable(): boolean {
-    return false
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return false
-  }
-
-  get hasChildren(): boolean {
-    return false
+  public setValue(value: number) {
+    this.store.setValue(value)
   }
 }

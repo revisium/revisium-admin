@@ -22,7 +22,12 @@ export const RowForeignKeyEditor: FC<RowStringEditorProps> = observer(({ store, 
   return (
     <ForeignKeyMenu store={store} onChange={handleSelect} disabled={readonly}>
       <Flex data-testid={`${dataTestId}-string`}>
-        <PlainTextEditor store={store} dataTestId={dataTestId} readonly={readonly} />
+        <PlainTextEditor
+          value={store.getPlainValue()}
+          setValue={store.setValue}
+          dataTestId={dataTestId}
+          readonly={readonly}
+        />
       </Flex>
     </ForeignKeyMenu>
   )

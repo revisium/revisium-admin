@@ -72,7 +72,7 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
-            {node.isExpandable && (
+            {node.isCollapsible && (
               <>
                 <Menu.Item value="expand-all" onClick={() => node.expandAll()}>
                   <Box flex={1}>Expand all</Box>

@@ -10,7 +10,6 @@ export class RootValueNode extends BaseValueNode {
   private readonly cardStore: RowDataCardStore
   private readonly idNode: IdValueNode
   private readonly valueNode: BaseValueNode
-  public _children: BaseValueNode[] | null = null
 
   constructor(cardStore: RowDataCardStore) {
     super(cardStore.root, 'root')
@@ -22,6 +21,8 @@ export class RootValueNode extends BaseValueNode {
 
     this.idNode = new IdValueNode(this.cardStore, this.valueNode)
     this.idNode.setParent(this)
+
+    this.children = [this.idNode, this.valueNode]
 
     this.expanded = true
 
@@ -45,26 +46,6 @@ export class RootValueNode extends BaseValueNode {
     return store.type === 'string' || store.type === 'number' || store.type === 'boolean'
   }
 
-  get children(): BaseValueNode[] {
-    if (!this._children) {
-      this._children = [this.idNode, this.valueNode]
-    }
-
-    return this._children
-  }
-
-  get isExpandable(): boolean {
-    return this.valueNode.isExpandable
-  }
-
-  get isInitiallyExpanded(): boolean {
-    return true
-  }
-
-  get hasChildren(): boolean {
-    return true
-  }
-
   public get flattenedNodes(): BaseValueNode[] {
     const result: BaseValueNode[] = []
 
@@ -73,7 +54,7 @@ export class RootValueNode extends BaseValueNode {
         result.push(node)
       }
 
-      if (node.expanded && node.hasChildren) {
+      if (node.expanded) {
         for (const child of node.children) {
           const shouldSkip = child instanceof PrimitiveRootNode
           traverse(child, shouldSkip)
@@ -92,11 +73,15 @@ export class RootValueNode extends BaseValueNode {
     return result
   }
 
+  public get isCollapsible() {
+    return this.valueNode.isCollapsible
+  }
+
   public saveExpandedState(): Map<string, boolean> {
     const expandedState = new Map<string, boolean>()
 
     const traverse = (node: BaseValueNode) => {
-      if (node.isExpandable) {
+      if (node.isCollapsible) {
         expandedState.set(node.dataTestId, node.expanded)
       }
 
@@ -111,7 +96,7 @@ export class RootValueNode extends BaseValueNode {
 
   public restoreExpandedState(expandedState: Map<string, boolean>) {
     const traverse = (node: BaseValueNode) => {
-      if (node.isExpandable && expandedState.has(node.dataTestId)) {
+      if (node.isCollapsible && expandedState.has(node.dataTestId)) {
         node.expanded = expandedState.get(node.dataTestId)!
       }
 

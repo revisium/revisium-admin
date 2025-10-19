@@ -5,37 +5,18 @@ import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
 
 export class ObjectValueNode extends BaseValueNode {
-  public _children: BaseValueNode[] = []
-
   constructor(store: JsonObjectValueStore) {
     super(store, 'object')
 
     this.buildChildren()
 
-    this.expanded = this.isInitiallyExpanded
+    this.expanded = this.objectStore.$ref !== SystemSchemaIds.File
   }
 
   public get collapseChildrenLabel() {
-    const count = this._children?.length ?? 0
+    const count = this.children?.length ?? 0
 
     return `<${count} ${count === 1 ? 'key' : 'keys'}>`
-  }
-
-  public get children(): BaseValueNode[] {
-    return this._children
-  }
-
-  public get isExpandable(): boolean {
-    return Object.keys(this.objectStore.value).length > 0
-  }
-
-  public get isInitiallyExpanded(): boolean {
-    const isFile = this.objectStore.$ref === SystemSchemaIds.File
-    return !isFile
-  }
-
-  public get hasChildren(): boolean {
-    return Object.keys(this.objectStore.value).length > 0
   }
 
   private get objectStore(): JsonObjectValueStore {
@@ -47,8 +28,8 @@ export class ObjectValueNode extends BaseValueNode {
       this.expanded = true
     }
 
-    for (const child of this._children) {
-      if (child.isExpandable && !child.skipOnExpandAll) {
+    for (const child of this.children) {
+      if (child.isCollapsible && !child.skipOnExpandAll) {
         child.setExpanded(true)
         child.expandAll()
       }
@@ -64,8 +45,8 @@ export class ObjectValueNode extends BaseValueNode {
       this.expanded = false
     }
 
-    for (const child of this._children) {
-      if (child.isExpandable) {
+    for (const child of this.children) {
+      if (child.isCollapsible) {
         child.setExpanded(false)
         child.collapseAll()
       }
@@ -75,7 +56,7 @@ export class ObjectValueNode extends BaseValueNode {
   private buildChildren() {
     const currentEntries = jsonValueStoreSorting(this.objectStore)
 
-    this._children = currentEntries.map(([, childStore]) => {
+    this.children = currentEntries.map(([, childStore]) => {
       const childNode = createNodeForStore(childStore)
       childNode.setParent(this)
       return childNode

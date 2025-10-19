@@ -25,7 +25,7 @@ export class JsonStringValueStore {
 
     this.baseValue = this.value
 
-    makeAutoObservable(this)
+    makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get $ref() {

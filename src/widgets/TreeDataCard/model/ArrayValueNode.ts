@@ -170,7 +170,7 @@ export class ArrayValueNode extends BaseValueNode {
   private addNewItem(store: JsonValueStore, index?: number) {
     const newNode = this.createNodeFromStore(store)
 
-    if (index !== undefined) {
+    if (index) {
       this.children.splice(index, 0, newNode)
     } else {
       this.children.splice(-1, 0, newNode)

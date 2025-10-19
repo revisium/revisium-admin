@@ -56,7 +56,7 @@ export const MenuRow: FC<MenuRowProps> = ({ node }) => {
           <Menu.Content>
             {node.menu.map((item) =>
               item.children ? (
-                <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }}>
+                <Menu.Root key={item.value} positioning={{ placement: 'right-start', gutter: 2 }}>
                   {item.beforeSeparator && <Menu.Separator />}
                   <Menu.TriggerItem width="100%" justifyContent="space-between">
                     {item.label} <LuChevronRight />

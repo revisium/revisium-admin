@@ -9,7 +9,7 @@ export type NodeType = 'root' | 'object' | 'array' | 'string' | 'number' | 'bool
 export interface MenuItem {
   value: string
   label?: string
-  handler?: () => void
+  handler?: () => Promise<void> | void
   children?: MenuItem[]
   beforeSeparator?: boolean
   afterSeparator?: boolean
@@ -77,8 +77,8 @@ export abstract class BaseValueNode {
         label: 'Copy',
         value: 'copy',
         children: [
-          { label: 'json', value: 'json', handler: this.handleGetJson },
-          ...(this.path ? [{ label: 'path', value: 'path', handler: this.handleGetPath }] : []),
+          { label: 'json', value: 'json', handler: () => this.handleGetJson() },
+          ...(this.path ? [{ label: 'path', value: 'path', handler: () => this.handleGetPath() }] : []),
         ],
       },
     ]
@@ -202,7 +202,7 @@ export abstract class BaseValueNode {
     return JSON.stringify(toSortedJsonValue(this.getStore()), null, 4)
   }
 
-  private handleGetJson = async () => {
+  private async handleGetJson() {
     await navigator.clipboard.writeText(this.json)
 
     toaster.info({
@@ -211,7 +211,7 @@ export abstract class BaseValueNode {
     })
   }
 
-  private handleGetPath = async () => {
+  private async handleGetPath() {
     await navigator.clipboard.writeText(this.path)
 
     toaster.info({

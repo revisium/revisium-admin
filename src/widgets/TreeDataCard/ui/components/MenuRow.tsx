@@ -13,7 +13,7 @@ export const MenuRow: FC<MenuRowProps> = observer(({ node }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <Menu.Root onOpenChange={({ open }) => setIsOpen(open)}>
+    <Menu.Root lazyMount unmountOnExit onOpenChange={({ open }) => setIsOpen(open)}>
       <Menu.Trigger asChild>
         {
           <Flex

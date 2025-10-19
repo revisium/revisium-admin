@@ -7,6 +7,8 @@ export class CreateItemValueNode extends BaseValueNode {
     private readonly onItemCreated: () => void,
   ) {
     super(arrayStore, 'createButton')
+
+    this.showMenu = false
   }
 
   public get dataTestId(): string {

@@ -23,6 +23,8 @@ export abstract class BaseValueNode {
 
   public children: BaseValueNode[] = []
 
+  public showMenu = true
+
   protected _store: JsonValueStore
   public readonly nodeType: NodeType
 

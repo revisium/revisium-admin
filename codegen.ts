@@ -43,19 +43,6 @@ const config: CodegenConfig = {
               nonOptionalTypename: true,
             },
           },
-          './': {
-            preset: 'near-operation-file',
-            documents: `./src/**/*.graphql`,
-            presetConfig: {
-              folder: '__generated__',
-              extension: '.generated.ts',
-              baseTypesPath: `./src/__generated__/globalTypes`,
-            },
-            plugins: [disablePlugin, 'typescript-operations', 'typescript-react-apollo'],
-            config: {
-              scalars,
-            },
-          },
           [`./src/__generated__/graphql-request.ts`]: {
             documents: `./src/**/*.graphql`,
             plugins: [disablePlugin, 'typescript', 'typescript-operations', 'typescript-graphql-request'],

@@ -1,0 +1,28 @@
+fragment FindBranch on BranchModel {
+  id
+  name
+  isRoot
+  touched
+  parent {
+    revision {
+      branch {
+        id
+      }
+    }
+  }
+}
+
+query findBranches($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      cursor
+      node {
+        ...FindBranch
+      }
+    }
+  }
+}

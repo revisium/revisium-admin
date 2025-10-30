@@ -2096,6 +2096,35 @@ export type TablesMstQuery = {
   }
 }
 
+export type FindBranchFragment = {
+  id: string
+  name: string
+  isRoot: boolean
+  touched: boolean
+  parent?: { revision: { branch: { id: string } } } | null
+}
+
+export type FindBranchesQueryVariables = Exact<{
+  data: GetBranchesInput
+}>
+
+export type FindBranchesQuery = {
+  branches: {
+    totalCount: number
+    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      cursor: string
+      node: {
+        id: string
+        name: string
+        isRoot: boolean
+        touched: boolean
+        parent?: { revision: { branch: { id: string } } } | null
+      }
+    }>
+  }
+}
+
 export const PageInfoFragmentDoc = gql`
   fragment PageInfo on PageInfo {
     startCursor
@@ -2265,6 +2294,21 @@ export const BranchRevisionMstFragmentDoc = gql`
   }
   ${RevisionMstFragmentDoc}
   ${EndpointMstFragmentDoc}
+`
+export const FindBranchFragmentDoc = gql`
+  fragment FindBranch on BranchModel {
+    id
+    name
+    isRoot
+    touched
+    parent {
+      revision {
+        branch {
+          id
+        }
+      }
+    }
+  }
 `
 export const FindForeignKeyDocument = gql`
   query findForeignKey($data: GetRowsInput!) {
@@ -2709,6 +2753,24 @@ export const TablesMstDocument = gql`
   }
   ${PageInfoMstFragmentDoc}
   ${TableMstFragmentDoc}
+`
+export const FindBranchesDocument = gql`
+  query findBranches($data: GetBranchesInput!) {
+    branches(data: $data) {
+      totalCount
+      pageInfo {
+        ...PageInfo
+      }
+      edges {
+        cursor
+        node {
+          ...FindBranch
+        }
+      }
+    }
+  }
+  ${PageInfoFragmentDoc}
+  ${FindBranchFragmentDoc}
 `
 
 export type SdkFunctionWrapper = <T>(
@@ -3246,6 +3308,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         (wrappedRequestHeaders) =>
           client.request<TablesMstQuery>(TablesMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
         'TablesMst',
+        'query',
+        variables,
+      )
+    },
+    findBranches(
+      variables: FindBranchesQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<FindBranchesQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FindBranchesQuery>(FindBranchesDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'findBranches',
         'query',
         variables,
       )

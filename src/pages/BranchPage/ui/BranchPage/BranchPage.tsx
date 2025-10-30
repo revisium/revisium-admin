@@ -4,7 +4,6 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { useDraftHeadWatcher } from 'src/pages/BranchPage/hooks/useDraftHeadWatcher.ts'
 import { Page } from 'src/shared/ui'
-import { BranchActionsWidget } from 'src/widgets/BranchActionsWidget'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 import { RevisionEndpointWidget } from 'src/widgets/RevisionEndpointWidget'
 import { SidebarWidget } from 'src/widgets/SidebarWidget'
@@ -13,7 +12,7 @@ export const BranchPage: React.FC = observer(() => {
   useDraftHeadWatcher()
 
   return (
-    <Page actions={<BranchActionsWidget />} sidebar={<SidebarWidget />} title={<BranchPageTitleWidget />}>
+    <Page sidebar={<SidebarWidget />} title={<BranchPageTitleWidget />}>
       <Flex flex={1} flexDirection="column" gap="1rem">
         <RevisionEndpointWidget />
 

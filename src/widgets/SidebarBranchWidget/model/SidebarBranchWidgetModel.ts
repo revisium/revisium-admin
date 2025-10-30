@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { container } from 'src/shared/lib'
+import { CreateBranchByRevisionIdCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateBranchByRevisionIdCommand.ts'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
 import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
@@ -73,6 +74,15 @@ export class SidebarBranchWidgetModel {
   public async handleCommitChanges(comment: string) {
     try {
       const command = new CreateRevisionCommand(rootStore, this.project, comment)
+      await command.execute()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  public async handleCreateBranch(name: string) {
+    try {
+      const command = new CreateBranchByRevisionIdCommand(rootStore, this.project, name)
       await command.execute()
     } catch (e) {
       console.error(e)

@@ -2,8 +2,8 @@ import { Heading, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { SidebarLink } from 'src/shared/ui'
 import { useMenuListModel } from 'src/widgets/BranchMenuList/hooks/useMenuListModel.ts'
+import { SidebarBranchWidget } from 'src/widgets/SidebarBranchWidget'
 
 export const BranchMenuList: FC = observer(() => {
   const store = useMenuListModel()
@@ -24,16 +24,7 @@ export const BranchMenuList: FC = observer(() => {
         pt="1rem"
         width="100%"
       >
-        {store.items.map((branchLink) => (
-          <SidebarLink
-            touched={branchLink.touched}
-            key={branchLink.id}
-            dataTestId={`sidebar-branch-${branchLink.name}`}
-            label={branchLink.title}
-            link={branchLink.link}
-            isActive={branchLink.isActive}
-          />
-        ))}
+        <SidebarBranchWidget />
       </VStack>
     </VStack>
   )

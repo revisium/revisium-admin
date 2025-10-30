@@ -2,13 +2,13 @@ import { Tabs } from '@chakra-ui/react'
 
 export const BranchRevisionContent = () => {
   return (
-    <Tabs.Root defaultValue="members">
+    <Tabs.Root defaultValue="revisions">
       <Tabs.List>
-        <Tabs.Trigger value="members">Revisions</Tabs.Trigger>
-        <Tabs.Trigger value="projects">Branches</Tabs.Trigger>
+        <Tabs.Trigger value="revisions">Revisions</Tabs.Trigger>
+        <Tabs.Trigger value="branches">Branches</Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="members">Manage your team members</Tabs.Content>
-      <Tabs.Content value="projects">Manage your projects</Tabs.Content>
+      <Tabs.Content value="revisions">Manage your revisions</Tabs.Content>
+      <Tabs.Content value="branches">Manage your branches</Tabs.Content>
     </Tabs.Root>
   )
 }

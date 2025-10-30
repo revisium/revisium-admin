@@ -4,15 +4,23 @@ import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
 
 interface CreateRevisionContentProps {
   onClick: (comment: string) => Promise<void>
-  onClose?: () => void
+  onClose: () => void
 }
 
 export const CreateRevisionContent: FC<CreateRevisionContentProps> = ({ onClick, onClose }) => {
   const [comment, setComment] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleClick = useCallback(async () => {
-    await onClick(comment)
-    onClose?.()
+    setIsLoading(true)
+    try {
+      await onClick(comment)
+      onClose()
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
   }, [comment, onClick, onClose])
 
   const handleComment: React.ChangeEventHandler<HTMLTextAreaElement> = useCallback((event) => {
@@ -26,7 +34,7 @@ export const CreateRevisionContent: FC<CreateRevisionContentProps> = ({ onClick,
         <Flex flexDirection="column" alignItems="end" justifyContent="flex-start" gap="0.5rem">
           <Textarea _placeholder={{ color: 'gray.300' }} placeholder="Comment (optional)" onChange={handleComment} />
           <div>
-            <GrayButton onClick={handleClick} title="Commit"></GrayButton>
+            <GrayButton isLoading={isLoading} onClick={handleClick} title="Commit"></GrayButton>
           </div>
         </Flex>
       </Popover.Body>

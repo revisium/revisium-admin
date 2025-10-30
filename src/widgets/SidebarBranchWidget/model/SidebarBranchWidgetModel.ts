@@ -22,8 +22,6 @@ export class SidebarBranchWidgetModel {
   }
 
   public get postfix() {
-    const revision = this.project.revision
-
     if (this.project.isHeadRevision) {
       return ' [head]'
     }
@@ -32,7 +30,7 @@ export class SidebarBranchWidgetModel {
       return ''
     }
 
-    const shortId = revision?.id.slice(0, 3)
+    const shortId = this.project.revisionOrThrow.id.slice(0, 3)
 
     return ` [${shortId}]`
   }
@@ -68,7 +66,7 @@ export class SidebarBranchWidgetModel {
       const command = new RevertChangesCommand(this.project)
       await command.execute()
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 

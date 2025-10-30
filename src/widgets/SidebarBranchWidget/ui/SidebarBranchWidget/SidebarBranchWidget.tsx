@@ -50,7 +50,13 @@ export const SidebarBranchWidget = observer(() => {
             _groupHover={{ opacity: 1, pointerEvents: 'auto' }}
           >
             {model.showBranchButton && (
-              <ActionButton content={<CreateBranchContent />} onOpenChange={setIsPopoverOpen} tooltip="Create branch">
+              <ActionButton
+                content={
+                  <CreateBranchContent onClick={model.handleCreateBranch} onClose={() => setIsPopoverOpen(false)} />
+                }
+                onOpenChange={setIsPopoverOpen}
+                tooltip="Create branch"
+              >
                 <PiPlusBold />
               </ActionButton>
             )}

@@ -34,11 +34,11 @@ export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChan
       }}
     >
       {open ? (
-        <BranchTrigger name={model.name} postfix={model.postfix} touched={!!model.touched} />
+        <BranchTrigger name={model.name} postfix={model.postfix} touched={model.touched} />
       ) : (
-        <Tooltip content="Select branch or revision" openDelay={100} closeDelay={50}>
+        <Tooltip content="Select branch or revision" openDelay={500} closeDelay={50}>
           <Box>
-            <BranchTrigger name={model.name} postfix={model.postfix} touched={!!model.touched} />
+            <BranchTrigger name={model.name} postfix={model.postfix} touched={model.touched} />
           </Box>
         </Tooltip>
       )}

@@ -15,7 +15,7 @@ export const CreateBranchContent: React.FC<CreateBranchContentProps> = ({ onClic
   const handleAdd = useCallback(async () => {
     setIsLoading(true)
     try {
-      // await onClick(name)
+      await onClick(name)
       onClose()
     } catch (e) {
       console.error(e)

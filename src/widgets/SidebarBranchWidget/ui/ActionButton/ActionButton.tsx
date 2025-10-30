@@ -1,30 +1,18 @@
-import { Flex, Popover, Portal, useDisclosure } from '@chakra-ui/react'
+import { Flex, Popover, Portal } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
 import { Tooltip } from 'src/shared/ui'
 
 interface ActionButtonProps {
   children: ReactNode
   content: ReactNode
-  onOpenChange?: (open: boolean) => void
+  onOpenChange: (open: boolean) => void
   tooltip?: ReactNode
+  open: boolean
 }
 
-export const ActionButton: FC<ActionButtonProps> = ({ content, children, onOpenChange, tooltip }) => {
-  const { onOpen, onClose, open } = useDisclosure()
-
+export const ActionButton: FC<ActionButtonProps> = ({ content, children, onOpenChange, tooltip, open }) => {
   return (
-    <Popover.Root
-      portalled
-      open={open}
-      onOpenChange={({ open }) => {
-        if (open) {
-          onOpen()
-        } else {
-          onClose()
-        }
-        onOpenChange?.(open)
-      }}
-    >
+    <Popover.Root portalled open={open} onOpenChange={({ open }) => onOpenChange(open)}>
       <Popover.Trigger asChild>
         <Flex
           justifyContent="center"

@@ -15,7 +15,7 @@ export const SidebarBranchWidget = observer(() => {
   const projectPageModel = useProjectPageModel()
   const model = useViewModel(SidebarBranchWidgetModel, projectPageModel)
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const [openedPopover, setOpenedPopover] = useState<null | 'create' | 'commit' | 'revert'>(null)
 
   if (model.isLoading) {
     return null
@@ -24,7 +24,7 @@ export const SidebarBranchWidget = observer(() => {
   return (
     <Flex
       alignItems="center"
-      backgroundColor={isPopoverOpen ? 'gray.900/4' : 'transparent'}
+      backgroundColor={openedPopover ? 'gray.900/4' : 'transparent'}
       _hover={{ backgroundColor: 'newGray.100' }}
       borderRadius="0.25rem"
       height="30px"
@@ -38,23 +38,28 @@ export const SidebarBranchWidget = observer(() => {
           <Box color="newGray.400">
             <PiGitBranchLight />
           </Box>
-          <BranchButton model={model} onAction={async () => {}} onOpenChange={setIsPopoverOpen}></BranchButton>
+          <BranchButton
+            model={model}
+            onAction={async () => {}}
+            onOpenChange={(open) => setOpenedPopover(open ? null : openedPopover)}
+          />
         </Flex>
         {model.showActionsButton && (
           <Flex
             pl="16px"
             gap="8px"
             display="flex"
-            opacity={isPopoverOpen ? 1 : 0}
-            pointerEvents={isPopoverOpen ? 'auto' : 'none'}
+            opacity={openedPopover ? 1 : 0}
+            pointerEvents={openedPopover ? 'auto' : 'none'}
             _groupHover={{ opacity: 1, pointerEvents: 'auto' }}
           >
             {model.showBranchButton && (
               <ActionButton
+                open={openedPopover === 'create'}
+                onOpenChange={(open) => setOpenedPopover(open ? 'create' : null)}
                 content={
-                  <CreateBranchContent onClick={model.handleCreateBranch} onClose={() => setIsPopoverOpen(false)} />
+                  <CreateBranchContent onClick={model.handleCreateBranch} onClose={() => setOpenedPopover(null)} />
                 }
-                onOpenChange={setIsPopoverOpen}
                 tooltip="Create branch"
               >
                 <PiPlusBold />
@@ -62,8 +67,9 @@ export const SidebarBranchWidget = observer(() => {
             )}
             {model.showRevertButton && (
               <ActionButton
-                content={<RevertContent onClick={model.handleRevertChanges} onClose={() => setIsPopoverOpen(false)} />}
-                onOpenChange={setIsPopoverOpen}
+                open={openedPopover === 'revert'}
+                onOpenChange={(open) => setOpenedPopover(open ? 'revert' : null)}
+                content={<RevertContent onClick={model.handleRevertChanges} onClose={() => setOpenedPopover(null)} />}
                 tooltip="Revert changes"
               >
                 <PiArrowCounterClockwiseBold />
@@ -71,10 +77,11 @@ export const SidebarBranchWidget = observer(() => {
             )}
             {model.showCommitButton && (
               <ActionButton
+                open={openedPopover === 'commit'}
+                onOpenChange={(open) => setOpenedPopover(open ? 'commit' : null)}
                 content={
-                  <CreateRevisionContent onClick={model.handleCommitChanges} onClose={() => setIsPopoverOpen(false)} />
+                  <CreateRevisionContent onClick={model.handleCommitChanges} onClose={() => setOpenedPopover(null)} />
                 }
-                onOpenChange={setIsPopoverOpen}
                 tooltip="Commit changes"
               >
                 <PiCheckBold />

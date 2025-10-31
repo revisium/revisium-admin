@@ -1,4 +1,4 @@
-import { Box, Popover, Portal, useDisclosure } from '@chakra-ui/react'
+import { Flex, Popover, Portal, useDisclosure } from '@chakra-ui/react'
 import { FC } from 'react'
 import { observer } from 'mobx-react-lite'
 import { BranchRevisionContent } from 'src/widgets/BranchRevisionContent'
@@ -39,9 +39,9 @@ export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChan
         <BranchTrigger name={model.name} postfix={model.postfix} touched={model.touched} />
       ) : (
         <Tooltip content="Select branch or revision" openDelay={500} closeDelay={50}>
-          <Box>
+          <Flex minWidth={0} width="100%">
             <BranchTrigger name={model.name} postfix={model.postfix} touched={model.touched} />
-          </Box>
+          </Flex>
         </Tooltip>
       )}
       <Portal>

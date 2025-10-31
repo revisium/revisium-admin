@@ -184,6 +184,9 @@ export type GetBranchRevisionsInput = {
   before?: InputMaybe<Scalars['String']['input']>
   comment?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+  inclusive?: InputMaybe<Scalars['Boolean']['input']>
+  /** Sort order: asc (default) or desc */
+  sort?: InputMaybe<SortOrder>
 }
 
 export type GetBranchesInput = {
@@ -2125,6 +2128,47 @@ export type FindBranchesQuery = {
   }
 }
 
+export type FindRevisionFragment = {
+  id: string
+  comment: string
+  isDraft: boolean
+  isHead: boolean
+  isStart: boolean
+  createdAt: string
+  endpoints: Array<{ id: string; type: EndpointType }>
+}
+
+export type FindRevisionsQueryVariables = Exact<{
+  data: GetBranchInput
+  revisionsData: GetBranchRevisionsInput
+}>
+
+export type FindRevisionsQuery = {
+  branch: {
+    revisions: {
+      totalCount: number
+      pageInfo: {
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor?: string | null
+        endCursor?: string | null
+      }
+      edges: Array<{
+        cursor: string
+        node: {
+          id: string
+          comment: string
+          isDraft: boolean
+          isHead: boolean
+          isStart: boolean
+          createdAt: string
+          endpoints: Array<{ id: string; type: EndpointType }>
+        }
+      }>
+    }
+  }
+}
+
 export const PageInfoFragmentDoc = gql`
   fragment PageInfo on PageInfo {
     startCursor
@@ -2307,6 +2351,20 @@ export const FindBranchFragmentDoc = gql`
           id
         }
       }
+    }
+  }
+`
+export const FindRevisionFragmentDoc = gql`
+  fragment FindRevision on RevisionModel {
+    id
+    comment
+    isDraft
+    isHead
+    isStart
+    createdAt
+    endpoints {
+      id
+      type
     }
   }
 `
@@ -2771,6 +2829,28 @@ export const FindBranchesDocument = gql`
   }
   ${PageInfoFragmentDoc}
   ${FindBranchFragmentDoc}
+`
+export const FindRevisionsDocument = gql`
+  query findRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
+    branch(data: $data) {
+      revisions(data: $revisionsData) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            ...FindRevision
+          }
+        }
+      }
+    }
+  }
+  ${FindRevisionFragmentDoc}
 `
 
 export type SdkFunctionWrapper = <T>(
@@ -3323,6 +3403,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'findBranches',
+        'query',
+        variables,
+      )
+    },
+    findRevisions(
+      variables: FindRevisionsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<FindRevisionsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FindRevisionsQuery>(FindRevisionsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'findRevisions',
         'query',
         variables,
       )

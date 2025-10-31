@@ -1,0 +1,32 @@
+fragment FindRevision on RevisionModel {
+  id
+  comment
+  isDraft
+  isHead
+  isStart
+  createdAt
+  endpoints {
+    id
+    type
+  }
+}
+
+query findRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
+  branch(data: $data) {
+    revisions(data: $revisionsData) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      edges {
+        cursor
+        node {
+          ...FindRevision
+        }
+      }
+    }
+  }
+}

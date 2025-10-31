@@ -1,8 +1,8 @@
 import { Box, Popover, Portal, useDisclosure } from '@chakra-ui/react'
 import { FC } from 'react'
 import { observer } from 'mobx-react-lite'
+import { BranchRevisionContent } from 'src/widgets/BranchRevisionContent'
 import { SidebarBranchWidgetModel } from 'src/widgets/SidebarBranchWidget/model/SidebarBranchWidgetModel.ts'
-import { BranchRevisionContent } from 'src/widgets/SidebarBranchWidget/ui/BranchRevisionContent/BranchRevisionContent.tsx'
 import { BranchTrigger } from 'src/widgets/SidebarBranchWidget/ui/BranchesMenu/BranchTrigger.tsx'
 import { Tooltip } from 'src/shared/ui'
 
@@ -22,6 +22,8 @@ export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChan
 
   return (
     <Popover.Root
+      lazyMount
+      unmountOnExit
       portalled
       open={open}
       onOpenChange={({ open }) => {
@@ -44,11 +46,11 @@ export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChan
       )}
       <Portal>
         <Popover.Positioner>
-          <Popover.Content zIndex={2000}>
+          <Popover.Content>
             <Popover.CloseTrigger />
             <Popover.Body>
               <Popover.Title />
-              <BranchRevisionContent />
+              <BranchRevisionContent onClose={onClose} />
             </Popover.Body>
           </Popover.Content>
         </Popover.Positioner>

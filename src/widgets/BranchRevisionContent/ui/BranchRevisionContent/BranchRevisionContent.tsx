@@ -1,5 +1,5 @@
 import { Tabs } from '@chakra-ui/react'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { BranchesContent } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/BranchesContent.tsx'
 
 interface BranchRevisionContentProps {
@@ -7,6 +7,13 @@ interface BranchRevisionContentProps {
 }
 
 export const BranchRevisionContent: FC<BranchRevisionContentProps> = ({ onClose }) => {
+  const handleSelect = useCallback(
+    (_: string) => {
+      onClose()
+    },
+    [onClose],
+  )
+
   return (
     <Tabs.Root defaultValue="revisions" display="flex" flexDirection="column">
       <Tabs.List>
@@ -15,7 +22,7 @@ export const BranchRevisionContent: FC<BranchRevisionContentProps> = ({ onClose 
       </Tabs.List>
       <Tabs.Content value="revisions">Manage your revisions</Tabs.Content>
       <Tabs.Content value="branches" overflow="hidden">
-        <BranchesContent onSelect={onClose} />
+        <BranchesContent onSelect={handleSelect} />
       </Tabs.Content>
     </Tabs.Root>
   )

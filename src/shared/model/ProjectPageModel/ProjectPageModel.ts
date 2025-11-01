@@ -61,7 +61,7 @@ export class ProjectPageModel {
   }
 
   public get isEditableRevision() {
-    return this.isDraftRevision || (!this.branchOrThrow.touched && this.isHeadRevision)
+    return this.isDraftRevision
   }
 
   public get rowOrThrow(): IRowModel {

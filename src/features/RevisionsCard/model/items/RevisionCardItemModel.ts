@@ -1,4 +1,4 @@
-import { format } from 'date-fns/format'
+import { format } from 'date-fns'
 import { makeAutoObservable } from 'mobx'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { getLabelByEndpointType } from 'src/features/BranchEndpointsCard/config/consts.ts'

@@ -19,7 +19,7 @@ export const BranchRevisionContent: FC<BranchRevisionContentProps> = ({ onClose 
   )
 
   return (
-    <Tabs.Root defaultValue="revisions" display="flex" flexDirection="column">
+    <Tabs.Root lazyMount unmountOnExit defaultValue="revisions" display="flex" flexDirection="column">
       <Tabs.List>
         <Tabs.Trigger value="revisions">Revisions</Tabs.Trigger>
         <Tabs.Trigger value="branches">Branches</Tabs.Trigger>

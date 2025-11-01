@@ -32,9 +32,7 @@ export const RevisionItem: FC<RevisionItemProps> = ({ revision, onSelect }) => {
                 {revision.badgeText}
               </Badge>
             ) : (
-              <Text color={revision.isActive ? 'newGray.600' : 'newGray.200'}>
-                {revision.shortId}
-              </Text>
+              <Text color={revision.isActive ? 'newGray.600' : 'newGray.200'}>{revision.shortId}</Text>
             )}
           </Box>
 

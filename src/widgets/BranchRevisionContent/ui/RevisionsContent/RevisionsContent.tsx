@@ -37,7 +37,13 @@ export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, 
 
       {viewModel.showEmpty && <Empty />}
 
-      {viewModel.showList && <RevisionsList revisions={viewModel.revisions} onSelect={handleSelect} />}
+      {viewModel.showList && (
+        <RevisionsList
+          revisions={viewModel.revisions}
+          onSelect={handleSelect}
+          onEndReached={viewModel.canLoadMore ? viewModel.tryToFetchNextPage : undefined}
+        />
+      )}
     </Flex>
   )
 })

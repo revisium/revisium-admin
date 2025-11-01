@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { SortOrder } from 'src/__generated__/graphql-request.ts'
+import { SortOrder, FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, invariant } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
@@ -17,6 +17,10 @@ enum State {
 export class RevisionsViewModel implements IViewModel {
   private state = State.loading
   private _project: ProjectPageModel | null = null
+  private cursor?: string | null = null
+  private hasNextPage = false
+  private readonly pageSize = 100
+  private allRevisions: FindRevisionFragment[] = []
 
   private readonly findRevisions = ObservableRequest.of(client.findRevisions, { skipResetting: true })
 
@@ -41,22 +45,42 @@ export class RevisionsViewModel implements IViewModel {
   }
 
   public get revisions(): RevisionTreeNode[] {
-    const revisions = this.findRevisions.data?.branch.revisions.edges.map((edge) => edge.node) ?? []
-    return revisions.map((revision) => new RevisionTreeNode(revision, this.project))
+    return this.allRevisions.map((revision) => new RevisionTreeNode(revision, this.project))
   }
 
   public get totalCount() {
     return this.findRevisions.data?.branch.revisions.totalCount ?? 0
   }
 
+  public get canLoadMore() {
+    return this.hasNextPage
+  }
+
   public init(projectPageModel: ProjectPageModel) {
     this._project = projectPageModel
-    void this.request()
+    this.reset()
   }
 
   public dispose(): void {}
 
+  public reset() {
+    this.cursor = null
+    this.hasNextPage = false
+    this.allRevisions = []
+    void this.request()
+  }
+
+  public tryToFetchNextPage = () => {
+    if (this.hasNextPage && !this.findRevisions.isLoading) {
+      void this.request()
+    }
+  }
+
   private async request(): Promise<void> {
+    if (this.findRevisions.isLoading) {
+      return
+    }
+
     try {
       const result = await this.findRevisions.fetch({
         data: {
@@ -65,14 +89,28 @@ export class RevisionsViewModel implements IViewModel {
           branchName: this.project.branchOrThrow.name,
         },
         revisionsData: {
-          first: 50,
+          first: this.pageSize,
           sort: SortOrder.Desc,
+          ...(this.cursor ? { after: this.cursor } : {}),
         },
       })
 
       runInAction(() => {
         if (result.isRight) {
-          this.state = result.data.branch.revisions.totalCount ? State.list : State.empty
+          const newRevisions = result.data.branch.revisions.edges.map((edge) => edge.node)
+
+          if (this.cursor) {
+            // Filter out duplicates by ID
+            const existingIds = new Set(this.allRevisions.map((r) => r.id))
+            const uniqueNewRevisions = newRevisions.filter((r) => !existingIds.has(r.id))
+            this.allRevisions = [...this.allRevisions, ...uniqueNewRevisions]
+          } else {
+            this.allRevisions = newRevisions
+          }
+
+          this.cursor = result.data.branch.revisions.pageInfo.endCursor
+          this.hasNextPage = result.data.branch.revisions.pageInfo.hasNextPage
+          this.state = this.allRevisions.length ? State.list : State.empty
         } else {
           this.state = State.error
         }

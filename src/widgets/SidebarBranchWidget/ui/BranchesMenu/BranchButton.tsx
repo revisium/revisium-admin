@@ -18,7 +18,6 @@ export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChan
   return (
     <Popover.Root
       lazyMount
-      unmountOnExit
       portalled
       open={open}
       onOpenChange={({ open }) => {

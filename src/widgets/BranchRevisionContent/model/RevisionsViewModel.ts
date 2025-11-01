@@ -100,7 +100,6 @@ export class RevisionsViewModel implements IViewModel {
           const newRevisions = result.data.branch.revisions.edges.map((edge) => edge.node)
 
           if (this.cursor) {
-            // Filter out duplicates by ID
             const existingIds = new Set(this.allRevisions.map((r) => r.id))
             const uniqueNewRevisions = newRevisions.filter((r) => !existingIds.has(r.id))
             this.allRevisions = [...this.allRevisions, ...uniqueNewRevisions]

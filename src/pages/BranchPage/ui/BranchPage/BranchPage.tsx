@@ -2,7 +2,6 @@ import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import { useDraftHeadWatcher } from 'src/pages/BranchPage/hooks/useDraftHeadWatcher.ts'
 import { ReadonlyBanner } from 'src/pages/BranchPage/ui/ReadonlyBanner/ReadonlyBanner.tsx'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { Page } from 'src/shared/ui'
@@ -11,8 +10,6 @@ import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 import { SidebarWidget } from 'src/widgets/SidebarWidget'
 
 export const BranchPage: React.FC = observer(() => {
-  useDraftHeadWatcher()
-
   const projectPageModel = useProjectPageModel()
 
   const showReadonlyBanner = !projectPageModel.isDraftRevision

@@ -23,6 +23,9 @@ export class RevertChangesCommand {
 
     this.branch.updateTouched(false)
 
+    // TEMP fix until separate revert revision page
+    window.location.reload()
+
     return true
   }
 

@@ -34,6 +34,9 @@ export class CreateRevisionCommand {
       await this.queryPreviousHead(branch.head.parent)
     }
 
+    // TEMP fix until separate create revision page
+    window.location.reload()
+
     return true
   }
 

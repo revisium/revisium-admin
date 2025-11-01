@@ -22,7 +22,7 @@ export const ActionButton: FC<ActionButtonProps> = ({ content, children, onOpenC
           _hover={{ color: 'newGray.400' }}
         >
           {tooltip && !open ? (
-            <Tooltip content={tooltip} openDelay={500} closeDelay={200}>
+            <Tooltip content={tooltip} openDelay={500} closeDelay={0}>
               {children}
             </Tooltip>
           ) : (

@@ -43,10 +43,9 @@ export const SidebarBranchWidget = observer(() => {
           <Flex
             pl="16px"
             gap="8px"
-            display="flex"
-            opacity={openedPopover ? 1 : 0}
+            display={openedPopover ? 'flex' : 'none'}
             pointerEvents={openedPopover ? 'auto' : 'none'}
-            _groupHover={{ opacity: 1, pointerEvents: 'auto' }}
+            _groupHover={{ display: 'flex', pointerEvents: 'auto' }}
           >
             {model.showBranchButton && (
               <ActionButton

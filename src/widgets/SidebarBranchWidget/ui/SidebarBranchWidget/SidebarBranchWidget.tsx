@@ -34,11 +34,7 @@ export const SidebarBranchWidget = observer(() => {
       className="group"
     >
       <Flex width="100%" alignItems="center" justifyContent="space-between">
-        <BranchButton
-          model={model}
-          onAction={async () => {}}
-          onOpenChange={(open) => setOpenedPopover(open ? null : openedPopover)}
-        />
+        <BranchButton model={model} onOpenChange={(open) => setOpenedPopover(open ? null : openedPopover)} />
         {model.showActionsButton && (
           <Flex
             pl="16px"

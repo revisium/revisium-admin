@@ -8,7 +8,6 @@ import { Tooltip } from 'src/shared/ui'
 
 interface BranchesMenuProps {
   model: SidebarBranchWidgetModel
-  onAction: () => Promise<void>
   onOpenChange?: (open: boolean) => void
 }
 

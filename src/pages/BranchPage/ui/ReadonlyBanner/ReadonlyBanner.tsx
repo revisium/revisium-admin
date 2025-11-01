@@ -16,6 +16,7 @@ export const ReadonlyBanner = observer(() => {
       paddingX="4px"
       paddingY="4px"
       marginTop="auto"
+      backgroundColor="white"
     >
       <Flex alignItems="center" justifyContent="center" gap="16px">
         <Text color="newGray.600">You are viewing a read-only revision</Text>

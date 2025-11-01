@@ -75,7 +75,6 @@ export class BranchPageTitleWidgetModel {
     return `[${this.revision.id.slice(0, 6)}]`
   }
 
-
   private get isDraftRevision() {
     return this.projectPageModel.isDraftRevision
   }

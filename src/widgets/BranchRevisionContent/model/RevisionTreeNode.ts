@@ -44,7 +44,6 @@ export class RevisionTreeNode {
   public get badgeText(): string | null {
     if (this.isDraft) return 'draft'
     if (this.isHead) return 'head'
-    if (this.isStart) return 'start'
     return null
   }
 

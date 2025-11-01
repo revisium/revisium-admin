@@ -15,11 +15,6 @@ interface BranchesMenuProps {
 export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChange }) => {
   const { onOpen, onClose, open } = useDisclosure()
 
-  // const handleClick = useCallback(async () => {
-  //   onClose()
-  //   await onAction()
-  // }, [onAction, onClose])
-
   return (
     <Popover.Root
       lazyMount

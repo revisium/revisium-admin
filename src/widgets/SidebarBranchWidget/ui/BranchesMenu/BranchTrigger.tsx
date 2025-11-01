@@ -1,5 +1,6 @@
 import { Box, Flex, Popover } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
+import { PiGitBranchLight } from 'react-icons/pi'
 
 interface BranchTriggerProps {
   name: ReactNode
@@ -18,10 +19,16 @@ export const BranchTrigger: FC<BranchTriggerProps> = ({ name, postfix, touched }
         fontSize="16px"
         alignItems="center"
         minWidth="0"
+        cursor="pointer"
       >
-        <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          {name}
-        </Box>
+        <Flex gap="4px" alignItems="center" minWidth="0">
+          <Box color="newGray.400">
+            <PiGitBranchLight />
+          </Box>
+          <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+            {name}
+          </Box>
+        </Flex>
         <Box color="newGray.300" flexShrink="0">
           {postfix}
         </Box>

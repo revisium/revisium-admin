@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mobx'
 import { SortOrder, FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, invariant } from 'src/shared/lib'
@@ -23,6 +23,8 @@ export class RevisionsViewModel implements IViewModel {
   private allRevisions: FindRevisionFragment[] = []
 
   private readonly findRevisions = ObservableRequest.of(client.findRevisions, { skipResetting: true })
+
+  private branchDisposer: IReactionDisposer | null = null
 
   constructor() {
     makeAutoObservable(this)
@@ -59,9 +61,18 @@ export class RevisionsViewModel implements IViewModel {
   public init(projectPageModel: ProjectPageModel) {
     this._project = projectPageModel
     this.reset()
+
+    this.branchDisposer = reaction(
+      () => this.project.branchOrThrow,
+      () => {
+        this.reset()
+      },
+    )
   }
 
-  public dispose(): void {}
+  public dispose(): void {
+    this.branchDisposer?.()
+  }
 
   public reset() {
     this.cursor = null

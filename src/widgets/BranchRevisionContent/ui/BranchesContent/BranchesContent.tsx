@@ -1,7 +1,7 @@
 import { Flex, Text, Spinner } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { BranchesContentViewModel } from 'src/widgets/BranchRevisionContent/model/BranchesContentViewModel.ts'
+import { BranchesViewModel } from 'src/widgets/BranchRevisionContent/model/BranchesViewModel.ts'
 import { Empty } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/Empty.tsx'
 import { BranchesList } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/BranchesList.tsx'
 import { useViewModel } from 'src/shared/lib'
@@ -13,7 +13,7 @@ interface BranchesContentProps {
 
 export const BranchesContent: FC<BranchesContentProps> = observer(({ onSelect }) => {
   const projectPageModel = useProjectPageModel()
-  const model = useViewModel(BranchesContentViewModel, projectPageModel)
+  const model = useViewModel(BranchesViewModel, projectPageModel)
 
   return (
     <Flex flexDirection="column" height="250px" width="100%" overflow="hidden">

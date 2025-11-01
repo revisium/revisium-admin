@@ -14,7 +14,7 @@ enum State {
   error = 'error',
 }
 
-export class BranchesContentViewModel implements IViewModel {
+export class BranchesViewModel implements IViewModel {
   private state = State.loading
   private _project: ProjectPageModel | null = null
 
@@ -89,9 +89,9 @@ export class BranchesContentViewModel implements IViewModel {
 }
 
 container.register(
-  BranchesContentViewModel,
+  BranchesViewModel,
   () => {
-    return new BranchesContentViewModel()
+    return new BranchesViewModel()
   },
   { scope: 'request' },
 )

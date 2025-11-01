@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 import { useDraftHeadWatcher } from 'src/pages/BranchPage/hooks/useDraftHeadWatcher.ts'
 import { Page } from 'src/shared/ui'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
-import { RevisionEndpointWidget } from 'src/widgets/RevisionEndpointWidget'
+// import { RevisionEndpointWidget } from 'src/widgets/RevisionEndpointWidget'
 import { SidebarWidget } from 'src/widgets/SidebarWidget'
 
 export const BranchPage: React.FC = observer(() => {
@@ -14,7 +14,7 @@ export const BranchPage: React.FC = observer(() => {
   return (
     <Page sidebar={<SidebarWidget />} title={<BranchPageTitleWidget />}>
       <Flex flex={1} flexDirection="column" gap="1rem">
-        <RevisionEndpointWidget />
+        {/*<RevisionEndpointWidget />*/}
 
         <Flex flexDirection="column" gap="0.5rem" flex={1}>
           <Outlet />

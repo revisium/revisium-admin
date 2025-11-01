@@ -188,6 +188,9 @@ export type GetBranchRevisionsInput = {
   before?: InputMaybe<Scalars['String']['input']>
   comment?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+  inclusive?: InputMaybe<Scalars['Boolean']['input']>
+  /** Sort order: asc (default) or desc */
+  sort?: InputMaybe<SortOrder>
 }
 
 export type GetBranchesInput = {

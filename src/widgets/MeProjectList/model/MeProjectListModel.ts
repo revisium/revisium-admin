@@ -61,12 +61,9 @@ export class MeProjectListModel {
 }
 
 const createLink = (project: IProjectModel): string => {
-  return generatePath(
-    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}${project.rootBranch.touched ? `/${DRAFT_REVISION_ROUTE}` : ''}`,
-    {
-      organizationId: project.organization.id,
-      projectName: project.name,
-      branchName: project.rootBranch.name,
-    },
-  )
+  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`, {
+    organizationId: project.organization.id,
+    projectName: project.name,
+    branchName: project.rootBranch.name,
+  })
 }

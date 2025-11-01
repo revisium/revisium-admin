@@ -35,7 +35,7 @@ export class CreateRevisionCommand {
     }
 
     // TEMP fix until separate create revision page
-    window.location.reload()
+    globalThis.location.reload()
 
     return true
   }

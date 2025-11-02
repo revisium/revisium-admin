@@ -987,6 +987,18 @@ export type PageInfoFragment = {
   endCursor?: string | null
 }
 
+export type CreateEndpointMutationVariables = Exact<{
+  data: CreateEndpointInput
+}>
+
+export type CreateEndpointMutation = { createEndpoint: { id: string; type: EndpointType; createdAt: string } }
+
+export type DeleteEndpointMutationVariables = Exact<{
+  data: DeleteEndpointInput
+}>
+
+export type DeleteEndpointMutation = { deleteEndpoint: boolean }
+
 export type FindForeignKeyQueryVariables = Exact<{
   data: GetRowsInput
 }>
@@ -2368,6 +2380,20 @@ export const FindRevisionFragmentDoc = gql`
     }
   }
 `
+export const CreateEndpointDocument = gql`
+  mutation createEndpoint($data: CreateEndpointInput!) {
+    createEndpoint(data: $data) {
+      id
+      type
+      createdAt
+    }
+  }
+`
+export const DeleteEndpointDocument = gql`
+  mutation deleteEndpoint($data: DeleteEndpointInput!) {
+    deleteEndpoint(data: $data)
+  }
+`
 export const FindForeignKeyDocument = gql`
   query findForeignKey($data: GetRowsInput!) {
     rows(data: $data) {
@@ -2864,6 +2890,36 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    createEndpoint(
+      variables: CreateEndpointMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateEndpointMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateEndpointMutation>(CreateEndpointDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createEndpoint',
+        'mutation',
+        variables,
+      )
+    },
+    deleteEndpoint(
+      variables: DeleteEndpointMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<DeleteEndpointMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<DeleteEndpointMutation>(DeleteEndpointDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'deleteEndpoint',
+        'mutation',
+        variables,
+      )
+    },
     findForeignKey(
       variables: FindForeignKeyQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,

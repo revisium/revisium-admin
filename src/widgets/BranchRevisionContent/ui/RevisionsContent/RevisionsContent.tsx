@@ -13,7 +13,7 @@ interface RevisionsContentProps {
 }
 
 export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, onClose }) => {
-  const viewModel = useViewModel(RevisionsViewModel, project)
+  const model = useViewModel(RevisionsViewModel, project)
 
   const handleSelect = (_: string) => {
     onClose()
@@ -21,13 +21,13 @@ export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, 
 
   return (
     <Flex flexDirection="column" height="250px" width="100%" overflow="hidden">
-      {viewModel.showLoading && (
+      {model.showLoading && (
         <Flex justify="center" align="center" height="100%" width="100%">
           <Spinner size="md" color="gray.400" />
         </Flex>
       )}
 
-      {viewModel.showError && (
+      {model.showError && (
         <Flex justify="center" align="center" height="100%" width="100%">
           <Text fontSize="sm" color="gray.500">
             Could not load revisions. Please retry later.
@@ -35,13 +35,13 @@ export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, 
         </Flex>
       )}
 
-      {viewModel.showEmpty && <Empty />}
+      {model.showEmpty && <Empty />}
 
-      {viewModel.showList && (
+      {model.showList && (
         <RevisionsList
-          revisions={viewModel.revisions}
+          revisions={model.revisions}
           onSelect={handleSelect}
-          onEndReached={viewModel.canLoadMore ? viewModel.tryToFetchNextPage : undefined}
+          onEndReached={model.canLoadMore ? model.tryToFetchNextPage : undefined}
         />
       )}
     </Flex>

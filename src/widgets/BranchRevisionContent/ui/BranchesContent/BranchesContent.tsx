@@ -7,11 +7,7 @@ import { BranchesList } from 'src/widgets/BranchRevisionContent/ui/BranchesConte
 import { useViewModel } from 'src/shared/lib'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 
-interface BranchesContentProps {
-  onSelect: (branchId: string) => void
-}
-
-export const BranchesContent: FC<BranchesContentProps> = observer(({ onSelect }) => {
+export const BranchesContent: FC = observer(() => {
   const projectPageModel = useProjectPageModel()
   const model = useViewModel(BranchesViewModel, projectPageModel)
 
@@ -33,7 +29,7 @@ export const BranchesContent: FC<BranchesContentProps> = observer(({ onSelect })
 
       {model.showEmpty && <Empty />}
 
-      {model.showList && <BranchesList branches={model.branches} onSelect={onSelect} />}
+      {model.showList && <BranchesList branches={model.branches} />}
     </Flex>
   )
 })

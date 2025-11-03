@@ -1,22 +1,11 @@
 import { Tabs } from '@chakra-ui/react'
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { BranchesContent } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/BranchesContent.tsx'
 import { RevisionsContent } from 'src/widgets/BranchRevisionContent/ui/RevisionsContent/RevisionsContent.tsx'
 
-interface BranchRevisionContentProps {
-  onClose: () => void
-}
-
-export const BranchRevisionContent: FC<BranchRevisionContentProps> = ({ onClose }) => {
+export const BranchRevisionContent: FC = () => {
   const projectPageModel = useProjectPageModel()
-
-  const handleSelect = useCallback(
-    (_: string) => {
-      // onClose()
-    },
-    [onClose],
-  )
 
   return (
     <Tabs.Root lazyMount defaultValue="revisions" display="flex" flexDirection="column">
@@ -25,10 +14,10 @@ export const BranchRevisionContent: FC<BranchRevisionContentProps> = ({ onClose 
         <Tabs.Trigger value="revisions">Revisions [{projectPageModel.routeBranchName}]</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value="branches" overflow="hidden">
-        <BranchesContent onSelect={handleSelect} />
+        <BranchesContent />
       </Tabs.Content>
       <Tabs.Content value="revisions" overflow="hidden">
-        <RevisionsContent project={projectPageModel} onClose={() => {}} />
+        <RevisionsContent project={projectPageModel} />
       </Tabs.Content>
     </Tabs.Root>
   )

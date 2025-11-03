@@ -1,4 +1,5 @@
 import { format } from 'date-fns/format'
+import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
@@ -11,6 +12,8 @@ export class RevisionTreeNode {
     private readonly projectPageModel: ProjectPageModel,
   ) {
     this.linkMaker = new LinkMaker(projectPageModel)
+
+    makeAutoObservable(this)
   }
 
   public get id(): string {

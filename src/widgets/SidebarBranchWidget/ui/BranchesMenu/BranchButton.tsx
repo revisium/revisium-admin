@@ -8,22 +8,15 @@ import { Tooltip } from 'src/shared/ui'
 
 interface BranchesMenuProps {
   model: SidebarBranchWidgetModel
-  onAction: () => Promise<void>
   onOpenChange?: (open: boolean) => void
 }
 
 export const BranchButton: FC<BranchesMenuProps> = observer(({ model, onOpenChange }) => {
   const { onOpen, onClose, open } = useDisclosure()
 
-  // const handleClick = useCallback(async () => {
-  //   onClose()
-  //   await onAction()
-  // }, [onAction, onClose])
-
   return (
     <Popover.Root
       lazyMount
-      unmountOnExit
       portalled
       open={open}
       onOpenChange={({ open }) => {

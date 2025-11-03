@@ -1,4 +1,5 @@
 import { Box, Flex, Text, Badge } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { Tooltip } from 'src/shared/ui'
@@ -9,7 +10,7 @@ interface RevisionItemProps {
   onSelect: (revisionId: string) => void
 }
 
-export const RevisionItem: FC<RevisionItemProps> = ({ revision, onSelect }) => {
+export const RevisionItem: FC<RevisionItemProps> = observer(({ revision, onSelect }) => {
   const handleClick = () => {
     onSelect(revision.id)
   }
@@ -60,4 +61,4 @@ export const RevisionItem: FC<RevisionItemProps> = ({ revision, onSelect }) => {
       </Box>
     </Link>
   )
-}
+})

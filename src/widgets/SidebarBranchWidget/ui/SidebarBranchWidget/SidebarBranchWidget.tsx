@@ -1,7 +1,7 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
-import { PiArrowCounterClockwiseBold, PiCheckBold, PiGitBranchLight, PiPlusBold } from 'react-icons/pi'
+import { PiArrowCounterClockwiseBold, PiCheckBold, PiPlusBold } from 'react-icons/pi'
 import { useViewModel } from 'src/shared/lib'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { SidebarBranchWidgetModel } from 'src/widgets/SidebarBranchWidget/model/SidebarBranchWidgetModel.ts'
@@ -34,24 +34,14 @@ export const SidebarBranchWidget = observer(() => {
       className="group"
     >
       <Flex width="100%" alignItems="center" justifyContent="space-between">
-        <Flex cursor="pointer" gap="4px" alignItems="center" minWidth="0">
-          <Box color="newGray.400">
-            <PiGitBranchLight />
-          </Box>
-          <BranchButton
-            model={model}
-            onAction={async () => {}}
-            onOpenChange={(open) => setOpenedPopover(open ? null : openedPopover)}
-          />
-        </Flex>
+        <BranchButton model={model} onOpenChange={(open) => setOpenedPopover(open ? null : openedPopover)} />
         {model.showActionsButton && (
           <Flex
             pl="16px"
             gap="8px"
-            display="flex"
-            opacity={openedPopover ? 1 : 0}
+            display={openedPopover ? 'flex' : 'none'}
             pointerEvents={openedPopover ? 'auto' : 'none'}
-            _groupHover={{ opacity: 1, pointerEvents: 'auto' }}
+            _groupHover={{ display: 'flex', pointerEvents: 'auto' }}
           >
             {model.showBranchButton && (
               <ActionButton

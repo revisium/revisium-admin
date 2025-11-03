@@ -16,7 +16,7 @@ export class RevisionEndpointPopoverModel {
   }
 
   public get hasEndpoints(): boolean {
-    return this.graphqlItem?.isEnabled || false || this.restApiItem?.isEnabled || false
+    return Boolean(this.graphqlItem?.isEnabled || this.restApiItem?.isEnabled)
   }
 
   public get revisionTitle(): string {

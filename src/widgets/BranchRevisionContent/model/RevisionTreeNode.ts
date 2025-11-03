@@ -5,9 +5,10 @@ import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageM
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 
 export class RevisionTreeNode {
-  private linkMaker: LinkMaker
-
   public isOpenEndpointPopover: boolean = false
+
+  private linkMaker: LinkMaker
+  private _popover: RevisionEndpointPopoverModel | null = null
 
   constructor(
     private readonly revision: FindRevisionFragment,
@@ -19,7 +20,11 @@ export class RevisionTreeNode {
   }
 
   public get popover() {
-    return new RevisionEndpointPopoverModel(this.projectPageModel, this.revision)
+    if (!this._popover) {
+      this._popover = new RevisionEndpointPopoverModel(this.projectPageModel, this.revision)
+    }
+
+    return this._popover
   }
 
   public get id(): string {

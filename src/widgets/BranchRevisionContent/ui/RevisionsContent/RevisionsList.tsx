@@ -5,17 +5,16 @@ import { RevisionItem } from 'src/widgets/BranchRevisionContent/ui/RevisionsCont
 
 interface RevisionsListProps {
   revisions: RevisionTreeNode[]
-  onSelect: (revisionId: string) => void
   onEndReached?: () => void
 }
 
-export const RevisionsList: FC<RevisionsListProps> = ({ revisions, onSelect, onEndReached }) => {
+export const RevisionsList: FC<RevisionsListProps> = ({ revisions, onEndReached }) => {
   return (
     <Virtuoso
       style={{ height: '100%', width: '100%' }}
       totalCount={revisions.length}
       data={revisions}
-      itemContent={(_, revision) => <RevisionItem key={revision.id} model={revision} onSelect={onSelect} />}
+      itemContent={(_, revision) => <RevisionItem key={revision.id} model={revision} />}
       endReached={onEndReached}
       increaseViewportBy={200}
     />

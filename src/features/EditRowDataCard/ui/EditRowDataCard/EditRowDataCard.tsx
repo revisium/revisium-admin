@@ -1,13 +1,11 @@
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowDataCard } from 'src/entities/Schema/ui/RowDataCard/RowDataCard.tsx'
 import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
 import { ApproveButton } from 'src/shared/ui'
-import { BackButton2 } from 'src/shared/ui/BackButton2/BackButton2.tsx'
 import { RevertButton } from 'src/shared/ui/RevertButton/RevertButton.tsx'
 
 interface EditRowDataCardProps {
@@ -20,8 +18,6 @@ interface EditRowDataCardProps {
 
 export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
   ({ store, isEdit, onUpdate, onSelectForeignKey, onUploadFile }) => {
-    const navigate = useNavigate()
-    const location = useLocation()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleClick = useCallback(async () => {
@@ -33,14 +29,6 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
     const handleRevert = useCallback(() => {
       store.reset()
     }, [store])
-
-    const handleBack = useCallback(() => {
-      if (location.state?.isBackToRow) {
-        navigate(-1)
-      } else {
-        navigate('..')
-      }
-    }, [location.state?.isBackToRow, navigate])
 
     useEffectOnce(() => {
       if (store.scrollPosition) {
@@ -71,16 +59,15 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
           rootName="<id>"
           actions={
             <>
-              <BackButton2 dataTestId="back-to-row-list-button" onClick={handleBack} />
-              {isEdit && (
+              {store.touched && (
                 <ApproveButton
                   dataTestId="row-editor-approve-button"
-                  isDisabled={!store.touched || !store.isValid}
+                  isDisabled={!store.isValid}
                   loading={isLoading}
                   onClick={handleClick}
                 />
               )}
-              {isEdit && store.touched && <RevertButton dataTestId="row-editor-revert-button" onClick={handleRevert} />}
+              {store.touched && <RevertButton dataTestId="row-editor-revert-button" onClick={handleRevert} />}
             </>
           }
           isEdit={isEdit}

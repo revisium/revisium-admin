@@ -9,15 +9,10 @@ import { RevisionsList } from 'src/widgets/BranchRevisionContent/ui/RevisionsCon
 
 interface RevisionsContentProps {
   project: ProjectPageModel
-  onClose: () => void
 }
 
-export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, onClose }) => {
+export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project }) => {
   const model = useViewModel(RevisionsViewModel, project)
-
-  const handleSelect = (_: string) => {
-    onClose()
-  }
 
   return (
     <Flex flexDirection="column" height="250px" width="100%" overflow="hidden">
@@ -40,7 +35,6 @@ export const RevisionsContent: FC<RevisionsContentProps> = observer(({ project, 
       {model.showList && (
         <RevisionsList
           revisions={model.revisions}
-          onSelect={handleSelect}
           onEndReached={model.canLoadMore ? model.tryToFetchNextPage : undefined}
         />
       )}

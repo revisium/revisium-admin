@@ -5,16 +5,15 @@ import { BranchItem } from 'src/widgets/BranchRevisionContent/ui/BranchesContent
 
 interface BranchesListProps {
   branches: BranchTreeNode[]
-  onSelect: (branchId: string) => void
 }
 
-export const BranchesList: FC<BranchesListProps> = ({ branches, onSelect }) => {
+export const BranchesList: FC<BranchesListProps> = ({ branches }) => {
   return (
     <Virtuoso
       style={{ height: '100%', width: '100%' }}
       totalCount={branches.length}
       data={branches}
-      itemContent={(_, branch) => <BranchItem key={branch.id} branch={branch} onSelect={onSelect} />}
+      itemContent={(_, branch) => <BranchItem key={branch.id} branch={branch} />}
     />
   )
 }

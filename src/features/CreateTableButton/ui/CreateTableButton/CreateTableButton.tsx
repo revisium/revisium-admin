@@ -1,21 +1,11 @@
 import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
+import { FC } from 'react'
 import { CreateButton } from 'src/shared/ui'
 
 interface CreateTableButtonProps {
   onClick: () => void
 }
 
-export const CreateTableButton: React.FC<CreateTableButtonProps> = observer(({ onClick }) => {
-  const projectPageModel = useProjectPageModel()
-
-  return (
-    <CreateButton
-      dataTestId="create-table-button"
-      disabled={!projectPageModel.isEditableRevision}
-      title="Table"
-      onClick={onClick}
-    />
-  )
+export const CreateTableButton: FC<CreateTableButtonProps> = observer(({ onClick }) => {
+  return <CreateButton dataTestId="create-table-button" title="Table" onClick={onClick} />
 })

@@ -8,15 +8,10 @@ import { RevisionTreeNode } from 'src/widgets/BranchRevisionContent/model/Revisi
 
 interface RevisionItemProps {
   model: RevisionTreeNode
-  onSelect: (revisionId: string) => void
 }
 
-export const RevisionItem: FC<RevisionItemProps> = observer(({ model, onSelect }) => {
+export const RevisionItem: FC<RevisionItemProps> = observer(({ model }) => {
   const [isHovered, setIsHovered] = useState(false)
-
-  const handleClick = () => {
-    onSelect(model.id)
-  }
 
   return (
     <Box
@@ -34,7 +29,6 @@ export const RevisionItem: FC<RevisionItemProps> = observer(({ model, onSelect }
         <Link
           to={model.link}
           style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}
-          onClick={handleClick}
         >
           <Box width="50px" flexShrink={0}>
             {model.badgeText ? (

@@ -6,18 +6,13 @@ import { BranchTreeNode } from 'src/widgets/BranchRevisionContent/model/BranchTr
 
 interface BranchItemProps {
   branch: BranchTreeNode
-  onSelect: (branchId: string) => void
 }
 
-export const BranchItem: FC<BranchItemProps> = ({ branch, onSelect }) => {
-  const handleClick = () => {
-    onSelect(branch.id)
-  }
-
+export const BranchItem: FC<BranchItemProps> = ({ branch }) => {
   const indentationPx = branch.depth * 16
 
   return (
-    <Link to={branch.link} style={{ textDecoration: 'none', display: 'block' }} onClick={handleClick}>
+    <Link to={branch.link} style={{ textDecoration: 'none', display: 'block' }}>
       <Box
         width="100%"
         backgroundColor={branch.isActive ? 'newGray.100' : 'transparent'}

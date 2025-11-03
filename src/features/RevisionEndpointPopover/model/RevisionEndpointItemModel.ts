@@ -36,7 +36,14 @@ export class RevisionEndpointItemModel {
     }
 
     const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`
-    return `${baseUrl}/${this.revision.id}`
+
+    if (this.revision.isDraft) {
+      return `${baseUrl}/draft`
+    } else if (this.revision.isHead) {
+      return `${baseUrl}/head`
+    } else {
+      return `${baseUrl}/${this.revision.id}`
+    }
   }
 
   public async toggle() {

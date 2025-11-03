@@ -8,6 +8,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { CreateRowButton } from 'src/features/CreateRowButton'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
+import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { toaster } from 'src/shared/ui'
 import { RowList } from 'src/widgets/RowList'
 
@@ -19,6 +20,7 @@ import { ShortRowEditor } from 'src/widgets/RowStackWidget/ui/ShortRowEditor/Sho
 export const RowStack: React.FC = observer(() => {
   const navigate = useNavigate()
   const linkMaker = useLinkMaker()
+  const projectPageModel = useProjectPageModel()
   const { root, item } = useRowStackModel()
 
   const handleSelectForeignKey = useCallback(
@@ -112,7 +114,7 @@ export const RowStack: React.FC = observer(() => {
     return (
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-        <CreateRowButton onClick={item.toCreatingRow} />
+        {projectPageModel.isEditableRevision && <CreateRowButton onClick={item.toCreatingRow} />}
         <Box paddingTop="0.5rem" paddingBottom="1rem" height="100%">
           <RowList
             table={item.table}

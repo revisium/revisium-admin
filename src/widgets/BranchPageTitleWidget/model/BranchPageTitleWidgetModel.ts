@@ -22,14 +22,19 @@ export class BranchPageTitleWidgetModel {
   public get breadcrumbs(): BreadCrumb[] {
     const breadcrumbs: BreadCrumb[] = []
 
+    const tableId = this.projectPageModel.routeTableId
+    const rowId = this.projectPageModel.routeRowId
+
+    if (!tableId && !rowId) {
+      return breadcrumbs
+    }
+
     breadcrumbs.push({
-      title: this.branch.name,
+      title: 'tables',
       href: this.linkMaker.currentBaseLink,
       isCurrentPage: false,
-      dataTestId: `breadcrumb-branch-${this.branch.name}`,
+      dataTestId: `breadcrumb-branch-tables`,
     })
-
-    const tableId = this.projectPageModel.routeTableId
 
     if (tableId) {
       breadcrumbs.push({
@@ -42,7 +47,6 @@ export class BranchPageTitleWidgetModel {
       })
     }
 
-    const rowId = this.projectPageModel.routeRowId
     if (rowId) {
       breadcrumbs.push({
         title: rowId,
@@ -59,36 +63,6 @@ export class BranchPageTitleWidgetModel {
     }
 
     return breadcrumbs
-  }
-
-  public get branchName() {
-    return this.branch.name
-  }
-
-  public get title() {
-    if (this.isDraftRevision) {
-      return ''
-    } else if (this.isHeadRevision) {
-      return ''
-    }
-
-    return `[${this.revision.id.slice(0, 6)}]`
-  }
-
-  private get isDraftRevision() {
-    return this.projectPageModel.isDraftRevision
-  }
-
-  private get isHeadRevision() {
-    return this.projectPageModel.isHeadRevision
-  }
-
-  private get branch() {
-    return this.projectPageModel.branchOrThrow
-  }
-
-  private get revision() {
-    return this.projectPageModel.revisionOrThrow
   }
 
   public init() {}

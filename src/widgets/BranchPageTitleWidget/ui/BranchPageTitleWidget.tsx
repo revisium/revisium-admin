@@ -38,11 +38,6 @@ export const BranchPageTitleWidget = observer(() => {
           ))}
         </Breadcrumb.List>
       </Breadcrumb.Root>
-      {store.title && (
-        <Text color="gray" opacity="0.3" fontWeight="400" fontSize="16px">
-          - {store.title}
-        </Text>
-      )}
     </Flex>
   )
 })

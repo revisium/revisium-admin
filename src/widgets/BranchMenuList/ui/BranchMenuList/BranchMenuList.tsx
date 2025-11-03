@@ -1,12 +1,17 @@
-import { Heading, VStack } from '@chakra-ui/react'
+import { Box, Flex, Heading, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { useMenuListModel } from 'src/widgets/BranchMenuList/hooks/useMenuListModel.ts'
+import { useNavigationState } from 'src/widgets/BranchMenuList/hooks/useNavigationState.ts'
+import { NavigationButton } from 'src/widgets/BranchMenuList/ui/NavigationButton/NavigationButton.tsx'
 import { SidebarBranchWidget } from 'src/widgets/SidebarBranchWidget'
 
 export const BranchMenuList: FC = observer(() => {
   const store = useMenuListModel()
+  const linkMaker = useLinkMaker()
+  const { isTablesActive } = useNavigationState()
 
   return (
     <VStack alignItems="flex-start" gap="1rem">
@@ -15,17 +20,12 @@ export const BranchMenuList: FC = observer(() => {
           {store.projectName}
         </Heading>
       </Link>
-      <VStack
-        alignItems="flex-start"
-        borderTop="1px solid"
-        borderTopColor="gray.100"
-        gap="0.25rem"
-        pb="1rem"
-        pt="1rem"
-        width="100%"
-      >
+      <Box pb="8px" pt="8px" width="100%" borderY="1px solid" borderTopColor="gray.100" borderBottomColor="gray.100">
         <SidebarBranchWidget />
-      </VStack>
+      </Box>
+      <Flex flexDirection="column" alignItems="flex-start" gap="0.25rem" width="100%">
+        <NavigationButton to={linkMaker.currentBaseLink} label="Tables" isActive={isTablesActive} />
+      </Flex>
     </VStack>
   )
 })

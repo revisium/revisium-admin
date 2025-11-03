@@ -24,16 +24,18 @@ export class BranchEndpointsCardItemModel {
   }
 
   public get href(): string | undefined {
-    if (this.endpoint) {
-      const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`
+    if (!this.endpoint) {
+      return ''
+    }
 
-      if (this.projectPageModel.isDraftRevision) {
-        return `${baseUrl}/draft`
-      } else if (this.projectPageModel.isHeadRevision) {
-        return `${baseUrl}/head`
-      } else {
-        return `${baseUrl}/${this.revision.id}`
-      }
+    const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`
+
+    if (this.projectPageModel.isDraftRevision) {
+      return `${baseUrl}/draft`
+    } else if (this.projectPageModel.isHeadRevision) {
+      return `${baseUrl}/head`
+    } else {
+      return `${baseUrl}/${this.revision.id}`
     }
   }
 

@@ -30,9 +30,9 @@ export class RevisionEndpointItemModel {
     return Boolean(this.endpoint)
   }
 
-  public get href(): string | undefined {
+  public get href() {
     if (!this.endpoint) {
-      return
+      return ''
     }
 
     const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`

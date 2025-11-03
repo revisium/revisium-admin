@@ -10,11 +10,7 @@ import {
   BranchRevisionsCardItemPage,
 } from 'src/features/RevisionsCard/ui/RevisionsCardItem/BranchRevisionsCardItem'
 
-interface BranchRevisionsCardProps {
-  endpointSlot: React.ReactElement
-}
-
-export const RevisionsCard: React.FC<BranchRevisionsCardProps> = observer(({ endpointSlot }) => {
+export const RevisionsCard: React.FC = observer(() => {
   const store = useRevisionsCardModel()
 
   return store.items.length ? (
@@ -46,7 +42,6 @@ export const RevisionsCard: React.FC<BranchRevisionsCardProps> = observer(({ end
           ))}
         </Flex>
       </Flex>
-      <Flex>{endpointSlot}</Flex>
     </Flex>
   ) : null
 })

@@ -40,7 +40,7 @@ export const RevisionEndpointPopover: FC<RevisionEndpointPopoverProps> = observe
         <IconButton
           aria-label="Endpoint settings"
           opacity={0.5}
-          _hover={{ opacity: 1.0 }}
+          _hover={{ opacity: 1 }}
           variant="plain"
           size="xs"
           padding={0}

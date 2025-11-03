@@ -1,7 +1,6 @@
 import { format } from 'date-fns'
 import { makeAutoObservable } from 'mobx'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
-import { getLabelByEndpointType } from 'src/features/BranchEndpointsCard/config/consts.ts'
 import { IconType } from 'src/features/RevisionsCard/config/icons.ts'
 import { IRevisionCardItem } from 'src/features/RevisionsCard/config/types.ts'
 import { RevisionCardChildItemModel } from 'src/features/RevisionsCard/model/items/RevisionCardChildItemModel.ts'
@@ -76,7 +75,7 @@ export class RevisionCardItemModel implements IRevisionCardItem {
 
     const tooltips = [...comment, this.revision.id, date]
 
-    const endpoints = this.revision.endpoints.map((endpoint) => `${getLabelByEndpointType(endpoint.type)}`)
+    const endpoints = this.revision.endpoints.map((endpoint) => `${endpoint.type}`)
     if (endpoints.length) {
       tooltips.push(''.padEnd(25, '-'))
       tooltips.push('Active endpoints:')

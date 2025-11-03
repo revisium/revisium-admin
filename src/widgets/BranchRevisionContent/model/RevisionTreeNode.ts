@@ -1,4 +1,5 @@
 import { format } from 'date-fns/format'
+import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'

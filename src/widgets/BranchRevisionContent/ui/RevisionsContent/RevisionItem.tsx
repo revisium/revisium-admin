@@ -1,44 +1,53 @@
 import { Box, Flex, Text, Badge } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { RevisionEndpointPopover } from 'src/features/RevisionEndpointPopover'
 import { Tooltip } from 'src/shared/ui'
 import { RevisionTreeNode } from 'src/widgets/BranchRevisionContent/model/RevisionTreeNode.ts'
 
 interface RevisionItemProps {
-  revision: RevisionTreeNode
+  model: RevisionTreeNode
   onSelect: (revisionId: string) => void
 }
 
-export const RevisionItem: FC<RevisionItemProps> = observer(({ revision, onSelect }) => {
+export const RevisionItem: FC<RevisionItemProps> = observer(({ model, onSelect }) => {
+  const [isHovered, setIsHovered] = useState(false)
+
   const handleClick = () => {
-    onSelect(revision.id)
+    onSelect(model.id)
   }
 
   return (
-    <Link to={revision.link} style={{ textDecoration: 'none', display: 'block' }} onClick={handleClick}>
-      <Box
-        width="100%"
-        backgroundColor={revision.isActive ? 'newGray.100/50' : 'transparent'}
-        _hover={{
-          backgroundColor: 'newGray.100',
-        }}
-        borderBottom="1px solid"
-        borderColor="border.subtle"
-      >
-        <Flex alignItems="center" justifyContent="space-between" paddingY="2" paddingX="3" gap={3}>
+    <Box
+      width="100%"
+      backgroundColor={model.isActive ? 'newGray.100/50' : 'transparent'}
+      _hover={{
+        backgroundColor: 'newGray.100',
+      }}
+      borderBottom="1px solid"
+      borderColor="border.subtle"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Flex alignItems="center" justifyContent="space-between" paddingY="2" paddingX="3" gap={3}>
+        <Link
+          to={model.link}
+          style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}
+          onClick={handleClick}
+        >
           <Box width="50px" flexShrink={0}>
-            {revision.badgeText ? (
+            {model.badgeText ? (
               <Badge size="sm" colorPalette="gray">
-                {revision.badgeText}
+                {model.badgeText}
               </Badge>
             ) : (
-              <Text color={revision.isActive ? 'newGray.600' : 'newGray.200'}>{revision.shortId}</Text>
+              <Text color={model.isActive ? 'newGray.600' : 'newGray.200'}>{model.shortId}</Text>
             )}
           </Box>
 
-          {revision.comment && (
-            <Tooltip content={revision.comment} positioning={{ placement: 'top' }}>
+          {model.comment && (
+            <Tooltip content={model.comment} positioning={{ placement: 'top' }}>
               <Text
                 color="gray.400"
                 overflow="hidden"
@@ -47,18 +56,28 @@ export const RevisionItem: FC<RevisionItemProps> = observer(({ revision, onSelec
                 flex={1}
                 minWidth={0}
               >
-                {revision.comment}
+                {model.comment}
               </Text>
             </Tooltip>
           )}
 
-          {revision.formattedDate && (
+          {model.formattedDate && (
             <Text width="100px" fontSize="xs" color="gray.500" flexShrink={0}>
-              {revision.formattedDate}
+              {model.formattedDate}
             </Text>
           )}
-        </Flex>
-      </Box>
-    </Link>
+        </Link>
+
+        {(isHovered || model.isOpenEndpointPopover) && (
+          <Box position="relative">
+            <RevisionEndpointPopover
+              isOpen={model.isOpenEndpointPopover}
+              setIsOpen={model.setIsOpenEndpointPopover}
+              model={model.popover}
+            />
+          </Box>
+        )}
+      </Flex>
+    </Box>
   )
 })

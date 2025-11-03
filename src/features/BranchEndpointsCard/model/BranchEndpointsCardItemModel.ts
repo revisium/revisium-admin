@@ -25,7 +25,7 @@ export class BranchEndpointsCardItemModel {
 
   public get href(): string | undefined {
     if (!this.endpoint) {
-      return
+      return ''
     }
 
     const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`

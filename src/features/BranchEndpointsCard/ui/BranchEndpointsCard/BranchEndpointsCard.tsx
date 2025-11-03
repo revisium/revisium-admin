@@ -22,7 +22,7 @@ export const BranchEndpointsCard: React.FC = observer(() => {
           className={!open ? styles.Action : undefined}
           aria-label=""
           opacity={0.5}
-          _hover={{ opacity: 1.0 }}
+          _hover={{ opacity: 1 }}
           variant="plain"
           size="xl"
         >

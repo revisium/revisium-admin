@@ -1,11 +1,15 @@
 import { format } from 'date-fns/format'
 import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
+import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 
 export class RevisionTreeNode {
+  public isOpenEndpointPopover: boolean = false
+
   private linkMaker: LinkMaker
+  private _popover: RevisionEndpointPopoverModel | null = null
 
   constructor(
     private readonly revision: FindRevisionFragment,
@@ -13,7 +17,15 @@ export class RevisionTreeNode {
   ) {
     this.linkMaker = new LinkMaker(projectPageModel)
 
-    makeAutoObservable(this)
+    makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get popover() {
+    if (!this._popover) {
+      this._popover = new RevisionEndpointPopoverModel(this.projectPageModel, this.revision)
+    }
+
+    return this._popover
   }
 
   public get id(): string {
@@ -22,6 +34,10 @@ export class RevisionTreeNode {
 
   public get shortId(): string {
     return `[${this.revision.id.slice(0, 3)}]`
+  }
+
+  public get revisionModel(): FindRevisionFragment {
+    return this.revision
   }
 
   public get comment(): string | null {
@@ -66,5 +82,9 @@ export class RevisionTreeNode {
     }
 
     return this.linkMaker.make({ id: this.revision.id })
+  }
+
+  public setIsOpenEndpointPopover(value: boolean) {
+    this.isOpenEndpointPopover = value
   }
 }

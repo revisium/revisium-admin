@@ -15,7 +15,7 @@ export const RevisionsList: FC<RevisionsListProps> = ({ revisions, onSelect, onE
       style={{ height: '100%', width: '100%' }}
       totalCount={revisions.length}
       data={revisions}
-      itemContent={(_, revision) => <RevisionItem key={revision.id} revision={revision} onSelect={onSelect} />}
+      itemContent={(_, revision) => <RevisionItem key={revision.id} model={revision} onSelect={onSelect} />}
       endReached={onEndReached}
       increaseViewportBy={200}
     />

@@ -10,8 +10,15 @@ export const SIGN_UP_COMPLETED_ROUTE = 'completed'
 export const SIGN_UP_CONFIRM_ROUTE = 'confirm'
 export const APP_ROUTE = 'app'
 export const ORGANIZATION_ROUTE = ':organizationId'
+
 export const PROJECT_ROUTE = ':projectName'
+export const PROJECT_SETTINGS_ROUTE = '-/settings'
+export const PROJECT_USERS_ROUTE = '-/users'
+export const PROJECT_API_KEYS_ROUTE = '-/api-keys'
+
 export const BRANCH_ROUTE = ':branchName'
+export const CHANGES_ROUTE = '-/changes'
+export const ASSETS_ROUTE = '-/assets'
 export const MIGRATIONS_ROUTE = '-/migrations'
 export const DRAFT_REVISION_ROUTE = '-/draft'
 export const SPECIFIC_REVISION_ROUTE = '-/:revisionId'
@@ -31,4 +38,7 @@ export enum RouteIds {
   DraftRow = 'draftRow',
   HeadRow = 'headRow',
   SpecificRow = 'specificRow',
+  ProjectSettings = 'projectSettings',
+  ProjectUsers = 'projectUsers',
+  ProjectApiKeys = 'projectApiKeys',
 }

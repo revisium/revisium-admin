@@ -1,1 +1,2 @@
-export * from './ui/SidebarBranchWidget/SidebarBranchWidget.tsx'
+export * from './ui/BranchWidget/BranchWidget.tsx'
+export * from './model/SidebarBranchWidgetModel.ts'

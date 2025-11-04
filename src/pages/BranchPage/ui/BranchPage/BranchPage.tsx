@@ -6,8 +6,7 @@ import { ReadonlyBanner } from 'src/pages/BranchPage/ui/ReadonlyBanner/ReadonlyB
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { Page } from 'src/shared/ui'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
-// import { RevisionEndpointWidget } from 'src/widgets/RevisionEndpointWidget'
-import { SidebarWidget } from 'src/widgets/SidebarWidget'
+import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
 export const BranchPage: React.FC = observer(() => {
   const projectPageModel = useProjectPageModel()
@@ -15,7 +14,7 @@ export const BranchPage: React.FC = observer(() => {
   const showReadonlyBanner = !projectPageModel.isDraftRevision
 
   return (
-    <Page sidebar={<SidebarWidget />} title={<BranchPageTitleWidget />}>
+    <Page sidebar={<ProjectSidebar />} title={<BranchPageTitleWidget />}>
       <Flex flex={1} flexDirection="column" gap="1rem" position="relative">
         {/*<RevisionEndpointWidget />*/}
 

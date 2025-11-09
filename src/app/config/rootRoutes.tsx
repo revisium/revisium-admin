@@ -24,6 +24,7 @@ import { LoginGithubPage, checkLoginGithub } from 'src/pages/LoginGithubPage'
 import { LoginPage } from 'src/pages/LoginPage'
 import { LogoutPage } from 'src/pages/LogoutPage'
 import { MainPage } from 'src/pages/MainPage'
+import { MigrationsPage } from 'src/pages/MigrationsPage'
 import { RevisionPage } from 'src/pages/RevisionPage'
 import { RowPage } from 'src/pages/RowPage'
 import { SignUpCompletedPage } from 'src/pages/SignUpCompletedPage'
@@ -53,11 +54,24 @@ import {
   PROJECT_SETTINGS_ROUTE,
   PROJECT_USERS_ROUTE,
   PROJECT_API_KEYS_ROUTE,
+  MIGRATIONS_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
 
 import { Layout } from '../ui/Layout'
+
+const createRevisionRouteObjects = ({ migrationId }: { migrationId: string }): RouteObject[] => [
+  {
+    index: true,
+    element: <RevisionPage />,
+  },
+  {
+    path: MIGRATIONS_ROUTE,
+    element: <MigrationsPage />,
+    id: migrationId,
+  },
+]
 
 const createTableRouteObject = ({
   tableLoader,
@@ -125,10 +139,9 @@ const organizationRouteObject = {
               id: RouteIds.HeadRevision,
               errorElement: <RevisionPageErrorWidget />,
               children: [
-                {
-                  index: true,
-                  element: <RevisionPage />,
-                },
+                ...createRevisionRouteObjects({
+                  migrationId: RouteIds.HeadMigrations,
+                }),
                 createTableRouteObject({
                   tableLoader: headTableLoader,
                   tableId: RouteIds.HeadTable,
@@ -143,10 +156,9 @@ const organizationRouteObject = {
               id: RouteIds.DraftRevision,
               errorElement: <RevisionPageErrorWidget />,
               children: [
-                {
-                  index: true,
-                  element: <RevisionPage />,
-                },
+                ...createRevisionRouteObjects({
+                  migrationId: RouteIds.DraftMigrations,
+                }),
                 createTableRouteObject({
                   tableLoader: draftTableLoader,
                   tableId: RouteIds.DraftTable,
@@ -161,10 +173,9 @@ const organizationRouteObject = {
               id: RouteIds.SpecificRevision,
               errorElement: <RevisionPageErrorWidget />,
               children: [
-                {
-                  index: true,
-                  element: <RevisionPage />,
-                },
+                ...createRevisionRouteObjects({
+                  migrationId: RouteIds.SpecificMigrations,
+                }),
                 createTableRouteObject({
                   tableLoader: specificTableLoader,
                   tableId: RouteIds.SpecificTable,

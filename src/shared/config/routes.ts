@@ -32,12 +32,19 @@ export enum RouteIds {
   DraftRevision = 'draftRevision',
   HeadRevision = 'headRevision',
   SpecificRevision = 'specificRevision',
+
   DraftTable = 'draftTable',
   HeadTable = 'headTable',
   SpecificTable = 'specificTable',
+
   DraftRow = 'draftRow',
   HeadRow = 'headRow',
   SpecificRow = 'specificRow',
+
+  DraftMigrations = 'draftMigrations',
+  HeadMigrations = 'headMigrations',
+  SpecificMigrations = 'specificMigrations',
+
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',
   ProjectApiKeys = 'projectApiKeys',

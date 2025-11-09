@@ -736,6 +736,7 @@ export type RevisionModel = {
   isDraft: Scalars['Boolean']['output']
   isHead: Scalars['Boolean']['output']
   isStart: Scalars['Boolean']['output']
+  migrations: Array<Scalars['JSON']['output']>
   parent?: Maybe<RevisionModel>
   sequence: Scalars['Int']['output']
   tables: TablesConnection
@@ -1034,6 +1035,14 @@ export type LoginMutationVariables = Exact<{
 }>
 
 export type LoginMutation = { login: { accessToken: string } }
+
+export type GetMigrationsQueryVariables = Exact<{
+  data: GetRevisionInput
+}>
+
+export type GetMigrationsQuery = {
+  revision: { id: string; migrations: Array<{ [key: string]: any } | string | number | boolean | null> }
+}
 
 export type SignUpMutationVariables = Exact<{
   data: SignUpInput
@@ -2439,6 +2448,14 @@ export const LoginDocument = gql`
     }
   }
 `
+export const GetMigrationsDocument = gql`
+  query getMigrations($data: GetRevisionInput!) {
+    revision(data: $data) {
+      id
+      migrations
+    }
+  }
+`
 export const SignUpDocument = gql`
   mutation signUp($data: SignUpInput!) {
     signUp(data: $data)
@@ -2986,6 +3003,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           client.request<LoginMutation>(LoginDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
         'login',
         'mutation',
+        variables,
+      )
+    },
+    getMigrations(
+      variables: GetMigrationsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetMigrationsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetMigrationsQuery>(GetMigrationsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getMigrations',
+        'query',
         variables,
       )
     },

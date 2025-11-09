@@ -9,11 +9,12 @@ import {
   // PiSliders,
   // PiFileTextLight,
   // PiFileLight,
-  // PiListLight,
+  PiListLight,
   // PiMagnifyingGlassLight,
   PiGitBranchLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
+import { MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
 import { useMenuListModel } from 'src/widgets/ProjectSidebar/hooks/useMenuListModel.ts'
 import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigationState.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
@@ -30,19 +31,9 @@ export const ProjectSidebar: FC = observer(() => {
   const projectPageModel = useProjectPageModel()
   const branchModel = useViewModel(SidebarBranchWidgetModel, projectPageModel)
 
-  const {
-    isInBranchContext,
-    isTablesActive,
-    // isProjectSettingsActive,
-    // isProjectUsersActive,
-    // isProjectApiKeysActive,
-    // isProjectLevelActive,
-    // isMigrationsActive,
-    // isChangesActive,
-    // isAssetsActive,
-  } = useNavigationState()
+  const { isTablesActive, isMigrationsActive } = useNavigationState()
 
-  const [isBranchSectionExpanded, setIsBranchSectionExpanded] = useState(isInBranchContext)
+  const [isBranchSectionExpanded, setIsBranchSectionExpanded] = useState(true)
   // const [isProjectSectionExpanded, setIsProjectSectionExpanded] = useState(isProjectLevelActive)
 
   const handleBranchSectionClick = () => {
@@ -90,12 +81,12 @@ export const ProjectSidebar: FC = observer(() => {
           {/*  icon={<PiFileLight />}*/}
           {/*  isActive={isAssetsActive}*/}
           {/*/>*/}
-          {/*<NavigationButton*/}
-          {/*  to={`${linkMaker.currentBaseLink}/-/migrations`}*/}
-          {/*  label="Migrations"*/}
-          {/*  icon={<PiListLight />}*/}
-          {/*  isActive={isMigrationsActive}*/}
-          {/*/>*/}
+          <NavigationButton
+            to={`${linkMaker.currentBaseLink}/${MIGRATIONS_ROUTE}`}
+            label="Migrations"
+            icon={<PiListLight />}
+            isActive={isMigrationsActive}
+          />
         </CollapsibleGroupButton>
 
         {/*<CollapsibleGroupButton*/}

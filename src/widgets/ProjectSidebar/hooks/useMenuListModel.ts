@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
-import { MenuListModel } from 'src/widgets/BranchMenuList/model/MenuListModel.ts'
+import { MenuListModel } from 'src/widgets/ProjectSidebar/model/MenuListModel.ts'
 
 export const useMenuListModel = () => {
   const projectPageModel = useProjectPageModel()

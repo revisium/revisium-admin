@@ -50,6 +50,9 @@ import {
   USERNAME_ROUTE,
   APP_ROUTE,
   SANDBOX_ROUTE,
+  PROJECT_SETTINGS_ROUTE,
+  PROJECT_USERS_ROUTE,
+  PROJECT_API_KEYS_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
@@ -96,6 +99,21 @@ const organizationRouteObject = {
       loader: composeLoaders(checkAuth, projectLoader),
       id: RouteIds.Project,
       children: [
+        {
+          path: PROJECT_SETTINGS_ROUTE,
+          element: <div>Project Settings Page</div>,
+          id: RouteIds.ProjectSettings,
+        },
+        {
+          path: PROJECT_USERS_ROUTE,
+          element: <div>Project Users Page</div>,
+          id: RouteIds.ProjectUsers,
+        },
+        {
+          path: PROJECT_API_KEYS_ROUTE,
+          element: <div>Project API Keys Page</div>,
+          id: RouteIds.ProjectApiKeys,
+        },
         {
           path: BRANCH_ROUTE,
           element: <BranchPage />,

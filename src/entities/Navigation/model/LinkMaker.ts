@@ -37,25 +37,6 @@ export class LinkMaker {
     return getBaseLink(this.organization.id, this.project.name, this.branch.name, this.getCurrentOptions())
   }
 
-  public get parentForTableOrRow() {
-    const BASE_LINK = this.currentBaseLink
-
-    const tableId = this.projectPageModel.routeTableId
-    const rowId = this.projectPageModel.routeRowId
-
-    if (tableId && rowId) {
-      return generatePath(`${BASE_LINK}/${TABLE_ROUTE}`, {
-        tableId,
-      })
-    }
-
-    if (tableId) {
-      return generatePath(`${BASE_LINK}`)
-    }
-
-    return undefined
-  }
-
   public getCurrentOptions(): RevisionOptionType {
     if (this.projectPageModel.isDraftRevision) {
       return { isDraft: true }

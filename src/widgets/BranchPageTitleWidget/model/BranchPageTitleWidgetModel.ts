@@ -30,7 +30,7 @@ export class BranchPageTitleWidgetModel {
     }
 
     breadcrumbs.push({
-      title: 'tables',
+      title: 'Database',
       href: this.linkMaker.currentBaseLink,
       isCurrentPage: false,
       dataTestId: `breadcrumb-branch-tables`,

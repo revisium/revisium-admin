@@ -5,10 +5,7 @@ import {
   BRANCH_ROUTE,
   DRAFT_REVISION_ROUTE,
   ORGANIZATION_ROUTE,
-  PROJECT_API_KEYS_ROUTE,
   PROJECT_ROUTE,
-  PROJECT_SETTINGS_ROUTE,
-  PROJECT_USERS_ROUTE,
   ROW_ROUTE,
   SPECIFIC_REVISION_ROUTE,
   TABLE_ROUTE,
@@ -40,25 +37,6 @@ export class LinkMaker {
     return getBaseLink(this.organization.id, this.project.name, this.branch.name, this.getCurrentOptions())
   }
 
-  public get parentForTableOrRow() {
-    const BASE_LINK = this.currentBaseLink
-
-    const tableId = this.projectPageModel.routeTableId
-    const rowId = this.projectPageModel.routeRowId
-
-    if (tableId && rowId) {
-      return generatePath(`${BASE_LINK}/${TABLE_ROUTE}`, {
-        tableId,
-      })
-    }
-
-    if (tableId) {
-      return generatePath(`${BASE_LINK}`)
-    }
-
-    return undefined
-  }
-
   public getCurrentOptions(): RevisionOptionType {
     if (this.projectPageModel.isDraftRevision) {
       return { isDraft: true }
@@ -67,37 +45,6 @@ export class LinkMaker {
     } else {
       return { id: this.revision.id }
     }
-  }
-
-  public makeProjectSettingsLink() {
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_SETTINGS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
-    })
-  }
-
-  public makeProjectUsersLink() {
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_USERS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
-    })
-  }
-
-  public makeProjectApiKeysLink() {
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_API_KEYS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
-    })
-  }
-
-  public makeDefaultBranchLink() {
-    // Navigate to the first available branch or main branch
-    const defaultBranchName = 'main' // For now use 'main' as default
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
-      branchName: defaultBranchName,
-    })
   }
 
   public make(options: RevisionOptionType) {

@@ -1,16 +1,32 @@
 import { LoaderFunction } from 'react-router-dom'
-import { getBranchVariables, getSpecificRevisionVariables } from 'src/app/lib/utils.ts'
+import { getBranchVariables, waitForBranch } from 'src/app/lib/utils.ts'
 import { COUNT_REVISIONS_TO_BE_LOADED } from 'src/shared/config/countRevisionsToBeLoaded.ts'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
-export const specificRevisionLoader: LoaderFunction = async ({ params }) => {
-  const revisionVariables = getSpecificRevisionVariables(params)
+export const revisionLoader: LoaderFunction = async ({ params }) => {
+  const { revisionIdOrTag } = params
   const branchVariables = getBranchVariables(params)
 
-  const revision =
-    rootStore.cache.getRevision(revisionVariables.revisionId) ||
-    (await rootStore.backend.queryRevision(revisionVariables))
+  if (!revisionIdOrTag) {
+    throw new Error('Not found revisionIdOrTag in route params')
+  }
 
+  const branch = await waitForBranch(params)
+
+  let revision
+
+  if (revisionIdOrTag === 'head') {
+    revision = branch.head
+  } else if (revisionIdOrTag === 'draft') {
+    revision = branch.draft
+  } else {
+    // Specific revision ID
+    revision =
+      rootStore.cache.getRevision(revisionIdOrTag) ||
+      (await rootStore.backend.queryRevision({ revisionId: revisionIdOrTag }))
+  }
+
+  // Load children revisions for navigation
   const childrenDetails = revision.getChildrenDetails(COUNT_REVISIONS_TO_BE_LOADED)
   if (!childrenDetails.isAllLoaded) {
     await rootStore.queryRevisions({
@@ -19,6 +35,7 @@ export const specificRevisionLoader: LoaderFunction = async ({ params }) => {
     })
   }
 
+  // Load parent revisions for navigation
   const parentDetails = revision.getParentsDetails(COUNT_REVISIONS_TO_BE_LOADED)
   if (!parentDetails.isAllLoaded) {
     await rootStore.queryRevisions({
@@ -27,6 +44,7 @@ export const specificRevisionLoader: LoaderFunction = async ({ params }) => {
     })
   }
 
+  // Load tables if not already loaded
   if (revision.tablesConnection.countLoaded === 0) {
     await rootStore.queryTables({
       revisionId: revision.id,

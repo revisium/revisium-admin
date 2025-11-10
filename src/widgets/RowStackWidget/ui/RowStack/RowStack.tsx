@@ -50,7 +50,7 @@ export const RowStack: React.FC = observer(() => {
         if (item.state.isSelectingForeignKey) {
           root.onSelectedForeignKey(item, store.name.getPlainValue())
         } else {
-          navigate(linkMaker.make({ isDraft: true, rowId: createdRow.id }))
+          navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: createdRow.id }))
         }
       }
     }
@@ -63,7 +63,7 @@ export const RowStack: React.FC = observer(() => {
       if (result) {
         store.save()
         store.syncReadOnlyStores()
-        navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
+        navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: store.name.getPlainValue() }))
       }
     }
   }, [item, linkMaker, navigate])
@@ -84,7 +84,7 @@ export const RowStack: React.FC = observer(() => {
             duration: 1500,
           })
           store.syncReadOnlyStores()
-          navigate(linkMaker.make({ isDraft: true, rowId: store.name.getPlainValue() }))
+          navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: store.name.getPlainValue() }))
         } else {
           toaster.update(toastId, {
             type: 'info',

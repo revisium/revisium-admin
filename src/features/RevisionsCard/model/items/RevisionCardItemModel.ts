@@ -99,14 +99,14 @@ export class RevisionCardItemModel implements IRevisionCardItem {
 
   private get revisionLinkOption(): RevisionOptionType {
     if (this.checkIsHeadRevision()) {
-      return { isHead: true }
+      return { revisionIdOrTag: 'head' }
     }
 
     if (this.checkIsDraftRevision()) {
-      return { isDraft: true }
+      return { revisionIdOrTag: 'draft' }
     }
 
-    return { id: this.revision.id }
+    return { revisionIdOrTag: this.revision.id }
   }
 
   private checkIsStartRevision() {

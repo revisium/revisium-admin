@@ -3,11 +3,10 @@ import { generatePath } from 'react-router-dom'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
-  DRAFT_REVISION_ROUTE,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
+  REVISION_ROUTE,
   ROW_ROUTE,
-  SPECIFIC_REVISION_ROUTE,
   TABLE_ROUTE,
 } from 'src/shared/config/routes.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
@@ -39,11 +38,11 @@ export class LinkMaker {
 
   public getCurrentOptions(): RevisionOptionType {
     if (this.projectPageModel.isDraftRevision) {
-      return { isDraft: true }
+      return { revisionIdOrTag: 'draft' }
     } else if (this.projectPageModel.isHeadRevision) {
-      return { isHead: true }
+      return { revisionIdOrTag: 'head' }
     } else {
-      return { id: this.revision.id }
+      return { revisionIdOrTag: this.revision.id }
     }
   }
 
@@ -74,12 +73,9 @@ export class LinkMaker {
 
 type TableAndRow = { tableId?: string; rowId?: string }
 
-export type RevisionOptionType = (
-  | { isDraft: true; isHead?: false }
-  | { isHead: true; isDraft?: false }
-  | { id: string; isDraft?: false; isHead?: false }
-) &
-  TableAndRow
+export type RevisionOptionType = {
+  revisionIdOrTag: string
+} & TableAndRow
 
 const getBaseLink = (
   organizationId: string,
@@ -87,32 +83,13 @@ const getBaseLink = (
   branchName: string,
   revision: RevisionOptionType,
 ): string => {
-  if (revision.isHead) {
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}`, {
-      organizationId,
-      projectName,
-      branchName,
-    })
-  }
-
-  if (revision.isDraft) {
-    return generatePath(
-      `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`,
-      {
-        organizationId,
-        projectName,
-        branchName,
-      },
-    )
-  }
-
   return generatePath(
-    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${SPECIFIC_REVISION_ROUTE}`,
+    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`,
     {
       organizationId,
       projectName,
       branchName,
-      revisionId: revision.id,
+      revisionIdOrTag: revision.revisionIdOrTag,
     },
   )
 }

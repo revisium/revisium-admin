@@ -74,14 +74,14 @@ export class RevisionTreeNode {
 
   public get link(): string {
     if (this.isDraft) {
-      return this.linkMaker.make({ isDraft: true })
+      return this.linkMaker.make({ revisionIdOrTag: 'draft' })
     }
 
     if (this.isHead) {
-      return this.linkMaker.make({ isHead: true })
+      return this.linkMaker.make({ revisionIdOrTag: 'head' })
     }
 
-    return this.linkMaker.make({ id: this.revision.id })
+    return this.linkMaker.make({ revisionIdOrTag: this.revision.id })
   }
 
   public setIsOpenEndpointPopover(value: boolean) {

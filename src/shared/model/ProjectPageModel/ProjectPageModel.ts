@@ -49,11 +49,11 @@ export class ProjectPageModel {
   }
 
   public get isHeadRevision() {
-    return this.branchOrThrow.head.id === this.revisionOrThrow.id
+    return this.routeRevisionIdOrTag === 'head' || this.branchOrThrow.head.id === this.revisionOrThrow.id
   }
 
   public get isDraftRevision() {
-    return this.branchOrThrow.draft.id === this.revisionOrThrow.id
+    return this.routeRevisionIdOrTag === 'draft' || this.branchOrThrow.draft.id === this.revisionOrThrow.id
   }
 
   public get isStartAndHeadSameRevision() {
@@ -92,6 +92,10 @@ export class ProjectPageModel {
 
   public get routeBranchName() {
     return this.params.branchName
+  }
+
+  public get routeRevisionIdOrTag() {
+    return this.params.revisionIdOrTag
   }
 
   public get routeRevisionId() {

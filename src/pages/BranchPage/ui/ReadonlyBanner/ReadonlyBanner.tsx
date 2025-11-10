@@ -5,7 +5,7 @@ import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 
 export const ReadonlyBanner = observer(() => {
   const linkMaker = useLinkMaker()
-  const draftLink = linkMaker.make({ isDraft: true })
+  const draftLink = linkMaker.make({ revisionIdOrTag: 'draft' })
 
   return (
     <Box

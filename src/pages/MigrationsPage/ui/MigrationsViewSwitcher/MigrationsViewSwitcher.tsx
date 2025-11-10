@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react'
 import React from 'react'
 import { PiBracketsCurlyThin, PiTableThin } from 'react-icons/pi'
-import {ViewMode} from "src/pages/MigrationsPage/config/viewMode.ts";
+import { ViewMode } from 'src/pages/MigrationsPage/config/viewMode.ts'
 import { SelectedIconButton } from 'src/shared/ui/SelectedIconButton/SelectedIconButton'
 
 interface MigrationsViewSwitcherProps {

@@ -4,7 +4,7 @@ import { JsonPatchOperation, PatchData, PatchItemModel } from '../model/PatchIte
 export function parsePatches(migrations: MigrationData[]): PatchItemModel[] {
   const patches: PatchData[] = []
 
-  migrations.forEach((migration) => {
+  for (const migration of migrations) {
     if (migration.changeType === 'init') {
       patches.push({
         migrationId: migration.id,
@@ -22,7 +22,7 @@ export function parsePatches(migrations: MigrationData[]): PatchItemModel[] {
     if (migration.changeType === 'update' && migration.patches) {
       const patchArray = Array.isArray(migration.patches) ? migration.patches : [migration.patches]
 
-      patchArray.forEach((patch) => {
+      for (const patch of patchArray) {
         if (patch && typeof patch === 'object' && 'op' in patch && 'path' in patch) {
           patches.push({
             migrationId: migration.id,
@@ -32,9 +32,9 @@ export function parsePatches(migrations: MigrationData[]): PatchItemModel[] {
             parentMigration: migration,
           })
         }
-      })
+      }
     }
-  })
+  }
 
   return patches.map((patchData) => new PatchItemModel(patchData))
 }

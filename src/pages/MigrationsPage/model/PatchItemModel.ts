@@ -42,10 +42,12 @@ export class PatchItemModel {
     return convertSchemaPathToJsonPath(this.data.patch.path)
   }
 
-  public get displayFrom(): string | undefined {
+  public get displayFrom() {
     if (this.data.patch.from) {
       return convertSchemaPathToJsonPath(this.data.patch.from)
     }
+
+    return ''
   }
 
   public setPopoverOpen(value: boolean): void {

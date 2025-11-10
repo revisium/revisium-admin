@@ -1,6 +1,8 @@
 import { LoaderFunction } from 'react-router-dom'
 import { getBranchVariables, waitForBranch } from 'src/app/lib/utils.ts'
 import { COUNT_REVISIONS_TO_BE_LOADED } from 'src/shared/config/countRevisionsToBeLoaded.ts'
+import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
+import { IRevisionModel } from 'src/shared/model/BackendStore'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export const revisionLoader: LoaderFunction = async ({ params }) => {
@@ -13,20 +15,18 @@ export const revisionLoader: LoaderFunction = async ({ params }) => {
 
   const branch = await waitForBranch(params)
 
-  let revision
+  let revision: IRevisionModel
 
-  if (revisionIdOrTag === 'head') {
+  if (revisionIdOrTag === HEAD_TAG) {
     revision = branch.head
-  } else if (revisionIdOrTag === 'draft') {
+  } else if (revisionIdOrTag === DRAFT_TAG) {
     revision = branch.draft
   } else {
-    // Specific revision ID
     revision =
       rootStore.cache.getRevision(revisionIdOrTag) ||
       (await rootStore.backend.queryRevision({ revisionId: revisionIdOrTag }))
   }
 
-  // Load children revisions for navigation
   const childrenDetails = revision.getChildrenDetails(COUNT_REVISIONS_TO_BE_LOADED)
   if (!childrenDetails.isAllLoaded) {
     await rootStore.queryRevisions({
@@ -35,7 +35,6 @@ export const revisionLoader: LoaderFunction = async ({ params }) => {
     })
   }
 
-  // Load parent revisions for navigation
   const parentDetails = revision.getParentsDetails(COUNT_REVISIONS_TO_BE_LOADED)
   if (!parentDetails.isAllLoaded) {
     await rootStore.queryRevisions({
@@ -44,7 +43,6 @@ export const revisionLoader: LoaderFunction = async ({ params }) => {
     })
   }
 
-  // Load tables if not already loaded
   if (revision.tablesConnection.countLoaded === 0) {
     await rootStore.queryTables({
       revisionId: revision.id,

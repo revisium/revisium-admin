@@ -24,6 +24,9 @@ export const REVISION_ROUTE = ':revisionIdOrTag'
 export const TABLE_ROUTE = ':tableId'
 export const ROW_ROUTE = ':rowId'
 
+export const DRAFT_TAG = 'draft'
+export const HEAD_TAG = 'head'
+
 export enum RouteIds {
   Organization = 'organization',
   Project = 'project',

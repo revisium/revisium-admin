@@ -8,6 +8,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { CreateRowButton } from 'src/features/CreateRowButton'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
+import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { toaster } from 'src/shared/ui'
 import { RowList } from 'src/widgets/RowList'
@@ -50,7 +51,7 @@ export const RowStack: React.FC = observer(() => {
         if (item.state.isSelectingForeignKey) {
           root.onSelectedForeignKey(item, store.name.getPlainValue())
         } else {
-          navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: createdRow.id }))
+          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: createdRow.id }))
         }
       }
     }
@@ -63,7 +64,7 @@ export const RowStack: React.FC = observer(() => {
       if (result) {
         store.save()
         store.syncReadOnlyStores()
-        navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: store.name.getPlainValue() }))
+        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
       }
     }
   }, [item, linkMaker, navigate])
@@ -84,7 +85,7 @@ export const RowStack: React.FC = observer(() => {
             duration: 1500,
           })
           store.syncReadOnlyStores()
-          navigate(linkMaker.make({ revisionIdOrTag: 'draft', rowId: store.name.getPlainValue() }))
+          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
         } else {
           toaster.update(toastId, {
             type: 'info',

@@ -3,6 +3,7 @@ import { generatePath } from 'react-router-dom'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
+  DRAFT_TAG,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
   REVISION_ROUTE,
@@ -65,6 +66,6 @@ const createLink = (project: IProjectModel): string => {
     organizationId: project.organization.id,
     projectName: project.name,
     branchName: project.rootBranch.name,
-    revisionIdOrTag: 'draft',
+    revisionIdOrTag: DRAFT_TAG,
   })
 }

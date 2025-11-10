@@ -3,6 +3,8 @@ import { generatePath } from 'react-router-dom'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
+  DRAFT_TAG,
+  HEAD_TAG,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
   REVISION_ROUTE,
@@ -38,9 +40,9 @@ export class LinkMaker {
 
   public getCurrentOptions(): RevisionOptionType {
     if (this.projectPageModel.isDraftRevision) {
-      return { revisionIdOrTag: 'draft' }
+      return { revisionIdOrTag: DRAFT_TAG }
     } else if (this.projectPageModel.isHeadRevision) {
-      return { revisionIdOrTag: 'head' }
+      return { revisionIdOrTag: HEAD_TAG }
     } else {
       return { revisionIdOrTag: this.revision.id }
     }
@@ -83,13 +85,10 @@ const getBaseLink = (
   branchName: string,
   revision: RevisionOptionType,
 ): string => {
-  return generatePath(
-    `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`,
-    {
-      organizationId,
-      projectName,
-      branchName,
-      revisionIdOrTag: revision.revisionIdOrTag,
-    },
-  )
+  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`, {
+    organizationId,
+    projectName,
+    branchName,
+    revisionIdOrTag: revision.revisionIdOrTag,
+  })
 }

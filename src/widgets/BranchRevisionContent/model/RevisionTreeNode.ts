@@ -4,6 +4,7 @@ import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
+import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 
 export class RevisionTreeNode {
   public isOpenEndpointPopover: boolean = false
@@ -74,11 +75,11 @@ export class RevisionTreeNode {
 
   public get link(): string {
     if (this.isDraft) {
-      return this.linkMaker.make({ revisionIdOrTag: 'draft' })
+      return this.linkMaker.make({ revisionIdOrTag: DRAFT_TAG })
     }
 
     if (this.isHead) {
-      return this.linkMaker.make({ revisionIdOrTag: 'head' })
+      return this.linkMaker.make({ revisionIdOrTag: HEAD_TAG })
     }
 
     return this.linkMaker.make({ revisionIdOrTag: this.revision.id })

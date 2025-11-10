@@ -31,7 +31,7 @@ export const MigrationsPage = observer(() => {
   if (model.showEmpty) {
     return (
       <Flex justify="center" align="center" height="200px">
-        <Text color="gray.400">No migrations found</Text>
+        <Text color="newGray.400">No migrations found</Text>
       </Flex>
     )
   }
@@ -39,8 +39,8 @@ export const MigrationsPage = observer(() => {
   if (model.showList) {
     return (
       <Box mb="4rem">
-        <Flex justify="space-between" align="center" marginBottom="16px">
-          <Text fontSize="20px" fontWeight="600" color="gray.500">
+        <Flex justify="space-between" align="center" marginBottom="3rem">
+          <Text fontSize="20px" fontWeight="600" color="newGray.500">
             {model.isTableMode ? `Latest operations (${model.totalCount})` : `Migrations (${model.data.length})`}
           </Text>
           <MigrationsViewSwitcher mode={model.viewMode} onChange={(mode) => model.setViewMode(mode)} />

@@ -12,7 +12,7 @@ export const SelectedIconButton: React.FC<SelectedIconButtonProps> = ({ isSelect
   return (
     <IconButton
       data-testid={dataTestId}
-      _disabled={isSelected ? { backgroundColor: 'gray.100', cursor: 'not-allowed' } : undefined}
+      _disabled={isSelected ? { backgroundColor: 'newGray.100', cursor: 'not-allowed' } : undefined}
       _hover={{ backgroundColor: 'gray.50' }}
       disabled={isSelected}
       alignSelf="flex-start"

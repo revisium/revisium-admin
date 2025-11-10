@@ -54,7 +54,7 @@ import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/
 
 import { Layout } from '../ui/Layout'
 
-const createRevisionRouteObjects = ({ migrationId }: { migrationId: string }): RouteObject[] => [
+const createRevisionRouteObjects = (): RouteObject[] => [
   {
     index: true,
     element: <RevisionPage />,
@@ -62,7 +62,7 @@ const createRevisionRouteObjects = ({ migrationId }: { migrationId: string }): R
   {
     path: MIGRATIONS_ROUTE,
     element: <MigrationsPage />,
-    id: migrationId,
+    id: RouteIds.Migrations,
   },
 ]
 
@@ -122,12 +122,7 @@ const organizationRouteObject = {
               loader: revisionLoader,
               id: RouteIds.Revision,
               errorElement: <RevisionPageErrorWidget />,
-              children: [
-                ...createRevisionRouteObjects({
-                  migrationId: RouteIds.Migrations,
-                }),
-                createTableRouteObject(),
-              ],
+              children: [...createRevisionRouteObjects(), createTableRouteObject()],
             },
           ],
         },

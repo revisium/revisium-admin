@@ -48,7 +48,7 @@ export class MigrationsViewModel implements IViewModel {
   }
 
   public get items(): PatchItemModel[] {
-    return parsePatches(this.data)
+    return parsePatches(this.data).reverse()
   }
 
   public get viewMode(): ViewMode {

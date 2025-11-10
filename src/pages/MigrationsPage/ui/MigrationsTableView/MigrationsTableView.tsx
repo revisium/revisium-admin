@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { MigrationsViewModel } from 'src/pages/MigrationsPage/model/MigrationsViewModel'
-import { MigrationsTableRow } from './MigrationsTableRow'
+import { MigrationsTableRow } from 'src/pages/MigrationsPage/ui/MigrationsTableView/MigrationsTableRow.tsx'
 
 interface MigrationsTableViewProps {
   model: MigrationsViewModel

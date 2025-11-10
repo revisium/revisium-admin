@@ -41,7 +41,7 @@ export const MigrationsPage = observer(() => {
       <Box mb="4rem">
         <Flex justify="space-between" align="center" marginBottom="16px">
           <Text fontSize="20px" fontWeight="600" color="gray.500">
-            {model.isTableMode ? `Operations (${model.totalCount})` : `Migrations (${model.data.length})`}
+            {model.isTableMode ? `Latest operations (${model.totalCount})` : `Migrations (${model.data.length})`}
           </Text>
           <MigrationsViewSwitcher mode={model.viewMode} onChange={(mode) => model.setViewMode(mode)} />
         </Flex>

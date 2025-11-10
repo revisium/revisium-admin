@@ -758,6 +758,7 @@ export type RevisionModel = {
   isDraft: Scalars['Boolean']['output']
   isHead: Scalars['Boolean']['output']
   isStart: Scalars['Boolean']['output']
+  migrations: Array<Scalars['JSON']['output']>
   parent?: Maybe<RevisionModel>
   sequence: Scalars['Int']['output']
   tables: TablesConnection

@@ -1,0 +1,6 @@
+query getMigrations($data: GetRevisionInput!) {
+  revision(data: $data) {
+    id
+    migrations
+  }
+}

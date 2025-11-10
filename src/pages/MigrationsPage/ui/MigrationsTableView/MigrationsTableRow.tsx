@@ -51,6 +51,12 @@ export const MigrationsTableRow: FC<MigrationsTableRowProps> = observer(({ model
                 {model.displayFrom}
               </Text>
             </Box>
+
+            <Box width="140px" flexShrink={0} marginLeft="16px">
+              <Text color="newGray.300" fontSize="sm">
+                {model.formattedDate}
+              </Text>
+            </Box>
           </Flex>
         </Popover.Trigger>
 

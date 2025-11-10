@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { JsonValue } from 'src/entities/Schema/types/json.types'
 import { MigrationData } from 'src/pages/MigrationsPage/config/types.ts'
 import { convertSchemaPathToJsonPath } from 'src/pages/MigrationsPage/lib/convertSchemaPathToJsonPath.ts'
+import { formatDate } from 'src/shared/lib/helpers/formatDate.ts'
 
 export interface JsonPatchOperation {
   op: string
@@ -66,5 +67,9 @@ export class PatchItemModel {
 
   public get fullPatchData() {
     return this.data.parentMigration as unknown as JsonValue
+  }
+
+  public get formattedDate(): string {
+    return formatDate(this.data.migrationId, 'dd.MM.yyyy, HH:mm')
   }
 }

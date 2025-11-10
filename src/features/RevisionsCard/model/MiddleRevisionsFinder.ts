@@ -1,10 +1,9 @@
 import { Priority } from 'src/features/RevisionsCard/config/types.ts'
 import { IRevisionModel } from 'src/shared/model/BackendStore'
 
-export type RevisionOptionType =
-  | { isDraft: true; isHead?: false }
-  | { isHead: true; isDraft?: false }
-  | { id: string; isDraft?: false; isHead?: false }
+export type RevisionOptionType = {
+  revisionIdOrTag: string
+}
 
 export class MiddleRevisionsFinder {
   constructor(private readonly projectPageModel) {}

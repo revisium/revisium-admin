@@ -3,9 +3,10 @@ import { generatePath } from 'react-router-dom'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
-  DRAFT_REVISION_ROUTE,
+  DRAFT_TAG,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
+  REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
 import { IProjectModel } from 'src/shared/model/BackendStore'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
@@ -61,9 +62,10 @@ export class MeProjectListModel {
 }
 
 const createLink = (project: IProjectModel): string => {
-  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`, {
+  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`, {
     organizationId: project.organization.id,
     projectName: project.name,
     branchName: project.rootBranch.name,
+    revisionIdOrTag: DRAFT_TAG,
   })
 }

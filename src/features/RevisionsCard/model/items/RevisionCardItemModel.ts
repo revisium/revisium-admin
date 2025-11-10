@@ -5,6 +5,7 @@ import { IconType } from 'src/features/RevisionsCard/config/icons.ts'
 import { IRevisionCardItem } from 'src/features/RevisionsCard/config/types.ts'
 import { RevisionCardChildItemModel } from 'src/features/RevisionsCard/model/items/RevisionCardChildItemModel.ts'
 import { RevisionOptionType } from 'src/features/RevisionsCard/model/MiddleRevisionsFinder.ts'
+import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 import { IRevisionModel } from 'src/shared/model/BackendStore'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
@@ -99,14 +100,14 @@ export class RevisionCardItemModel implements IRevisionCardItem {
 
   private get revisionLinkOption(): RevisionOptionType {
     if (this.checkIsHeadRevision()) {
-      return { isHead: true }
+      return { revisionIdOrTag: HEAD_TAG }
     }
 
     if (this.checkIsDraftRevision()) {
-      return { isDraft: true }
+      return { revisionIdOrTag: DRAFT_TAG }
     }
 
-    return { id: this.revision.id }
+    return { revisionIdOrTag: this.revision.id }
   }
 
   private checkIsStartRevision() {

@@ -1,12 +1,7 @@
+import { useRouteLoaderData } from 'react-router-dom'
 import { IRowModel } from 'src/shared/model/BackendStore'
-import { useCurrentDraftRow } from 'src/shared/model/ProjectPageModel/hooks/row/useCurrentDraftRow.ts'
-import { useCurrentHeadRow } from 'src/shared/model/ProjectPageModel/hooks/row/useCurrentHeadRow.ts'
-import { useCurrentSpecificRow } from 'src/shared/model/ProjectPageModel/hooks/row/useCurrentSpecificRow.ts'
+import { RouteIds } from 'src/shared/config/routes.ts'
 
 export const useCurrentRow = (): IRowModel | null => {
-  const draftRow = useCurrentDraftRow()
-  const headRow = useCurrentHeadRow()
-  const specificRow = useCurrentSpecificRow()
-
-  return draftRow || headRow || specificRow
+  return useRouteLoaderData(RouteIds.Row) as IRowModel | null
 }

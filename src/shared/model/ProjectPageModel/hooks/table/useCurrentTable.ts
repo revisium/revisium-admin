@@ -1,12 +1,7 @@
-import { useCurrentDraftTable } from 'src/shared/model/ProjectPageModel/hooks/table/useCurrentDraftTable.ts'
-import { useCurrentHeadTable } from 'src/shared/model/ProjectPageModel/hooks/table/useCurrentHeadTable.ts'
-import { useCurrentSpecificTable } from 'src/shared/model/ProjectPageModel/hooks/table/useCurrentSpecificTable.ts'
+import { useRouteLoaderData } from 'react-router-dom'
 import { ITableModel } from 'src/shared/model/BackendStore'
+import { RouteIds } from 'src/shared/config/routes.ts'
 
 export const useCurrentTable = (): ITableModel | null => {
-  const draftTable = useCurrentDraftTable()
-  const headTable = useCurrentHeadTable()
-  const specificTable = useCurrentSpecificTable()
-
-  return draftTable || headTable || specificTable
+  return useRouteLoaderData(RouteIds.Table) as ITableModel | null
 }

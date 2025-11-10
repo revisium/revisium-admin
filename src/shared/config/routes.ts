@@ -20,30 +20,22 @@ export const BRANCH_ROUTE = ':branchName'
 export const CHANGES_ROUTE = '-/changes'
 export const ASSETS_ROUTE = '-/assets'
 export const MIGRATIONS_ROUTE = '-/migrations'
-export const DRAFT_REVISION_ROUTE = '-/draft'
-export const SPECIFIC_REVISION_ROUTE = '-/:revisionId'
+export const REVISION_ROUTE = ':revisionIdOrTag'
 export const TABLE_ROUTE = ':tableId'
 export const ROW_ROUTE = ':rowId'
+
+export const DRAFT_TAG = 'draft'
+export const HEAD_TAG = 'head'
 
 export enum RouteIds {
   Organization = 'organization',
   Project = 'project',
   Branch = 'branch',
-  DraftRevision = 'draftRevision',
-  HeadRevision = 'headRevision',
-  SpecificRevision = 'specificRevision',
+  Revision = 'revision',
 
-  DraftTable = 'draftTable',
-  HeadTable = 'headTable',
-  SpecificTable = 'specificTable',
-
-  DraftRow = 'draftRow',
-  HeadRow = 'headRow',
-  SpecificRow = 'specificRow',
-
-  DraftMigrations = 'draftMigrations',
-  HeadMigrations = 'headMigrations',
-  SpecificMigrations = 'specificMigrations',
+  Table = 'table',
+  Row = 'row',
+  Migrations = 'migrations',
 
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',

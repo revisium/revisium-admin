@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { Params } from 'react-router-dom'
+import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 import { IBranchModel, IProjectModel, IRevisionModel, IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { ICacheModel } from 'src/shared/model/BackendStore/cache.mst.ts'
 import { IRowForeignKeysByModel } from 'src/shared/model/BackendStore/model'
@@ -49,11 +50,11 @@ export class ProjectPageModel {
   }
 
   public get isHeadRevision() {
-    return this.branchOrThrow.head.id === this.revisionOrThrow.id
+    return this.routeRevisionIdOrTag === HEAD_TAG || this.branchOrThrow.head.id === this.revisionOrThrow.id
   }
 
   public get isDraftRevision() {
-    return this.branchOrThrow.draft.id === this.revisionOrThrow.id
+    return this.routeRevisionIdOrTag === DRAFT_TAG || this.branchOrThrow.draft.id === this.revisionOrThrow.id
   }
 
   public get isStartAndHeadSameRevision() {
@@ -92,6 +93,10 @@ export class ProjectPageModel {
 
   public get routeBranchName() {
     return this.params.branchName
+  }
+
+  public get routeRevisionIdOrTag() {
+    return this.params.revisionIdOrTag
   }
 
   public get routeRevisionId() {

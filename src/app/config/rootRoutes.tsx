@@ -1,4 +1,4 @@
-import { LoaderFunction, Outlet, RouteObject } from 'react-router-dom'
+import { Outlet, RouteObject } from 'react-router-dom'
 import { branchLoader } from 'src/app/lib/branchLoader.ts'
 import { checkAuth } from 'src/app/lib/checkAuth.ts'
 import { checkGuest } from 'src/app/lib/checkGuest.ts'
@@ -7,15 +7,9 @@ import { composeLoaders } from 'src/app/lib/composeLoaders.ts'
 import { mainPageLoader } from 'src/app/lib/mainPageLoader.ts'
 import { organizationLoader } from 'src/app/lib/organizationLoader.ts'
 import { projectLoader } from 'src/app/lib/projectLoader.ts'
-import { draftRevisionLoader } from 'src/app/lib/revisionLoaders/draftRevisionLoader.ts'
-import { headRevisionLoader } from 'src/app/lib/revisionLoaders/headRevisionLoader.ts'
-import { specificRevisionLoader } from 'src/app/lib/revisionLoaders/specificRevisionLoader.ts'
-import { draftRowLoader } from 'src/app/lib/rowLoaders/draftRowLoader.ts'
-import { headRowLoader } from 'src/app/lib/rowLoaders/headRowLoader.ts'
-import { specificRowLoader } from 'src/app/lib/rowLoaders/specificRowLoader.ts'
-import { draftTableLoader } from 'src/app/lib/tableLoaders/draftTableLoader.ts'
-import { headTableLoader } from 'src/app/lib/tableLoaders/headTableLoader.ts'
-import { specificTableLoader } from 'src/app/lib/tableLoaders/specificTableLoader.ts'
+import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
+import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
+import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
@@ -35,16 +29,15 @@ import { UsernamePage } from 'src/pages/UsernamePage'
 import {
   BRANCH_ROUTE,
   SIGN_UP_CONFIRM_ROUTE,
-  DRAFT_REVISION_ROUTE,
   LOGIN_ROUTE,
   LOGOUT_ROUTE,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
+  REVISION_ROUTE,
   RouteIds,
   ROW_ROUTE,
   SIGN_UP_ROUTE,
   SIGN_UP_COMPLETED_ROUTE,
-  SPECIFIC_REVISION_ROUTE,
   TABLE_ROUTE,
   LOGIN_GOOGLE_ROUTE,
   LOGIN_GITHUB_ROUTE,
@@ -61,7 +54,7 @@ import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/
 
 import { Layout } from '../ui/Layout'
 
-const createRevisionRouteObjects = ({ migrationId }: { migrationId: string }): RouteObject[] => [
+const createRevisionRouteObjects = (): RouteObject[] => [
   {
     index: true,
     element: <RevisionPage />,
@@ -69,24 +62,14 @@ const createRevisionRouteObjects = ({ migrationId }: { migrationId: string }): R
   {
     path: MIGRATIONS_ROUTE,
     element: <MigrationsPage />,
-    id: migrationId,
+    id: RouteIds.Migrations,
   },
 ]
 
-const createTableRouteObject = ({
-  tableLoader,
-  tableId,
-  rowLoader,
-  rowId,
-}: {
-  tableLoader: LoaderFunction
-  tableId: RouteIds
-  rowLoader: LoaderFunction
-  rowId: RouteIds
-}): RouteObject => ({
+const createTableRouteObject = (): RouteObject => ({
   path: TABLE_ROUTE,
   loader: tableLoader,
-  id: tableId,
+  id: RouteIds.Table,
   children: [
     {
       index: true,
@@ -95,7 +78,7 @@ const createTableRouteObject = ({
     {
       path: ROW_ROUTE,
       loader: rowLoader,
-      id: rowId,
+      id: RouteIds.Row,
       element: <RowPage />,
     },
   ],
@@ -135,54 +118,11 @@ const organizationRouteObject = {
           id: RouteIds.Branch,
           children: [
             {
-              loader: headRevisionLoader,
-              id: RouteIds.HeadRevision,
+              path: REVISION_ROUTE,
+              loader: revisionLoader,
+              id: RouteIds.Revision,
               errorElement: <RevisionPageErrorWidget />,
-              children: [
-                ...createRevisionRouteObjects({
-                  migrationId: RouteIds.HeadMigrations,
-                }),
-                createTableRouteObject({
-                  tableLoader: headTableLoader,
-                  tableId: RouteIds.HeadTable,
-                  rowLoader: headRowLoader,
-                  rowId: RouteIds.HeadRow,
-                }),
-              ],
-            },
-            {
-              path: DRAFT_REVISION_ROUTE,
-              loader: draftRevisionLoader,
-              id: RouteIds.DraftRevision,
-              errorElement: <RevisionPageErrorWidget />,
-              children: [
-                ...createRevisionRouteObjects({
-                  migrationId: RouteIds.DraftMigrations,
-                }),
-                createTableRouteObject({
-                  tableLoader: draftTableLoader,
-                  tableId: RouteIds.DraftTable,
-                  rowLoader: draftRowLoader,
-                  rowId: RouteIds.DraftRow,
-                }),
-              ],
-            },
-            {
-              path: SPECIFIC_REVISION_ROUTE,
-              loader: specificRevisionLoader,
-              id: RouteIds.SpecificRevision,
-              errorElement: <RevisionPageErrorWidget />,
-              children: [
-                ...createRevisionRouteObjects({
-                  migrationId: RouteIds.SpecificMigrations,
-                }),
-                createTableRouteObject({
-                  tableLoader: specificTableLoader,
-                  tableId: RouteIds.SpecificTable,
-                  rowLoader: specificRowLoader,
-                  rowId: RouteIds.SpecificRow,
-                }),
-              ],
+              children: [...createRevisionRouteObjects(), createTableRouteObject()],
             },
           ],
         },

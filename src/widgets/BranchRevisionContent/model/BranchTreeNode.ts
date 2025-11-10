@@ -3,9 +3,10 @@ import { FindBranchFragment } from 'src/__generated__/graphql-request.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
-  DRAFT_REVISION_ROUTE,
+  DRAFT_TAG,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
+  REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
 import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
@@ -37,13 +38,11 @@ export class BranchTreeNode {
   }
 
   public get link(): string {
-    return generatePath(
-      `/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${DRAFT_REVISION_ROUTE}`,
-      {
-        organizationId: this.projectPageModel.organization.id,
-        projectName: this.projectPageModel.project.name,
-        branchName: this.branch.name,
-      },
-    )
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`, {
+      organizationId: this.projectPageModel.organization.id,
+      projectName: this.projectPageModel.project.name,
+      branchName: this.branch.name,
+      revisionIdOrTag: DRAFT_TAG,
+    })
   }
 }

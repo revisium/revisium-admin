@@ -2,10 +2,11 @@ import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { Link } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
+import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 
 export const ReadonlyBanner = observer(() => {
   const linkMaker = useLinkMaker()
-  const draftLink = linkMaker.make({ isDraft: true })
+  const draftLink = linkMaker.make({ revisionIdOrTag: DRAFT_TAG })
 
   return (
     <Box

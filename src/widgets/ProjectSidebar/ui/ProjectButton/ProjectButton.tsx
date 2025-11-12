@@ -1,13 +1,14 @@
 import { Box, Flex, Menu, Portal } from '@chakra-ui/react'
 import { FC, useState } from 'react'
-import { PiCaretDownBold, PiHouseLight } from 'react-icons/pi'
+import { PiCaretDownBold, PiHouseLight, PiLockSimple } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 
 interface ProjectButtonProps {
   name: string
+  isPublic: boolean
 }
 
-export const ProjectButton: FC<ProjectButtonProps> = ({ name }) => {
+export const ProjectButton: FC<ProjectButtonProps> = ({ name, isPublic }) => {
   const navigate = useNavigate()
   const [isHovered, setIsHovered] = useState(false)
 
@@ -46,6 +47,11 @@ export const ProjectButton: FC<ProjectButtonProps> = ({ name }) => {
           <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
             {name}
           </Box>
+          {!isPublic && (
+            <Box fontSize="14px" color="newGray.400" flexShrink={0}>
+              <PiLockSimple />
+            </Box>
+          )}
           {isHovered && (
             <Box fontSize="12px" ml="0.25rem">
               <PiCaretDownBold />

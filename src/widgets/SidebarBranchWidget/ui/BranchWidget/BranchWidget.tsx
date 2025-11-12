@@ -2,6 +2,7 @@ import { Box, Flex, Popover, Portal, useDisclosure } from '@chakra-ui/react'
 import { FC, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { PiArrowCounterClockwiseBold, PiCheckBold, PiPlusBold } from 'react-icons/pi'
+import { useViewModel } from 'src/shared/lib'
 import { BranchRevisionContent } from 'src/widgets/BranchRevisionContent'
 import { SidebarBranchWidgetModel } from 'src/widgets/SidebarBranchWidget/model/SidebarBranchWidgetModel.ts'
 import { ActionButton } from 'src/widgets/SidebarBranchWidget/ui/ActionButton/ActionButton.tsx'
@@ -10,18 +11,12 @@ import { RevertContent } from 'src/widgets/SidebarBranchWidget/ui/RevertContent/
 import { CreateBranchContent } from 'src/widgets/SidebarBranchWidget/ui/CreateBranchContent/CreateBranchContent.tsx'
 import { Tooltip } from 'src/shared/ui'
 
-interface BranchWidgetProps {
-  model: SidebarBranchWidgetModel
-}
+export const BranchWidget: FC = observer(() => {
+  const model = useViewModel(SidebarBranchWidgetModel)
 
-export const BranchWidget: FC<BranchWidgetProps> = observer(({ model }) => {
   const { onOpen, onClose, open } = useDisclosure()
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const [openedPopover, setOpenedPopover] = useState<null | 'create' | 'commit' | 'revert'>(null)
-
-  if (model.isLoading) {
-    return null
-  }
 
   return (
     <Flex width="100%" alignItems="center" justifyContent="space-between">

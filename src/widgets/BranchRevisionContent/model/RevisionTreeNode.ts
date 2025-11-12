@@ -1,8 +1,9 @@
 import { format } from 'date-fns/format'
 import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { container } from 'src/shared/lib'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 
@@ -14,16 +15,16 @@ export class RevisionTreeNode {
 
   constructor(
     private readonly revision: FindRevisionFragment,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
   ) {
-    this.linkMaker = new LinkMaker(projectPageModel)
+    this.linkMaker = new LinkMaker(container.get(ProjectContext))
 
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get popover() {
     if (!this._popover) {
-      this._popover = new RevisionEndpointPopoverModel(this.projectPageModel, this.revision)
+      this._popover = new RevisionEndpointPopoverModel(this.context, this.revision)
     }
 
     return this._popover
@@ -58,7 +59,7 @@ export class RevisionTreeNode {
   }
 
   public get isActive(): boolean {
-    return this.revision.id === this.projectPageModel.revisionOrThrow.id
+    return this.revision.id === this.context.revision.id
   }
 
   public get badgeText(): string | null {

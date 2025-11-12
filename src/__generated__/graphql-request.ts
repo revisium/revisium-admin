@@ -592,6 +592,7 @@ export type Query = {
   revision: RevisionModel
   row?: Maybe<RowModel>
   rows: RowsConnection
+  searchRows: SearchResultsConnection
   table?: Maybe<TableModel>
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
@@ -632,6 +633,10 @@ export type QueryRowArgs = {
 
 export type QueryRowsArgs = {
   data: GetRowsInput
+}
+
+export type QuerySearchRowsArgs = {
+  data: SearchRowsInput
 }
 
 export type QueryTableArgs = {
@@ -796,6 +801,41 @@ export enum SearchIn {
   Numbers = 'numbers',
   Strings = 'strings',
   Values = 'values',
+}
+
+export type SearchMatch = {
+  highlight?: Maybe<Scalars['String']['output']>
+  path: Scalars['String']['output']
+  value: Scalars['JSON']['output']
+}
+
+export type SearchResult = {
+  matches: Array<SearchMatch>
+  row: RowModel
+  score?: Maybe<Scalars['Float']['output']>
+  table: TableModel
+}
+
+export type SearchResultEdge = {
+  cursor: Scalars['String']['output']
+  node: SearchResult
+}
+
+export type SearchResultsConnection = {
+  edges: Array<SearchResultEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type SearchRowsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first?: InputMaybe<Scalars['Int']['input']>
+  query: Scalars['String']['input']
+  revisionId: Scalars['String']['input']
+  searchIn?: InputMaybe<SearchIn>
+  searchLanguage?: InputMaybe<Scalars['String']['input']>
+  searchType?: InputMaybe<SearchType>
+  tables?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export enum SearchType {
@@ -1043,6 +1083,12 @@ export type GetMigrationsQueryVariables = Exact<{
 export type GetMigrationsQuery = {
   revision: { id: string; migrations: Array<{ [key: string]: any } | string | number | boolean | null> }
 }
+
+export type UpdateProjectMutationVariables = Exact<{
+  data: UpdateProjectInput
+}>
+
+export type UpdateProjectMutation = { updateProject: boolean }
 
 export type SignUpMutationVariables = Exact<{
   data: SignUpInput
@@ -2456,6 +2502,11 @@ export const GetMigrationsDocument = gql`
     }
   }
 `
+export const UpdateProjectDocument = gql`
+  mutation updateProject($data: UpdateProjectInput!) {
+    updateProject(data: $data)
+  }
+`
 export const SignUpDocument = gql`
   mutation signUp($data: SignUpInput!) {
     signUp(data: $data)
@@ -3018,6 +3069,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'getMigrations',
         'query',
+        variables,
+      )
+    },
+    updateProject(
+      variables: UpdateProjectMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateProjectMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateProjectMutation>(UpdateProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'updateProject',
+        'mutation',
         variables,
       )
     },

@@ -5,11 +5,15 @@ export const useNavigationState = () => {
   const matches = useMatches()
 
   const isMigrationsActive = matches.some((match) => match.id === RouteIds.Migrations)
+  const isProjectSettingsActive = matches.some((match) => match.id === RouteIds.ProjectSettings)
 
   const isTablesActive = matches.some((match) => match.id === RouteIds.Revision) && !isMigrationsActive
+  const isProjectLevelActive = isProjectSettingsActive
 
   return {
     isTablesActive,
     isMigrationsActive,
+    isProjectSettingsActive,
+    isProjectLevelActive,
   }
 }

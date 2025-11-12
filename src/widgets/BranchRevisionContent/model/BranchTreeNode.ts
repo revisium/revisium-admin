@@ -1,5 +1,6 @@
 import { generatePath } from 'react-router-dom'
 import { FindBranchFragment } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
@@ -8,13 +9,12 @@ import {
   PROJECT_ROUTE,
   REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class BranchTreeNode {
   constructor(
     private readonly branch: FindBranchFragment,
     public readonly depth: number,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
   ) {}
 
   public get id(): string {
@@ -34,13 +34,13 @@ export class BranchTreeNode {
   }
 
   public get isActive(): boolean {
-    return this.branch.id === this.projectPageModel.branchOrThrow.id
+    return this.branch.id === this.context.branch.id
   }
 
   public get link(): string {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`, {
-      organizationId: this.projectPageModel.organization.id,
-      projectName: this.projectPageModel.project.name,
+      organizationId: this.context.organization.id,
+      projectName: this.context.project.name,
       branchName: this.branch.name,
       revisionIdOrTag: DRAFT_TAG,
     })

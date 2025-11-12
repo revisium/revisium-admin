@@ -1,37 +1,30 @@
 import { makeAutoObservable } from 'mobx'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
 import { CreateBranchByRevisionIdCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateBranchByRevisionIdCommand.ts'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
 import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
-import { invariant } from 'src/shared/lib'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export class SidebarBranchWidgetModel {
-  private _project: ProjectPageModel | null = null
-
-  constructor() {
+  constructor(private context: ProjectContext) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public get isLoading() {
-    return !this._project
-  }
-
   public get name() {
-    return this.project.branchOrThrow.name
+    return this.context.branch.name
   }
 
   public get postfix() {
-    if (this.project.isHeadRevision) {
+    if (this.context.isHeadRevision) {
       return ' [head]'
     }
 
-    if (this.project.isDraftRevision) {
+    if (this.context.isDraftRevision) {
       return ''
     }
 
-    const shortId = this.project.revisionOrThrow.id.slice(0, 3)
+    const shortId = this.context.revision.id.slice(0, 3)
 
     return ` [${shortId}]`
   }
@@ -49,22 +42,20 @@ export class SidebarBranchWidgetModel {
   }
 
   public get showBranchButton() {
-    return !this.project.isDraftRevision
+    return !this.context.isDraftRevision
   }
 
   public get touched() {
-    return this.project.isDraftRevision && this.project.branchOrThrow.touched
+    return this.context.isDraftRevision && this.context.branch.touched
   }
 
-  public init(projectPageModel: ProjectPageModel) {
-    this._project = projectPageModel
-  }
+  public init() {}
 
   public dispose() {}
 
   public async handleRevertChanges() {
     try {
-      const command = new RevertChangesCommand(this.project)
+      const command = new RevertChangesCommand(this.context)
       await command.execute()
     } catch (e) {
       console.error(e)
@@ -73,7 +64,7 @@ export class SidebarBranchWidgetModel {
 
   public async handleCommitChanges(comment: string) {
     try {
-      const command = new CreateRevisionCommand(rootStore, this.project, comment)
+      const command = new CreateRevisionCommand(rootStore, this.context, comment)
       await command.execute()
     } catch (e) {
       console.error(e)
@@ -82,24 +73,20 @@ export class SidebarBranchWidgetModel {
 
   public async handleCreateBranch(name: string) {
     try {
-      const command = new CreateBranchByRevisionIdCommand(rootStore, this.project, name)
+      const command = new CreateBranchByRevisionIdCommand(rootStore, this.context, name)
       await command.execute()
     } catch (e) {
       console.error(e)
     }
-  }
-
-  private get project() {
-    invariant(this._project, 'SidebarBranchWidgetModel: project is not defined')
-
-    return this._project
   }
 }
 
 container.register(
   SidebarBranchWidgetModel,
   () => {
-    return new SidebarBranchWidgetModel()
+    const context: ProjectContext = container.get(ProjectContext)
+
+    return new SidebarBranchWidgetModel(context)
   },
   { scope: 'request' },
 )

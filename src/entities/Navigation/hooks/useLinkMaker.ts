@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container } from 'src/shared/lib'
 
 export const useLinkMaker = () => {
-  const projectPageModel = useProjectPageModel()
-
   const [store] = useState(() => {
-    return new LinkMaker(projectPageModel)
+    return new LinkMaker(container.get(ProjectContext))
   })
 
   useEffect(() => {

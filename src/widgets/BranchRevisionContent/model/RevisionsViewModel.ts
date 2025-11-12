@@ -1,10 +1,10 @@
 import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mobx'
 import { SortOrder, FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, invariant } from 'src/shared/lib'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { RevisionTreeNode } from 'src/widgets/BranchRevisionContent/model/RevisionTreeNode.ts'
 
 enum State {
@@ -16,7 +16,6 @@ enum State {
 
 export class RevisionsViewModel implements IViewModel {
   private state = State.loading
-  private _project: ProjectPageModel | null = null
   private cursor?: string | null = null
   private hasNextPage = false
   private readonly pageSize = 100
@@ -26,7 +25,7 @@ export class RevisionsViewModel implements IViewModel {
 
   private branchDisposer: IReactionDisposer | null = null
 
-  constructor() {
+  constructor(private context: ProjectContext) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -47,7 +46,7 @@ export class RevisionsViewModel implements IViewModel {
   }
 
   public get revisions(): RevisionTreeNode[] {
-    return this.allRevisions.map((revision) => new RevisionTreeNode(revision, this.project))
+    return this.allRevisions.map((revision) => new RevisionTreeNode(revision, this.context))
   }
 
   public get totalCount() {
@@ -58,12 +57,11 @@ export class RevisionsViewModel implements IViewModel {
     return this.hasNextPage
   }
 
-  public init(projectPageModel: ProjectPageModel) {
-    this._project = projectPageModel
+  public init() {
     this.reset()
 
     this.branchDisposer = reaction(
-      () => this.project.branchOrThrow,
+      () => this.context.branch,
       () => {
         this.reset()
       },
@@ -95,9 +93,9 @@ export class RevisionsViewModel implements IViewModel {
     try {
       const result = await this.findRevisions.fetch({
         data: {
-          organizationId: this.project.organization.id,
-          projectName: this.project.project.name,
-          branchName: this.project.branchOrThrow.name,
+          organizationId: this.context.project.organization.id,
+          projectName: this.context.project.name,
+          branchName: this.context.branch.name,
         },
         revisionsData: {
           first: this.pageSize,
@@ -132,17 +130,14 @@ export class RevisionsViewModel implements IViewModel {
       console.error(e)
     }
   }
-
-  private get project() {
-    invariant(this._project, 'RevisionsViewModel: project is not defined')
-    return this._project
-  }
 }
 
 container.register(
   RevisionsViewModel,
   () => {
-    return new RevisionsViewModel()
+    const context = container.get(ProjectContext)
+
+    return new RevisionsViewModel(context)
   },
   { scope: 'request' },
 )

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { EndpointType } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { RevisionFragment } from 'src/features/RevisionEndpointPopover/config/types.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { RevisionEndpointItemModel } from './RevisionEndpointItemModel.ts'
 
 export class RevisionEndpointPopoverModel {
@@ -9,7 +9,7 @@ export class RevisionEndpointPopoverModel {
   public restApiItem: RevisionEndpointItemModel | null = null
 
   constructor(
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
     public readonly revision: RevisionFragment,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -24,10 +24,10 @@ export class RevisionEndpointPopoverModel {
   }
 
   public init() {
-    this.graphqlItem = new RevisionEndpointItemModel(this.projectPageModel, EndpointType.Graphql, this.revision)
+    this.graphqlItem = new RevisionEndpointItemModel(this.context, EndpointType.Graphql, this.revision)
     this.graphqlItem.init()
 
-    this.restApiItem = new RevisionEndpointItemModel(this.projectPageModel, EndpointType.RestApi, this.revision)
+    this.restApiItem = new RevisionEndpointItemModel(this.context, EndpointType.RestApi, this.revision)
     this.restApiItem.init()
   }
 

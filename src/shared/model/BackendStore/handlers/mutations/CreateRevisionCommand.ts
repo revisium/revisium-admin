@@ -1,26 +1,26 @@
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IRevisionModel } from 'src/shared/model/BackendStore'
 import { createRevisionMstRequest } from 'src/shared/model/BackendStore/api/createRevisionMstRequest.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { addBranchFragmentToCache } from 'src/shared/model/BackendStore/utils/addBranchFragmentToCache.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class CreateRevisionCommand {
   constructor(
     private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
     private readonly comment: string,
   ) {}
 
   private get organization() {
-    return this.projectPageModel.organization
+    return this.context.organization
   }
 
   private get project() {
-    return this.projectPageModel.project
+    return this.context.project
   }
 
   private get branch() {
-    return this.projectPageModel.branchOrThrow
+    return this.context.branch
   }
 
   public async execute() {

@@ -10,7 +10,7 @@ import {
   // PiFileTextLight,
   // PiFileLight,
   PiListLight,
-  // PiMagnifyingGlassLight,
+  PiMagnifyingGlassLight,
   PiGitBranchLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
@@ -22,9 +22,11 @@ import { NavigationButton } from 'src/widgets/ProjectSidebar/ui/NavigationButton
 import { ProjectButton } from 'src/widgets/ProjectSidebar/ui/ProjectButton/ProjectButton.tsx'
 import { BranchWidget } from 'src/widgets/SidebarBranchWidget'
 import { useViewModel } from 'src/shared/lib'
+import { SearchModal, SearchModalModel } from 'src/widgets/SearchModal'
 
 export const ProjectSidebar: FC = observer(() => {
-  const store = useViewModel(ProjectSidebarViewModel)
+  const model = useViewModel(ProjectSidebarViewModel)
+  const searchModel = useViewModel(SearchModalModel)
 
   const linkMaker = useLinkMaker()
 
@@ -32,21 +34,21 @@ export const ProjectSidebar: FC = observer(() => {
 
   return (
     <VStack alignItems="flex-start" gap={0}>
-      <ProjectButton name={store.projectName} isPublic={store.isProjectPublic} />
+      <ProjectButton name={model.projectName} isPublic={model.isProjectPublic} />
 
       <Flex flexDirection="column" width="100%" mt={4} gap={1}>
-        {/*<NavigationButton*/}
-        {/*  to={linkMaker.currentBaseLink}*/}
-        {/*  label="Search"*/}
-        {/*  icon={<PiMagnifyingGlassLight />}*/}
-        {/*  isActive={false}*/}
-        {/*/>*/}
+        <NavigationButton
+          label="Search"
+          icon={<PiMagnifyingGlassLight />}
+          isActive={false}
+          onClick={() => searchModel.openModal()}
+        />
 
         <CollapsibleGroupButton
           icon={<PiGitBranchLight />}
           label={<BranchWidget />}
-          isExpanded={store.isBranchSectionExpanded}
-          onClick={store.handleBranchSectionClick}
+          isExpanded={model.isBranchSectionExpanded}
+          onClick={model.handleBranchSectionClick}
           disableLabelClick={true}
         >
           <NavigationButton
@@ -78,8 +80,8 @@ export const ProjectSidebar: FC = observer(() => {
         <CollapsibleGroupButton
           icon={<PiSliders />}
           label="Management"
-          isExpanded={store.isProjectSectionExpanded}
-          onClick={store.handleProjectSectionClick}
+          isExpanded={model.isProjectSectionExpanded}
+          onClick={model.handleProjectSectionClick}
         >
           <NavigationButton
             to={linkMaker.makeProjectSettingsLink()}
@@ -101,6 +103,8 @@ export const ProjectSidebar: FC = observer(() => {
           {/*  />*/}
         </CollapsibleGroupButton>
       </Flex>
+
+      <SearchModal model={searchModel} />
     </VStack>
   )
 })

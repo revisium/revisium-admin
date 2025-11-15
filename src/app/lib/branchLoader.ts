@@ -1,6 +1,8 @@
 import { LoaderFunction } from 'react-router-dom'
 import { getBranchVariables } from 'src/app/lib/utils.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { COUNT_REVISIONS_TO_BE_LOADED } from 'src/shared/config/countRevisionsToBeLoaded.ts'
+import { container } from 'src/shared/lib'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export const branchLoader: LoaderFunction = async ({ params }) => {
@@ -8,6 +10,9 @@ export const branchLoader: LoaderFunction = async ({ params }) => {
 
   const branch =
     rootStore.cache.getBranchByVariables(branchVariables) || (await rootStore.backend.queryBranch(branchVariables))
+
+  const context: ProjectContext = container.get(ProjectContext)
+  context.setBranch(branch)
 
   const childrenDetails = branch.start.getChildrenDetails(COUNT_REVISIONS_TO_BE_LOADED)
   if (!childrenDetails.isAllLoaded) {

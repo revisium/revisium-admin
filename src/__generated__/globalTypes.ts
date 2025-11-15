@@ -608,6 +608,7 @@ export type Query = {
   revision: RevisionModel
   row?: Maybe<RowModel>
   rows: RowsConnection
+  searchRows: SearchResultsConnection
   table?: Maybe<TableModel>
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
@@ -648,6 +649,10 @@ export type QueryRowArgs = {
 
 export type QueryRowsArgs = {
   data: GetRowsInput
+}
+
+export type QuerySearchRowsArgs = {
+  data: SearchRowsInput
 }
 
 export type QueryTableArgs = {
@@ -823,6 +828,45 @@ export enum SearchIn {
   NUMBERS = 'numbers',
   STRINGS = 'strings',
   VALUES = 'values',
+}
+
+export type SearchMatch = {
+  __typename: 'SearchMatch'
+  highlight?: Maybe<Scalars['String']['output']>
+  path: Scalars['String']['output']
+  value: Scalars['JSON']['output']
+}
+
+export type SearchResult = {
+  __typename: 'SearchResult'
+  matches: Array<SearchMatch>
+  row: RowModel
+  score?: Maybe<Scalars['Float']['output']>
+  table: TableModel
+}
+
+export type SearchResultEdge = {
+  __typename: 'SearchResultEdge'
+  cursor: Scalars['String']['output']
+  node: SearchResult
+}
+
+export type SearchResultsConnection = {
+  __typename: 'SearchResultsConnection'
+  edges: Array<SearchResultEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type SearchRowsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first?: InputMaybe<Scalars['Int']['input']>
+  query: Scalars['String']['input']
+  revisionId: Scalars['String']['input']
+  searchIn?: InputMaybe<SearchIn>
+  searchLanguage?: InputMaybe<Scalars['String']['input']>
+  searchType?: InputMaybe<SearchType>
+  tables?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export enum SearchType {

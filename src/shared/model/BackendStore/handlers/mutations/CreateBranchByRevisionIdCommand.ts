@@ -1,26 +1,26 @@
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { createBranchByRevisionIdMstRequest } from 'src/shared/model/BackendStore/api/createBranchByRevisionIdMstRequest.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
 import { addBranchFragmentToCache } from 'src/shared/model/BackendStore/utils/addBranchFragmentToCache.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export class CreateBranchByRevisionIdCommand {
   constructor(
     private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
     private readonly branchName: string,
   ) {}
 
   private get organization() {
-    return this.projectPageModel.organization
+    return this.context.organization
   }
 
   private get project() {
-    return this.projectPageModel.project
+    return this.context.project
   }
 
   private get revision() {
-    return this.projectPageModel.revisionOrThrow
+    return this.context.revision
   }
 
   public async execute() {

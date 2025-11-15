@@ -5,11 +5,9 @@ import { BranchesViewModel } from 'src/widgets/BranchRevisionContent/model/Branc
 import { Empty } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/Empty.tsx'
 import { BranchesList } from 'src/widgets/BranchRevisionContent/ui/BranchesContent/BranchesList.tsx'
 import { useViewModel } from 'src/shared/lib'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 
 export const BranchesContent: FC = observer(() => {
-  const projectPageModel = useProjectPageModel()
-  const model = useViewModel(BranchesViewModel, projectPageModel)
+  const model = useViewModel(BranchesViewModel)
 
   return (
     <Flex flexDirection="column" height="250px" width="100%" overflow="hidden">

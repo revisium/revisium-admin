@@ -1,9 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, invariant } from 'src/shared/lib'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { buildBranchTree } from 'src/widgets/BranchRevisionContent/lib/buildBranchTree.ts'
 import { BranchTreeNode } from 'src/widgets/BranchRevisionContent/model/BranchTreeNode.ts'
 
@@ -16,11 +16,10 @@ enum State {
 
 export class BranchesViewModel implements IViewModel {
   private state = State.loading
-  private _project: ProjectPageModel | null = null
 
   private readonly findBranches = ObservableRequest.of(client.findBranches, { skipResetting: true })
 
-  constructor() {
+  constructor(private readonly context: ProjectContext) {
     makeAutoObservable(this)
   }
 
@@ -42,15 +41,14 @@ export class BranchesViewModel implements IViewModel {
 
   public get branches(): BranchTreeNode[] {
     const branches = this.findBranches.data?.branches.edges.map((edge) => edge.node) ?? []
-    return buildBranchTree(branches, this.project)
+    return buildBranchTree(branches, this.context)
   }
 
   public get totalCount() {
     return this.findBranches.data?.branches.totalCount ?? 0
   }
 
-  public init(projectPageModel: ProjectPageModel) {
-    this._project = projectPageModel
+  public init() {
     void this.request()
   }
 
@@ -61,8 +59,8 @@ export class BranchesViewModel implements IViewModel {
       const result = await this.findBranches.fetch({
         data: {
           first: 100,
-          organizationId: this.project.organization.id,
-          projectName: this.project.project.name,
+          organizationId: this.context.organization.id,
+          projectName: this.context.project.name,
         },
       })
 
@@ -80,18 +78,14 @@ export class BranchesViewModel implements IViewModel {
       console.error(e)
     }
   }
-
-  private get project() {
-    invariant(this._project, 'BranchesContentViewModel: project is not defined')
-
-    return this._project
-  }
 }
 
 container.register(
   BranchesViewModel,
   () => {
-    return new BranchesViewModel()
+    const context = container.get(ProjectContext)
+
+    return new BranchesViewModel(context)
   },
   { scope: 'request' },
 )

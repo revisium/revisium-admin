@@ -1,5 +1,7 @@
 import { LoaderFunction } from 'react-router-dom'
 import { getProjectVariables } from 'src/app/lib/utils.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container } from 'src/shared/lib'
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export const projectLoader: LoaderFunction = async ({ params }) => {
@@ -7,6 +9,9 @@ export const projectLoader: LoaderFunction = async ({ params }) => {
 
   const project =
     rootStore.cache.getProjectByVariables(projectVariables) || (await rootStore.backend.queryProject(projectVariables))
+
+  const context = container.get(ProjectContext)
+  context.setProject(project)
 
   if (!project.branchesConnection.countLoaded) {
     await rootStore.backend.queryBranches({

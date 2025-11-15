@@ -11,6 +11,7 @@ import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
 import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
 import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
+import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
 import { ConfirmEmailCodePage } from 'src/pages/ConfirmEmailCodePage/ui/ConfirmEmailCodePage/ConfirmEmailCodePage.tsx'
@@ -98,7 +99,7 @@ const organizationRouteObject = {
       children: [
         {
           path: PROJECT_SETTINGS_ROUTE,
-          element: <div>Project Settings Page</div>,
+          element: <ProjectSettingsPage />,
           id: RouteIds.ProjectSettings,
         },
         {

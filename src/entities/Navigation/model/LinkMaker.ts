@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
@@ -7,31 +8,31 @@ import {
   HEAD_TAG,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
+  PROJECT_SETTINGS_ROUTE,
   REVISION_ROUTE,
   ROW_ROUTE,
   TABLE_ROUTE,
 } from 'src/shared/config/routes.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class LinkMaker {
-  constructor(private projectPageModel: ProjectPageModel) {
+  constructor(private context: ProjectContext) {
     makeAutoObservable(this)
   }
 
   private get organization() {
-    return this.projectPageModel.organization
+    return this.context.project.organization
   }
 
   private get project() {
-    return this.projectPageModel.project
+    return this.context.project
   }
 
   private get branch() {
-    return this.projectPageModel.branchOrThrow
+    return this.context.branch
   }
 
   private get revision() {
-    return this.projectPageModel.revisionOrThrow
+    return this.context.revision
   }
 
   public get currentBaseLink() {
@@ -39,18 +40,25 @@ export class LinkMaker {
   }
 
   public getCurrentOptions(): RevisionOptionType {
-    if (this.projectPageModel.isDraftRevision) {
+    if (this.revision.id === this.branch.draft.id) {
       return { revisionIdOrTag: DRAFT_TAG }
-    } else if (this.projectPageModel.isHeadRevision) {
+    } else if (this.revision.id === this.branch.head.id) {
       return { revisionIdOrTag: HEAD_TAG }
     } else {
       return { revisionIdOrTag: this.revision.id }
     }
   }
 
+  public makeProjectSettingsLink() {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_SETTINGS_ROUTE}`, {
+      organizationId: this.organization.id,
+      projectName: this.project.name,
+    })
+  }
+
   public make(options: RevisionOptionType) {
-    const tableId = options.tableId || this.projectPageModel.routeTableId
-    const rowId = options.rowId || this.projectPageModel.routeRowId
+    const tableId = options.tableId || this.context.table?.id
+    const rowId = options.rowId || this.context.row?.id
 
     const BASE_LINK = getBaseLink(this.organization.id, this.project.name, this.branch.name, options)
 

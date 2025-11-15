@@ -4,10 +4,7 @@ import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { Virtuoso } from 'react-virtuoso'
 
-import { DeleteProjectButton } from 'src/features/DeleteProjectButton'
 import { useProjectListModel } from 'src/widgets/MeProjectList/hooks/useProjectListModel.ts'
-
-import styles from 'src/widgets/MeProjectList/ui/MeProjectList/MeProjectList.module.scss'
 
 export const MeProjectList: FC = observer(() => {
   const store = useProjectListModel()
@@ -26,7 +23,6 @@ export const MeProjectList: FC = observer(() => {
             <Flex
               _hover={{ backgroundColor: 'gray.50' }}
               alignItems="center"
-              className={styles.Row}
               gap="4px"
               paddingLeft="1rem"
               data-testid={`project-${project.name}`}
@@ -44,9 +40,6 @@ export const MeProjectList: FC = observer(() => {
                   </Flex>
                   {project.touched ? '*' : ''}
                 </Flex>
-                <Box className={styles.RemoveRowButton}>
-                  <DeleteProjectButton organizationId={project.organizationId} projectName={project.name} />
-                </Box>
               </Flex>
             </Flex>
           </Box>

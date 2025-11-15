@@ -1,19 +1,19 @@
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { revertChangesMstRequest } from 'src/shared/model/BackendStore/api/revertChangesMstRequest.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class RevertChangesCommand {
-  constructor(private readonly projectPageModel: ProjectPageModel) {}
+  constructor(private readonly context: ProjectContext) {}
 
   private get organization() {
-    return this.projectPageModel.organization
+    return this.context.organization
   }
 
   private get project() {
-    return this.projectPageModel.project
+    return this.context.project
   }
 
   private get branch() {
-    return this.projectPageModel.branchOrThrow
+    return this.context.branch
   }
 
   public async execute() {

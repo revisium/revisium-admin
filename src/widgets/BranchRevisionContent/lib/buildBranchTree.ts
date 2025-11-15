@@ -1,11 +1,11 @@
 import { FindBranchFragment } from 'src/__generated__/graphql-request.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { BranchTreeNode } from 'src/widgets/BranchRevisionContent/model/BranchTreeNode.ts'
 
-export function buildBranchTree(branches: FindBranchFragment[], projectPageModel: ProjectPageModel): BranchTreeNode[] {
+export function buildBranchTree(branches: FindBranchFragment[], context: ProjectContext): BranchTreeNode[] {
   const rootBranch = branches.find((branch) => branch.isRoot)
   if (!rootBranch) {
-    return branches.map((branch) => new BranchTreeNode(branch, 0, projectPageModel))
+    return branches.map((branch) => new BranchTreeNode(branch, 0, context))
   }
 
   const visited = new Set<string>()
@@ -22,7 +22,7 @@ export function buildBranchTree(branches: FindBranchFragment[], projectPageModel
 
     children.sort((a, b) => a.name.localeCompare(b.name))
 
-    const treeNode = new BranchTreeNode(branch, depth, projectPageModel)
+    const treeNode = new BranchTreeNode(branch, depth, context)
     result.push(treeNode)
 
     children.forEach((child, index) => {
@@ -35,7 +35,7 @@ export function buildBranchTree(branches: FindBranchFragment[], projectPageModel
 
   branches.forEach((branch) => {
     if (!visited.has(branch.id)) {
-      const treeNode = new BranchTreeNode(branch, 0, projectPageModel)
+      const treeNode = new BranchTreeNode(branch, 0, context)
       result.push(treeNode)
     }
   })

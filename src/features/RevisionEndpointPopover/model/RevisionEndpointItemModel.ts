@@ -1,11 +1,11 @@
 import { makeAutoObservable } from 'mobx'
 import { EndpointType } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { EndpointFragment, RevisionFragment } from 'src/features/RevisionEndpointPopover/config/types.ts'
 import { SANDBOX_ROUTE } from 'src/shared/config/routes.ts'
 import { getEnv } from 'src/shared/env/getEnv.ts'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 const BASE_URL = getEnv('REACT_APP_ENDPOINT_SERVER_URL')
 
@@ -19,7 +19,7 @@ export class RevisionEndpointItemModel {
   private readonly deleteEndpointRequest = ObservableRequest.of(client.deleteEndpoint)
 
   constructor(
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly context: ProjectContext,
     private readonly endpointType: EndpointType,
     private readonly revision: RevisionFragment,
   ) {
@@ -88,15 +88,15 @@ export class RevisionEndpointItemModel {
   }
 
   private get organization() {
-    return this.projectPageModel.organization
+    return this.context.organization
   }
 
   private get project() {
-    return this.projectPageModel.project
+    return this.context.project
   }
 
   private get branch() {
-    return this.projectPageModel.branchOrThrow
+    return this.context.branch
   }
 
   private get baseUrl() {

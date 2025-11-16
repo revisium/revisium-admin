@@ -1,4 +1,5 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -8,7 +9,7 @@ interface BranchItemProps {
   branch: BranchTreeNode
 }
 
-export const BranchItem: FC<BranchItemProps> = ({ branch }) => {
+export const BranchItem: FC<BranchItemProps> = observer(({ branch }) => {
   const indentationPx = branch.depth * 16
 
   return (
@@ -35,4 +36,4 @@ export const BranchItem: FC<BranchItemProps> = ({ branch }) => {
       </Box>
     </Link>
   )
-}
+})

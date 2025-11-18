@@ -2236,6 +2236,40 @@ export type FindRevisionsQuery = {
   }
 }
 
+export type SearchResultFragment = {
+  score?: number | null
+  row: { id: string }
+  table: { id: string }
+  matches: Array<{
+    value: { [key: string]: any } | string | number | boolean | null
+    path: string
+    highlight?: string | null
+  }>
+}
+
+export type SearchRowsQueryVariables = Exact<{
+  data: SearchRowsInput
+}>
+
+export type SearchRowsQuery = {
+  searchRows: {
+    totalCount: number
+    edges: Array<{
+      cursor: string
+      node: {
+        score?: number | null
+        row: { id: string }
+        table: { id: string }
+        matches: Array<{
+          value: { [key: string]: any } | string | number | boolean | null
+          path: string
+          highlight?: string | null
+        }>
+      }
+    }>
+  }
+}
+
 export const PageInfoFragmentDoc = gql`
   fragment PageInfo on PageInfo {
     startCursor
@@ -2432,6 +2466,22 @@ export const FindRevisionFragmentDoc = gql`
     endpoints {
       id
       type
+    }
+  }
+`
+export const SearchResultFragmentDoc = gql`
+  fragment SearchResult on SearchResult {
+    row {
+      id
+    }
+    table {
+      id
+    }
+    score
+    matches {
+      value
+      path
+      highlight
     }
   }
 `
@@ -2945,6 +2995,30 @@ export const FindRevisionsDocument = gql`
     }
   }
   ${FindRevisionFragmentDoc}
+`
+export const SearchRowsDocument = gql`
+  query searchRows($data: SearchRowsInput!) {
+    searchRows(data: $data) {
+      edges {
+        cursor
+        node {
+          row {
+            id
+          }
+          table {
+            id
+          }
+          score
+          matches {
+            value
+            path
+            highlight
+          }
+        }
+      }
+      totalCount
+    }
+  }
 `
 
 export type SdkFunctionWrapper = <T>(
@@ -3572,6 +3646,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'findRevisions',
+        'query',
+        variables,
+      )
+    },
+    searchRows(
+      variables: SearchRowsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<SearchRowsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<SearchRowsQuery>(SearchRowsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'searchRows',
         'query',
         variables,
       )

@@ -1,0 +1,37 @@
+fragment SearchResult on SearchResult {
+  row {
+    id
+  }
+  table {
+    id
+  }
+  score
+  matches {
+    value
+    path
+    highlight
+  }
+}
+
+query searchRows($data: SearchRowsInput!) {
+  searchRows(data: $data) {
+    edges {
+      cursor
+      node {
+        row {
+          id
+        }
+        table {
+          id
+        }
+        score
+        matches {
+          value
+          path
+          highlight
+        }
+      }
+    }
+    totalCount
+  }
+}

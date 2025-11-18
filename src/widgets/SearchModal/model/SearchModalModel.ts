@@ -173,10 +173,10 @@ container.register(
   SearchModalModel,
   () => {
     const context = container.get(ProjectContext)
-    const linkMaler = new LinkMaker(context)
+    const linkMaker = new LinkMaker(context)
     const router = container.get(RouterService)
 
-    return new SearchModalModel(context, linkMaler, router)
+    return new SearchModalModel(context, linkMaker, router)
   },
   { scope: 'request' },
 )

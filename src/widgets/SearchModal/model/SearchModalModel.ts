@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { SearchIn, SearchType } from 'src/__generated__/graphql-request.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
@@ -147,8 +146,6 @@ export class SearchModalModel implements IViewModel {
         data: {
           query: this.searchQuery,
           revisionId: this.context.revision.id,
-          searchType: SearchType.Plain,
-          searchIn: SearchIn.Values,
           first: 20,
         },
       })

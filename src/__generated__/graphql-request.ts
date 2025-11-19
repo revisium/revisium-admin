@@ -812,7 +812,6 @@ export type SearchMatch = {
 export type SearchResult = {
   matches: Array<SearchMatch>
   row: RowModel
-  score?: Maybe<Scalars['Float']['output']>
   table: TableModel
 }
 
@@ -832,10 +831,6 @@ export type SearchRowsInput = {
   first?: InputMaybe<Scalars['Int']['input']>
   query: Scalars['String']['input']
   revisionId: Scalars['String']['input']
-  searchIn?: InputMaybe<SearchIn>
-  searchLanguage?: InputMaybe<Scalars['String']['input']>
-  searchType?: InputMaybe<SearchType>
-  tables?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export enum SearchType {
@@ -2237,7 +2232,6 @@ export type FindRevisionsQuery = {
 }
 
 export type SearchResultFragment = {
-  score?: number | null
   row: { id: string }
   table: { id: string }
   matches: Array<{
@@ -2257,7 +2251,6 @@ export type SearchRowsQuery = {
     edges: Array<{
       cursor: string
       node: {
-        score?: number | null
         row: { id: string }
         table: { id: string }
         matches: Array<{
@@ -2477,7 +2470,6 @@ export const SearchResultFragmentDoc = gql`
     table {
       id
     }
-    score
     matches {
       value
       path
@@ -3002,23 +2994,13 @@ export const SearchRowsDocument = gql`
       edges {
         cursor
         node {
-          row {
-            id
-          }
-          table {
-            id
-          }
-          score
-          matches {
-            value
-            path
-            highlight
-          }
+          ...SearchResult
         }
       }
       totalCount
     }
   }
+  ${SearchResultFragmentDoc}
 `
 
 export type SdkFunctionWrapper = <T>(

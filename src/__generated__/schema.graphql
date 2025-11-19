@@ -617,7 +617,6 @@ type SearchMatch {
 type SearchResult {
   matches: [SearchMatch!]!
   row: RowModel!
-  score: Float
   table: TableModel!
 }
 
@@ -637,10 +636,6 @@ input SearchRowsInput {
   first: Int = 20
   query: String!
   revisionId: String!
-  searchIn: SearchIn = all
-  searchLanguage: String = "simple"
-  searchType: SearchType = plain
-  tables: [String!]
 }
 
 enum SearchType {

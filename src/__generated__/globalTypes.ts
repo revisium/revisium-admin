@@ -841,7 +841,6 @@ export type SearchResult = {
   __typename: 'SearchResult'
   matches: Array<SearchMatch>
   row: RowModel
-  score?: Maybe<Scalars['Float']['output']>
   table: TableModel
 }
 
@@ -863,10 +862,6 @@ export type SearchRowsInput = {
   first?: InputMaybe<Scalars['Int']['input']>
   query: Scalars['String']['input']
   revisionId: Scalars['String']['input']
-  searchIn?: InputMaybe<SearchIn>
-  searchLanguage?: InputMaybe<Scalars['String']['input']>
-  searchType?: InputMaybe<SearchType>
-  tables?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export enum SearchType {

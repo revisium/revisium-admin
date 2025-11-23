@@ -7,14 +7,14 @@ import {
   // PiUsersLight,
   PiDatabaseThin,
   PiSliders,
-  // PiFileTextLight,
+  PiFileTextLight,
   // PiFileLight,
   PiListLight,
   PiMagnifyingGlassLight,
   PiGitBranchLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
-import { MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
+import { CHANGES_ROUTE, MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
 import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigationState.ts'
 import { ProjectSidebarViewModel } from 'src/widgets/ProjectSidebar/model/ProjectSidebarViewModel.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
@@ -30,7 +30,7 @@ export const ProjectSidebar: FC = observer(() => {
 
   const linkMaker = useLinkMaker()
 
-  const { isTablesActive, isMigrationsActive, isProjectSettingsActive } = useNavigationState()
+  const { isTablesActive, isChangesActive, isMigrationsActive, isProjectSettingsActive } = useNavigationState()
 
   return (
     <VStack alignItems="flex-start" gap={0}>
@@ -57,12 +57,12 @@ export const ProjectSidebar: FC = observer(() => {
             icon={<PiDatabaseThin />}
             isActive={isTablesActive}
           />
-          {/*<NavigationButton*/}
-          {/*  to={`${linkMaker.makeProjectSettingsLink}/-/changes`}*/}
-          {/*  label="Changes"*/}
-          {/*  icon={<PiFileTextLight />}*/}
-          {/*  isActive={isChangesActive}*/}
-          {/*/>*/}
+          <NavigationButton
+            to={`${linkMaker.currentBaseLink}/${CHANGES_ROUTE}`}
+            label="Changes"
+            icon={<PiFileTextLight />}
+            isActive={isChangesActive}
+          />
           {/*<NavigationButton*/}
           {/*  to={`${linkMaker.currentBaseLink}/-/assets`}*/}
           {/*  label="Assets"*/}

@@ -1,0 +1,37 @@
+query GetTableChanges($revisionId: String!, $first: Int!, $after: String, $filters: TableChangesFiltersInput) {
+  tableChanges(data: { revisionId: $revisionId, first: $first, after: $after, filters: $filters }) {
+    edges {
+      node {
+        tableId
+        changeType
+        oldTableId
+        newTableId
+        schemaMigrations {
+          migrationType
+          migrationId
+          oldTableId
+          newTableId
+          patches {
+            op
+            path
+            value
+            from
+          }
+        }
+        rowChangesCount
+        addedRowsCount
+        modifiedRowsCount
+        removedRowsCount
+        renamedRowsCount
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

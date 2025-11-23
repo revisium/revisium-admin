@@ -1,0 +1,30 @@
+query GetRowChanges($revisionId: String!, $first: Int!, $after: String, $filters: RowChangesFiltersInput) {
+  rowChanges(data: { revisionId: $revisionId, first: $first, after: $after, filters: $filters }) {
+    edges {
+      node {
+        rowId
+        tableId
+        changeType
+        oldRowId
+        newRowId
+        fieldChanges {
+          fieldPath
+          changeType
+          oldValue
+          newValue
+          movedFrom
+        }
+        updatedAt
+        createdAt
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

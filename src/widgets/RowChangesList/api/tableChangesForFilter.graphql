@@ -1,0 +1,13 @@
+query GetTableChangesForFilter($revisionId: String!) {
+  tableChanges(data: { revisionId: $revisionId, first: 1000 }) {
+    edges {
+      node {
+        tableId
+        changeType
+        oldTableId
+        newTableId
+        rowChangesCount
+      }
+    }
+  }
+}

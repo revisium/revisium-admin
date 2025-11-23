@@ -52,6 +52,14 @@ type BranchesConnection {
   totalCount: Int!
 }
 
+enum ChangeType {
+  ADDED
+  MODIFIED
+  REMOVED
+  RENAMED
+  RENAMED_AND_MODIFIED
+}
+
 type ChildBranchModel {
   branch: BranchModel!
   revision: RevisionModel!
@@ -159,6 +167,14 @@ enum EndpointType {
   REST_API
 }
 
+type FieldChangeModel {
+  changeType: RowChangeDetailType!
+  fieldPath: String!
+  movedFrom: String
+  newValue: JSON
+  oldValue: JSON
+}
+
 input GetBranchInput {
   branchName: String!
   organizationId: String!
@@ -205,6 +221,12 @@ input GetProjectsInput {
   organizationId: String!
 }
 
+input GetRevisionChangesInput {
+  compareWithRevisionId: String
+  includeSystem: Boolean = false
+  revisionId: String!
+}
+
 input GetRevisionInput {
   revisionId: String!
 }
@@ -212,6 +234,14 @@ input GetRevisionInput {
 input GetRevisionTablesInput {
   after: String
   first: Int!
+}
+
+input GetRowChangesInput {
+  after: String
+  compareWithRevisionId: String
+  filters: RowChangesFiltersInput
+  first: Int!
+  revisionId: String!
 }
 
 input GetRowCountForeignKeysByInput {
@@ -239,6 +269,14 @@ input GetRowsInput {
   revisionId: String!
   tableId: String!
   where: WhereInput
+}
+
+input GetTableChangesInput {
+  after: String
+  compareWithRevisionId: String
+  filters: TableChangesFiltersInput
+  first: Int!
+  revisionId: String!
 }
 
 input GetTableForeignKeysInput {
@@ -285,6 +323,11 @@ type GoogleOauth {
   clientId: String
 }
 
+type HistoryPatchModel {
+  hash: String!
+  patches: [JsonPatchOperationModel!]!
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -310,6 +353,21 @@ input JsonFilter {
   string_starts_with: String
 }
 
+enum JsonPatchOp {
+  ADD
+  COPY
+  MOVE
+  REMOVE
+  REPLACE
+}
+
+type JsonPatchOperationModel {
+  from: String
+  op: JsonPatchOp!
+  path: String!
+  value: JSON
+}
+
 input LoginGithubInput {
   code: String!
 }
@@ -326,6 +384,13 @@ input LoginInput {
 
 type LoginModel {
   accessToken: String!
+}
+
+enum MigrationType {
+  INIT
+  REMOVE
+  RENAME
+  UPDATE
 }
 
 type Mutation {
@@ -358,6 +423,7 @@ type Mutation {
   updateProject(data: UpdateProjectInput!): Boolean!
   updateRow(data: UpdateRowInput!): UpdateRowResultModel!
   updateTable(data: UpdateTableInput!): UpdateTableResultModel!
+  updateUserProjectRole(data: UpdateUserProjectRoleInput!): Boolean!
 }
 
 input OrderBy {
@@ -389,6 +455,12 @@ enum OrderDataType {
   int
   text
   timestamp
+}
+
+type OrganizationModel {
+  createdId: String!
+  id: String!
+  userOrganization: UsersOrganizationModel
 }
 
 type PageInfo {
@@ -427,6 +499,13 @@ type PatchRowResultModel {
   table: TableModel!
 }
 
+type PermissionModel {
+  action: String!
+  condition: JSON
+  id: String!
+  subject: String!
+}
+
 type PluginsModel {
   file: Boolean!
 }
@@ -437,8 +516,10 @@ type ProjectModel {
   id: String!
   isPublic: Boolean!
   name: String!
+  organization: OrganizationModel!
   organizationId: String!
   rootBranch: BranchModel!
+  userProject: UsersProjectModel
 }
 
 type ProjectModelEdge {
@@ -463,10 +544,14 @@ type Query {
   project(data: GetProjectInput!): ProjectModel!
   projects(data: GetProjectsInput!): ProjectsConnection!
   revision(data: GetRevisionInput!): RevisionModel!
+  revisionChanges(data: GetRevisionChangesInput!): RevisionChangesModel!
   row(data: GetRowInput!): RowModel
+  rowChanges(data: GetRowChangesInput!): RowChangesConnection!
   rows(data: GetRowsInput!): RowsConnection!
   searchRows(data: SearchRowsInput!): SearchResultsConnection!
+  searchUsers(data: SearchUsersInput!): UsersConnection!
   table(data: GetTableInput!): TableModel
+  tableChanges(data: GetTableChangesInput!): TableChangesConnection!
   tables(data: GetTablesInput!): TablesConnection!
   usersOrganization(data: GetUsersOrganizationInput!): UsersOrganizationConnection!
   usersProject(data: GetUsersProjectInput!): UsersProjectConnection!
@@ -540,6 +625,22 @@ input RevertChangesInput {
   projectName: String!
 }
 
+type RevisionChangeSummaryModel {
+  added: Int!
+  modified: Int!
+  removed: Int!
+  renamed: Int!
+  total: Int!
+}
+
+type RevisionChangesModel {
+  parentRevisionId: String
+  revisionId: String!
+  rowsSummary: RevisionChangeSummaryModel!
+  tablesSummary: RevisionChangeSummaryModel!
+  totalChanges: Int!
+}
+
 type RevisionConnection {
   edges: [RevisionModelEdge!]!
   pageInfo: PageInfo!
@@ -548,6 +649,7 @@ type RevisionConnection {
 
 type RevisionModel {
   branch: BranchModel!
+  changes: RevisionChangesModel!
   child: RevisionModel
   childBranches: [ChildBranchModel!]!
   children: [RevisionModel!]!
@@ -572,6 +674,54 @@ type RevisionModelEdge {
 type RoleModel {
   id: String!
   name: String!
+  permissions: [PermissionModel!]!
+}
+
+enum RowChangeDetailType {
+  FIELD_ADDED
+  FIELD_MODIFIED
+  FIELD_MOVED
+  FIELD_REMOVED
+}
+
+type RowChangeModel {
+  changeType: ChangeType!
+  createdAt: DateTime!
+  fieldChanges: [FieldChangeModel!]!
+  fromData: JSON
+  fromHash: String
+  fromSchemaHash: String
+  fromVersionId: String
+  newRowId: String
+  oldRowId: String
+  publishedAt: DateTime!
+  rowCreatedId: String!
+  rowId: String!
+  tableCreatedId: String!
+  tableId: String!
+  toData: JSON
+  toHash: String
+  toSchemaHash: String
+  toVersionId: String
+  updatedAt: DateTime!
+}
+
+type RowChangeModelEdge {
+  cursor: String!
+  node: RowChangeModel!
+}
+
+type RowChangesConnection {
+  edges: [RowChangeModelEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+input RowChangesFiltersInput {
+  changeTypes: [ChangeType!]
+  includeSystem: Boolean = false
+  search: String
+  tableId: String
 }
 
 type RowModel {
@@ -597,6 +747,25 @@ type RowsConnection {
   edges: [RowModelEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
+}
+
+type SchemaFieldChangeModel {
+  changeType: String!
+  fieldPath: String!
+  movedFrom: String
+  movedTo: String
+  newSchema: JSON
+  oldSchema: JSON
+}
+
+type SchemaMigrationDetailModel {
+  historyPatches: [HistoryPatchModel!]
+  initialSchema: JSON
+  migrationId: String!
+  migrationType: MigrationType!
+  newTableId: String
+  oldTableId: String
+  patches: [JsonPatchOperationModel!]
 }
 
 enum SearchIn {
@@ -643,6 +812,12 @@ enum SearchType {
   plain
 }
 
+input SearchUsersInput {
+  after: String
+  first: Int!
+  search: String
+}
+
 input SetUsernameInput {
   username: String!
 }
@@ -669,6 +844,40 @@ input StringFilter {
   not: String
   notIn: [String!]
   startsWith: String
+}
+
+type TableChangeModel {
+  addedRowsCount: Int!
+  changeType: ChangeType!
+  fromVersionId: String
+  modifiedRowsCount: Int!
+  newTableId: String
+  oldTableId: String
+  removedRowsCount: Int!
+  renamedRowsCount: Int!
+  rowChangesCount: Int!
+  schemaMigrations: [SchemaMigrationDetailModel!]!
+  tableCreatedId: String!
+  tableId: String!
+  toVersionId: String
+}
+
+type TableChangeModelEdge {
+  cursor: String!
+  node: TableChangeModel!
+}
+
+type TableChangesConnection {
+  edges: [TableChangeModelEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+input TableChangesFiltersInput {
+  changeTypes: [ChangeType!]
+  includeSystem: Boolean = false
+  search: String
+  withSchemaMigrations: Boolean
 }
 
 type TableModel {
@@ -734,11 +943,23 @@ type UpdateTableResultModel {
   table: TableModel!
 }
 
+input UpdateUserProjectRoleInput {
+  organizationId: String!
+  projectName: String!
+  roleId: UserProjectRoles!
+  userId: String!
+}
+
 type UserModel {
   email: String
   id: String!
   organizationId: String
   username: String
+}
+
+type UserModelEdge {
+  cursor: String!
+  node: UserModel!
 }
 
 enum UserOrganizationRoles {
@@ -759,6 +980,12 @@ enum UserSystemRole {
   systemAdmin
   systemFullApiRead
   systemUser
+}
+
+type UsersConnection {
+  edges: [UserModelEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type UsersOrganizationConnection {

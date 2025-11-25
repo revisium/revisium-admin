@@ -9,23 +9,23 @@ import { RowDetailModal } from 'src/widgets/RowDetailModal'
 
 export const AllRowsChangesPage: FC = observer(() => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const initialTableId = searchParams.get('table')
+  const tableParam = searchParams.get('table')
 
   const projectPageModel = useProjectPageModel()
   const linkMaker = useLinkMaker()
 
   const [model] = useState(
-    () => new RowChangesListModel(projectPageModel.revisionOrThrow.id, linkMaker, initialTableId ?? undefined),
+    () => new RowChangesListModel(projectPageModel.revisionOrThrow.id, linkMaker, tableParam ?? undefined),
   )
 
   useEffect(() => {
     const tableId = model.tableId
     if (tableId) {
       setSearchParams({ table: tableId })
-    } else if (searchParams.has('table')) {
+    } else if (tableParam) {
       setSearchParams({})
     }
-  }, [model.tableId, setSearchParams, searchParams])
+  }, [model.tableId, setSearchParams, tableParam])
 
   const handleRowClick = useCallback(
     (itemModel: RowChangeItemModel) => {

@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import { PiX } from 'react-icons/pi'
 import { RowDetailModalModel } from '../../model/RowDetailModalModel'
 import { getFieldChangeTypeColor, formatValue } from '../../lib'
+import { DiffView } from '../DiffView'
 
 interface RowDetailModalProps {
   model: RowDetailModalModel
@@ -90,40 +91,7 @@ export const RowDetailModal: React.FC<RowDetailModalProps> = observer(({ model }
                       )}
 
                       {fieldChange.changeType === 'FIELD_MODIFIED' && (
-                        <Box fontSize="12px">
-                          <Flex gap="1rem">
-                            <Box flex={1}>
-                              <Text color="red.600" fontWeight="500" mb="0.25rem">
-                                Old:
-                              </Text>
-                              <Box
-                                backgroundColor="red.50"
-                                padding="0.5rem"
-                                borderRadius="4px"
-                                fontFamily="monospace"
-                                whiteSpace="pre-wrap"
-                                wordBreak="break-word"
-                              >
-                                {formatValue(fieldChange.oldValue)}
-                              </Box>
-                            </Box>
-                            <Box flex={1}>
-                              <Text color="green.600" fontWeight="500" mb="0.25rem">
-                                New:
-                              </Text>
-                              <Box
-                                backgroundColor="green.50"
-                                padding="0.5rem"
-                                borderRadius="4px"
-                                fontFamily="monospace"
-                                whiteSpace="pre-wrap"
-                                wordBreak="break-word"
-                              >
-                                {formatValue(fieldChange.newValue)}
-                              </Box>
-                            </Box>
-                          </Flex>
-                        </Box>
+                        <DiffView oldValue={fieldChange.oldValue} newValue={fieldChange.newValue} />
                       )}
 
                       {fieldChange.changeType === 'FIELD_ADDED' && (

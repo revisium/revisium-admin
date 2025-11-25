@@ -1,15 +1,18 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
 import { GetTableChangesQuery, ChangeType } from 'src/__generated__/graphql-request'
 import { TypeFilterModel } from 'src/entities/Changes'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
+import { IViewModel } from 'src/shared/config/types'
 import { TableChangeItemModel } from './TableChangeItemModel'
 import { TableDetailModalModel } from './TableDetailModalModel'
 
 type TableChangeItem = GetTableChangesQuery['tableChanges']['edges'][number]['node']
 
-export class TableChangesListModel {
+export class TableChangesListModel implements IViewModel {
   private readonly getTableChangesRequest = ObservableRequest.of(client.GetTableChanges, {
     skipResetting: true,
   })
@@ -23,14 +26,23 @@ export class TableChangesListModel {
   public readonly detailModalModel: TableDetailModalModel
 
   constructor(
-    private revisionId: string,
-    linkMaker: LinkMaker,
+    private readonly context: ProjectContext,
+    private readonly linkMaker: LinkMaker,
   ) {
     this.typeFilterModel = new TypeFilterModel((types) => this.handleTypesChange(types))
-    this.detailModalModel = new TableDetailModalModel(linkMaker)
+    this.detailModalModel = new TableDetailModalModel(this.linkMaker)
     makeAutoObservable(this)
+  }
+
+  private get revisionId(): string {
+    return this.context.revision.id
+  }
+
+  public init(): void {
     void this.loadInitial()
   }
+
+  public dispose(): void {}
 
   public get items(): TableChangeItem[] {
     return this._items
@@ -142,3 +154,13 @@ export class TableChangesListModel {
     })
   }
 }
+
+container.register(
+  TableChangesListModel,
+  () => {
+    const context = container.get(ProjectContext)
+    const linkMaker = new LinkMaker(context)
+    return new TableChangesListModel(context, linkMaker)
+  },
+  { scope: 'request' },
+)

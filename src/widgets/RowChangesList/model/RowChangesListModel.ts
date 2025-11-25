@@ -1,16 +1,19 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
 import { ChangeType, GetTableChangesForFilterQuery } from 'src/__generated__/graphql-request'
 import { TypeFilterModel } from 'src/entities/Changes'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
+import { IViewModel } from 'src/shared/config/types'
 import { RowChangeItemModel } from './RowChangeItemModel'
 import { TableFilterModel } from './TableFilterModel'
 import { RowDetailModalModel } from 'src/widgets/RowDetailModal'
 
 type TableForFilter = GetTableChangesForFilterQuery['tableChanges']['edges'][number]['node']
 
-export class RowChangesListModel {
+export class RowChangesListModel implements IViewModel {
   private readonly getRowChangesRequest = ObservableRequest.of(client.GetRowChanges, {
     skipResetting: true,
   })
@@ -31,14 +34,23 @@ export class RowChangesListModel {
   public readonly detailModalModel: RowDetailModalModel
 
   constructor(
-    private revisionId: string,
-    linkMaker: LinkMaker,
-    tableId?: string,
+    private readonly context: ProjectContext,
+    private readonly linkMaker: LinkMaker,
   ) {
     this.typeFilterModel = new TypeFilterModel((types) => this.handleTypesChange(types))
-    this.tableFilterModel = new TableFilterModel((id) => this.handleTableChange(id), tableId ?? null)
-    this.detailModalModel = new RowDetailModalModel(linkMaker)
+    this.tableFilterModel = new TableFilterModel((id) => this.handleTableChange(id))
+    this.detailModalModel = new RowDetailModalModel(this.linkMaker)
     makeAutoObservable(this)
+  }
+
+  private get revisionId(): string {
+    return this.context.revision.id
+  }
+
+  public init(tableId?: string): void {
+    if (tableId) {
+      this.tableFilterModel.setInitialTableId(tableId)
+    }
     void this.loadInitial()
     void this.loadTablesForFilter()
   }
@@ -196,4 +208,21 @@ export class RowChangesListModel {
       }
     })
   }
+
+  public dispose(): void {
+    if (this._searchDebounceTimer) {
+      clearTimeout(this._searchDebounceTimer)
+      this._searchDebounceTimer = null
+    }
+  }
 }
+
+container.register(
+  RowChangesListModel,
+  () => {
+    const context = container.get(ProjectContext)
+    const linkMaker = new LinkMaker(context)
+    return new RowChangesListModel(context, linkMaker)
+  },
+  { scope: 'request' },
+)

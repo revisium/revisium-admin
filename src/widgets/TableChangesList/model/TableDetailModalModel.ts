@@ -93,7 +93,7 @@ export class TableDetailModalModel {
   }
 
   public get rowChangesLink(): string {
-    return `rows?table=${encodeURIComponent(this.displayName)}`
+    return `rows?table=${encodeURIComponent(this.tableId)}`
   }
 
   public open(item: TableChangeItem): void {

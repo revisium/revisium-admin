@@ -14,8 +14,8 @@ export const TableDetailModal: React.FC<TableDetailModalProps> = observer(({ mod
   const navigate = useNavigate()
 
   const handleViewRowChanges = useCallback(() => {
-    model.close()
     navigate(model.rowChangesLink)
+    model.close()
   }, [model, navigate])
 
   if (!model.item) {

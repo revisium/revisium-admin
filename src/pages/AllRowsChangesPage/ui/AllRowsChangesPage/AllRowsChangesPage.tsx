@@ -1,9 +1,8 @@
 import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel'
+import { useViewModel } from 'src/shared/lib/hooks/useViewModel'
 import { RowChangesList, RowChangesListModel, RowChangesFilters, RowChangeItemModel } from 'src/widgets/RowChangesList'
 import { RowDetailModal } from 'src/widgets/RowDetailModal'
 
@@ -11,12 +10,7 @@ export const AllRowsChangesPage: FC = observer(() => {
   const [searchParams, setSearchParams] = useSearchParams()
   const tableParam = searchParams.get('table')
 
-  const projectPageModel = useProjectPageModel()
-  const linkMaker = useLinkMaker()
-
-  const [model] = useState(
-    () => new RowChangesListModel(projectPageModel.revisionOrThrow.id, linkMaker, tableParam ?? undefined),
-  )
+  const model = useViewModel(RowChangesListModel, tableParam ?? undefined)
 
   useEffect(() => {
     const tableId = model.tableId

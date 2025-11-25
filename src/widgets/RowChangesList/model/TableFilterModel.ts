@@ -69,6 +69,10 @@ export class TableFilterModel {
     this.onTableChange(null)
   }
 
+  public setInitialTableId(tableId: string | null): void {
+    this._selectedTableId = tableId
+  }
+
   public getTableDisplayName(table: TableForFilter): string {
     return table.newTableId || table.tableId
   }

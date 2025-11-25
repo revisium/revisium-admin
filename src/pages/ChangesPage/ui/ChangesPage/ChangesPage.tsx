@@ -1,8 +1,7 @@
 import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useState } from 'react'
-import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel'
+import { FC, useCallback } from 'react'
+import { useViewModel } from 'src/shared/lib/hooks/useViewModel'
 import {
   TableChangesList,
   TableChangesListModel,
@@ -12,9 +11,7 @@ import {
 } from 'src/widgets/TableChangesList'
 
 export const ChangesPage: FC = observer(() => {
-  const projectPageModel = useProjectPageModel()
-  const linkMaker = useLinkMaker()
-  const [model] = useState(() => new TableChangesListModel(projectPageModel.revisionOrThrow.id, linkMaker))
+  const model = useViewModel(TableChangesListModel)
 
   const handleTableClick = useCallback(
     (itemModel: TableChangeItemModel) => {

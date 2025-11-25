@@ -1,5 +1,7 @@
 import { makeAutoObservable } from 'mobx'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { CHANGES_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
 import { CreateBranchByRevisionIdCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateBranchByRevisionIdCommand.ts'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
@@ -7,7 +9,10 @@ import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mut
 import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export class SidebarBranchWidgetModel {
-  constructor(private context: ProjectContext) {
+  constructor(
+    private readonly linkMaker: LinkMaker,
+    private readonly context: ProjectContext,
+  ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -49,6 +54,10 @@ export class SidebarBranchWidgetModel {
     return this.context.isDraftRevision && this.context.branch.touched
   }
 
+  public get changesLink(): string {
+    return `${this.linkMaker.currentBaseLink}/${CHANGES_ROUTE}`
+  }
+
   public init() {}
 
   public dispose() {}
@@ -86,7 +95,7 @@ container.register(
   () => {
     const context: ProjectContext = container.get(ProjectContext)
 
-    return new SidebarBranchWidgetModel(context)
+    return new SidebarBranchWidgetModel(new LinkMaker(context), context)
   },
   { scope: 'request' },
 )

@@ -13,7 +13,7 @@ export const BranchItem: FC<BranchItemProps> = observer(({ branch }) => {
   const indentationPx = branch.depth * 16
 
   return (
-    <Link to={branch.link} style={{ textDecoration: 'none', display: 'block' }}>
+    <Link to={branch.link} onClick={branch.showNavigationToast} style={{ textDecoration: 'none', display: 'block' }}>
       <Box
         width="100%"
         backgroundColor={branch.isActive ? 'newGray.100' : 'transparent'}

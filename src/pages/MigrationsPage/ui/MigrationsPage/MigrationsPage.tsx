@@ -5,12 +5,10 @@ import { MigrationsViewModel } from 'src/pages/MigrationsPage/model/MigrationsVi
 import { MigrationsTableView } from 'src/pages/MigrationsPage/ui/MigrationsTableView/MigrationsTableView'
 import { MigrationsViewSwitcher } from 'src/pages/MigrationsPage/ui/MigrationsViewSwitcher/MigrationsViewSwitcher'
 import { useViewModel } from 'src/shared/lib'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { JsonCard } from 'src/shared/ui'
 
 export const MigrationsPage = observer(() => {
-  const projectPageModel = useProjectPageModel()
-  const model = useViewModel(MigrationsViewModel, projectPageModel)
+  const model = useViewModel(MigrationsViewModel)
 
   if (model.showLoading) {
     return (

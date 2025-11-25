@@ -63,11 +63,6 @@ const createRevisionRouteObjects = (): RouteObject[] => [
     index: true,
     element: <RevisionPage />,
   },
-  {
-    path: MIGRATIONS_ROUTE,
-    element: <MigrationsPage />,
-    id: RouteIds.Migrations,
-  },
 ]
 
 const createChangesRouteObject = (): RouteObject => ({
@@ -84,6 +79,12 @@ const createChangesRouteObject = (): RouteObject => ({
       element: <AllRowsChangesPage />,
     },
   ],
+})
+
+const createMigrationsRouteObject = (): RouteObject => ({
+  path: MIGRATIONS_ROUTE,
+  element: <MigrationsPage />,
+  id: RouteIds.Migrations,
 })
 
 const createTableRouteObject = (): RouteObject => ({
@@ -148,7 +149,7 @@ const organizationRouteObject = {
                 },
                 {
                   element: <BranchPage showTitle={false} />,
-                  children: [createChangesRouteObject()],
+                  children: [createChangesRouteObject(), createMigrationsRouteObject()],
                 },
               ],
             },

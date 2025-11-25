@@ -1,12 +1,12 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mobx'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { MigrationData } from 'src/pages/MigrationsPage/config/types.ts'
 import { ViewMode } from 'src/pages/MigrationsPage/config/viewMode.ts'
 import { parsePatches } from 'src/pages/MigrationsPage/lib/parsePatches.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, invariant } from 'src/shared/lib'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { PatchItemModel } from './PatchItemModel'
 
 enum State {
@@ -18,12 +18,12 @@ enum State {
 
 export class MigrationsViewModel implements IViewModel {
   private state = State.loading
-  private _project: ProjectPageModel | null = null
   private _viewMode: ViewMode = ViewMode.Table
+  private revisionReaction: IReactionDisposer | null = null
 
   private readonly getMigrationsRequest = ObservableRequest.of(client.getMigrations, { skipResetting: true })
 
-  constructor() {
+  constructor(private readonly context: ProjectContext) {
     makeAutoObservable(this)
   }
 
@@ -71,18 +71,35 @@ export class MigrationsViewModel implements IViewModel {
     return this.items.length
   }
 
-  public init(projectPageModel: ProjectPageModel) {
-    this._project = projectPageModel
-    void this.request()
+  public init(): void {
+    this.load()
+    this.revisionReaction = reaction(
+      () => this.context.revision.id,
+      () => {
+        this.reset()
+        this.load()
+      },
+    )
   }
 
-  public dispose(): void {}
+  public dispose(): void {
+    this.revisionReaction?.()
+    this.revisionReaction = null
+  }
+
+  private reset(): void {
+    this.state = State.loading
+  }
+
+  private load(): void {
+    void this.request()
+  }
 
   private async request(): Promise<void> {
     try {
       const result = await this.getMigrationsRequest.fetch({
         data: {
-          revisionId: this.project.revisionOrThrow.id,
+          revisionId: this.context.revision.id,
         },
       })
 
@@ -105,18 +122,13 @@ export class MigrationsViewModel implements IViewModel {
       console.error(e)
     }
   }
-
-  private get project() {
-    invariant(this._project, 'MigrationsViewModel: project is not defined')
-
-    return this._project
-  }
 }
 
 container.register(
   MigrationsViewModel,
   () => {
-    return new MigrationsViewModel()
+    const context = container.get(ProjectContext)
+    return new MigrationsViewModel(context)
   },
   { scope: 'request' },
 )

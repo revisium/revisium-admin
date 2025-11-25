@@ -29,17 +29,20 @@ export const CreateBranchContent: React.FC<CreateBranchContentProps> = ({ onClic
   }, [])
 
   return (
-    <Popover.Content>
-      <Popover.CloseTrigger color="gray.400" />
-      <Popover.Body>
-        <Flex alignSelf="flex-start" gap="0.5rem">
+    <Popover.Content width="280px">
+      <Popover.Header fontWeight="500" fontSize="14px" color="newGray.500" borderBottom="0" pb="0">
+        Create branch
+      </Popover.Header>
+      <Popover.CloseTrigger color="newGray.300" />
+      <Popover.Body pt="0.75rem" pb="1rem">
+        <Flex gap="0.5rem">
           <Input
             ref={ref}
             data-testid="create-branch-name-input"
-            borderColor="gray.100"
-            borderStyle="solid"
-            borderWidth="1px"
-            padding="0 0.5rem"
+            size="sm"
+            fontSize="13px"
+            borderColor="newGray.100"
+            _placeholder={{ color: 'newGray.300' }}
             placeholder="branch-name"
             variant="outline"
             onChange={handleChange}

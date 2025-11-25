@@ -9,6 +9,7 @@ import {
   PROJECT_ROUTE,
   REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
+import { showNavigationToast } from 'src/widgets/BranchRevisionContent/lib/showNavigationToast.ts'
 
 export class BranchTreeNode {
   constructor(
@@ -16,6 +17,11 @@ export class BranchTreeNode {
     public readonly depth: number,
     private readonly context: ProjectContext,
   ) {}
+
+  public showNavigationToast = (): void => {
+    if (this.isActive) return
+    showNavigationToast({ path: `${this.name} / ${DRAFT_TAG}`, isReadonly: false })
+  }
 
   public get id(): string {
     return this.branch.id

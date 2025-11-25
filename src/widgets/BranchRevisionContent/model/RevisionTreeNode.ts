@@ -1,11 +1,12 @@
 import { format } from 'date-fns/format'
 import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
-import { container } from 'src/shared/lib'
-import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
+import { container } from 'src/shared/lib'
+import { showNavigationToast } from 'src/widgets/BranchRevisionContent/lib/showNavigationToast.ts'
 
 export class RevisionTreeNode {
   public isOpenEndpointPopover: boolean = false
@@ -76,14 +77,39 @@ export class RevisionTreeNode {
 
   public get link(): string {
     if (this.isDraft) {
-      return this.linkMaker.make({ revisionIdOrTag: DRAFT_TAG })
+      return this.linkMaker.makeRevisionLink({ revisionIdOrTag: DRAFT_TAG })
     }
-
     if (this.isHead) {
-      return this.linkMaker.make({ revisionIdOrTag: HEAD_TAG })
+      return this.linkMaker.makeRevisionLink({ revisionIdOrTag: HEAD_TAG })
     }
+    return this.linkMaker.makeRevisionLink({ revisionIdOrTag: this.revision.id })
+  }
 
-    return this.linkMaker.make({ revisionIdOrTag: this.revision.id })
+  public get branchName(): string {
+    return this.context.branch.name
+  }
+
+  private get toastPath(): string {
+    const branchName = this.branchName
+    if (this.isDraft) {
+      return `${branchName} / ${DRAFT_TAG}`
+    }
+    if (this.isHead) {
+      return `${branchName} / ${HEAD_TAG}`
+    }
+    return `${branchName} / ${this.shortId}`
+  }
+
+  private get isReadonly(): boolean {
+    return !this.isDraft
+  }
+
+  public showNavigationToast(): void {
+    if (this.isActive) return
+    showNavigationToast({
+      path: this.toastPath,
+      isReadonly: this.isReadonly,
+    })
   }
 
   public setIsOpenEndpointPopover(value: boolean) {

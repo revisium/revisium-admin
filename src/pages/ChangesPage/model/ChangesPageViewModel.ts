@@ -1,11 +1,10 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mobx'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, invariant } from 'src/shared/lib'
+import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { GetRevisionChangesQuery } from 'src/__generated__/graphql-request'
-import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
 import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
 import { rootStore } from 'src/shared/model/RootStore.ts'
@@ -19,7 +18,7 @@ enum State {
 
 export class ChangesPageViewModel implements IViewModel {
   private state = State.loading
-  private _project: ProjectPageModel | null = null
+  private revisionReaction: IReactionDisposer | null = null
 
   private readonly getRevisionChangesRequest = ObservableRequest.of(client.GetRevisionChanges, {
     skipResetting: true,
@@ -69,6 +68,24 @@ export class ChangesPageViewModel implements IViewModel {
     return this.context.isDraftRevision && this.context.branch.touched
   }
 
+  public get isDraftRevision(): boolean {
+    return this.context.isDraftRevision
+  }
+
+  public get emptyStateMessage(): string {
+    if (this.context.isDraftRevision) {
+      return 'No changes in working copy'
+    }
+    return 'No changes in this revision'
+  }
+
+  public get emptyStateDescription(): string {
+    if (this.context.isDraftRevision) {
+      return 'Make edits to tables or rows to see changes here'
+    }
+    return 'This revision has no recorded changes'
+  }
+
   public async handleRevertChanges(): Promise<void> {
     try {
       const command = new RevertChangesCommand(this.context)
@@ -87,17 +104,34 @@ export class ChangesPageViewModel implements IViewModel {
     }
   }
 
-  public init(projectPageModel: ProjectPageModel) {
-    this._project = projectPageModel
-    void this.request()
+  public init(): void {
+    this.load()
+    this.revisionReaction = reaction(
+      () => this.context.revision.id,
+      () => {
+        this.reset()
+        this.load()
+      },
+    )
   }
 
-  public dispose(): void {}
+  public dispose(): void {
+    this.revisionReaction?.()
+    this.revisionReaction = null
+  }
+
+  private reset(): void {
+    this.state = State.loading
+  }
+
+  private load(): void {
+    void this.request()
+  }
 
   private async request(): Promise<void> {
     try {
       const result = await this.getRevisionChangesRequest.fetch({
-        revisionId: this.project.revisionOrThrow.id,
+        revisionId: this.context.revision.id,
         includeSystem: false,
       })
 
@@ -119,12 +153,6 @@ export class ChangesPageViewModel implements IViewModel {
       })
       console.error(e)
     }
-  }
-
-  private get project() {
-    invariant(this._project, 'ChangesPageViewModel: project is not defined')
-
-    return this._project
   }
 }
 

@@ -28,6 +28,7 @@ export const RevisionItem: FC<RevisionItemProps> = observer(({ model }) => {
       <Flex alignItems="center" justifyContent="space-between" paddingY="2" paddingX="3" gap={3}>
         <Link
           to={model.link}
+          onClick={model.showNavigationToast}
           style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}
         >
           <Box width="50px" flexShrink={0}>

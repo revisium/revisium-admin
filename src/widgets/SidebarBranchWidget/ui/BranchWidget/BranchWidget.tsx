@@ -104,7 +104,13 @@ export const BranchWidget: FC = observer(() => {
             <ActionButton
               open={openedPopover === 'revert'}
               onOpenChange={(open) => setOpenedPopover(open ? 'revert' : null)}
-              content={<RevertContent onClick={model.handleRevertChanges} onClose={() => setOpenedPopover(null)} />}
+              content={
+                <RevertContent
+                  onClick={model.handleRevertChanges}
+                  onClose={() => setOpenedPopover(null)}
+                  changesLink={model.changesLink}
+                />
+              }
               tooltip="Revert changes"
             >
               <PiArrowCounterClockwiseBold />
@@ -115,7 +121,11 @@ export const BranchWidget: FC = observer(() => {
               open={openedPopover === 'commit'}
               onOpenChange={(open) => setOpenedPopover(open ? 'commit' : null)}
               content={
-                <CreateRevisionContent onClick={model.handleCommitChanges} onClose={() => setOpenedPopover(null)} />
+                <CreateRevisionContent
+                  onClick={model.handleCommitChanges}
+                  onClose={() => setOpenedPopover(null)}
+                  changesLink={model.changesLink}
+                />
               }
               tooltip="Commit changes"
             >

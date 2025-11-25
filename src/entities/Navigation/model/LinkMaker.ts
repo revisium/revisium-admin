@@ -4,8 +4,10 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
+  CHANGES_ROUTE,
   DRAFT_TAG,
   HEAD_TAG,
+  MIGRATIONS_ROUTE,
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
   PROJECT_SETTINGS_ROUTE,
@@ -13,10 +15,33 @@ import {
   ROW_ROUTE,
   TABLE_ROUTE,
 } from 'src/shared/config/routes.ts'
+import { container } from 'src/shared/lib'
+import { RouterService } from 'src/shared/model/RouterService.ts'
+
+type CurrentSection = 'changes' | 'migrations' | undefined
 
 export class LinkMaker {
   constructor(private context: ProjectContext) {
     makeAutoObservable(this)
+  }
+
+  private get routerService(): RouterService {
+    return container.get(RouterService)
+  }
+
+  private get currentPathname(): string {
+    return this.routerService.router.state.location.pathname
+  }
+
+  public get currentSection(): CurrentSection {
+    const path = this.currentPathname
+    if (path.includes(CHANGES_ROUTE)) {
+      return 'changes'
+    }
+    if (path.includes(MIGRATIONS_ROUTE)) {
+      return 'migrations'
+    }
+    return undefined
   }
 
   private get organization() {
@@ -74,6 +99,20 @@ export class LinkMaker {
     }
 
     return BASE_LINK
+  }
+
+  public makeRevisionLink(options: { revisionIdOrTag: string }): string {
+    const baseLink = getBaseLink(this.organization.id, this.project.name, this.branch.name, options)
+
+    if (this.currentSection === 'changes') {
+      return `${baseLink}/${CHANGES_ROUTE}`
+    }
+
+    if (this.currentSection === 'migrations') {
+      return `${baseLink}/${MIGRATIONS_ROUTE}`
+    }
+
+    return baseLink
   }
 
   init() {}

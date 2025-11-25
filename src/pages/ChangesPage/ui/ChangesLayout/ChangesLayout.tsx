@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import { FC, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useViewModel } from 'src/shared/lib'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel'
 import { ChangesPageViewModel } from 'src/pages/ChangesPage/model/ChangesPageViewModel'
 import { RevertButton } from 'src/pages/ChangesPage/ui/RevertButton/RevertButton'
 import { CommitButton } from 'src/pages/ChangesPage/ui/CommitButton/CommitButton'
@@ -13,8 +12,7 @@ type TabValue = 'tables' | 'rows'
 export const ChangesLayout: FC = observer(() => {
   const navigate = useNavigate()
   const location = useLocation()
-  const projectPageModel = useProjectPageModel()
-  const model = useViewModel(ChangesPageViewModel, projectPageModel)
+  const model = useViewModel(ChangesPageViewModel)
   const [openedPopover, setOpenedPopover] = useState<null | 'commit' | 'revert'>(null)
 
   const currentTab: TabValue =
@@ -46,8 +44,11 @@ export const ChangesLayout: FC = observer(() => {
 
   if (model.showEmpty) {
     return (
-      <Flex justify="center" align="center" height="200px">
-        <Text color="newGray.400">No changes found</Text>
+      <Flex direction="column" justify="center" align="center" height="calc(100vh - 200px)" gap="0.25rem">
+        <Text color="newGray.400">{model.emptyStateMessage}</Text>
+        <Text fontSize="14px" color="newGray.300">
+          {model.emptyStateDescription}
+        </Text>
       </Flex>
     )
   }

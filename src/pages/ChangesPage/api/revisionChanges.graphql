@@ -1,0 +1,23 @@
+query GetRevisionChanges($revisionId: String!, $compareWithRevisionId: String, $includeSystem: Boolean) {
+  revisionChanges(
+    data: { revisionId: $revisionId, compareWithRevisionId: $compareWithRevisionId, includeSystem: $includeSystem }
+  ) {
+    revisionId
+    parentRevisionId
+    totalChanges
+    tablesSummary {
+      added
+      modified
+      removed
+      renamed
+      total
+    }
+    rowsSummary {
+      added
+      modified
+      removed
+      renamed
+      total
+    }
+  }
+}

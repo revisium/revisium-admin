@@ -8,13 +8,17 @@ import { Page } from 'src/shared/ui'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
-export const BranchPage: React.FC = observer(() => {
+interface BranchPageProps {
+  showTitle?: boolean
+}
+
+export const BranchPage: React.FC<BranchPageProps> = observer(({ showTitle = true }) => {
   const projectPageModel = useProjectPageModel()
 
   const showReadonlyBanner = !projectPageModel.isDraftRevision
 
   return (
-    <Page sidebar={<ProjectSidebar />} title={<BranchPageTitleWidget />}>
+    <Page sidebar={<ProjectSidebar />} title={showTitle ? <BranchPageTitleWidget /> : undefined}>
       <Flex flex={1} flexDirection="column" gap="1rem" position="relative">
         {/*<RevisionEndpointWidget />*/}
 

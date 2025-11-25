@@ -11,6 +11,8 @@ import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
 import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
 import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
+import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
+import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
@@ -48,6 +50,7 @@ import {
   PROJECT_SETTINGS_ROUTE,
   PROJECT_USERS_ROUTE,
   PROJECT_API_KEYS_ROUTE,
+  CHANGES_ROUTE,
   MIGRATIONS_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
@@ -66,6 +69,22 @@ const createRevisionRouteObjects = (): RouteObject[] => [
     id: RouteIds.Migrations,
   },
 ]
+
+const createChangesRouteObject = (): RouteObject => ({
+  path: CHANGES_ROUTE,
+  id: RouteIds.Changes,
+  element: <ChangesLayout />,
+  children: [
+    {
+      index: true,
+      element: <ChangesPage />,
+    },
+    {
+      path: 'rows',
+      element: <AllRowsChangesPage />,
+    },
+  ],
+})
 
 const createTableRouteObject = (): RouteObject => ({
   path: TABLE_ROUTE,
@@ -114,7 +133,6 @@ const organizationRouteObject = {
         },
         {
           path: BRANCH_ROUTE,
-          element: <BranchPage />,
           loader: branchLoader,
           id: RouteIds.Branch,
           children: [
@@ -123,7 +141,16 @@ const organizationRouteObject = {
               loader: revisionLoader,
               id: RouteIds.Revision,
               errorElement: <RevisionPageErrorWidget />,
-              children: [...createRevisionRouteObjects(), createTableRouteObject()],
+              children: [
+                {
+                  element: <BranchPage />,
+                  children: [...createRevisionRouteObjects(), createTableRouteObject()],
+                },
+                {
+                  element: <BranchPage showTitle={false} />,
+                  children: [createChangesRouteObject()],
+                },
+              ],
             },
           ],
         },

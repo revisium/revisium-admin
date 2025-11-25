@@ -1,0 +1,6 @@
+export { TableChangesList } from './ui/TableChangesList/TableChangesList'
+export { TableChangesListModel } from './model/TableChangesListModel'
+export { TableChangeItemModel } from './model/TableChangeItemModel'
+export { TableChangesFilters } from './ui/TableChangesFilters/TableChangesFilters'
+export { TableDetailModal } from './ui/TableDetailModal/TableDetailModal'
+export { TableDetailModalModel } from './model/TableDetailModalModel'

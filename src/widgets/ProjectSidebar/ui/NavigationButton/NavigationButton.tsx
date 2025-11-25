@@ -8,9 +8,10 @@ interface NavigationButtonProps {
   isActive: boolean
   icon?: ReactNode
   onClick?: () => void
+  badge?: number | null
 }
 
-export const NavigationButton: FC<NavigationButtonProps> = ({ to, label, isActive, icon, onClick }) => {
+export const NavigationButton: FC<NavigationButtonProps> = ({ to, label, isActive, icon, onClick, badge }) => {
   const content = (
     <Flex
       alignItems="center"
@@ -31,7 +32,24 @@ export const NavigationButton: FC<NavigationButtonProps> = ({ to, label, isActiv
       onClick={onClick}
     >
       {icon && <Box fontSize="14px">{icon}</Box>}
-      {label}
+      <Box flex="1" minWidth="0" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+        {label}
+      </Box>
+      {badge !== null && badge !== undefined && badge > 0 && (
+        <Box
+          fontSize="11px"
+          fontWeight="600"
+          color="newGray.400"
+          backgroundColor="newGray.100"
+          borderRadius="0.25rem"
+          paddingX="0.375rem"
+          paddingY="0.125rem"
+          minWidth="1.25rem"
+          textAlign="center"
+        >
+          {badge > 99 ? '99+' : badge}
+        </Box>
+      )}
     </Flex>
   )
 

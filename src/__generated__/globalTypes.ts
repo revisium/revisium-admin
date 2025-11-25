@@ -70,6 +70,14 @@ export type BranchesConnection = {
   totalCount: Scalars['Int']['output']
 }
 
+export enum ChangeType {
+  ADDED = 'ADDED',
+  MODIFIED = 'MODIFIED',
+  REMOVED = 'REMOVED',
+  RENAMED = 'RENAMED',
+  RENAMED_AND_MODIFIED = 'RENAMED_AND_MODIFIED',
+}
+
 export type ChildBranchModel = {
   __typename: 'ChildBranchModel'
   branch: BranchModel
@@ -177,6 +185,15 @@ export enum EndpointType {
   REST_API = 'REST_API',
 }
 
+export type FieldChangeModel = {
+  __typename: 'FieldChangeModel'
+  changeType: RowChangeDetailType
+  fieldPath: Scalars['String']['output']
+  movedFrom?: Maybe<Scalars['String']['output']>
+  newValue?: Maybe<Scalars['JSON']['output']>
+  oldValue?: Maybe<Scalars['JSON']['output']>
+}
+
 export type GetBranchInput = {
   branchName: Scalars['String']['input']
   organizationId: Scalars['String']['input']
@@ -221,6 +238,12 @@ export type GetProjectsInput = {
   organizationId: Scalars['String']['input']
 }
 
+export type GetRevisionChangesInput = {
+  compareWithRevisionId?: InputMaybe<Scalars['String']['input']>
+  includeSystem?: InputMaybe<Scalars['Boolean']['input']>
+  revisionId: Scalars['String']['input']
+}
+
 export type GetRevisionInput = {
   revisionId: Scalars['String']['input']
 }
@@ -228,6 +251,14 @@ export type GetRevisionInput = {
 export type GetRevisionTablesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+}
+
+export type GetRowChangesInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  compareWithRevisionId?: InputMaybe<Scalars['String']['input']>
+  filters?: InputMaybe<RowChangesFiltersInput>
+  first: Scalars['Int']['input']
+  revisionId: Scalars['String']['input']
 }
 
 export type GetRowCountForeignKeysByInput = {
@@ -255,6 +286,14 @@ export type GetRowsInput = {
   revisionId: Scalars['String']['input']
   tableId: Scalars['String']['input']
   where?: InputMaybe<WhereInput>
+}
+
+export type GetTableChangesInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  compareWithRevisionId?: InputMaybe<Scalars['String']['input']>
+  filters?: InputMaybe<TableChangesFiltersInput>
+  first: Scalars['Int']['input']
+  revisionId: Scalars['String']['input']
 }
 
 export type GetTableForeignKeysInput = {
@@ -303,6 +342,12 @@ export type GoogleOauth = {
   clientId?: Maybe<Scalars['String']['output']>
 }
 
+export type HistoryPatchModel = {
+  __typename: 'HistoryPatchModel'
+  hash: Scalars['String']['output']
+  patches: Array<JsonPatchOperationModel>
+}
+
 export type JsonFilter = {
   array_contains?: InputMaybe<Array<Scalars['JSON']['input']>>
   array_ends_with?: InputMaybe<Scalars['JSON']['input']>
@@ -323,6 +368,22 @@ export type JsonFilter = {
   string_starts_with?: InputMaybe<Scalars['String']['input']>
 }
 
+export enum JsonPatchOp {
+  ADD = 'ADD',
+  COPY = 'COPY',
+  MOVE = 'MOVE',
+  REMOVE = 'REMOVE',
+  REPLACE = 'REPLACE',
+}
+
+export type JsonPatchOperationModel = {
+  __typename: 'JsonPatchOperationModel'
+  from?: Maybe<Scalars['String']['output']>
+  op: JsonPatchOp
+  path: Scalars['String']['output']
+  value?: Maybe<Scalars['JSON']['output']>
+}
+
 export type LoginGithubInput = {
   code: Scalars['String']['input']
 }
@@ -340,6 +401,13 @@ export type LoginInput = {
 export type LoginModel = {
   __typename: 'LoginModel'
   accessToken: Scalars['String']['output']
+}
+
+export enum MigrationType {
+  INIT = 'INIT',
+  REMOVE = 'REMOVE',
+  RENAME = 'RENAME',
+  UPDATE = 'UPDATE',
 }
 
 export type Mutation = {
@@ -373,6 +441,7 @@ export type Mutation = {
   updateProject: Scalars['Boolean']['output']
   updateRow: UpdateRowResultModel
   updateTable: UpdateTableResultModel
+  updateUserProjectRole: Scalars['Boolean']['output']
 }
 
 export type MutationAddUserToOrganizationArgs = {
@@ -491,6 +560,10 @@ export type MutationUpdateTableArgs = {
   data: UpdateTableInput
 }
 
+export type MutationUpdateUserProjectRoleArgs = {
+  data: UpdateUserProjectRoleInput
+}
+
 export type OrderBy = {
   aggregation?: InputMaybe<OrderDataAggregation>
   direction: SortOrder
@@ -520,6 +593,13 @@ export enum OrderDataType {
   INT = 'int',
   TEXT = 'text',
   TIMESTAMP = 'timestamp',
+}
+
+export type OrganizationModel = {
+  __typename: 'OrganizationModel'
+  createdId: Scalars['String']['output']
+  id: Scalars['String']['output']
+  userOrganization?: Maybe<UsersOrganizationModel>
 }
 
 export type PageInfo = {
@@ -561,6 +641,14 @@ export type PatchRowResultModel = {
   table: TableModel
 }
 
+export type PermissionModel = {
+  __typename: 'PermissionModel'
+  action: Scalars['String']['output']
+  condition?: Maybe<Scalars['JSON']['output']>
+  id: Scalars['String']['output']
+  subject: Scalars['String']['output']
+}
+
 export type PluginsModel = {
   __typename: 'PluginsModel'
   file: Scalars['Boolean']['output']
@@ -573,8 +661,10 @@ export type ProjectModel = {
   id: Scalars['String']['output']
   isPublic: Scalars['Boolean']['output']
   name: Scalars['String']['output']
+  organization: OrganizationModel
   organizationId: Scalars['String']['output']
   rootBranch: BranchModel
+  userProject?: Maybe<UsersProjectModel>
 }
 
 export type ProjectModelAllBranchesArgs = {
@@ -606,10 +696,14 @@ export type Query = {
   project: ProjectModel
   projects: ProjectsConnection
   revision: RevisionModel
+  revisionChanges: RevisionChangesModel
   row?: Maybe<RowModel>
+  rowChanges: RowChangesConnection
   rows: RowsConnection
   searchRows: SearchResultsConnection
+  searchUsers: UsersConnection
   table?: Maybe<TableModel>
+  tableChanges: TableChangesConnection
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
   usersProject: UsersProjectConnection
@@ -643,8 +737,16 @@ export type QueryRevisionArgs = {
   data: GetRevisionInput
 }
 
+export type QueryRevisionChangesArgs = {
+  data: GetRevisionChangesInput
+}
+
 export type QueryRowArgs = {
   data: GetRowInput
+}
+
+export type QueryRowChangesArgs = {
+  data: GetRowChangesInput
 }
 
 export type QueryRowsArgs = {
@@ -655,8 +757,16 @@ export type QuerySearchRowsArgs = {
   data: SearchRowsInput
 }
 
+export type QuerySearchUsersArgs = {
+  data: SearchUsersInput
+}
+
 export type QueryTableArgs = {
   data: GetTableInput
+}
+
+export type QueryTableChangesArgs = {
+  data: GetTableChangesInput
 }
 
 export type QueryTablesArgs = {
@@ -743,6 +853,24 @@ export type RevertChangesInput = {
   projectName: Scalars['String']['input']
 }
 
+export type RevisionChangeSummaryModel = {
+  __typename: 'RevisionChangeSummaryModel'
+  added: Scalars['Int']['output']
+  modified: Scalars['Int']['output']
+  removed: Scalars['Int']['output']
+  renamed: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+}
+
+export type RevisionChangesModel = {
+  __typename: 'RevisionChangesModel'
+  parentRevisionId?: Maybe<Scalars['String']['output']>
+  revisionId: Scalars['String']['output']
+  rowsSummary: RevisionChangeSummaryModel
+  tablesSummary: RevisionChangeSummaryModel
+  totalChanges: Scalars['Int']['output']
+}
+
 export type RevisionConnection = {
   __typename: 'RevisionConnection'
   edges: Array<RevisionModelEdge>
@@ -753,6 +881,7 @@ export type RevisionConnection = {
 export type RevisionModel = {
   __typename: 'RevisionModel'
   branch: BranchModel
+  changes: RevisionChangesModel
   child?: Maybe<RevisionModel>
   childBranches: Array<ChildBranchModel>
   children: Array<RevisionModel>
@@ -783,6 +912,57 @@ export type RoleModel = {
   __typename: 'RoleModel'
   id: Scalars['String']['output']
   name: Scalars['String']['output']
+  permissions: Array<PermissionModel>
+}
+
+export enum RowChangeDetailType {
+  FIELD_ADDED = 'FIELD_ADDED',
+  FIELD_MODIFIED = 'FIELD_MODIFIED',
+  FIELD_MOVED = 'FIELD_MOVED',
+  FIELD_REMOVED = 'FIELD_REMOVED',
+}
+
+export type RowChangeModel = {
+  __typename: 'RowChangeModel'
+  changeType: ChangeType
+  createdAt: Scalars['DateTime']['output']
+  fieldChanges: Array<FieldChangeModel>
+  fromData?: Maybe<Scalars['JSON']['output']>
+  fromHash?: Maybe<Scalars['String']['output']>
+  fromSchemaHash?: Maybe<Scalars['String']['output']>
+  fromVersionId?: Maybe<Scalars['String']['output']>
+  newRowId?: Maybe<Scalars['String']['output']>
+  oldRowId?: Maybe<Scalars['String']['output']>
+  publishedAt: Scalars['DateTime']['output']
+  rowCreatedId: Scalars['String']['output']
+  rowId: Scalars['String']['output']
+  tableCreatedId: Scalars['String']['output']
+  tableId: Scalars['String']['output']
+  toData?: Maybe<Scalars['JSON']['output']>
+  toHash?: Maybe<Scalars['String']['output']>
+  toSchemaHash?: Maybe<Scalars['String']['output']>
+  toVersionId?: Maybe<Scalars['String']['output']>
+  updatedAt: Scalars['DateTime']['output']
+}
+
+export type RowChangeModelEdge = {
+  __typename: 'RowChangeModelEdge'
+  cursor: Scalars['String']['output']
+  node: RowChangeModel
+}
+
+export type RowChangesConnection = {
+  __typename: 'RowChangesConnection'
+  edges: Array<RowChangeModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type RowChangesFiltersInput = {
+  changeTypes?: InputMaybe<Array<ChangeType>>
+  includeSystem?: InputMaybe<Scalars['Boolean']['input']>
+  search?: InputMaybe<Scalars['String']['input']>
+  tableId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type RowModel = {
@@ -819,6 +999,27 @@ export type RowsConnection = {
   edges: Array<RowModelEdge>
   pageInfo: PageInfo
   totalCount: Scalars['Int']['output']
+}
+
+export type SchemaFieldChangeModel = {
+  __typename: 'SchemaFieldChangeModel'
+  changeType: Scalars['String']['output']
+  fieldPath: Scalars['String']['output']
+  movedFrom?: Maybe<Scalars['String']['output']>
+  movedTo?: Maybe<Scalars['String']['output']>
+  newSchema?: Maybe<Scalars['JSON']['output']>
+  oldSchema?: Maybe<Scalars['JSON']['output']>
+}
+
+export type SchemaMigrationDetailModel = {
+  __typename: 'SchemaMigrationDetailModel'
+  historyPatches?: Maybe<Array<HistoryPatchModel>>
+  initialSchema?: Maybe<Scalars['JSON']['output']>
+  migrationId: Scalars['String']['output']
+  migrationType: MigrationType
+  newTableId?: Maybe<Scalars['String']['output']>
+  oldTableId?: Maybe<Scalars['String']['output']>
+  patches?: Maybe<Array<JsonPatchOperationModel>>
 }
 
 export enum SearchIn {
@@ -869,6 +1070,12 @@ export enum SearchType {
   PLAIN = 'plain',
 }
 
+export type SearchUsersInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  search?: InputMaybe<Scalars['String']['input']>
+}
+
 export type SetUsernameInput = {
   username: Scalars['String']['input']
 }
@@ -895,6 +1102,43 @@ export type StringFilter = {
   not?: InputMaybe<Scalars['String']['input']>
   notIn?: InputMaybe<Array<Scalars['String']['input']>>
   startsWith?: InputMaybe<Scalars['String']['input']>
+}
+
+export type TableChangeModel = {
+  __typename: 'TableChangeModel'
+  addedRowsCount: Scalars['Int']['output']
+  changeType: ChangeType
+  fromVersionId?: Maybe<Scalars['String']['output']>
+  modifiedRowsCount: Scalars['Int']['output']
+  newTableId?: Maybe<Scalars['String']['output']>
+  oldTableId?: Maybe<Scalars['String']['output']>
+  removedRowsCount: Scalars['Int']['output']
+  renamedRowsCount: Scalars['Int']['output']
+  rowChangesCount: Scalars['Int']['output']
+  schemaMigrations: Array<SchemaMigrationDetailModel>
+  tableCreatedId: Scalars['String']['output']
+  tableId: Scalars['String']['output']
+  toVersionId?: Maybe<Scalars['String']['output']>
+}
+
+export type TableChangeModelEdge = {
+  __typename: 'TableChangeModelEdge'
+  cursor: Scalars['String']['output']
+  node: TableChangeModel
+}
+
+export type TableChangesConnection = {
+  __typename: 'TableChangesConnection'
+  edges: Array<TableChangeModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type TableChangesFiltersInput = {
+  changeTypes?: InputMaybe<Array<ChangeType>>
+  includeSystem?: InputMaybe<Scalars['Boolean']['input']>
+  search?: InputMaybe<Scalars['String']['input']>
+  withSchemaMigrations?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type TableModel = {
@@ -977,12 +1221,25 @@ export type UpdateTableResultModel = {
   table: TableModel
 }
 
+export type UpdateUserProjectRoleInput = {
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  roleId: UserProjectRoles
+  userId: Scalars['String']['input']
+}
+
 export type UserModel = {
   __typename: 'UserModel'
   email?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   organizationId?: Maybe<Scalars['String']['output']>
   username?: Maybe<Scalars['String']['output']>
+}
+
+export type UserModelEdge = {
+  __typename: 'UserModelEdge'
+  cursor: Scalars['String']['output']
+  node: UserModel
 }
 
 export enum UserOrganizationRoles {
@@ -1003,6 +1260,13 @@ export enum UserSystemRole {
   SYSTEMADMIN = 'systemAdmin',
   SYSTEMFULLAPIREAD = 'systemFullApiRead',
   SYSTEMUSER = 'systemUser',
+}
+
+export type UsersConnection = {
+  __typename: 'UsersConnection'
+  edges: Array<UserModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
 }
 
 export type UsersOrganizationConnection = {

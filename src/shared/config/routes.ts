@@ -35,6 +35,7 @@ export enum RouteIds {
 
   Table = 'table',
   Row = 'row',
+  Changes = 'changes',
   Migrations = 'migrations',
 
   ProjectSettings = 'projectSettings',

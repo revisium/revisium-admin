@@ -1,6 +1,12 @@
 import { makeAutoObservable } from 'mobx'
-import { GetRowChangesQuery } from 'src/__generated__/graphql-request'
-import { getChangeTypeBadgeColor, getChangeTypeLabel } from 'src/entities/Changes'
+import { ChangeType, GetRowChangesQuery } from 'src/__generated__/graphql-request'
+import {
+  getChangeTypeBadgeColor,
+  getChangeTypeLabel,
+  isAddedRowChange,
+  isRemovedRowChange,
+  isModifiedRowChange,
+} from 'src/entities/Changes'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker'
 
 type RowChangeItem = GetRowChangesQuery['rowChanges']['edges'][number]['node']
@@ -22,11 +28,31 @@ export class RowDetailModalModel {
   }
 
   public get rowId(): string {
-    return this._item?.rowId ?? ''
+    if (!this._item) return ''
+    if (isAddedRowChange(this._item)) {
+      return this._item.row.id
+    }
+    if (isRemovedRowChange(this._item)) {
+      return this._item.fromRow.id
+    }
+    if (isModifiedRowChange(this._item)) {
+      return this._item.row.id
+    }
+    return ''
   }
 
   public get tableId(): string {
-    return this._item?.tableId ?? ''
+    if (!this._item) return ''
+    if (isAddedRowChange(this._item)) {
+      return this._item.table.id
+    }
+    if (isRemovedRowChange(this._item)) {
+      return this._item.fromTable.id
+    }
+    if (isModifiedRowChange(this._item)) {
+      return this._item.table.id
+    }
+    return ''
   }
 
   public get changeType(): string {
@@ -34,18 +60,23 @@ export class RowDetailModalModel {
   }
 
   public get isRenamed(): boolean {
-    return this.changeType === 'RENAMED' || this.changeType === 'RENAMED_AND_MODIFIED'
+    return this.changeType === ChangeType.Renamed || this.changeType === ChangeType.RenamedAndModified
   }
 
   public get displayName(): string {
-    if (this.isRenamed && this._item?.newRowId) {
-      return this._item.newRowId
+    if (!this._item) return ''
+    if (this.isRenamed && isModifiedRowChange(this._item)) {
+      return this._item.row.id
     }
     return this.rowId
   }
 
   public get oldRowId(): string | null {
-    return this._item?.oldRowId ?? null
+    if (!this._item) return null
+    if (this.isRenamed && isModifiedRowChange(this._item)) {
+      return this._item.fromRow.id
+    }
+    return null
   }
 
   public get hasFieldChanges(): boolean {

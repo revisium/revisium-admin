@@ -1,6 +1,7 @@
 export { RowChangesList } from './ui/RowChangesList/RowChangesList'
 export { RowChangesListModel } from './model/RowChangesListModel'
 export { RowChangeItemModel } from './model/RowChangeItemModel'
+export type { RowChangeItem } from './model/RowChangeItemModel'
 export { RowChangesFilters } from './ui/RowChangesFilters/RowChangesFilters'
 export { TableFilterPopover } from './ui/TableFilterPopover/TableFilterPopover'
 export { TableFilterModel } from './model/TableFilterModel'

@@ -20,7 +20,7 @@ export const formatValue = (value: unknown): string => {
     return 'null'
   }
   if (typeof value === 'string') {
-    return value === '' ? '""' : value
+    return `"${value}"`
   }
   if (typeof value === 'object') {
     return JSON.stringify(value, null, 2)

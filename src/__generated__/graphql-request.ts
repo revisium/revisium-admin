@@ -36,6 +36,13 @@ export type AddUserToProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type AddedRowChangeModel = {
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  row: RowChangeRowModel
+  table: RowChangeTableModel
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -398,6 +405,15 @@ export enum MigrationType {
   Remove = 'REMOVE',
   Rename = 'RENAME',
   Update = 'UPDATE',
+}
+
+export type ModifiedRowChangeModel = {
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  fromRow: RowChangeRowModel
+  fromTable: RowChangeTableModel
+  row: RowChangeRowModel
+  table: RowChangeTableModel
 }
 
 export type Mutation = {
@@ -797,6 +813,13 @@ export type RemoveUserFromProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type RemovedRowChangeModel = {
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  fromRow: RowChangeRowModel
+  fromTable: RowChangeTableModel
+}
+
 export type RenameRowInput = {
   nextRowId: Scalars['String']['input']
   revisionId: Scalars['String']['input']
@@ -884,6 +907,8 @@ export type RoleModel = {
   permissions: Array<PermissionModel>
 }
 
+export type RowChange = AddedRowChangeModel | ModifiedRowChangeModel | RemovedRowChangeModel
+
 export enum RowChangeDetailType {
   FieldAdded = 'FIELD_ADDED',
   FieldModified = 'FIELD_MODIFIED',
@@ -891,35 +916,37 @@ export enum RowChangeDetailType {
   FieldRemoved = 'FIELD_REMOVED',
 }
 
-export type RowChangeModel = {
-  changeType: ChangeType
-  createdAt: Scalars['DateTime']['output']
-  fieldChanges: Array<FieldChangeModel>
-  fromData?: Maybe<Scalars['JSON']['output']>
-  fromHash?: Maybe<Scalars['String']['output']>
-  fromSchemaHash?: Maybe<Scalars['String']['output']>
-  fromVersionId?: Maybe<Scalars['String']['output']>
-  newRowId?: Maybe<Scalars['String']['output']>
-  oldRowId?: Maybe<Scalars['String']['output']>
-  publishedAt: Scalars['DateTime']['output']
-  rowCreatedId: Scalars['String']['output']
-  rowId: Scalars['String']['output']
-  tableCreatedId: Scalars['String']['output']
-  tableId: Scalars['String']['output']
-  toData?: Maybe<Scalars['JSON']['output']>
-  toHash?: Maybe<Scalars['String']['output']>
-  toSchemaHash?: Maybe<Scalars['String']['output']>
-  toVersionId?: Maybe<Scalars['String']['output']>
-  updatedAt: Scalars['DateTime']['output']
+export type RowChangeEdge = {
+  cursor: Scalars['String']['output']
+  node: RowChange
 }
 
-export type RowChangeModelEdge = {
-  cursor: Scalars['String']['output']
-  node: RowChangeModel
+export type RowChangeRowModel = {
+  createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
+  data: Scalars['JSON']['output']
+  hash: Scalars['String']['output']
+  id: Scalars['String']['output']
+  meta: Scalars['JSON']['output']
+  publishedAt: Scalars['DateTime']['output']
+  readonly: Scalars['Boolean']['output']
+  schemaHash: Scalars['String']['output']
+  updatedAt: Scalars['DateTime']['output']
+  versionId: Scalars['String']['output']
+}
+
+export type RowChangeTableModel = {
+  createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
+  id: Scalars['String']['output']
+  readonly: Scalars['Boolean']['output']
+  system: Scalars['Boolean']['output']
+  updatedAt: Scalars['DateTime']['output']
+  versionId: Scalars['String']['output']
 }
 
 export type RowChangesConnection = {
-  edges: Array<RowChangeModelEdge>
+  edges: Array<RowChangeEdge>
   pageInfo: PageInfo
   totalCount: Scalars['Int']['output']
 }
@@ -2534,6 +2561,18 @@ export type FindRevisionsQuery = {
   }
 }
 
+export type RowChangeRowFieldsFragment = { id: string }
+
+export type RowChangeTableFieldsFragment = { id: string }
+
+export type FieldChangeFieldsFragment = {
+  fieldPath: string
+  changeType: RowChangeDetailType
+  oldValue?: { [key: string]: any } | string | number | boolean | null | null
+  newValue?: { [key: string]: any } | string | number | boolean | null | null
+  movedFrom?: string | null
+}
+
 export type GetRowChangesQueryVariables = Exact<{
   revisionId: Scalars['String']['input']
   first: Scalars['Int']['input']
@@ -2546,22 +2585,45 @@ export type GetRowChangesQuery = {
     totalCount: number
     edges: Array<{
       cursor: string
-      node: {
-        rowId: string
-        tableId: string
-        changeType: ChangeType
-        oldRowId?: string | null
-        newRowId?: string | null
-        updatedAt: string
-        createdAt: string
-        fieldChanges: Array<{
-          fieldPath: string
-          changeType: RowChangeDetailType
-          oldValue?: { [key: string]: any } | string | number | boolean | null | null
-          newValue?: { [key: string]: any } | string | number | boolean | null | null
-          movedFrom?: string | null
-        }>
-      }
+      node:
+        | {
+            changeType: ChangeType
+            row: { id: string }
+            table: { id: string }
+            fieldChanges: Array<{
+              fieldPath: string
+              changeType: RowChangeDetailType
+              oldValue?: { [key: string]: any } | string | number | boolean | null | null
+              newValue?: { [key: string]: any } | string | number | boolean | null | null
+              movedFrom?: string | null
+            }>
+          }
+        | {
+            changeType: ChangeType
+            row: { id: string }
+            fromRow: { id: string }
+            table: { id: string }
+            fromTable: { id: string }
+            fieldChanges: Array<{
+              fieldPath: string
+              changeType: RowChangeDetailType
+              oldValue?: { [key: string]: any } | string | number | boolean | null | null
+              newValue?: { [key: string]: any } | string | number | boolean | null | null
+              movedFrom?: string | null
+            }>
+          }
+        | {
+            changeType: ChangeType
+            fromRow: { id: string }
+            fromTable: { id: string }
+            fieldChanges: Array<{
+              fieldPath: string
+              changeType: RowChangeDetailType
+              oldValue?: { [key: string]: any } | string | number | boolean | null | null
+              newValue?: { [key: string]: any } | string | number | boolean | null | null
+              movedFrom?: string | null
+            }>
+          }
     }>
     pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
   }
@@ -2814,6 +2876,25 @@ export const FindRevisionFragmentDoc = gql`
       id
       type
     }
+  }
+`
+export const RowChangeRowFieldsFragmentDoc = gql`
+  fragment RowChangeRowFields on RowChangeRowModel {
+    id
+  }
+`
+export const RowChangeTableFieldsFragmentDoc = gql`
+  fragment RowChangeTableFields on RowChangeTableModel {
+    id
+  }
+`
+export const FieldChangeFieldsFragmentDoc = gql`
+  fragment FieldChangeFields on FieldChangeModel {
+    fieldPath
+    changeType
+    oldValue
+    newValue
+    movedFrom
   }
 `
 export const SearchResultFragmentDoc = gql`
@@ -3411,20 +3492,48 @@ export const GetRowChangesDocument = gql`
     rowChanges(data: { revisionId: $revisionId, first: $first, after: $after, filters: $filters }) {
       edges {
         node {
-          rowId
-          tableId
-          changeType
-          oldRowId
-          newRowId
-          fieldChanges {
-            fieldPath
+          ... on AddedRowChangeModel {
             changeType
-            oldValue
-            newValue
-            movedFrom
+            row {
+              ...RowChangeRowFields
+            }
+            table {
+              ...RowChangeTableFields
+            }
+            fieldChanges {
+              ...FieldChangeFields
+            }
           }
-          updatedAt
-          createdAt
+          ... on RemovedRowChangeModel {
+            changeType
+            fromRow {
+              ...RowChangeRowFields
+            }
+            fromTable {
+              ...RowChangeTableFields
+            }
+            fieldChanges {
+              ...FieldChangeFields
+            }
+          }
+          ... on ModifiedRowChangeModel {
+            changeType
+            row {
+              ...RowChangeRowFields
+            }
+            fromRow {
+              ...RowChangeRowFields
+            }
+            table {
+              ...RowChangeTableFields
+            }
+            fromTable {
+              ...RowChangeTableFields
+            }
+            fieldChanges {
+              ...FieldChangeFields
+            }
+          }
         }
         cursor
       }
@@ -3437,6 +3546,9 @@ export const GetRowChangesDocument = gql`
       totalCount
     }
   }
+  ${RowChangeRowFieldsFragmentDoc}
+  ${RowChangeTableFieldsFragmentDoc}
+  ${FieldChangeFieldsFragmentDoc}
 `
 export const GetTableChangesForFilterDocument = gql`
   query GetTableChangesForFilter($revisionId: String!) {

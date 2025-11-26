@@ -1,21 +1,65 @@
+fragment RowChangeRowFields on RowChangeRowModel {
+  id
+}
+
+fragment RowChangeTableFields on RowChangeTableModel {
+  id
+}
+
+fragment FieldChangeFields on FieldChangeModel {
+  fieldPath
+  changeType
+  oldValue
+  newValue
+  movedFrom
+}
+
 query GetRowChanges($revisionId: String!, $first: Int!, $after: String, $filters: RowChangesFiltersInput) {
   rowChanges(data: { revisionId: $revisionId, first: $first, after: $after, filters: $filters }) {
     edges {
       node {
-        rowId
-        tableId
-        changeType
-        oldRowId
-        newRowId
-        fieldChanges {
-          fieldPath
+        ... on AddedRowChangeModel {
           changeType
-          oldValue
-          newValue
-          movedFrom
+          row {
+            ...RowChangeRowFields
+          }
+          table {
+            ...RowChangeTableFields
+          }
+          fieldChanges {
+            ...FieldChangeFields
+          }
         }
-        updatedAt
-        createdAt
+        ... on RemovedRowChangeModel {
+          changeType
+          fromRow {
+            ...RowChangeRowFields
+          }
+          fromTable {
+            ...RowChangeTableFields
+          }
+          fieldChanges {
+            ...FieldChangeFields
+          }
+        }
+        ... on ModifiedRowChangeModel {
+          changeType
+          row {
+            ...RowChangeRowFields
+          }
+          fromRow {
+            ...RowChangeRowFields
+          }
+          table {
+            ...RowChangeTableFields
+          }
+          fromTable {
+            ...RowChangeTableFields
+          }
+          fieldChanges {
+            ...FieldChangeFields
+          }
+        }
       }
       cursor
     }

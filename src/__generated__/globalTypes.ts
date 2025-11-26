@@ -32,6 +32,14 @@ export type AddUserToProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type AddedRowChangeModel = {
+  __typename: 'AddedRowChangeModel'
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  row: RowChangeRowModel
+  table: RowChangeTableModel
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -408,6 +416,16 @@ export enum MigrationType {
   REMOVE = 'REMOVE',
   RENAME = 'RENAME',
   UPDATE = 'UPDATE',
+}
+
+export type ModifiedRowChangeModel = {
+  __typename: 'ModifiedRowChangeModel'
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  fromRow: RowChangeRowModel
+  fromTable: RowChangeTableModel
+  row: RowChangeRowModel
+  table: RowChangeTableModel
 }
 
 export type Mutation = {
@@ -820,6 +838,14 @@ export type RemoveUserFromProjectInput = {
   userId: Scalars['String']['input']
 }
 
+export type RemovedRowChangeModel = {
+  __typename: 'RemovedRowChangeModel'
+  changeType: ChangeType
+  fieldChanges: Array<FieldChangeModel>
+  fromRow: RowChangeRowModel
+  fromTable: RowChangeTableModel
+}
+
 export type RenameRowInput = {
   nextRowId: Scalars['String']['input']
   revisionId: Scalars['String']['input']
@@ -915,6 +941,8 @@ export type RoleModel = {
   permissions: Array<PermissionModel>
 }
 
+export type RowChange = AddedRowChangeModel | ModifiedRowChangeModel | RemovedRowChangeModel
+
 export enum RowChangeDetailType {
   FIELD_ADDED = 'FIELD_ADDED',
   FIELD_MODIFIED = 'FIELD_MODIFIED',
@@ -922,38 +950,41 @@ export enum RowChangeDetailType {
   FIELD_REMOVED = 'FIELD_REMOVED',
 }
 
-export type RowChangeModel = {
-  __typename: 'RowChangeModel'
-  changeType: ChangeType
-  createdAt: Scalars['DateTime']['output']
-  fieldChanges: Array<FieldChangeModel>
-  fromData?: Maybe<Scalars['JSON']['output']>
-  fromHash?: Maybe<Scalars['String']['output']>
-  fromSchemaHash?: Maybe<Scalars['String']['output']>
-  fromVersionId?: Maybe<Scalars['String']['output']>
-  newRowId?: Maybe<Scalars['String']['output']>
-  oldRowId?: Maybe<Scalars['String']['output']>
-  publishedAt: Scalars['DateTime']['output']
-  rowCreatedId: Scalars['String']['output']
-  rowId: Scalars['String']['output']
-  tableCreatedId: Scalars['String']['output']
-  tableId: Scalars['String']['output']
-  toData?: Maybe<Scalars['JSON']['output']>
-  toHash?: Maybe<Scalars['String']['output']>
-  toSchemaHash?: Maybe<Scalars['String']['output']>
-  toVersionId?: Maybe<Scalars['String']['output']>
-  updatedAt: Scalars['DateTime']['output']
+export type RowChangeEdge = {
+  __typename: 'RowChangeEdge'
+  cursor: Scalars['String']['output']
+  node: RowChange
 }
 
-export type RowChangeModelEdge = {
-  __typename: 'RowChangeModelEdge'
-  cursor: Scalars['String']['output']
-  node: RowChangeModel
+export type RowChangeRowModel = {
+  __typename: 'RowChangeRowModel'
+  createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
+  data: Scalars['JSON']['output']
+  hash: Scalars['String']['output']
+  id: Scalars['String']['output']
+  meta: Scalars['JSON']['output']
+  publishedAt: Scalars['DateTime']['output']
+  readonly: Scalars['Boolean']['output']
+  schemaHash: Scalars['String']['output']
+  updatedAt: Scalars['DateTime']['output']
+  versionId: Scalars['String']['output']
+}
+
+export type RowChangeTableModel = {
+  __typename: 'RowChangeTableModel'
+  createdAt: Scalars['DateTime']['output']
+  createdId: Scalars['String']['output']
+  id: Scalars['String']['output']
+  readonly: Scalars['Boolean']['output']
+  system: Scalars['Boolean']['output']
+  updatedAt: Scalars['DateTime']['output']
+  versionId: Scalars['String']['output']
 }
 
 export type RowChangesConnection = {
   __typename: 'RowChangesConnection'
-  edges: Array<RowChangeModelEdge>
+  edges: Array<RowChangeEdge>
   pageInfo: PageInfo
   totalCount: Scalars['Int']['output']
 }

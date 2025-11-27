@@ -1,4 +1,4 @@
-import { Box, Flex, Link as ChakraLink } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { LOGOUT_ROUTE } from 'src/shared/config/routes.ts'
@@ -22,12 +22,12 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
       {!hideSidebar && (
         <Flex
           borderRight="1px solid"
-          borderRightColor="orange.900/5"
+          borderRightColor="newGray.100"
           flexDirection="column"
           justifyContent={sidebar ? 'space-between' : 'flex-end'}
-          padding="8px"
-          width="250px"
-          minWidth="250px"
+          padding="16px"
+          width="288px"
+          minWidth="288px"
           flexShrink={0}
           height="100vh"
           top={0}
@@ -35,10 +35,8 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
         >
           {sidebar}
           <Box alignSelf="center" mt="1rem">
-            <Link to={`/${LOGOUT_ROUTE}`}>
-              <ChakraLink color="gray.400" alignSelf="center">
-                Logout
-              </ChakraLink>
+            <Link to={`/${LOGOUT_ROUTE}`} style={{ color: '#A0AEC0', textDecoration: 'none' }}>
+              Logout
             </Link>
           </Box>
         </Flex>

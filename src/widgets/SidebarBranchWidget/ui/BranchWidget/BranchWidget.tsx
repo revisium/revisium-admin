@@ -19,7 +19,7 @@ export const BranchWidget: FC = observer(() => {
   const [openedPopover, setOpenedPopover] = useState<null | 'create' | 'commit' | 'revert'>(null)
 
   return (
-    <Flex width="100%" alignItems="center" justifyContent="space-between">
+    <Flex width="100%" alignItems="center" minWidth={0}>
       <Popover.Root
         lazyMount
         unmountOnExit
@@ -33,40 +33,39 @@ export const BranchWidget: FC = observer(() => {
           }
         }}
       >
-        <Tooltip
-          open={!open && tooltipOpen}
-          onOpenChange={(details) => {
-            setTooltipOpen(details.open)
-          }}
-          content="Select branch or revision"
-          openDelay={500}
-          closeDelay={50}
-        >
-          <Flex minWidth={0} width="100%">
-            <Popover.Trigger asChild>
-              <Flex
-                color="newGray.500"
-                _hover={{ color: 'newGray.600' }}
-                fontWeight="500"
-                textDecoration="none"
-                fontSize="14px"
-                alignItems="center"
-                minWidth="0"
-                cursor="pointer"
-              >
-                <Flex gap="4px" alignItems="center" minWidth="0">
-                  <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-                    {model.name}
-                  </Box>
-                </Flex>
+        <Popover.Trigger asChild>
+          <Flex
+            color="newGray.400"
+            _hover={{ color: 'newGray.500' }}
+            fontWeight="600"
+            textDecoration="none"
+            fontSize="12px"
+            textTransform="uppercase"
+            alignItems="center"
+            minWidth="0"
+            cursor="pointer"
+          >
+            <Tooltip
+              open={!open && tooltipOpen}
+              onOpenChange={(details) => {
+                setTooltipOpen(details.open)
+              }}
+              content="Select branch or revision"
+              openDelay={500}
+              closeDelay={50}
+            >
+              <Flex alignItems="center" minWidth="0">
+                <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+                  {model.name}
+                </Box>
                 <Box color="newGray.300" flexShrink="0">
                   {model.postfix}
                 </Box>
                 {model.touched && <Box flexShrink="0">*</Box>}
               </Flex>
-            </Popover.Trigger>
+            </Tooltip>
           </Flex>
-        </Tooltip>
+        </Popover.Trigger>
         <Portal>
           <Popover.Positioner>
             <Popover.Content>
@@ -82,8 +81,9 @@ export const BranchWidget: FC = observer(() => {
 
       {model.showActionsButton && (
         <Flex
-          pl="16px"
-          gap="8px"
+          gap="12px"
+          ml="12px"
+          flexShrink={0}
           display={openedPopover ? 'flex' : 'none'}
           pointerEvents={openedPopover ? 'auto' : 'none'}
           _groupHover={{ display: 'flex', pointerEvents: 'auto' }}

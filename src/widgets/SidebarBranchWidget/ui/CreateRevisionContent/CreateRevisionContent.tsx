@@ -1,4 +1,4 @@
-import { Flex, Link, Textarea, Popover } from '@chakra-ui/react'
+import { Flex, Textarea, Popover } from '@chakra-ui/react'
 import React, { FC, useCallback, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
@@ -44,11 +44,13 @@ export const CreateRevisionContent: FC<CreateRevisionContentProps> = ({ onClick,
             onChange={handleComment}
           />
           <Flex width="100%" justifyContent="space-between" alignItems="center">
-            <Link asChild colorPalette="gray" focusRing="none" fontSize="12px" color="newGray.400">
-              <RouterLink to={changesLink} onClick={onClose}>
-                Review changes
-              </RouterLink>
-            </Link>
+            <RouterLink
+              to={changesLink}
+              onClick={onClose}
+              style={{ color: '#A3A3A3', fontSize: '12px', textDecoration: 'none' }}
+            >
+              Review changes
+            </RouterLink>
             <GrayButton isLoading={isLoading} onClick={handleClick} title="Commit" />
           </Flex>
         </Flex>

@@ -13,6 +13,7 @@ import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
 import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
+import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
@@ -52,6 +53,7 @@ import {
   PROJECT_API_KEYS_ROUTE,
   CHANGES_ROUTE,
   MIGRATIONS_ROUTE,
+  ENDPOINTS_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
@@ -121,6 +123,11 @@ const organizationRouteObject = {
           path: PROJECT_SETTINGS_ROUTE,
           element: <ProjectSettingsPage />,
           id: RouteIds.ProjectSettings,
+        },
+        {
+          path: ENDPOINTS_ROUTE,
+          element: <EndpointsPage />,
+          id: RouteIds.Endpoints,
         },
         {
           path: PROJECT_USERS_ROUTE,

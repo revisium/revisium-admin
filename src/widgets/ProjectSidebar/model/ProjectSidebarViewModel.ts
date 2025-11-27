@@ -70,6 +70,10 @@ export class ProjectSidebarViewModel {
   public handleProjectSectionClick() {
     this.isProjectSectionExpanded = !this.isProjectSectionExpanded
   }
+
+  public expandProjectSection() {
+    this.isProjectSectionExpanded = true
+  }
 }
 
 container.register(

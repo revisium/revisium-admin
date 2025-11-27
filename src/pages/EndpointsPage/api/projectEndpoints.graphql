@@ -1,0 +1,46 @@
+query GetProjectEndpoints(
+  $organizationId: String!
+  $projectName: String!
+  $first: Int!
+  $after: String
+  $branchId: String
+  $type: EndpointType
+) {
+  projectEndpoints(
+    data: {
+      organizationId: $organizationId
+      projectName: $projectName
+      first: $first
+      after: $after
+      branchId: $branchId
+      type: $type
+    }
+  ) {
+    edges {
+      node {
+        id
+        type
+        createdAt
+        revisionId
+        revision {
+          id
+          isDraft
+          isHead
+          createdAt
+          branch {
+            id
+            name
+          }
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

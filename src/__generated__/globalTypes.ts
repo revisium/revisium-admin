@@ -185,12 +185,26 @@ export type EndpointModel = {
   createdAt: Scalars['DateTime']['output']
   id: Scalars['String']['output']
   revision: RevisionModel
+  revisionId: Scalars['String']['output']
   type: EndpointType
+}
+
+export type EndpointModelEdge = {
+  __typename: 'EndpointModelEdge'
+  cursor: Scalars['String']['output']
+  node: EndpointModel
 }
 
 export enum EndpointType {
   GRAPHQL = 'GRAPHQL',
   REST_API = 'REST_API',
+}
+
+export type EndpointsConnection = {
+  __typename: 'EndpointsConnection'
+  edges: Array<EndpointModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
 }
 
 export type FieldChangeModel = {
@@ -233,6 +247,15 @@ export type GetMeProjectsInput = {
 export type GetProjectBranchesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+}
+
+export type GetProjectEndpointsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  branchId?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  type?: InputMaybe<EndpointType>
 }
 
 export type GetProjectInput = {
@@ -712,6 +735,7 @@ export type Query = {
   me: UserModel
   meProjects: ProjectsConnection
   project: ProjectModel
+  projectEndpoints: EndpointsConnection
   projects: ProjectsConnection
   revision: RevisionModel
   revisionChanges: RevisionChangesModel
@@ -745,6 +769,10 @@ export type QueryMeProjectsArgs = {
 
 export type QueryProjectArgs = {
   data: GetProjectInput
+}
+
+export type QueryProjectEndpointsArgs = {
+  data: GetProjectEndpointsInput
 }
 
 export type QueryProjectsArgs = {

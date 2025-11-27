@@ -16,22 +16,26 @@ export const NavigationButton: FC<NavigationButtonProps> = ({ to, label, isActiv
     <Flex
       alignItems="center"
       backgroundColor={isActive ? 'newGray.100' : 'transparent'}
-      _hover={{ backgroundColor: 'newGray.100', color: 'newGray.600' }}
-      borderRadius="0.25rem"
-      height="30px"
-      paddingLeft="0.5rem"
-      paddingRight="0.5rem"
+      _hover={{ backgroundColor: 'newGray.100' }}
+      borderRadius="8px"
+      height="36px"
+      paddingX="8px"
       width="100%"
-      color="newGray.500"
-      fontWeight="500"
+      color={isActive ? 'black' : 'newGray.600'}
+      fontWeight="400"
       textDecoration="none"
       fontSize="14px"
       minWidth="0"
       cursor="pointer"
-      gap="0.5rem"
+      gap="12px"
+      userSelect="none"
       onClick={onClick}
     >
-      {icon && <Box fontSize="14px">{icon}</Box>}
+      {icon && (
+        <Box fontSize="20px" color="newGray.400">
+          {icon}
+        </Box>
+      )}
       <Box flex="1" minWidth="0" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
         {label}
       </Box>
@@ -41,10 +45,10 @@ export const NavigationButton: FC<NavigationButtonProps> = ({ to, label, isActiv
           fontWeight="600"
           color="newGray.400"
           backgroundColor="newGray.100"
-          borderRadius="0.25rem"
-          paddingX="0.375rem"
-          paddingY="0.125rem"
-          minWidth="1.25rem"
+          borderRadius="4px"
+          paddingX="6px"
+          paddingY="2px"
+          minWidth="20px"
           textAlign="center"
         >
           {badge > 99 ? '99+' : badge}

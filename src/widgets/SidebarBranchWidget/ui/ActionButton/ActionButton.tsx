@@ -1,4 +1,4 @@
-import { Flex, Popover, Portal } from '@chakra-ui/react'
+import { Box, Flex, Popover, Portal } from '@chakra-ui/react'
 import { FC, ReactNode } from 'react'
 import { Tooltip } from 'src/shared/ui'
 
@@ -16,14 +16,19 @@ export const ActionButton: FC<ActionButtonProps> = ({ content, children, onOpenC
       <Popover.Trigger asChild>
         <Flex
           justifyContent="center"
+          alignItems="center"
           width="24px"
+          height="24px"
+          fontSize="16px"
           cursor="pointer"
-          color="newGray.300"
-          _hover={{ color: 'newGray.400' }}
+          color="newGray.400"
+          _hover={{ color: 'newGray.500' }}
         >
           {tooltip && !open ? (
             <Tooltip content={tooltip} openDelay={500} closeDelay={0}>
-              {children}
+              <Box as="span" display="flex" alignItems="center">
+                {children}
+              </Box>
             </Tooltip>
           ) : (
             children

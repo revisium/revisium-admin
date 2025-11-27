@@ -1,4 +1,4 @@
-import { Button, Flex, Icon, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Text } from '@chakra-ui/react'
 import React from 'react'
 
 interface GrayButtonProps {
@@ -38,7 +38,7 @@ export const GrayButton: React.FC<GrayButtonProps> = ({
       onClick={onClick}
     >
       <Flex alignItems="center" gap="0.5rem">
-        {icon && <Icon size="sm">{icon}</Icon>}
+        {icon && <Box fontSize="sm">{icon}</Box>}
         <Text>{title}</Text>
       </Flex>
     </Button>

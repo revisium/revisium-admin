@@ -1,73 +1,60 @@
-import { Box, Flex, Menu, Portal } from '@chakra-ui/react'
-import { FC, useState } from 'react'
-import { PiCaretDownBold, PiHouseLight, PiLockSimple } from 'react-icons/pi'
+import { Box, Flex } from '@chakra-ui/react'
+import { FC, useCallback } from 'react'
+import { PiCaretCircleLeftLight } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 
-interface ProjectButtonProps {
+interface ProjectHeaderProps {
   name: string
-  isPublic: boolean
+  organizationName: string
 }
 
-export const ProjectButton: FC<ProjectButtonProps> = ({ name, isPublic }) => {
+export const ProjectHeader: FC<ProjectHeaderProps> = ({ name, organizationName }) => {
   const navigate = useNavigate()
-  const [isHovered, setIsHovered] = useState(false)
 
-  const handleSelect = (details: { value: string }) => {
-    switch (details.value) {
-      case 'back':
-        navigate('/')
-        break
-    }
-  }
+  const handleBackClick = useCallback(() => {
+    navigate('/')
+  }, [navigate])
 
   return (
-    <Menu.Root onSelect={handleSelect}>
-      <Menu.Trigger asChild>
-        <Flex
-          alignItems="center"
-          backgroundColor="transparent"
-          _hover={{ backgroundColor: 'newGray.100', color: 'newGray.600' }}
-          borderRadius="0.25rem"
-          height="30px"
-          paddingLeft="0.5rem"
-          paddingRight="0.5rem"
-          width="100%"
-          color="newGray.500"
-          fontWeight="500"
-          fontSize="14px"
-          minWidth="0"
+    <Flex flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
+      <Flex alignItems="center" gap="8px" padding="4px">
+        <Box
+          fontSize="20px"
+          color="newGray.400"
           cursor="pointer"
-          gap="0.5rem"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          _hover={{ color: 'newGray.500' }}
+          onClick={handleBackClick}
+          display="flex"
+          alignItems="center"
+          flexShrink={0}
         >
-          <Box fontSize="14px">
-            <PiHouseLight />
-          </Box>
-          <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-            {name}
-          </Box>
-          {!isPublic && (
-            <Box fontSize="14px" color="newGray.400" flexShrink={0}>
-              <PiLockSimple />
-            </Box>
-          )}
-          {isHovered && (
-            <Box fontSize="12px" ml="0.25rem">
-              <PiCaretDownBold />
-            </Box>
-          )}
-        </Flex>
-      </Menu.Trigger>
-      <Portal>
-        <Menu.Positioner>
-          <Menu.Content>
-            <Menu.Item color="gray.600" value="back">
-              Back to projects
-            </Menu.Item>
-          </Menu.Content>
-        </Menu.Positioner>
-      </Portal>
-    </Menu.Root>
+          <PiCaretCircleLeftLight />
+        </Box>
+        <Box
+          color="black"
+          fontWeight="600"
+          fontSize="18px"
+          lineHeight="26px"
+          textOverflow="ellipsis"
+          whiteSpace="nowrap"
+          overflow="hidden"
+        >
+          {name}
+        </Box>
+      </Flex>
+      <Flex
+        color="newGray.400"
+        fontWeight="500"
+        fontSize="14px"
+        lineHeight="20px"
+        padding="4px"
+        alignItems="center"
+        gap="8px"
+      >
+        <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+          {organizationName}
+        </Box>
+      </Flex>
+    </Flex>
   )
 }

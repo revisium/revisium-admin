@@ -1,17 +1,15 @@
-import { Flex, VStack } from '@chakra-ui/react'
+import { Box, Flex, Separator, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import {
   PiGearLight,
   // PiKeyLight,
   // PiUsersLight,
-  PiDatabaseThin,
-  PiSliders,
+  PiDatabaseLight,
   PiFileTextLight,
   // PiFileLight,
-  PiListLight,
+  PiShuffleLight,
   PiMagnifyingGlassLight,
-  PiGitBranchLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { CHANGES_ROUTE, MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
@@ -19,7 +17,7 @@ import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigati
 import { ProjectSidebarViewModel } from 'src/widgets/ProjectSidebar/model/ProjectSidebarViewModel.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
 import { NavigationButton } from 'src/widgets/ProjectSidebar/ui/NavigationButton/NavigationButton.tsx'
-import { ProjectButton } from 'src/widgets/ProjectSidebar/ui/ProjectButton/ProjectButton.tsx'
+import { ProjectHeader } from 'src/widgets/ProjectSidebar/ui/ProjectButton/ProjectButton.tsx'
 import { BranchWidget } from 'src/widgets/SidebarBranchWidget'
 import { useViewModel } from 'src/shared/lib'
 import { SearchModal, SearchModalModel } from 'src/widgets/SearchModal'
@@ -33,10 +31,14 @@ export const ProjectSidebar: FC = observer(() => {
   const { isTablesActive, isChangesActive, isMigrationsActive, isProjectSettingsActive } = useNavigationState()
 
   return (
-    <VStack alignItems="flex-start" gap={0}>
-      <ProjectButton name={model.projectName} isPublic={model.isProjectPublic} />
+    <VStack alignItems="flex-start" gap={0} width="100%">
+      <ProjectHeader name={model.projectName} organizationName={model.organizationId} />
 
-      <Flex flexDirection="column" width="100%" mt={4} gap={1}>
+      <Box width="100%" paddingY="16px">
+        <Separator borderColor="newGray.100" />
+      </Box>
+
+      <Flex flexDirection="column" width="100%" gap={1}>
         <NavigationButton
           label="Search"
           icon={<PiMagnifyingGlassLight />}
@@ -45,7 +47,6 @@ export const ProjectSidebar: FC = observer(() => {
         />
 
         <CollapsibleGroupButton
-          icon={<PiGitBranchLight />}
           label={<BranchWidget />}
           isExpanded={model.isBranchSectionExpanded}
           onClick={model.handleBranchSectionClick}
@@ -54,7 +55,7 @@ export const ProjectSidebar: FC = observer(() => {
           <NavigationButton
             to={linkMaker.currentBaseLink}
             label="Database"
-            icon={<PiDatabaseThin />}
+            icon={<PiDatabaseLight />}
             isActive={isTablesActive}
           />
           <NavigationButton
@@ -72,13 +73,12 @@ export const ProjectSidebar: FC = observer(() => {
           <NavigationButton
             to={`${linkMaker.currentBaseLink}/${MIGRATIONS_ROUTE}`}
             label="Migrations"
-            icon={<PiListLight />}
+            icon={<PiShuffleLight />}
             isActive={isMigrationsActive}
           />
         </CollapsibleGroupButton>
 
         <CollapsibleGroupButton
-          icon={<PiSliders />}
           label="Management"
           isExpanded={model.isProjectSectionExpanded}
           onClick={model.handleProjectSectionClick}

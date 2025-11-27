@@ -1,9 +1,8 @@
 import { Box, Flex, VStack } from '@chakra-ui/react'
 import { FC, ReactNode, useState } from 'react'
-import { PiCaretDownBold, PiCaretRightBold } from 'react-icons/pi'
+import { PiCaretDownLight } from 'react-icons/pi'
 
 interface CollapsibleGroupButtonProps {
-  icon?: ReactNode
   label: ReactNode
   isExpanded: boolean
   onClick: () => void
@@ -12,7 +11,6 @@ interface CollapsibleGroupButtonProps {
 }
 
 export const CollapsibleGroupButton: FC<CollapsibleGroupButtonProps> = ({
-  icon,
   label,
   isExpanded,
   onClick,
@@ -21,7 +19,7 @@ export const CollapsibleGroupButton: FC<CollapsibleGroupButtonProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false)
 
-  const handleIconClick = (e: React.MouseEvent) => {
+  const handleCaretClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onClick()
   }
@@ -29,42 +27,48 @@ export const CollapsibleGroupButton: FC<CollapsibleGroupButtonProps> = ({
   return (
     <Box>
       <Flex
+        className="group"
         onClick={disableLabelClick ? undefined : onClick}
         cursor={disableLabelClick ? 'default' : 'pointer'}
         alignItems="center"
-        _hover={{ backgroundColor: 'newGray.100', color: 'newGray.600' }}
-        borderRadius="0.25rem"
-        height="30px"
-        paddingLeft="0.5rem"
-        paddingRight="0.5rem"
+        backgroundColor="transparent"
+        _hover={{ backgroundColor: 'newGray.100' }}
+        borderRadius="8px"
+        height="36px"
+        paddingX="8px"
         width="100%"
-        color="newGray.500"
-        fontWeight="500"
-        fontSize="14px"
+        color="newGray.400"
+        fontWeight="600"
+        fontSize="12px"
+        textTransform="uppercase"
         minWidth="0"
-        gap="0.5rem"
+        gap="12px"
+        userSelect="none"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group"
       >
-        {icon && (
-          <Box
-            fontSize="14px"
-            color="newGray.400"
-            flexShrink="0"
-            onClick={disableLabelClick ? handleIconClick : undefined}
-            cursor={disableLabelClick ? 'pointer' : 'inherit'}
-          >
-            {isHovered ? <Box as={isExpanded ? PiCaretDownBold : PiCaretRightBold} /> : icon}
-          </Box>
-        )}
-        <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden" width="100%">
+        <Box flex="1" display="flex" alignItems="center" gap="12px" minWidth="0">
           {label}
         </Box>
+        {isHovered && (
+          <Box
+            fontSize="20px"
+            color="newGray.300"
+            flexShrink="0"
+            onClick={handleCaretClick}
+            cursor="pointer"
+            display="flex"
+            alignItems="center"
+            transform={isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'}
+            transition="transform 0.15s ease"
+          >
+            <PiCaretDownLight />
+          </Box>
+        )}
       </Flex>
 
       {isExpanded && children && (
-        <VStack pl={4} mt={1} gap={1} alignItems="stretch">
+        <VStack mt={1} gap={1} alignItems="stretch">
           {children}
         </VStack>
       )}

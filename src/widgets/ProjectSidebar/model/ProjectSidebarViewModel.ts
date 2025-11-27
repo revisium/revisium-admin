@@ -25,6 +25,10 @@ export class ProjectSidebarViewModel {
     return this.context.project.isPublic
   }
 
+  public get organizationId() {
+    return this.context.organization.id
+  }
+
   public get changesCount(): number | null {
     if (!this.context.isDraftRevision) {
       return null

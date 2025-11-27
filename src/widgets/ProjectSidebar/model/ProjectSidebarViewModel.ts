@@ -25,7 +25,7 @@ export class ProjectSidebarViewModel {
     return this.context.project.isPublic
   }
 
-  public get organizationName() {
+  public get organizationId() {
     return this.context.organization.id
   }
 

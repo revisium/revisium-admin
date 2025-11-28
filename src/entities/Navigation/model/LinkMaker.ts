@@ -6,6 +6,7 @@ import {
   BRANCH_ROUTE,
   CHANGES_ROUTE,
   DRAFT_TAG,
+  ENDPOINTS_ROUTE,
   HEAD_TAG,
   MIGRATIONS_ROUTE,
   ORGANIZATION_ROUTE,
@@ -76,6 +77,13 @@ export class LinkMaker {
 
   public makeProjectSettingsLink() {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_SETTINGS_ROUTE}`, {
+      organizationId: this.organization.id,
+      projectName: this.project.name,
+    })
+  }
+
+  public makeEndpointsLink() {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${ENDPOINTS_ROUTE}`, {
       organizationId: this.organization.id,
       projectName: this.project.name,
     })

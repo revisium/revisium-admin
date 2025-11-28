@@ -1,6 +1,6 @@
 import { Box, Flex, Separator, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import {
   PiGearLight,
   // PiKeyLight,
@@ -10,6 +10,7 @@ import {
   // PiFileLight,
   PiShuffleLight,
   PiMagnifyingGlassLight,
+  PiPlugLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { CHANGES_ROUTE, MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
@@ -28,7 +29,20 @@ export const ProjectSidebar: FC = observer(() => {
 
   const linkMaker = useLinkMaker()
 
-  const { isTablesActive, isChangesActive, isMigrationsActive, isProjectSettingsActive } = useNavigationState()
+  const {
+    isTablesActive,
+    isChangesActive,
+    isMigrationsActive,
+    isProjectSettingsActive,
+    isEndpointsActive,
+    isProjectLevelActive,
+  } = useNavigationState()
+
+  useEffect(() => {
+    if (isProjectLevelActive) {
+      model.expandProjectSection()
+    }
+  }, [isProjectLevelActive, model])
 
   return (
     <VStack alignItems="flex-start" gap={0} width="100%">
@@ -83,6 +97,12 @@ export const ProjectSidebar: FC = observer(() => {
           isExpanded={model.isProjectSectionExpanded}
           onClick={model.handleProjectSectionClick}
         >
+          <NavigationButton
+            to={linkMaker.makeEndpointsLink()}
+            label="Endpoints"
+            icon={<PiPlugLight />}
+            isActive={isEndpointsActive}
+          />
           <NavigationButton
             to={linkMaker.makeProjectSettingsLink()}
             label="Settings"

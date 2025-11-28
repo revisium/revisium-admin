@@ -180,12 +180,24 @@ export type EndpointModel = {
   createdAt: Scalars['DateTime']['output']
   id: Scalars['String']['output']
   revision: RevisionModel
+  revisionId: Scalars['String']['output']
   type: EndpointType
+}
+
+export type EndpointModelEdge = {
+  cursor: Scalars['String']['output']
+  node: EndpointModel
 }
 
 export enum EndpointType {
   Graphql = 'GRAPHQL',
   RestApi = 'REST_API',
+}
+
+export type EndpointsConnection = {
+  edges: Array<EndpointModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
 }
 
 export type FieldChangeModel = {
@@ -227,6 +239,15 @@ export type GetMeProjectsInput = {
 export type GetProjectBranchesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
+}
+
+export type GetProjectEndpointsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  branchId?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  type?: InputMaybe<EndpointType>
 }
 
 export type GetProjectInput = {
@@ -689,6 +710,7 @@ export type Query = {
   me: UserModel
   meProjects: ProjectsConnection
   project: ProjectModel
+  projectEndpoints: EndpointsConnection
   projects: ProjectsConnection
   revision: RevisionModel
   revisionChanges: RevisionChangesModel
@@ -722,6 +744,10 @@ export type QueryMeProjectsArgs = {
 
 export type QueryProjectArgs = {
   data: GetProjectInput
+}
+
+export type QueryProjectEndpointsArgs = {
+  data: GetProjectEndpointsInput
 }
 
 export type QueryProjectsArgs = {
@@ -1383,6 +1409,38 @@ export type ConfirmEmailCodeMutationVariables = Exact<{
 
 export type ConfirmEmailCodeMutation = { confirmEmailCode: { accessToken: string } }
 
+export type GetProjectEndpointsQueryVariables = Exact<{
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  first: Scalars['Int']['input']
+  after?: InputMaybe<Scalars['String']['input']>
+  branchId?: InputMaybe<Scalars['String']['input']>
+  type?: InputMaybe<EndpointType>
+}>
+
+export type GetProjectEndpointsQuery = {
+  projectEndpoints: {
+    totalCount: number
+    edges: Array<{
+      cursor: string
+      node: {
+        id: string
+        type: EndpointType
+        createdAt: string
+        revisionId: string
+        revision: {
+          id: string
+          isDraft: boolean
+          isHead: boolean
+          createdAt: string
+          branch: { id: string; name: string }
+        }
+      }
+    }>
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
+  }
+}
+
 export type LoginGithubMutationVariables = Exact<{
   data: LoginGithubInput
 }>
@@ -1464,7 +1522,7 @@ export type BranchMstFragment = {
     comment: string
     child?: { id: string } | null
     childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   }
   head: {
     id: string
@@ -1473,18 +1531,18 @@ export type BranchMstFragment = {
     parent?: { id: string } | null
     child?: { id: string } | null
     childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   }
   draft: {
     id: string
     createdAt: string
     comment: string
     parent?: { id: string } | null
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   }
 }
 
-export type EndpointMstFragment = { id: string; type: EndpointType; createdAt: string }
+export type EndpointMstFragment = { id: string; type: EndpointType; createdAt: string; revisionId: string }
 
 export type PageInfoMstFragment = {
   startCursor?: string | null
@@ -1512,7 +1570,7 @@ export type ProjectMstFragment = {
       comment: string
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     head: {
       id: string
@@ -1521,14 +1579,14 @@ export type ProjectMstFragment = {
       parent?: { id: string } | null
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     draft: {
       id: string
       createdAt: string
       comment: string
       parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
   }
 }
@@ -1540,7 +1598,7 @@ export type RevisionMstFragment = {
   parent?: { id: string } | null
   child?: { id: string } | null
   childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
 }
 
 export type RevisionStartMstFragment = {
@@ -1549,7 +1607,7 @@ export type RevisionStartMstFragment = {
   comment: string
   child?: { id: string } | null
   childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
 }
 
 export type RevisionDraftMstFragment = {
@@ -1557,7 +1615,7 @@ export type RevisionDraftMstFragment = {
   createdAt: string
   comment: string
   parent?: { id: string } | null
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
 }
 
 export type RowMstFragment = {
@@ -1599,7 +1657,7 @@ export type CreateBranchByRevisionIdMstMutation = {
       comment: string
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     head: {
       id: string
@@ -1608,14 +1666,14 @@ export type CreateBranchByRevisionIdMstMutation = {
       parent?: { id: string } | null
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     draft: {
       id: string
       createdAt: string
       comment: string
       parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
   }
 }
@@ -1624,7 +1682,9 @@ export type CreateEndpointMstMutationVariables = Exact<{
   data: CreateEndpointInput
 }>
 
-export type CreateEndpointMstMutation = { createEndpoint: { id: string; type: EndpointType; createdAt: string } }
+export type CreateEndpointMstMutation = {
+  createEndpoint: { id: string; type: EndpointType; createdAt: string; revisionId: string }
+}
 
 export type CreateProjectMstMutationVariables = Exact<{
   data: CreateProjectInput
@@ -1650,7 +1710,7 @@ export type CreateProjectMstMutation = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -1659,14 +1719,14 @@ export type CreateProjectMstMutation = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
   }
@@ -1694,7 +1754,7 @@ export type CreateRevisionMstMutation = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -1703,20 +1763,20 @@ export type CreateRevisionMstMutation = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
     parent?: { id: string } | null
     child?: { id: string } | null
     childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   }
 }
 
@@ -1768,7 +1828,7 @@ export type CreateTableMstMutation = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -1777,14 +1837,14 @@ export type CreateTableMstMutation = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
     table: {
@@ -1832,7 +1892,7 @@ export type DeleteRowMstMutation = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -1841,14 +1901,14 @@ export type DeleteRowMstMutation = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
     table?: {
@@ -1883,7 +1943,7 @@ export type DeleteTableMstMutation = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -1892,14 +1952,14 @@ export type DeleteTableMstMutation = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
   }
@@ -1973,7 +2033,7 @@ export type RevertChangesMstMutation = {
       comment: string
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     head: {
       id: string
@@ -1982,14 +2042,14 @@ export type RevertChangesMstMutation = {
       parent?: { id: string } | null
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     draft: {
       id: string
       createdAt: string
       comment: string
       parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
   }
 }
@@ -2062,7 +2122,7 @@ export type BranchMstQuery = {
       comment: string
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     head: {
       id: string
@@ -2071,14 +2131,14 @@ export type BranchMstQuery = {
       parent?: { id: string } | null
       child?: { id: string } | null
       childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
     draft: {
       id: string
       createdAt: string
       comment: string
       parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
   }
 }
@@ -2106,7 +2166,7 @@ export type BranchesMstQuery = {
           comment: string
           child?: { id: string } | null
           childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
         }
         head: {
           id: string
@@ -2115,14 +2175,14 @@ export type BranchesMstQuery = {
           parent?: { id: string } | null
           child?: { id: string } | null
           childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
         }
         draft: {
           id: string
           createdAt: string
           comment: string
           parent?: { id: string } | null
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
         }
       }
     }>
@@ -2164,7 +2224,7 @@ export type MeProjectsMstQuery = {
             comment: string
             child?: { id: string } | null
             childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
           head: {
             id: string
@@ -2173,14 +2233,14 @@ export type MeProjectsMstQuery = {
             parent?: { id: string } | null
             child?: { id: string } | null
             childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
           draft: {
             id: string
             createdAt: string
             comment: string
             parent?: { id: string } | null
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
         }
       }
@@ -2212,7 +2272,7 @@ export type ProjectMstQuery = {
         comment: string
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       head: {
         id: string
@@ -2221,14 +2281,14 @@ export type ProjectMstQuery = {
         parent?: { id: string } | null
         child?: { id: string } | null
         childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
       draft: {
         id: string
         createdAt: string
         comment: string
         parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
     }
   }
@@ -2263,7 +2323,7 @@ export type ProjectsMstQuery = {
             comment: string
             child?: { id: string } | null
             childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
           head: {
             id: string
@@ -2272,14 +2332,14 @@ export type ProjectsMstQuery = {
             parent?: { id: string } | null
             child?: { id: string } | null
             childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
           draft: {
             id: string
             createdAt: string
             comment: string
             parent?: { id: string } | null
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
         }
       }
@@ -2300,7 +2360,7 @@ export type RevisionMstQuery = {
     parent?: { id: string } | null
     child?: { id: string } | null
     childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   }
 }
 
@@ -2308,7 +2368,7 @@ export type BranchRevisionMstFragment = {
   id: string
   createdAt: string
   comment: string
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
   parent?: { id: string } | null
   child?: { id: string } | null
   childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
@@ -2336,7 +2396,7 @@ export type RevisionsMstQuery = {
           id: string
           createdAt: string
           comment: string
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           parent?: { id: string } | null
           child?: { id: string } | null
           childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
@@ -2708,6 +2768,7 @@ export const EndpointMstFragmentDoc = gql`
     id
     type
     createdAt
+    revisionId
   }
 `
 export const RevisionStartMstFragmentDoc = gql`
@@ -3011,6 +3072,54 @@ export const ConfirmEmailCodeDocument = gql`
   mutation confirmEmailCode($data: ConfirmEmailCodeInput!) {
     confirmEmailCode(data: $data) {
       accessToken
+    }
+  }
+`
+export const GetProjectEndpointsDocument = gql`
+  query GetProjectEndpoints(
+    $organizationId: String!
+    $projectName: String!
+    $first: Int!
+    $after: String
+    $branchId: String
+    $type: EndpointType
+  ) {
+    projectEndpoints(
+      data: {
+        organizationId: $organizationId
+        projectName: $projectName
+        first: $first
+        after: $after
+        branchId: $branchId
+        type: $type
+      }
+    ) {
+      edges {
+        node {
+          id
+          type
+          createdAt
+          revisionId
+          revision {
+            id
+            isDraft
+            isHead
+            createdAt
+            branch {
+              id
+              name
+            }
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
     }
   }
 `
@@ -3678,6 +3787,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'confirmEmailCode',
         'mutation',
+        variables,
+      )
+    },
+    GetProjectEndpoints(
+      variables: GetProjectEndpointsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetProjectEndpointsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetProjectEndpointsQuery>(GetProjectEndpointsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'GetProjectEndpoints',
+        'query',
         variables,
       )
     },

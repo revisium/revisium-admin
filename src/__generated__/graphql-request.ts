@@ -1409,6 +1409,14 @@ export type ConfirmEmailCodeMutationVariables = Exact<{
 
 export type ConfirmEmailCodeMutation = { confirmEmailCode: { accessToken: string } }
 
+export type EndpointFragment = {
+  id: string
+  type: EndpointType
+  createdAt: string
+  revisionId: string
+  revision: { id: string; isDraft: boolean; isHead: boolean; createdAt: string; branch: { id: string; name: string } }
+}
+
 export type GetProjectEndpointsQueryVariables = Exact<{
   organizationId: Scalars['String']['input']
   projectName: Scalars['String']['input']
@@ -2747,6 +2755,24 @@ export const PageInfoFragmentDoc = gql`
     endCursor
   }
 `
+export const EndpointFragmentDoc = gql`
+  fragment Endpoint on EndpointModel {
+    id
+    type
+    createdAt
+    revisionId
+    revision {
+      id
+      isDraft
+      isHead
+      createdAt
+      branch {
+        id
+        name
+      }
+    }
+  }
+`
 export const UserFragmentDoc = gql`
   fragment User on UserModel {
     id
@@ -3096,20 +3122,7 @@ export const GetProjectEndpointsDocument = gql`
     ) {
       edges {
         node {
-          id
-          type
-          createdAt
-          revisionId
-          revision {
-            id
-            isDraft
-            isHead
-            createdAt
-            branch {
-              id
-              name
-            }
-          }
+          ...Endpoint
         }
         cursor
       }
@@ -3122,6 +3135,7 @@ export const GetProjectEndpointsDocument = gql`
       totalCount
     }
   }
+  ${EndpointFragmentDoc}
 `
 export const LoginGithubDocument = gql`
   mutation loginGithub($data: LoginGithubInput!) {

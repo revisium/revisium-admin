@@ -25,7 +25,14 @@ export const SystemApiRow: FC<SystemApiRowProps> = ({ label, url, onCopy }) => {
           <Text fontSize="sm" color="newGray.400" minWidth="80px">
             {label}
           </Text>
-          <Link href={url} target="_blank" fontSize="xs" color="newGray.400" fontFamily="mono">
+          <Link
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            fontSize="xs"
+            color="newGray.400"
+            fontFamily="mono"
+          >
             {url}
           </Link>
           <IconButton

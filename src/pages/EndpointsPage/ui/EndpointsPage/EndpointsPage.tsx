@@ -48,7 +48,7 @@ export const EndpointsPage = observer(() => {
                 Create endpoints to expose your data via GraphQL or REST API
               </Text>
             </Box>
-            <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()}>
+            <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()} focusRing="none">
               <PiPlusLight />
               Create endpoint
             </Button>

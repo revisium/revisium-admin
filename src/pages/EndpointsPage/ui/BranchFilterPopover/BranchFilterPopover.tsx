@@ -40,7 +40,7 @@ export const BranchFilterPopover: FC<BranchFilterPopoverProps> = ({
   return (
     <Menu.Root open={open} onOpenChange={({ open }) => setOpen(open)}>
       <Menu.Trigger asChild>
-        <Button color="gray" variant="ghost" size="sm">
+        <Button color="gray" variant="ghost" size="sm" focusRing="none">
           <Flex alignItems="center" gap="0.25rem">
             <Text color={hasSelection ? 'newGray.500' : 'newGray.400'}>{selectedBranchName}</Text>
             {hasSelection ? (

@@ -50,8 +50,9 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
           </HStack>
           <HStack gap={1}>
             <Link
-              href={model.linkUrl}
+              href={model.endpointUrl}
               target="_blank"
+              rel="noopener noreferrer"
               fontSize="xs"
               color="newGray.400"
               fontFamily="mono"
@@ -70,6 +71,20 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
             >
               <PiCopyLight />
             </IconButton>
+            {model.sandboxUrl && (
+              <Link
+                href={model.sandboxUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                fontSize="xs"
+                color="newGray.400"
+                opacity={0}
+                _groupHover={{ opacity: 1 }}
+                _hover={{ color: 'newGray.500' }}
+              >
+                Apollo Sandbox
+              </Link>
+            )}
           </HStack>
         </VStack>
         <DeleteButton onDelete={model.delete} />

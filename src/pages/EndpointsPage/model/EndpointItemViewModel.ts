@@ -44,7 +44,7 @@ export class EndpointItemViewModel {
 
   public get endpointUrl(): string {
     const baseUrl = `${getOrigin()}${ENDPOINT_SERVER_URL}`
-    const apiType = this.item.type === EndpointType.Graphql ? 'graphql' : 'api'
+    const apiType = this.item.type === EndpointType.Graphql ? 'graphql' : 'swagger'
     return `${baseUrl}/${apiType}/${this.pathSegment}`
   }
 

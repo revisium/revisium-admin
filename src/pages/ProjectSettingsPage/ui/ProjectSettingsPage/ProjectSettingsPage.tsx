@@ -120,7 +120,11 @@ export const ProjectSettingsPage: React.FC = observer(() => {
                               <DialogActionTrigger asChild>
                                 <Button variant="outline">Cancel</Button>
                               </DialogActionTrigger>
-                              <Button colorScheme="red" disabled={!store.canDeleteProject} onClick={store.deleteProject}>
+                              <Button
+                                colorScheme="red"
+                                disabled={!store.canDeleteProject}
+                                onClick={store.deleteProject}
+                              >
                                 I understand the consequences, delete this project
                               </Button>
                             </DialogFooter>

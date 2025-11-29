@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { DRAFT_TAG, HEAD_TAG, SANDBOX_ROUTE } from 'src/shared/config/routes.ts'
 import { getEnv } from 'src/shared/env/getEnv.ts'
+import { copyToClipboard, getOrigin } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
 import { EndpointFragment, EndpointType } from 'src/__generated__/graphql-request'
@@ -42,7 +43,7 @@ export class EndpointItemViewModel {
   }
 
   public get endpointUrl(): string {
-    const baseUrl = `${window.location.origin}${ENDPOINT_SERVER_URL}`
+    const baseUrl = `${getOrigin()}${ENDPOINT_SERVER_URL}`
     const apiType = this.item.type === EndpointType.Graphql ? 'graphql' : 'api'
     return `${baseUrl}/${apiType}/${this.pathSegment}`
   }
@@ -53,12 +54,14 @@ export class EndpointItemViewModel {
 
   public get sandboxUrl() {
     if (this.isGraphql) {
-      return `${window.location.origin}/${SANDBOX_ROUTE}/${this.pathSegment}`
+      return `${getOrigin()}/${SANDBOX_ROUTE}/${this.pathSegment}`
     }
+
+    return undefined
   }
 
   public copyUrl(): void {
-    void navigator.clipboard.writeText(this.endpointUrl)
+    void copyToClipboard(this.endpointUrl)
   }
 
   public async delete(): Promise<void> {

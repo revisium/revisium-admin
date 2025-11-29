@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { copyToClipboard, getOrigin } from 'src/shared/lib'
 
 export class SystemApiViewModel {
   constructor() {
@@ -6,18 +7,14 @@ export class SystemApiViewModel {
   }
 
   public get restApiUrl(): string {
-    return `${this.endpointBaseUrl}/api`
+    return `${getOrigin()}/api`
   }
 
   public get graphqlUrl(): string {
-    return `${this.endpointBaseUrl}/graphql`
+    return `${getOrigin()}/graphql`
   }
 
   public copyUrl(url: string): void {
-    void navigator.clipboard.writeText(url)
-  }
-
-  private get endpointBaseUrl(): string {
-    return window.location.origin
+    void copyToClipboard(url)
   }
 }

@@ -13,6 +13,8 @@ export const projectLoader: LoaderFunction = async ({ params }) => {
   const context = container.get(ProjectContext)
   context.setProject(project)
 
+  await context.loadProjectPermissions(projectVariables.organizationId, projectVariables.projectName)
+
   if (!project.branchesConnection.countLoaded) {
     await rootStore.backend.queryBranches({
       ...projectVariables,

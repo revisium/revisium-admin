@@ -1,0 +1,28 @@
+fragment PermissionMst on PermissionModel {
+  id
+  action
+  subject
+  condition
+}
+
+fragment RoleMst on RoleModel {
+  id
+  name
+  permissions {
+    ...PermissionMst
+  }
+}
+
+fragment UserProjectMst on UsersProjectModel {
+  id
+  role {
+    ...RoleMst
+  }
+}
+
+fragment UserOrganizationMst on UsersOrganizationModel {
+  id
+  role {
+    ...RoleMst
+  }
+}

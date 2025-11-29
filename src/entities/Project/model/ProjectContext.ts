@@ -1,6 +1,11 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
+import { GetProjectQuery } from 'src/__generated__/graphql-request.ts'
 import { container, invariant } from 'src/shared/lib'
+import { ApiService } from 'src/shared/model/ApiService.ts'
 import { IBranchModel, IProjectModel, IRevisionModel, IRowModel, ITableModel } from 'src/shared/model/BackendStore'
+import { PermissionContext } from 'src/shared/model/AbilityService'
+
+export type ProjectData = GetProjectQuery['project']
 
 export class ProjectContext {
   private _project: IProjectModel | null = null
@@ -9,7 +14,10 @@ export class ProjectContext {
   private _table: ITableModel | null = null
   private _row: IRowModel | null = null
 
-  constructor() {
+  constructor(
+    private readonly apiService: ApiService,
+    private readonly permissionContext: PermissionContext,
+  ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -66,12 +74,37 @@ export class ProjectContext {
   public setRow(row: IRowModel | null): void {
     this._row = row
   }
+
+  public async loadProjectPermissions(organizationId: string, projectName: string): Promise<void> {
+    try {
+      const result = await this.apiService.client.getProject({
+        data: { organizationId, projectName },
+      })
+
+      runInAction(() => {
+        this.permissionContext.setProject(result.project)
+      })
+    } catch (error) {
+      console.error('Failed to load project permissions:', error)
+    }
+  }
+
+  public clear(): void {
+    this._project = null
+    this._branch = null
+    this._revision = null
+    this._table = null
+    this._row = null
+    this.permissionContext.clearProject()
+  }
 }
 
 container.register(
   ProjectContext,
   () => {
-    return new ProjectContext()
+    const apiService = container.get(ApiService)
+    const permissionContext = container.get(PermissionContext)
+    return new ProjectContext(apiService, permissionContext)
   },
   { scope: 'singleton' },
 )

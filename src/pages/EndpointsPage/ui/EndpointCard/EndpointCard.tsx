@@ -87,7 +87,7 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
             )}
           </HStack>
         </VStack>
-        <DeleteButton onDelete={model.delete} />
+        {model.canDelete && <DeleteButton onDelete={model.delete} />}
       </Flex>
     </Box>
   )

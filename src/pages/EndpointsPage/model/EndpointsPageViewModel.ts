@@ -3,6 +3,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { EndpointFragment, EndpointType, FindBranchesQuery } from 'src/__generated__/graphql-request'
 import { CreateEndpointModalViewModel } from './CreateEndpointModalViewModel.ts'
@@ -43,10 +44,21 @@ export class EndpointsPageViewModel implements IViewModel {
   public readonly createModal: CreateEndpointModalViewModel
   public readonly systemApi: SystemApiViewModel
 
-  constructor(private readonly context: ProjectContext) {
+  constructor(
+    private readonly context: ProjectContext,
+    private readonly permissionContext: PermissionContext,
+  ) {
     makeAutoObservable(this, {}, { autoBind: true })
     this.createModal = new CreateEndpointModalViewModel(context, this.handleEndpointCreated)
     this.systemApi = new SystemApiViewModel()
+  }
+
+  public get canCreateEndpoint(): boolean {
+    return this.permissionContext.canCreateEndpoint
+  }
+
+  public get canDeleteEndpoint(): boolean {
+    return this.permissionContext.canDeleteEndpoint
   }
 
   public get showInitialLoading(): boolean {
@@ -176,7 +188,7 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   private createItemViewModel(item: EndpointFragment): EndpointItemViewModel {
-    return new EndpointItemViewModel(this.context, item, this.handleEndpointDeleted)
+    return new EndpointItemViewModel(this.context, this.permissionContext, item, this.handleEndpointDeleted)
   }
 
   private handleEndpointCreated = (): void => {
@@ -269,7 +281,8 @@ container.register(
   EndpointsPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    return new EndpointsPageViewModel(context)
+    const permissionContext = container.get(PermissionContext)
+    return new EndpointsPageViewModel(context, permissionContext)
   },
   { scope: 'request' },
 )

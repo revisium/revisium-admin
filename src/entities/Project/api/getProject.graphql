@@ -1,0 +1,38 @@
+query getProject($data: GetProjectInput!) {
+  project(data: $data) {
+    id
+    organizationId
+    createdAt
+    name
+    isPublic
+    userProject {
+      id
+      role {
+        id
+        name
+        permissions {
+          id
+          action
+          subject
+          condition
+        }
+      }
+    }
+    organization {
+      id
+      userOrganization {
+        id
+        role {
+          id
+          name
+          permissions {
+            id
+            action
+            subject
+            condition
+          }
+        }
+      }
+    }
+  }
+}

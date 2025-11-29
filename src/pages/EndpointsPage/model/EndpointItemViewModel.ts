@@ -1,20 +1,20 @@
 import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { DRAFT_TAG, HEAD_TAG, SANDBOX_ROUTE } from 'src/shared/config/routes.ts'
 import { getEnv } from 'src/shared/env/getEnv.ts'
+import { copyToClipboard, getOrigin } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { EndpointType, GetProjectEndpointsQuery } from 'src/__generated__/graphql-request'
+import { EndpointFragment, EndpointType } from 'src/__generated__/graphql-request'
 
 const ENDPOINT_SERVER_URL = getEnv('REACT_APP_ENDPOINT_SERVER_URL')
-
-export type EndpointItem = GetProjectEndpointsQuery['projectEndpoints']['edges'][number]['node']
 
 export class EndpointItemViewModel {
   private readonly deleteEndpointRequest = ObservableRequest.of(client.deleteEndpoint)
 
   constructor(
     private readonly context: ProjectContext,
-    public readonly item: EndpointItem,
+    public readonly item: EndpointFragment,
     private readonly onDeleted: () => void,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -22,10 +22,6 @@ export class EndpointItemViewModel {
 
   public get id(): string {
     return this.item.id
-  }
-
-  public get type(): EndpointType {
-    return this.item.type
   }
 
   public get typeLabel(): string {
@@ -38,46 +34,34 @@ export class EndpointItemViewModel {
 
   public get revisionTag(): string {
     if (this.item.revision.isDraft) {
-      return 'draft'
+      return DRAFT_TAG
     }
     if (this.item.revision.isHead) {
-      return 'head'
+      return HEAD_TAG
     }
     return this.item.revision.id.slice(0, 8)
   }
 
   public get endpointUrl(): string {
-    const baseUrl = this.systemApiUrl
-    const orgId = this.context.project.organization.id
-    const projectName = this.context.project.name
-    const branchName = this.branchName
-    const revisionTag = this.revisionTag
+    const baseUrl = `${getOrigin()}${ENDPOINT_SERVER_URL}`
+    const apiType = this.item.type === EndpointType.Graphql ? 'graphql' : 'api'
+    return `${baseUrl}/${apiType}/${this.pathSegment}`
+  }
 
-    if (this.item.type === EndpointType.Graphql) {
-      return `${baseUrl}/graphql/${orgId}/${projectName}/${branchName}/${revisionTag}`
+  public get isGraphql(): boolean {
+    return this.item.type === EndpointType.Graphql
+  }
+
+  public get sandboxUrl() {
+    if (this.isGraphql) {
+      return `${getOrigin()}/${SANDBOX_ROUTE}/${this.pathSegment}`
     }
 
-    return `${baseUrl}/api/${orgId}/${projectName}/${branchName}/${revisionTag}`
-  }
-
-  public get sandboxUrl(): string {
-    const orgId = this.context.project.organization.id
-    const projectName = this.context.project.name
-    const branchName = this.branchName
-    const revisionTag = this.revisionTag
-    return `/sandbox/${orgId}/${projectName}/${branchName}/${revisionTag}`
-  }
-
-  public get linkUrl(): string {
-    return this.item.type === EndpointType.Graphql ? this.sandboxUrl : this.endpointUrl
+    return undefined
   }
 
   public copyUrl(): void {
-    void navigator.clipboard.writeText(this.endpointUrl)
-  }
-
-  public open(): void {
-    window.open(this.linkUrl, '_blank')
+    void copyToClipboard(this.endpointUrl)
   }
 
   public async delete(): Promise<void> {
@@ -96,7 +80,9 @@ export class EndpointItemViewModel {
     }
   }
 
-  private get systemApiUrl(): string {
-    return ENDPOINT_SERVER_URL || window.location.origin
+  private get pathSegment(): string {
+    const orgId = this.context.project.organization.id
+    const projectName = this.context.project.name
+    return `${orgId}/${projectName}/${this.branchName}/${this.revisionTag}`
   }
 }

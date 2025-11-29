@@ -1,26 +1,20 @@
 import { makeAutoObservable } from 'mobx'
-import { getEnv } from 'src/shared/env/getEnv.ts'
-
-const ENDPOINT_SERVER_URL = getEnv('REACT_APP_ENDPOINT_SERVER_URL')
+import { copyToClipboard, getOrigin } from 'src/shared/lib'
 
 export class SystemApiViewModel {
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public get baseUrl(): string {
-    return ENDPOINT_SERVER_URL || window.location.origin
-  }
-
   public get restApiUrl(): string {
-    return `${this.baseUrl}/api`
+    return `${getOrigin()}/api`
   }
 
   public get graphqlUrl(): string {
-    return `${this.baseUrl}/graphql`
+    return `${getOrigin()}/graphql`
   }
 
   public copyUrl(url: string): void {
-    void navigator.clipboard.writeText(url)
+    void copyToClipboard(url)
   }
 }

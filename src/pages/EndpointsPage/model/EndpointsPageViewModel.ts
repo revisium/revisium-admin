@@ -4,9 +4,9 @@ import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-import { EndpointType, FindBranchesQuery } from 'src/__generated__/graphql-request'
+import { EndpointFragment, EndpointType, FindBranchesQuery } from 'src/__generated__/graphql-request'
 import { CreateEndpointModalViewModel } from './CreateEndpointModalViewModel.ts'
-import { EndpointItem, EndpointItemViewModel } from './EndpointItemViewModel.ts'
+import { EndpointItemViewModel } from './EndpointItemViewModel.ts'
 import { SystemApiViewModel } from './SystemApiViewModel.ts'
 
 type BranchItem = FindBranchesQuery['branches']['edges'][number]['node']
@@ -175,7 +175,7 @@ export class EndpointsPageViewModel implements IViewModel {
     return this.context.project.name
   }
 
-  private createItemViewModel(item: EndpointItem): EndpointItemViewModel {
+  private createItemViewModel(item: EndpointFragment): EndpointItemViewModel {
     return new EndpointItemViewModel(this.context, item, this.handleEndpointDeleted)
   }
 

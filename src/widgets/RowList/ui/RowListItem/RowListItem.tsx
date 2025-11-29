@@ -65,7 +65,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
       ))}
 
       <Box as="td" width="100%"></Box>
-      {store.isEdit && (
+      {store.showMenu && (
         <Box
           className={!menuOpen ? styles.Actions : undefined}
           as="td"
@@ -93,19 +93,28 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
               <Portal>
                 <Menu.Positioner>
                   <Menu.Content>
-                    <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
-                      <PiCopy />
-                      <Box flex="1">Duplicate</Box>
-                    </Menu.Item>
-                    <Menu.Item
-                      color="gray.600"
-                      value="delete"
-                      data-restid={`remove-row-${row.id}`}
-                      onClick={handleDeleteRow}
-                    >
-                      <PiTrash />
-                      <Box flex={1}>Delete</Box>
-                    </Menu.Item>
+                    {store.canCreateRow && (
+                      <Menu.Item
+                        color="gray.600"
+                        value="copy"
+                        data-testid={`copy-row-${row.id}`}
+                        onClick={handleCopyRow}
+                      >
+                        <PiCopy />
+                        <Box flex="1">Duplicate</Box>
+                      </Menu.Item>
+                    )}
+                    {store.canDeleteRow && (
+                      <Menu.Item
+                        color="gray.600"
+                        value="delete"
+                        data-restid={`remove-row-${row.id}`}
+                        onClick={handleDeleteRow}
+                      >
+                        <PiTrash />
+                        <Box flex={1}>Delete</Box>
+                      </Menu.Item>
+                    )}
                   </Menu.Content>
                 </Menu.Positioner>
               </Portal>

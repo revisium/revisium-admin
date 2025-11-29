@@ -9,6 +9,8 @@ import { CreateRowButton } from 'src/features/CreateRowButton'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
+import { container } from 'src/shared/lib'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { toaster } from 'src/shared/ui'
 import { RowList } from 'src/widgets/RowList'
@@ -22,7 +24,11 @@ export const RowStack: React.FC = observer(() => {
   const navigate = useNavigate()
   const linkMaker = useLinkMaker()
   const projectPageModel = useProjectPageModel()
+  const permissionContext = container.get(PermissionContext)
   const { root, item } = useRowStackModel()
+
+  const canCreateRow = projectPageModel.isEditableRevision && permissionContext.canCreateRow
+  const canUpdateRow = item.isEditableRevision && permissionContext.canUpdateRow
 
   const handleSelectForeignKey = useCallback(
     async (node: JsonStringValueStore, isCreating?: boolean) => {
@@ -115,7 +121,7 @@ export const RowStack: React.FC = observer(() => {
     return (
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-        {projectPageModel.isEditableRevision && <CreateRowButton onClick={item.toCreatingRow} />}
+        {canCreateRow && <CreateRowButton onClick={item.toCreatingRow} />}
         <Box paddingTop="0.5rem" paddingBottom="1rem" height="100%">
           <RowList
             table={item.table}
@@ -146,7 +152,7 @@ export const RowStack: React.FC = observer(() => {
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
         <EditRowDataCard
-          isEdit={item.isEditableRevision}
+          isEdit={canUpdateRow}
           store={item.state.store}
           onUpdate={handleUpdateRow}
           onSelectForeignKey={handleSelectForeignKey}

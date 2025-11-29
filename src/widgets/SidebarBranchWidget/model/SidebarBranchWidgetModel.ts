@@ -3,6 +3,7 @@ import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { CHANGES_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { CreateBranchByRevisionIdCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateBranchByRevisionIdCommand.ts'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
 import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
@@ -12,6 +13,7 @@ export class SidebarBranchWidgetModel {
   constructor(
     private readonly linkMaker: LinkMaker,
     private readonly context: ProjectContext,
+    private readonly permissionContext: PermissionContext,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -35,19 +37,19 @@ export class SidebarBranchWidgetModel {
   }
 
   public get showRevertButton() {
-    return this.touched
+    return this.touched && this.permissionContext.canRevertRevision
   }
 
   public get showCommitButton() {
-    return this.touched
+    return this.touched && this.permissionContext.canCreateRevision
   }
 
   public get showActionsButton() {
-    return this.showCommitButton || this.showRevertButton || this.showBranchButton
+    return this.showCommitButton || this.showRevertButton || this.showCreateBranchButton
   }
 
-  public get showBranchButton() {
-    return !this.context.isDraftRevision
+  public get showCreateBranchButton() {
+    return !this.context.isDraftRevision && this.permissionContext.canCreateBranch
   }
 
   public get touched() {
@@ -94,8 +96,9 @@ container.register(
   SidebarBranchWidgetModel,
   () => {
     const context: ProjectContext = container.get(ProjectContext)
+    const permissionContext = container.get(PermissionContext)
 
-    return new SidebarBranchWidgetModel(new LinkMaker(context), context)
+    return new SidebarBranchWidgetModel(new LinkMaker(context), context, permissionContext)
   },
   { scope: 'request' },
 )

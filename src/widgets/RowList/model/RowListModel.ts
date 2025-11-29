@@ -4,6 +4,7 @@ import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaS
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { DeleteRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteRowCommand.ts'
 import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
@@ -26,6 +27,7 @@ export class RowListModel {
     private readonly rootStore: IRootStore,
     private readonly projectPageModel: ProjectPageModel,
     private table: ITableModel,
+    private readonly permissionContext: PermissionContext,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -40,6 +42,18 @@ export class RowListModel {
 
   public get isEdit() {
     return this.projectPageModel.isEditableRevision
+  }
+
+  public get canCreateRow(): boolean {
+    return this.isEdit && this.permissionContext.canCreateRow
+  }
+
+  public get canDeleteRow(): boolean {
+    return this.isEdit && this.permissionContext.canDeleteRow
+  }
+
+  public get showMenu(): boolean {
+    return this.canCreateRow || this.canDeleteRow
   }
 
   public get columns() {

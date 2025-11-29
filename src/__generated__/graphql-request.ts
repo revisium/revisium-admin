@@ -1323,6 +1323,49 @@ export type PageInfoFragment = {
   endCursor?: string | null
 }
 
+export type GetProjectQueryVariables = Exact<{
+  data: GetProjectInput
+}>
+
+export type GetProjectQuery = {
+  project: {
+    id: string
+    organizationId: string
+    createdAt: string
+    name: string
+    isPublic: boolean
+    userProject?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
+    organization: {
+      id: string
+      userOrganization?: {
+        id: string
+        role: {
+          id: string
+          name: string
+          permissions: Array<{
+            id: string
+            action: string
+            subject: string
+            condition?: { [key: string]: any } | string | number | boolean | null | null
+          }>
+        }
+      } | null
+    }
+  }
+}
+
 export type CreateEndpointMutationVariables = Exact<{
   data: CreateEndpointInput
 }>
@@ -1559,6 +1602,52 @@ export type PageInfoMstFragment = {
   hasNextPage: boolean
 }
 
+export type PermissionMstFragment = {
+  id: string
+  action: string
+  subject: string
+  condition?: { [key: string]: any } | string | number | boolean | null | null
+}
+
+export type RoleMstFragment = {
+  id: string
+  name: string
+  permissions: Array<{
+    id: string
+    action: string
+    subject: string
+    condition?: { [key: string]: any } | string | number | boolean | null | null
+  }>
+}
+
+export type UserProjectMstFragment = {
+  id: string
+  role: {
+    id: string
+    name: string
+    permissions: Array<{
+      id: string
+      action: string
+      subject: string
+      condition?: { [key: string]: any } | string | number | boolean | null | null
+    }>
+  }
+}
+
+export type UserOrganizationMstFragment = {
+  id: string
+  role: {
+    id: string
+    name: string
+    permissions: Array<{
+      id: string
+      action: string
+      subject: string
+      condition?: { [key: string]: any } | string | number | boolean | null | null
+    }>
+  }
+}
+
 export type ProjectMstFragment = {
   id: string
   organizationId: string
@@ -1596,6 +1685,35 @@ export type ProjectMstFragment = {
       parent?: { id: string } | null
       endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
     }
+  }
+  userProject?: {
+    id: string
+    role: {
+      id: string
+      name: string
+      permissions: Array<{
+        id: string
+        action: string
+        subject: string
+        condition?: { [key: string]: any } | string | number | boolean | null | null
+      }>
+    }
+  } | null
+  organization: {
+    id: string
+    userOrganization?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
   }
 }
 
@@ -1736,6 +1854,35 @@ export type CreateProjectMstMutation = {
         parent?: { id: string } | null
         endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
+    }
+    userProject?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
+    organization: {
+      id: string
+      userOrganization?: {
+        id: string
+        role: {
+          id: string
+          name: string
+          permissions: Array<{
+            id: string
+            action: string
+            subject: string
+            condition?: { [key: string]: any } | string | number | boolean | null | null
+          }>
+        }
+      } | null
     }
   }
 }
@@ -2251,6 +2398,35 @@ export type MeProjectsMstQuery = {
             endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
         }
+        userProject?: {
+          id: string
+          role: {
+            id: string
+            name: string
+            permissions: Array<{
+              id: string
+              action: string
+              subject: string
+              condition?: { [key: string]: any } | string | number | boolean | null | null
+            }>
+          }
+        } | null
+        organization: {
+          id: string
+          userOrganization?: {
+            id: string
+            role: {
+              id: string
+              name: string
+              permissions: Array<{
+                id: string
+                action: string
+                subject: string
+                condition?: { [key: string]: any } | string | number | boolean | null | null
+              }>
+            }
+          } | null
+        }
       }
     }>
   }
@@ -2298,6 +2474,35 @@ export type ProjectMstQuery = {
         parent?: { id: string } | null
         endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
       }
+    }
+    userProject?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
+    organization: {
+      id: string
+      userOrganization?: {
+        id: string
+        role: {
+          id: string
+          name: string
+          permissions: Array<{
+            id: string
+            action: string
+            subject: string
+            condition?: { [key: string]: any } | string | number | boolean | null | null
+          }>
+        }
+      } | null
     }
   }
 }
@@ -2349,6 +2554,35 @@ export type ProjectsMstQuery = {
             parent?: { id: string } | null
             endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
           }
+        }
+        userProject?: {
+          id: string
+          role: {
+            id: string
+            name: string
+            permissions: Array<{
+              id: string
+              action: string
+              subject: string
+              condition?: { [key: string]: any } | string | number | boolean | null | null
+            }>
+          }
+        } | null
+        organization: {
+          id: string
+          userOrganization?: {
+            id: string
+            role: {
+              id: string
+              name: string
+              permissions: Array<{
+                id: string
+                action: string
+                subject: string
+                condition?: { [key: string]: any } | string | number | boolean | null | null
+              }>
+            }
+          } | null
         }
       }
     }>
@@ -2890,6 +3124,42 @@ export const BranchMstFragmentDoc = gql`
   ${RevisionMstFragmentDoc}
   ${RevisionDraftMstFragmentDoc}
 `
+export const PermissionMstFragmentDoc = gql`
+  fragment PermissionMst on PermissionModel {
+    id
+    action
+    subject
+    condition
+  }
+`
+export const RoleMstFragmentDoc = gql`
+  fragment RoleMst on RoleModel {
+    id
+    name
+    permissions {
+      ...PermissionMst
+    }
+  }
+  ${PermissionMstFragmentDoc}
+`
+export const UserProjectMstFragmentDoc = gql`
+  fragment UserProjectMst on UsersProjectModel {
+    id
+    role {
+      ...RoleMst
+    }
+  }
+  ${RoleMstFragmentDoc}
+`
+export const UserOrganizationMstFragmentDoc = gql`
+  fragment UserOrganizationMst on UsersOrganizationModel {
+    id
+    role {
+      ...RoleMst
+    }
+  }
+  ${RoleMstFragmentDoc}
+`
 export const ProjectMstFragmentDoc = gql`
   fragment ProjectMst on ProjectModel {
     id
@@ -2900,8 +3170,19 @@ export const ProjectMstFragmentDoc = gql`
     rootBranch {
       ...BranchMst
     }
+    userProject {
+      ...UserProjectMst
+    }
+    organization {
+      id
+      userOrganization {
+        ...UserOrganizationMst
+      }
+    }
   }
   ${BranchMstFragmentDoc}
+  ${UserProjectMstFragmentDoc}
+  ${UserOrganizationMstFragmentDoc}
 `
 export const RowMstFragmentDoc = gql`
   fragment RowMst on RowModel {
@@ -2996,6 +3277,46 @@ export const SearchResultFragmentDoc = gql`
       value
       path
       highlight
+    }
+  }
+`
+export const GetProjectDocument = gql`
+  query getProject($data: GetProjectInput!) {
+    project(data: $data) {
+      id
+      organizationId
+      createdAt
+      name
+      isPublic
+      userProject {
+        id
+        role {
+          id
+          name
+          permissions {
+            id
+            action
+            subject
+            condition
+          }
+        }
+      }
+      organization {
+        id
+        userOrganization {
+          id
+          role {
+            id
+            name
+            permissions {
+              id
+              action
+              subject
+              condition
+            }
+          }
+        }
+      }
     }
   }
 `
@@ -3714,6 +4035,21 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    getProject(
+      variables: GetProjectQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetProjectQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetProjectQuery>(GetProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getProject',
+        'query',
+        variables,
+      )
+    },
     createEndpoint(
       variables: CreateEndpointMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,

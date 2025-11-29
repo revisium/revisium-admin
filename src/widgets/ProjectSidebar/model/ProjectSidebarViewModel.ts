@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 
 export class ProjectSidebarViewModel {
@@ -13,8 +14,15 @@ export class ProjectSidebarViewModel {
     skipResetting: true,
   })
 
-  constructor(private readonly context: ProjectContext) {
+  constructor(
+    private readonly context: ProjectContext,
+    private readonly permissionContext: PermissionContext,
+  ) {
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get canAccessSettings(): boolean {
+    return this.permissionContext.canAccessSettings
   }
 
   public get projectName() {
@@ -80,7 +88,8 @@ container.register(
   ProjectSidebarViewModel,
   () => {
     const context: ProjectContext = container.get(ProjectContext)
-    return new ProjectSidebarViewModel(context)
+    const permissionContext = container.get(PermissionContext)
+    return new ProjectSidebarViewModel(context, permissionContext)
   },
   { scope: 'singleton' },
 )

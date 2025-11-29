@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { DeleteProjectCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteProjectCommand.ts'
 import { rootStore } from 'src/shared/model/RootStore.ts'
@@ -17,8 +18,17 @@ export class ProjectSettingsPageModel {
   constructor(
     private readonly context: ProjectContext,
     private readonly routerService: RouterService,
+    private readonly permissionContext: PermissionContext,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get canUpdateProject(): boolean {
+    return this.permissionContext.canUpdateProject
+  }
+
+  public get hasDeletePermission(): boolean {
+    return this.permissionContext.canDeleteProject
   }
 
   public get isPublic() {
@@ -92,8 +102,9 @@ container.register(
   () => {
     const context = container.get(ProjectContext)
     const router = container.get(RouterService)
+    const permissionContext = container.get(PermissionContext)
 
-    return new ProjectSettingsPageModel(context, router)
+    return new ProjectSettingsPageModel(context, router, permissionContext)
   },
   { scope: 'request' },
 )

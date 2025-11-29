@@ -4,6 +4,7 @@ import { DRAFT_TAG, HEAD_TAG, SANDBOX_ROUTE } from 'src/shared/config/routes.ts'
 import { getEnv } from 'src/shared/env/getEnv.ts'
 import { copyToClipboard, getOrigin } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { EndpointFragment, EndpointType } from 'src/__generated__/graphql-request'
 
@@ -14,10 +15,15 @@ export class EndpointItemViewModel {
 
   constructor(
     private readonly context: ProjectContext,
+    private readonly permissionContext: PermissionContext,
     public readonly item: EndpointFragment,
     private readonly onDeleted: () => void,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get canDelete(): boolean {
+    return this.permissionContext.canDeleteEndpoint
   }
 
   public get id(): string {

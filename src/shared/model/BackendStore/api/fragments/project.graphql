@@ -7,4 +7,13 @@ fragment ProjectMst on ProjectModel {
   rootBranch {
     ...BranchMst
   }
+  userProject {
+    ...UserProjectMst
+  }
+  organization {
+    id
+    userOrganization {
+      ...UserOrganizationMst
+    }
+  }
 }

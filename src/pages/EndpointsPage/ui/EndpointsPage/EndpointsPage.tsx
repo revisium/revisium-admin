@@ -48,10 +48,12 @@ export const EndpointsPage = observer(() => {
                 Create endpoints to expose your data via GraphQL or REST API
               </Text>
             </Box>
-            <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()} focusRing="none">
-              <PiPlusLight />
-              Create endpoint
-            </Button>
+            {model.canCreateEndpoint && (
+              <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()} focusRing="none">
+                <PiPlusLight />
+                Create endpoint
+              </Button>
+            )}
           </Flex>
 
           <SystemApiSection model={model.systemApi} />
@@ -69,10 +71,12 @@ export const EndpointsPage = observer(() => {
             Endpoints ({model.totalCount})
           </Text>
           <HStack gap={2}>
-            <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()}>
-              <PiPlusLight />
-              Create
-            </Button>
+            {model.canCreateEndpoint && (
+              <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()}>
+                <PiPlusLight />
+                Create
+              </Button>
+            )}
             <TypeFilterPopover
               selectedType={model.selectedType}
               selectedTypeName={model.selectedTypeName}

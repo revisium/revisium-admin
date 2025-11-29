@@ -103,12 +103,14 @@ export const ProjectSidebar: FC = observer(() => {
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
           />
-          <NavigationButton
-            to={linkMaker.makeProjectSettingsLink()}
-            label="Settings"
-            icon={<PiGearLight />}
-            isActive={isProjectSettingsActive}
-          />
+          {model.canAccessSettings && (
+            <NavigationButton
+              to={linkMaker.makeProjectSettingsLink()}
+              label="Settings"
+              icon={<PiGearLight />}
+              isActive={isProjectSettingsActive}
+            />
+          )}
           {/*  <NavigationButton*/}
           {/*    to={linkMaker.makeProjectUsersLink()}*/}
           {/*    label="Users"*/}

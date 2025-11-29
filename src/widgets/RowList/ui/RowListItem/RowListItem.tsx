@@ -94,7 +94,12 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
                 <Menu.Positioner>
                   <Menu.Content>
                     {store.canCreateRow && (
-                      <Menu.Item color="gray.600" value="copy" data-testid={`copy-row-${row.id}`} onClick={handleCopyRow}>
+                      <Menu.Item
+                        color="gray.600"
+                        value="copy"
+                        data-testid={`copy-row-${row.id}`}
+                        onClick={handleCopyRow}
+                      >
                         <PiCopy />
                         <Box flex="1">Duplicate</Box>
                       </Menu.Item>

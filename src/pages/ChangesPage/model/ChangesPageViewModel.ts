@@ -3,6 +3,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { GetRevisionChangesQuery } from 'src/__generated__/graphql-request'
 import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
@@ -24,7 +25,10 @@ export class ChangesPageViewModel implements IViewModel {
     skipResetting: true,
   })
 
-  constructor(private readonly context: ProjectContext) {
+  constructor(
+    private readonly context: ProjectContext,
+    private readonly permissionContext: PermissionContext,
+  ) {
     makeAutoObservable(this)
   }
 
@@ -61,11 +65,11 @@ export class ChangesPageViewModel implements IViewModel {
   }
 
   public get showRevertButton(): boolean {
-    return this.context.isDraftRevision && this.context.branch.touched
+    return this.context.isDraftRevision && this.context.branch.touched && this.permissionContext.canRevertRevision
   }
 
   public get showCommitButton(): boolean {
-    return this.context.isDraftRevision && this.context.branch.touched
+    return this.context.isDraftRevision && this.context.branch.touched && this.permissionContext.canCreateRevision
   }
 
   public get isDraftRevision(): boolean {
@@ -160,7 +164,8 @@ container.register(
   ChangesPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    return new ChangesPageViewModel(context)
+    const permissionContext = container.get(PermissionContext)
+    return new ChangesPageViewModel(context, permissionContext)
   },
   { scope: 'request' },
 )

@@ -79,7 +79,7 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
           <Text color="gray.400" fontWeight="300" ml="16px">
             {table.count} rows
           </Text>
-          {!isSelectMode && store.isEditableRevision && (
+          {!isSelectMode && store.showMenu && (
             <Flex className={!menuOpen ? styles.Actions : undefined}>
               <Menu.Root
                 positioning={{
@@ -98,33 +98,39 @@ export const TableListItem: React.FC<TableListItemProps> = ({ table, store, onSe
                 <Portal>
                   <Menu.Positioner>
                     <Menu.Content>
-                      <Menu.Item
-                        color="gray.600"
-                        value="edit-schema"
-                        data-testid={`edit-schema-button-${table.id}`}
-                        onClick={handleSettings}
-                      >
-                        <PiGear />
-                        <Box flex="1">Edit schema</Box>
-                      </Menu.Item>
-                      <Menu.Item
-                        color="gray.600"
-                        value="copy"
-                        data-testid={`copy-table-button-${table.id}`}
-                        onClick={handleCopy}
-                      >
-                        <PiCopy />
-                        <Box flex="1">Copy schema</Box>
-                      </Menu.Item>
-                      <Menu.Item
-                        color="gray.600"
-                        value="delete"
-                        data-restid={`remove-table-button-${table.id}`}
-                        onClick={handleDelete}
-                      >
-                        <PiTrash />
-                        <Box flex={1}>Delete</Box>
-                      </Menu.Item>
+                      {store.canUpdateTable && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="edit-schema"
+                          data-testid={`edit-schema-button-${table.id}`}
+                          onClick={handleSettings}
+                        >
+                          <PiGear />
+                          <Box flex="1">Edit schema</Box>
+                        </Menu.Item>
+                      )}
+                      {store.canCreateTable && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="copy"
+                          data-testid={`copy-table-button-${table.id}`}
+                          onClick={handleCopy}
+                        >
+                          <PiCopy />
+                          <Box flex="1">Copy schema</Box>
+                        </Menu.Item>
+                      )}
+                      {store.canDeleteTable && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="delete"
+                          data-restid={`remove-table-button-${table.id}`}
+                          onClick={handleDelete}
+                        >
+                          <PiTrash />
+                          <Box flex={1}>Delete</Box>
+                        </Menu.Item>
+                      )}
                     </Menu.Content>
                   </Menu.Positioner>
                 </Portal>

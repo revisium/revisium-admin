@@ -2,6 +2,8 @@ import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { CreateTableButton } from 'src/features/CreateTableButton'
+import { container } from 'src/shared/lib'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { SchemaEditor, StringForeignKeyNodeStore, SchemaEditorMode } from 'src/widgets/SchemaEditor'
 import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
@@ -12,7 +14,10 @@ import { TableList } from 'src/widgets/TableList'
 
 export const TableStack: React.FC = observer(() => {
   const projectPageModel = useProjectPageModel()
+  const permissionContext = container.get(PermissionContext)
   const { root, item } = useTableStackModel()
+
+  const canCreateTable = projectPageModel.isEditableRevision && permissionContext.canCreateTable
 
   const handleSelectForeignKey = useCallback(
     (node: StringForeignKeyNodeStore) => {
@@ -78,7 +83,7 @@ export const TableStack: React.FC = observer(() => {
     return (
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-        {projectPageModel.isEditableRevision && <CreateTableButton onClick={item.toCreatingTable} />}
+        {canCreateTable && <CreateTableButton onClick={item.toCreatingTable} />}
 
         <Box paddingTop="0.5rem" paddingBottom="1rem">
           <TableList

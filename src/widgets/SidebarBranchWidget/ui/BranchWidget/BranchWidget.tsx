@@ -88,7 +88,7 @@ export const BranchWidget: FC = observer(() => {
           pointerEvents={openedPopover ? 'auto' : 'none'}
           _groupHover={{ display: 'flex', pointerEvents: 'auto' }}
         >
-          {model.showBranchButton && (
+          {model.showCreateBranchButton && (
             <ActionButton
               open={openedPopover === 'create'}
               onOpenChange={(open) => setOpenedPopover(open ? 'create' : null)}

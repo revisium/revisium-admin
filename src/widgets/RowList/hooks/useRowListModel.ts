@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { container } from 'src/shared/lib'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { ITableModel } from 'src/shared/model/BackendStore'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { rootStore } from 'src/shared/model/RootStore.ts'
@@ -8,7 +10,8 @@ export const useRowListModel = (table: ITableModel) => {
   const projectPageModel = useProjectPageModel()
 
   const [store] = useState(() => {
-    return new RowListModel(rootStore, projectPageModel, table)
+    const permissionContext = container.get(PermissionContext)
+    return new RowListModel(rootStore, projectPageModel, table, permissionContext)
   })
 
   useEffect(() => {

@@ -39,7 +39,7 @@ export class EndpointItemViewModel {
     if (this.item.revision.isHead) {
       return HEAD_TAG
     }
-    return this.item.revision.id.slice(0, 8)
+    return this.item.revision.id
   }
 
   public get endpointUrl(): string {

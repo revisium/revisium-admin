@@ -47,15 +47,13 @@ export class AuthService {
       const result = await this.apiService.client.getMe()
       this.user = result.me
 
-      // Set user system role to permission context
-      if (result.me.role) {
-        this.permissionContext.setUserRole(result.me.role)
-      }
+      this.permissionContext.setUserRole(result.me.role ?? null)
     } catch (e) {
       console.error(e)
 
       runInAction(() => {
         this.token = null
+        this.permissionContext.setUserRole(null)
       })
     }
   }

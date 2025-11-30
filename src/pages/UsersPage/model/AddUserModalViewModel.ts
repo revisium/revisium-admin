@@ -5,6 +5,8 @@ import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { UserProjectRoles, UserSystemRole } from 'src/__generated__/graphql-request'
 
+const DEBOUNCE_DELAY = 300
+
 interface SearchedUser {
   id: string
   username: string | null
@@ -28,6 +30,8 @@ export class AddUserModalViewModel {
 
   private _isAdding = false
   private _isCreating = false
+
+  private debounceTimeout: number | null = null
 
   private readonly searchRequest = ObservableRequest.of(client.SearchUsers)
 
@@ -115,7 +119,20 @@ export class AddUserModalViewModel {
 
   public setSearchQuery(query: string): void {
     this._searchQuery = query
-    void this.search()
+
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout)
+      this.debounceTimeout = null
+    }
+
+    if (query.trim()) {
+      this.debounceTimeout = setTimeout(() => {
+        void this.search()
+        this.debounceTimeout = null
+      }, DEBOUNCE_DELAY) as unknown as number
+    } else {
+      this._searchResults = []
+    }
   }
 
   public setSelectedUserId(userId: string | null): void {
@@ -242,7 +259,18 @@ export class AddUserModalViewModel {
     }
   }
 
+  public dispose(): void {
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout)
+      this.debounceTimeout = null
+    }
+  }
+
   private reset(): void {
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout)
+      this.debounceTimeout = null
+    }
     this._activeTab = 'search'
     this._searchQuery = ''
     this._searchResults = []

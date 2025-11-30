@@ -1003,6 +1003,7 @@ type UserModel {
   email: String
   id: String!
   organizationId: String
+  role: RoleModel
   username: String
 }
 

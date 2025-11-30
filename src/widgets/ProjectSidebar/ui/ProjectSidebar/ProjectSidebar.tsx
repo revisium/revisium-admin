@@ -4,7 +4,7 @@ import { FC, useEffect } from 'react'
 import {
   PiGearLight,
   // PiKeyLight,
-  // PiUsersLight,
+  PiUsersLight,
   PiDatabaseLight,
   PiFileTextLight,
   // PiFileLight,
@@ -35,6 +35,7 @@ export const ProjectSidebar: FC = observer(() => {
     isMigrationsActive,
     isProjectSettingsActive,
     isEndpointsActive,
+    isProjectUsersActive,
     isProjectLevelActive,
   } = useNavigationState()
 
@@ -103,6 +104,14 @@ export const ProjectSidebar: FC = observer(() => {
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
           />
+          {model.canManageUsers && (
+            <NavigationButton
+              to={linkMaker.makeProjectUsersLink()}
+              label="Users"
+              icon={<PiUsersLight />}
+              isActive={isProjectUsersActive}
+            />
+          )}
           {model.canAccessSettings && (
             <NavigationButton
               to={linkMaker.makeProjectSettingsLink()}
@@ -111,12 +120,6 @@ export const ProjectSidebar: FC = observer(() => {
               isActive={isProjectSettingsActive}
             />
           )}
-          {/*  <NavigationButton*/}
-          {/*    to={linkMaker.makeProjectUsersLink()}*/}
-          {/*    label="Users"*/}
-          {/*    icon={<PiUsersLight />}*/}
-          {/*    isActive={isProjectUsersActive}*/}
-          {/*  />*/}
           {/*  <NavigationButton*/}
           {/*    to={linkMaker.makeProjectApiKeysLink()}*/}
           {/*    label="API Keys"*/}

@@ -25,6 +25,10 @@ export class ProjectSidebarViewModel {
     return this.permissionContext.canAccessSettings
   }
 
+  public get canManageUsers(): boolean {
+    return this.permissionContext.canManageUsers
+  }
+
   public get projectName() {
     return this.context.project.name
   }

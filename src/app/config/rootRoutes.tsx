@@ -15,6 +15,7 @@ import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
 import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
 import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
+import { UsersPage } from 'src/pages/UsersPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
 import { ConfirmEmailCodePage } from 'src/pages/ConfirmEmailCodePage/ui/ConfirmEmailCodePage/ConfirmEmailCodePage.tsx'
@@ -131,7 +132,7 @@ const organizationRouteObject = {
         },
         {
           path: PROJECT_USERS_ROUTE,
-          element: <div>Project Users Page</div>,
+          element: <UsersPage />,
           id: RouteIds.ProjectUsers,
         },
         {

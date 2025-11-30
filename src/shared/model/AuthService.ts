@@ -1,6 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { UserFragment } from 'src/__generated__/graphql-request.ts'
 import { container } from 'src/shared/lib'
+import { PermissionContext } from 'src/shared/model/AbilityService'
 import { ApiService } from 'src/shared/model/ApiService.ts'
 
 const TOKEN_KEY = 'token'
@@ -14,6 +15,7 @@ export class AuthService {
   constructor(
     private readonly storage: Storage,
     private readonly apiService: ApiService,
+    private readonly permissionContext: PermissionContext,
   ) {
     makeAutoObservable(this)
 
@@ -44,6 +46,11 @@ export class AuthService {
     try {
       const result = await this.apiService.client.getMe()
       this.user = result.me
+
+      // Set user system role to permission context
+      if (result.me.role) {
+        this.permissionContext.setUserRole(result.me.role)
+      }
     } catch (e) {
       console.error(e)
 
@@ -74,6 +81,7 @@ export class AuthService {
     this.token = null
     this.user = null
     this.apiService.setToken(null)
+    this.permissionContext.setUserRole(null)
   }
 }
 
@@ -81,7 +89,8 @@ container.register(
   AuthService,
   () => {
     const apiService = container.get(ApiService)
-    return new AuthService(localStorage, apiService)
+    const permissionContext = container.get(PermissionContext)
+    return new AuthService(localStorage, apiService, permissionContext)
   },
   { scope: 'singleton' },
 )

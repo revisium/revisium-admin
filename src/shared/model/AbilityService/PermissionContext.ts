@@ -3,34 +3,32 @@ import { container } from 'src/shared/lib'
 import { AbilityService } from './AbilityService.ts'
 import { Actions, PermissionRule, Subjects } from './types.ts'
 
+export interface PermissionData {
+  id: string
+  action: string
+  subject: string
+  condition?: unknown
+}
+
+export interface RoleData {
+  permissions: PermissionData[]
+}
+
 export interface ProjectPermissionData {
   isPublic: boolean
   userProject?: {
-    role: {
-      permissions: Array<{
-        id: string
-        action: string
-        subject: string
-        condition?: unknown
-      }>
-    }
+    role: RoleData
   } | null
   organization?: {
     userOrganization?: {
-      role: {
-        permissions: Array<{
-          id: string
-          action: string
-          subject: string
-          condition?: unknown
-        }>
-      }
+      role: RoleData
     } | null
   }
 }
 
 export class PermissionContext {
   private _isPublic: boolean = false
+  private _userRole: RoleData | null = null
 
   constructor(private readonly abilityService: AbilityService) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -38,6 +36,10 @@ export class PermissionContext {
 
   public get isPublic(): boolean {
     return this._isPublic
+  }
+
+  public setUserRole(role: RoleData | null): void {
+    this._userRole = role
   }
 
   public setProject(project: ProjectPermissionData): void {
@@ -120,6 +122,26 @@ export class PermissionContext {
     return this.can('add', 'User')
   }
 
+  public get canUpdateUser(): boolean {
+    return this.can('update', 'User')
+  }
+
+  public get canDeleteUser(): boolean {
+    return this.can('delete', 'User')
+  }
+
+  public get canCreateUser(): boolean {
+    return this.can('create', 'User')
+  }
+
+  public get canReadUser(): boolean {
+    return this.can('read', 'User')
+  }
+
+  public get canManageUsers(): boolean {
+    return this.canAddUser || this.canReadUser
+  }
+
   public get canAccessSettings(): boolean {
     return this.canUpdateProject || this.canDeleteProject
   }
@@ -143,6 +165,20 @@ export class PermissionContext {
     const permissions: PermissionRule[] = []
     const seen = new Set<string>()
 
+    if (this._userRole?.permissions) {
+      for (const p of this._userRole.permissions) {
+        if (!seen.has(p.id)) {
+          seen.add(p.id)
+          permissions.push({
+            id: p.id,
+            action: p.action,
+            subject: p.subject,
+            condition: p.condition as Record<string, unknown> | null,
+          })
+        }
+      }
+    }
+
     if (project.userProject?.role?.permissions) {
       for (const p of project.userProject.role.permissions) {
         if (!seen.has(p.id)) {
@@ -157,7 +193,6 @@ export class PermissionContext {
       }
     }
 
-    // Extract from organization role
     if (project.organization?.userOrganization?.role?.permissions) {
       for (const p of project.organization.userOrganization.role.permissions) {
         if (!seen.has(p.id)) {

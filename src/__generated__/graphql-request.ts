@@ -1234,6 +1234,7 @@ export type UserModel = {
   email?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   organizationId?: Maybe<Scalars['String']['output']>
+  role?: Maybe<RoleModel>
   username?: Maybe<Scalars['String']['output']>
 }
 
@@ -1536,6 +1537,83 @@ export type SetUsernameMutationVariables = Exact<{
 
 export type SetUsernameMutation = { setUsername: boolean }
 
+export type UserProjectItemFragment = {
+  id: string
+  user: { id: string; email?: string | null; username?: string | null }
+  role: { id: string; name: string }
+}
+
+export type GetUsersProjectQueryVariables = Exact<{
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  first: Scalars['Int']['input']
+  after?: InputMaybe<Scalars['String']['input']>
+}>
+
+export type GetUsersProjectQuery = {
+  usersProject: {
+    totalCount: number
+    edges: Array<{
+      cursor: string
+      node: {
+        id: string
+        user: { id: string; email?: string | null; username?: string | null }
+        role: { id: string; name: string }
+      }
+    }>
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
+  }
+}
+
+export type SearchUsersQueryVariables = Exact<{
+  search?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  after?: InputMaybe<Scalars['String']['input']>
+}>
+
+export type SearchUsersQuery = {
+  searchUsers: {
+    totalCount: number
+    edges: Array<{ cursor: string; node: { id: string; email?: string | null; username?: string | null } }>
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+  }
+}
+
+export type AddUserToProjectMutationVariables = Exact<{
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  userId: Scalars['String']['input']
+  roleId: UserProjectRoles
+}>
+
+export type AddUserToProjectMutation = { addUserToProject: boolean }
+
+export type RemoveUserFromProjectMutationVariables = Exact<{
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  userId: Scalars['String']['input']
+}>
+
+export type RemoveUserFromProjectMutation = { removeUserFromProject: boolean }
+
+export type UpdateUserProjectRoleMutationVariables = Exact<{
+  organizationId: Scalars['String']['input']
+  projectName: Scalars['String']['input']
+  userId: Scalars['String']['input']
+  roleId: UserProjectRoles
+}>
+
+export type UpdateUserProjectRoleMutation = { updateUserProjectRole: boolean }
+
+export type CreateUserMutationVariables = Exact<{
+  username: Scalars['String']['input']
+  password: Scalars['String']['input']
+  email?: InputMaybe<Scalars['String']['input']>
+  roleId: UserSystemRole
+}>
+
+export type CreateUserMutation = { createUser: boolean }
+
 export type ConfigurationQueryVariables = Exact<{ [key: string]: never }>
 
 export type ConfigurationQuery = {
@@ -1552,12 +1630,37 @@ export type UserFragment = {
   username?: string | null
   email?: string | null
   organizationId?: string | null
+  role?: {
+    id: string
+    name: string
+    permissions: Array<{
+      id: string
+      action: string
+      subject: string
+      condition?: { [key: string]: any } | string | number | boolean | null | null
+    }>
+  } | null
 }
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetMeQuery = {
-  me: { id: string; username?: string | null; email?: string | null; organizationId?: string | null }
+  me: {
+    id: string
+    username?: string | null
+    email?: string | null
+    organizationId?: string | null
+    role?: {
+      id: string
+      name: string
+      permissions: Array<{
+        id: string
+        action: string
+        subject: string
+        condition?: { [key: string]: any } | string | number | boolean | null | null
+      }>
+    } | null
+  }
 }
 
 export type BranchMstFragment = {
@@ -3007,12 +3110,36 @@ export const EndpointFragmentDoc = gql`
     }
   }
 `
+export const UserProjectItemFragmentDoc = gql`
+  fragment UserProjectItem on UsersProjectModel {
+    id
+    user {
+      id
+      email
+      username
+    }
+    role {
+      id
+      name
+    }
+  }
+`
 export const UserFragmentDoc = gql`
   fragment User on UserModel {
     id
     username
     email
     organizationId
+    role {
+      id
+      name
+      permissions {
+        id
+        action
+        subject
+        condition
+      }
+    }
   }
 `
 export const PageInfoMstFragmentDoc = gql`
@@ -3500,6 +3627,79 @@ export const SignUpDocument = gql`
 export const SetUsernameDocument = gql`
   mutation setUsername($data: SetUsernameInput!) {
     setUsername(data: $data)
+  }
+`
+export const GetUsersProjectDocument = gql`
+  query GetUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
+    usersProject(data: { organizationId: $organizationId, projectName: $projectName, first: $first, after: $after }) {
+      edges {
+        node {
+          ...UserProjectItem
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+  ${UserProjectItemFragmentDoc}
+`
+export const SearchUsersDocument = gql`
+  query SearchUsers($search: String, $first: Int!, $after: String) {
+    searchUsers(data: { search: $search, first: $first, after: $after }) {
+      edges {
+        node {
+          id
+          email
+          username
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      totalCount
+    }
+  }
+`
+export const AddUserToProjectDocument = gql`
+  mutation AddUserToProject(
+    $organizationId: String!
+    $projectName: String!
+    $userId: String!
+    $roleId: UserProjectRoles!
+  ) {
+    addUserToProject(
+      data: { organizationId: $organizationId, projectName: $projectName, userId: $userId, roleId: $roleId }
+    )
+  }
+`
+export const RemoveUserFromProjectDocument = gql`
+  mutation RemoveUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
+    removeUserFromProject(data: { organizationId: $organizationId, projectName: $projectName, userId: $userId })
+  }
+`
+export const UpdateUserProjectRoleDocument = gql`
+  mutation UpdateUserProjectRole(
+    $organizationId: String!
+    $projectName: String!
+    $userId: String!
+    $roleId: UserProjectRoles!
+  ) {
+    updateUserProjectRole(
+      data: { organizationId: $organizationId, projectName: $projectName, userId: $userId, roleId: $roleId }
+    )
+  }
+`
+export const CreateUserDocument = gql`
+  mutation CreateUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
+    createUser(data: { username: $username, password: $password, email: $email, roleId: $roleId })
   }
 `
 export const ConfigurationDocument = gql`
@@ -4244,6 +4444,96 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'setUsername',
+        'mutation',
+        variables,
+      )
+    },
+    GetUsersProject(
+      variables: GetUsersProjectQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetUsersProjectQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetUsersProjectQuery>(GetUsersProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'GetUsersProject',
+        'query',
+        variables,
+      )
+    },
+    SearchUsers(
+      variables: SearchUsersQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<SearchUsersQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<SearchUsersQuery>(SearchUsersDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'SearchUsers',
+        'query',
+        variables,
+      )
+    },
+    AddUserToProject(
+      variables: AddUserToProjectMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AddUserToProjectMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AddUserToProjectMutation>(AddUserToProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'AddUserToProject',
+        'mutation',
+        variables,
+      )
+    },
+    RemoveUserFromProject(
+      variables: RemoveUserFromProjectMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RemoveUserFromProjectMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RemoveUserFromProjectMutation>(RemoveUserFromProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RemoveUserFromProject',
+        'mutation',
+        variables,
+      )
+    },
+    UpdateUserProjectRole(
+      variables: UpdateUserProjectRoleMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateUserProjectRoleMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateUserProjectRoleMutation>(UpdateUserProjectRoleDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'UpdateUserProjectRole',
+        'mutation',
+        variables,
+      )
+    },
+    CreateUser(
+      variables: CreateUserMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateUserMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateUserMutation>(CreateUserDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'CreateUser',
         'mutation',
         variables,
       )

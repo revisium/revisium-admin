@@ -1,0 +1,78 @@
+fragment UserProjectItem on UsersProjectModel {
+  id
+  user {
+    id
+    email
+    username
+  }
+  role {
+    id
+    name
+  }
+}
+
+query GetUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
+  usersProject(data: { organizationId: $organizationId, projectName: $projectName, first: $first, after: $after }) {
+    edges {
+      node {
+        ...UserProjectItem
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query SearchUsers($search: String, $first: Int!, $after: String) {
+  searchUsers(data: { search: $search, first: $first, after: $after }) {
+    edges {
+      node {
+        id
+        email
+        username
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+mutation AddUserToProject(
+  $organizationId: String!
+  $projectName: String!
+  $userId: String!
+  $roleId: UserProjectRoles!
+) {
+  addUserToProject(
+    data: { organizationId: $organizationId, projectName: $projectName, userId: $userId, roleId: $roleId }
+  )
+}
+
+mutation RemoveUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
+  removeUserFromProject(data: { organizationId: $organizationId, projectName: $projectName, userId: $userId })
+}
+
+mutation UpdateUserProjectRole(
+  $organizationId: String!
+  $projectName: String!
+  $userId: String!
+  $roleId: UserProjectRoles!
+) {
+  updateUserProjectRole(
+    data: { organizationId: $organizationId, projectName: $projectName, userId: $userId, roleId: $roleId }
+  )
+}
+
+mutation CreateUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
+  createUser(data: { username: $username, password: $password, email: $email, roleId: $roleId })
+}

@@ -3,6 +3,16 @@ fragment User on UserModel {
   username
   email
   organizationId
+  role {
+    id
+    name
+    permissions {
+      id
+      action
+      subject
+      condition
+    }
+  }
 }
 
 query getMe {

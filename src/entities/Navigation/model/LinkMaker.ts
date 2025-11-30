@@ -12,6 +12,7 @@ import {
   ORGANIZATION_ROUTE,
   PROJECT_ROUTE,
   PROJECT_SETTINGS_ROUTE,
+  PROJECT_USERS_ROUTE,
   REVISION_ROUTE,
   ROW_ROUTE,
   TABLE_ROUTE,
@@ -84,6 +85,13 @@ export class LinkMaker {
 
   public makeEndpointsLink() {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${ENDPOINTS_ROUTE}`, {
+      organizationId: this.organization.id,
+      projectName: this.project.name,
+    })
+  }
+
+  public makeProjectUsersLink() {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_USERS_ROUTE}`, {
       organizationId: this.organization.id,
       projectName: this.project.name,
     })

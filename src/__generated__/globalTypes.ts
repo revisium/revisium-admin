@@ -1292,6 +1292,7 @@ export type UserModel = {
   email?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   organizationId?: Maybe<Scalars['String']['output']>
+  role?: Maybe<RoleModel>
   username?: Maybe<Scalars['String']['output']>
 }
 

@@ -16,8 +16,10 @@ import { RevertButton } from 'src/shared/ui/RevertButton/RevertButton.tsx'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
+import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
+import { TreeCollapseButtons } from 'src/widgets/RowStackWidget/ui/TreeCollapseButtons/TreeCollapseButtons.tsx'
 
 export const RowStackUpdating: React.FC = observer(() => {
   const navigate = useNavigate()
@@ -37,6 +39,15 @@ export const RowStackUpdating: React.FC = observer(() => {
       await root.selectForeignKey(item, node, isCreating)
     },
     [item, root],
+  )
+
+  const handleSetRowName = useCallback(
+    (value: string) => {
+      if (item.state.type === RowStackModelStateType.UpdatingRow) {
+        item.state.store.name.setValue(value)
+      }
+    },
+    [item],
   )
 
   const handleUpdateRow = useCallback(async () => {
@@ -108,6 +119,7 @@ export const RowStackUpdating: React.FC = observer(() => {
   }
 
   const store = item.state.store
+  const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
 
   const actions = store.touched ? (
     <Flex gap="4px">
@@ -124,15 +136,38 @@ export const RowStackUpdating: React.FC = observer(() => {
   const switcher = (
     <RowViewerSwitcher
       availableRefByMode={store.areThereForeignKeysBy}
-      mode={store.viewMode || ViewerSwitcherMode.Tree}
+      mode={effectiveViewMode}
       onChange={store.setViewMode}
     />
   )
 
+  const rowIdInput = (
+    <RowIdInput
+      value={store.name.value}
+      setValue={handleSetRowName}
+      readonly={!canUpdateRow}
+      dataTestId="row-id-input"
+    />
+  )
+
+  const treeButtons =
+    effectiveViewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
+      <TreeCollapseButtons
+        onExpandAll={() => store.node.expandAllContent()}
+        onCollapseAll={() => store.node.collapseAllContent()}
+      />
+    ) : null
+
   return (
     <Flex flexDirection="column" flex={1}>
       {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-      <RowStackHeader showBreadcrumbs={showBreadcrumbs} actions={actions} switcher={switcher} />
+      <RowStackHeader
+        showBreadcrumbs={showBreadcrumbs}
+        rowIdInput={rowIdInput}
+        actions={actions}
+        treeButtons={treeButtons}
+        switcher={switcher}
+      />
       <Box paddingTop="1rem">
         <EditRowDataCard
           isEdit={canUpdateRow}

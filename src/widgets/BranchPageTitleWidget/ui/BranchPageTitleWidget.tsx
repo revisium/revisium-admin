@@ -11,7 +11,7 @@ export const BranchPageTitleWidget = observer(() => {
   const store = useBranchPageTitleWidgetModel()
 
   return (
-    <Flex alignItems="center" gap="4px" flex={1} height="40px" className={styles.Root}>
+    <Flex alignItems="center" gap="4px" height="40px" className={styles.Root}>
       <Breadcrumb.Root color="gray" fontWeight="600" fontSize="16px">
         <Breadcrumb.List fontSize="16px">
           {store.breadcrumbs.map((breadcrumb, index) => (

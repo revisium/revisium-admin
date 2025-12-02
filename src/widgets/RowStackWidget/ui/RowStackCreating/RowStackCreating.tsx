@@ -92,9 +92,7 @@ export const RowStackCreating: React.FC = observer(() => {
     />
   )
 
-  const rowIdInput = (
-    <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
-  )
+  const rowIdInput = <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
 
   const treeButtons =
     store.viewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (

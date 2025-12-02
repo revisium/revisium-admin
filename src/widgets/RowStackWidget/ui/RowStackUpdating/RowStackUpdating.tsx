@@ -73,20 +73,30 @@ export const RowStackUpdating: React.FC = observer(() => {
       const store = item.state.store
       const toastId = nanoid()
       toaster.loading({ id: toastId, title: 'Uploading...' })
-      const result = await item.uploadFile(store, fileId, file)
 
-      if (result) {
-        toaster.update(toastId, {
-          type: 'info',
-          title: 'Successfully uploaded!',
-          duration: 1500,
-        })
-        store.syncReadOnlyStores()
-        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
-      } else {
+      try {
+        const result = await item.uploadFile(store, fileId, file)
+
+        if (result) {
+          toaster.update(toastId, {
+            type: 'info',
+            title: 'Successfully uploaded!',
+            duration: 1500,
+          })
+          store.syncReadOnlyStores()
+          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
+        } else {
+          toaster.update(toastId, {
+            type: 'error',
+            title: 'Upload failed',
+            duration: 3000,
+          })
+        }
+      } catch {
         toaster.update(toastId, {
           type: 'error',
           title: 'Upload failed',
+          duration: 3000,
         })
       }
     },

@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -12,10 +12,10 @@ import { ApproveButton, CloseButton, toaster } from 'src/shared/ui'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
+import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
 import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
-import { TreeCollapseButtons } from 'src/widgets/RowStackWidget/ui/TreeCollapseButtons/TreeCollapseButtons.tsx'
 
 export const RowStackCreating: React.FC = observer(() => {
   const navigate = useNavigate()
@@ -66,6 +66,14 @@ export const RowStackCreating: React.FC = observer(() => {
     }
   }, [item, linkMaker, navigate, root])
 
+  const handleCopyJson = useCallback(async () => {
+    if (item.state.type !== RowStackModelStateType.CreatingRow) return
+
+    const json = JSON.stringify(item.state.store.root.getPlainValue(), null, 2)
+    await navigator.clipboard.writeText(json)
+    toaster.info({ title: 'Copied to clipboard' })
+  }, [item])
+
   if (item.state.type !== RowStackModelStateType.CreatingRow) {
     return null
   }
@@ -91,13 +99,17 @@ export const RowStackCreating: React.FC = observer(() => {
 
   const rowIdInput = <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
 
-  const treeButtons =
-    effectiveViewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
-      <TreeCollapseButtons
-        onExpandAll={() => store.node.expandAllContent()}
-        onCollapseAll={() => store.node.collapseAllContent()}
-      />
-    ) : null
+  const isTreeMode = effectiveViewMode === ViewerSwitcherMode.Tree
+  const showTreeActions = isTreeMode && store.node.hasCollapsibleContent
+
+  const actionsMenu = isTreeMode ? (
+    <RowActionsMenu
+      showTreeActions={showTreeActions}
+      onExpandAll={() => store.node.expandAllContent()}
+      onCollapseAll={() => store.node.collapseAllContent()}
+      onCopyJson={handleCopyJson}
+    />
+  ) : null
 
   return (
     <Flex flexDirection="column" flex={1}>
@@ -106,12 +118,12 @@ export const RowStackCreating: React.FC = observer(() => {
         showBreadcrumbs={showBreadcrumbs}
         rowIdInput={rowIdInput}
         actions={actions}
-        treeButtons={treeButtons}
+        actionsMenu={actionsMenu}
         switcher={switcher}
       />
-      <Box paddingTop="1rem">
+      <Flex flexDirection="column" paddingTop="60px">
         <CreateRowCard store={store} onSelectForeignKey={handleSelectForeignKey} />
-      </Box>
+      </Flex>
     </Flex>
   )
 })

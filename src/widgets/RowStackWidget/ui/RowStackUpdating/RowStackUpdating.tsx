@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { nanoid } from 'nanoid'
 import React, { useCallback, useState } from 'react'
@@ -16,10 +16,10 @@ import { RevertButton } from 'src/shared/ui/RevertButton/RevertButton.tsx'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
+import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
 import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
-import { TreeCollapseButtons } from 'src/widgets/RowStackWidget/ui/TreeCollapseButtons/TreeCollapseButtons.tsx'
 
 export const RowStackUpdating: React.FC = observer(() => {
   const navigate = useNavigate()
@@ -75,6 +75,14 @@ export const RowStackUpdating: React.FC = observer(() => {
     if (item.state.type === RowStackModelStateType.UpdatingRow) {
       item.state.store.reset()
     }
+  }, [item])
+
+  const handleCopyJson = useCallback(async () => {
+    if (item.state.type !== RowStackModelStateType.UpdatingRow) return
+
+    const json = JSON.stringify(item.state.store.root.getPlainValue(), null, 2)
+    await navigator.clipboard.writeText(json)
+    toaster.info({ title: 'Copied to clipboard' })
   }, [item])
 
   const handleUploadFile = useCallback(
@@ -150,13 +158,17 @@ export const RowStackUpdating: React.FC = observer(() => {
     />
   )
 
-  const treeButtons =
-    effectiveViewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
-      <TreeCollapseButtons
-        onExpandAll={() => store.node.expandAllContent()}
-        onCollapseAll={() => store.node.collapseAllContent()}
-      />
-    ) : null
+  const isTreeMode = effectiveViewMode === ViewerSwitcherMode.Tree
+  const showTreeActions = isTreeMode && store.node.hasCollapsibleContent
+
+  const actionsMenu = isTreeMode ? (
+    <RowActionsMenu
+      showTreeActions={showTreeActions}
+      onExpandAll={() => store.node.expandAllContent()}
+      onCollapseAll={() => store.node.collapseAllContent()}
+      onCopyJson={handleCopyJson}
+    />
+  ) : null
 
   return (
     <Flex flexDirection="column" flex={1}>
@@ -165,17 +177,17 @@ export const RowStackUpdating: React.FC = observer(() => {
         showBreadcrumbs={showBreadcrumbs}
         rowIdInput={rowIdInput}
         actions={actions}
-        treeButtons={treeButtons}
+        actionsMenu={actionsMenu}
         switcher={switcher}
       />
-      <Box paddingTop="1rem">
+      <Flex flexDirection="column" paddingTop="60px">
         <EditRowDataCard
           isEdit={canUpdateRow}
           store={store}
           onSelectForeignKey={handleSelectForeignKey}
           onUploadFile={handleUploadFile}
         />
-      </Box>
+      </Flex>
     </Flex>
   )
 })

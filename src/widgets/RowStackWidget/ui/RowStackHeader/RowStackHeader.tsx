@@ -6,7 +6,7 @@ interface RowStackHeaderProps {
   showBreadcrumbs?: boolean
   rowIdInput?: React.ReactNode
   actions?: React.ReactNode
-  treeButtons?: React.ReactNode
+  actionsMenu?: React.ReactNode
   switcher?: React.ReactNode
 }
 
@@ -14,7 +14,7 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
   showBreadcrumbs,
   rowIdInput,
   actions,
-  treeButtons,
+  actionsMenu,
   switcher,
 }) => {
   return (
@@ -40,8 +40,8 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
         {rowIdInput}
         {actions}
       </Flex>
-      <Flex alignItems="center" gap="8px">
-        {treeButtons}
+      <Flex alignItems="center" gap="4px">
+        {actionsMenu}
         {switcher}
       </Flex>
     </Flex>

@@ -37,9 +37,7 @@ export const RowStackList: React.FC = observer(() => {
     <Flex flexDirection="column" flex={1}>
       {showBreadcrumbs && <RowStackHeader showBreadcrumbs />}
       {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-      <Box paddingTop="1rem">
-        {canCreateRow && <CreateRowButton onClick={item.toCreatingRow} />}
-      </Box>
+      <Box paddingTop="1rem">{canCreateRow && <CreateRowButton onClick={item.toCreatingRow} />}</Box>
       <Box paddingTop="0.5rem" paddingBottom="1rem" flex={1}>
         <RowList
           table={item.table}

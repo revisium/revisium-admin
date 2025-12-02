@@ -80,7 +80,7 @@ export const RowStackUpdating: React.FC = observer(() => {
       } else {
         toaster.update(toastId, {
           type: 'info',
-          title: 'Something wrong with the upload',
+          title: 'Upload failed',
         })
       }
     },

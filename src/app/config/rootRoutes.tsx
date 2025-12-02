@@ -18,6 +18,7 @@ import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
 
 import { BranchPage } from 'src/pages/BranchPage'
+import { DatabaseLayout } from 'src/pages/DatabaseLayout'
 import { ConfirmEmailCodePage } from 'src/pages/ConfirmEmailCodePage/ui/ConfirmEmailCodePage/ConfirmEmailCodePage.tsx'
 import { LoginGithubPage, checkLoginGithub } from 'src/pages/LoginGithubPage'
 import { LoginPage } from 'src/pages/LoginPage'
@@ -152,7 +153,7 @@ const organizationRouteObject = {
               errorElement: <RevisionPageErrorWidget />,
               children: [
                 {
-                  element: <BranchPage />,
+                  element: <DatabaseLayout />,
                   children: [...createRevisionRouteObjects(), createTableRouteObject()],
                 },
                 {

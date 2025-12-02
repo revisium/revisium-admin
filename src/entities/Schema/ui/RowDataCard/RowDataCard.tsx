@@ -7,7 +7,6 @@ import { ForeignKeysByDataCard } from 'src/entities/Schema/ui/ForeignKeysByDataC
 
 import styles from 'src/entities/Schema/ui/RowDataCard/RowDataCard.module.scss'
 import { RowDataCardFooter } from 'src/entities/Schema/ui/RowDataCardFooter/RowDataCardFooter.tsx'
-import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { JsonCard } from 'src/shared/ui/JsonCard/JsonCard.tsx'
 import { TreeDataCardWidget } from 'src/widgets/TreeDataCard'
 
@@ -15,10 +14,9 @@ interface RowDataCardProps {
   store: RowDataCardStore
   isEdit: boolean
   rootName?: string
-  actions?: React.ReactNode
 }
 
-export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit, actions }) => {
+export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit }) => {
   return (
     <Flex
       alignItems="flex-start"
@@ -29,16 +27,6 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit
       minHeight="100vh"
       date-testid="row-data-card"
     >
-      <Flex justifyContent="space-between" width="100%" alignItems="center" paddingBottom="8px">
-        <Flex minHeight="40px">{actions}</Flex>
-        <Box className={styles.Actions}>
-          <RowViewerSwitcher
-            availableRefByMode={store.areThereForeignKeysBy}
-            mode={store.viewMode || ViewerSwitcherMode.Tree}
-            onChange={store.setViewMode}
-          />
-        </Box>
-      </Flex>
       {store.viewMode === ViewerSwitcherMode.Tree && (
         <>
           <Box flexGrow={1} width="100%">

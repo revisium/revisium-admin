@@ -41,7 +41,7 @@ export const RowViewerSwitcher: React.FC<ViewerSwitcherProps> = ({ mode, onChang
   }
 
   return (
-    <Menu.Root onSelect={handleValueChange} onOpenChange={({ open }) => setMenuOpen(open)}>
+    <Menu.Root onOpenChange={({ open }) => setMenuOpen(open)}>
       <Menu.Trigger asChild>
         <Button
           variant="ghost"
@@ -76,12 +76,7 @@ export const RowViewerSwitcher: React.FC<ViewerSwitcherProps> = ({ mode, onChang
           <Menu.Content minWidth="140px">
             <Menu.RadioItemGroup value={mode} onValueChange={handleValueChange}>
               {currentModes.map((item) => (
-                <Menu.RadioItem
-                  key={item.mode}
-                  value={item.mode}
-                  data-testid={item.dataTestId}
-                  cursor="pointer"
-                >
+                <Menu.RadioItem key={item.mode} value={item.mode} data-testid={item.dataTestId} cursor="pointer">
                   <Menu.ItemIndicator />
                   <Icon size="sm" mr="8px">
                     {item.icon}

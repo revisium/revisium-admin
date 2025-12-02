@@ -23,9 +23,8 @@ export class BranchPageTitleWidgetModel {
     const breadcrumbs: BreadCrumb[] = []
 
     const tableId = this.projectPageModel.routeTableId
-    const rowId = this.projectPageModel.routeRowId
 
-    if (!tableId && !rowId) {
+    if (!tableId) {
       return breadcrumbs
     }
 
@@ -47,19 +46,14 @@ export class BranchPageTitleWidgetModel {
       })
     }
 
-    if (rowId) {
-      breadcrumbs.push({
-        title: rowId,
-        href: '',
-        isCurrentPage: false,
-        dataTestId: `breadcrumb-row-${rowId}`,
-      })
-    }
+    const rowId = this.projectPageModel.routeRowId
 
-    const last = breadcrumbs.slice().pop()
+    if (!rowId) {
+      const last = breadcrumbs.slice().pop()
 
-    if (last) {
-      last.isCurrentPage = true
+      if (last) {
+        last.isCurrentPage = true
+      }
     }
 
     return breadcrumbs

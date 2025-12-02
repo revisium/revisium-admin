@@ -1,14 +1,12 @@
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store'
 import { createNodeForStore } from 'src/widgets/TreeDataCard/lib/nodeFactory.ts'
 import { BaseValueNode } from './BaseValueNode'
-import { IdValueNode } from './IdValueNode'
 import { PrimitiveRootNode } from './PrimitiveRootNode'
 
 const AUTO_COLLAPSE_THRESHOLD = 40
 
 export class RootValueNode extends BaseValueNode {
   private readonly cardStore: RowDataCardStore
-  private readonly idNode: IdValueNode
   private readonly valueNode: BaseValueNode
 
   constructor(cardStore: RowDataCardStore) {
@@ -19,10 +17,7 @@ export class RootValueNode extends BaseValueNode {
     this.valueNode = this.createValueNode()
     this.valueNode.setParent(this)
 
-    this.idNode = new IdValueNode(this.cardStore, this.valueNode)
-    this.idNode.setParent(this)
-
-    this.children = [this.idNode, this.valueNode]
+    this.children = [this.valueNode]
 
     this.expanded = true
 
@@ -63,11 +58,7 @@ export class RootValueNode extends BaseValueNode {
     }
 
     for (const child of this.children) {
-      if (child instanceof IdValueNode) {
-        traverse(child)
-      } else {
-        traverse(child, true)
-      }
+      traverse(child, true)
     }
 
     return result
@@ -75,6 +66,27 @@ export class RootValueNode extends BaseValueNode {
 
   public get isCollapsible() {
     return this.valueNode.isCollapsible
+  }
+
+  public get hasCollapsibleContent(): boolean {
+    const hasCollapsibleChild = (node: BaseValueNode): boolean => {
+      for (const child of node.children) {
+        if (child.isCollapsible || hasCollapsibleChild(child)) {
+          return true
+        }
+      }
+      return false
+    }
+
+    return hasCollapsibleChild(this.valueNode)
+  }
+
+  public expandAllContent() {
+    this.valueNode.expandAll({ skipItself: true })
+  }
+
+  public collapseAllContent() {
+    this.valueNode.collapseAll({ skipItself: true })
   }
 
   public saveExpandedState(): Map<string, boolean> {

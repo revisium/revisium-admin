@@ -2,7 +2,6 @@ import React, { FC } from 'react'
 import { BaseValueNode } from 'src/widgets/TreeDataCard/model/BaseValueNode.ts'
 import { BooleanValueNode } from 'src/widgets/TreeDataCard/model/BooleanValueNode.ts'
 import { CreateItemValueNode } from 'src/widgets/TreeDataCard/model/CreateItemValueNode.ts'
-import { IdValueNode } from 'src/widgets/TreeDataCard/model/IdValueNode.ts'
 import { NumberValueNode } from 'src/widgets/TreeDataCard/model/NumberValueNode.ts'
 import { MarkdownParentValueNode } from 'src/widgets/TreeDataCard/model/MarkdownParentValueNode.ts'
 import { MarkdownChildValueNode } from 'src/widgets/TreeDataCard/model/MarkdownChildValueNode.ts'
@@ -11,7 +10,6 @@ import { StringChildValueNode } from 'src/widgets/TreeDataCard/model/StringChild
 import { NodeRendererContext } from './types'
 
 import { CreateItemRendererComponent } from './CreateItemRenderer'
-import { IdRendererComponent } from './IdRenderer'
 import { FileRendererComponent } from './FileRenderer'
 import { ContainerRendererComponent } from './ContainerRenderer'
 import { ForeignKeyRendererComponent } from './ForeignKeyRenderer'
@@ -44,10 +42,6 @@ export class NodeRendererRegistry {
       {
         Component: CreateItemRendererComponent,
         canRender: (node) => node instanceof CreateItemValueNode,
-      },
-      {
-        Component: IdRendererComponent,
-        canRender: (node) => node instanceof IdValueNode,
       },
       {
         Component: DatePickerRendererComponent,

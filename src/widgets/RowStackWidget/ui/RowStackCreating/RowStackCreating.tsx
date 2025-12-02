@@ -12,8 +12,10 @@ import { ApproveButton, CloseButton, toaster } from 'src/shared/ui'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
+import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
+import { TreeCollapseButtons } from 'src/widgets/RowStackWidget/ui/TreeCollapseButtons/TreeCollapseButtons.tsx'
 
 export const RowStackCreating: React.FC = observer(() => {
   const navigate = useNavigate()
@@ -30,6 +32,15 @@ export const RowStackCreating: React.FC = observer(() => {
       await root.selectForeignKey(item, node, isCreating)
     },
     [item, root],
+  )
+
+  const handleSetRowName = useCallback(
+    (value: string) => {
+      if (item.state.type === RowStackModelStateType.CreatingRow) {
+        item.state.store.name.setValue(value)
+      }
+    },
+    [item],
   )
 
   const handleCreateRow = useCallback(async () => {
@@ -81,10 +92,28 @@ export const RowStackCreating: React.FC = observer(() => {
     />
   )
 
+  const rowIdInput = (
+    <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
+  )
+
+  const treeButtons =
+    store.viewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
+      <TreeCollapseButtons
+        onExpandAll={() => store.node.expandAllContent()}
+        onCollapseAll={() => store.node.collapseAllContent()}
+      />
+    ) : null
+
   return (
     <Flex flexDirection="column" flex={1}>
       {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-      <RowStackHeader showBreadcrumbs={showBreadcrumbs} actions={actions} switcher={switcher} />
+      <RowStackHeader
+        showBreadcrumbs={showBreadcrumbs}
+        rowIdInput={rowIdInput}
+        actions={actions}
+        treeButtons={treeButtons}
+        switcher={switcher}
+      />
       <Box paddingTop="1rem">
         <CreateRowCard store={store} onSelectForeignKey={handleSelectForeignKey} />
       </Box>

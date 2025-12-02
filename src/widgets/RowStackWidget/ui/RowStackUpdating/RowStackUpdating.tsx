@@ -119,6 +119,7 @@ export const RowStackUpdating: React.FC = observer(() => {
   }
 
   const store = item.state.store
+  const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
 
   const actions = store.touched ? (
     <Flex gap="4px">
@@ -135,7 +136,7 @@ export const RowStackUpdating: React.FC = observer(() => {
   const switcher = (
     <RowViewerSwitcher
       availableRefByMode={store.areThereForeignKeysBy}
-      mode={store.viewMode || ViewerSwitcherMode.Tree}
+      mode={effectiveViewMode}
       onChange={store.setViewMode}
     />
   )
@@ -150,7 +151,7 @@ export const RowStackUpdating: React.FC = observer(() => {
   )
 
   const treeButtons =
-    store.viewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
+    effectiveViewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
       <TreeCollapseButtons
         onExpandAll={() => store.node.expandAllContent()}
         onCollapseAll={() => store.node.collapseAllContent()}

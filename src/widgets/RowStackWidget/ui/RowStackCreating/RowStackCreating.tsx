@@ -71,6 +71,7 @@ export const RowStackCreating: React.FC = observer(() => {
   }
 
   const store = item.state.store
+  const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
 
   const actions = (
     <Flex gap="4px">
@@ -85,17 +86,13 @@ export const RowStackCreating: React.FC = observer(() => {
   )
 
   const switcher = (
-    <RowViewerSwitcher
-      availableRefByMode={false}
-      mode={store.viewMode || ViewerSwitcherMode.Tree}
-      onChange={store.setViewMode}
-    />
+    <RowViewerSwitcher availableRefByMode={false} mode={effectiveViewMode} onChange={store.setViewMode} />
   )
 
   const rowIdInput = <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
 
   const treeButtons =
-    store.viewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
+    effectiveViewMode === ViewerSwitcherMode.Tree && store.node.hasCollapsibleContent ? (
       <TreeCollapseButtons
         onExpandAll={() => store.node.expandAllContent()}
         onCollapseAll={() => store.node.collapseAllContent()}

@@ -44,13 +44,19 @@ export const RowStackUpdating: React.FC = observer(() => {
 
     const store = item.state.store
     setIsLoading(true)
-    const result = await item.updateRow(store)
-    setIsLoading(false)
 
-    if (result) {
-      store.save()
-      store.syncReadOnlyStores()
-      navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
+    try {
+      const result = await item.updateRow(store)
+
+      if (result) {
+        store.save()
+        store.syncReadOnlyStores()
+        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
+      }
+    } catch {
+      toaster.error({ title: 'Update failed' })
+    } finally {
+      setIsLoading(false)
     }
   }, [item, linkMaker, navigate])
 
@@ -79,7 +85,7 @@ export const RowStackUpdating: React.FC = observer(() => {
         navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
       } else {
         toaster.update(toastId, {
-          type: 'info',
+          type: 'error',
           title: 'Upload failed',
         })
       }

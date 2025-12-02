@@ -8,7 +8,7 @@ import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-strin
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { CreateRowCard } from 'src/features/CreateRowCard'
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
-import { ApproveButton, CloseButton } from 'src/shared/ui'
+import { ApproveButton, CloseButton, toaster } from 'src/shared/ui'
 
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
@@ -37,15 +37,21 @@ export const RowStackCreating: React.FC = observer(() => {
 
     const store = item.state.store
     setIsLoading(true)
-    const createdRow = await item.createRow(store.name.getPlainValue(), store.root.getPlainValue())
-    setIsLoading(false)
 
-    if (createdRow) {
-      if (item.state.isSelectingForeignKey) {
-        root.onSelectedForeignKey(item, store.name.getPlainValue())
-      } else {
-        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: createdRow.id }))
+    try {
+      const createdRow = await item.createRow(store.name.getPlainValue(), store.root.getPlainValue())
+
+      if (createdRow) {
+        if (item.state.isSelectingForeignKey) {
+          root.onSelectedForeignKey(item, store.name.getPlainValue())
+        } else {
+          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: createdRow.id }))
+        }
       }
+    } catch {
+      toaster.error({ title: 'Create failed' })
+    } finally {
+      setIsLoading(false)
     }
   }, [item, linkMaker, navigate, root])
 

@@ -1,14 +1,4 @@
-import {
-  Accordion,
-  Box,
-  Code,
-  Flex,
-  HStack,
-  IconButton,
-  Link,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Accordion, Box, Code, Flex, HStack, IconButton, Link, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { PiCopyLight } from 'react-icons/pi'
@@ -83,35 +73,19 @@ const TOOL_GROUPS = [
 const FEATURES = [
   {
     title: 'Project Setup',
-    examples: [
-      '"I need a blog platform"',
-      '"Set up an e-commerce store"',
-      '"Create a task management system"',
-    ],
+    examples: ['"I need a blog platform"', '"Set up an e-commerce store"', '"Create a task management system"'],
   },
   {
     title: 'Schema Management',
-    examples: [
-      '"Add user profiles with avatars"',
-      '"I need to track order history"',
-      '"Add tags to posts"',
-    ],
+    examples: ['"Add user profiles with avatars"', '"I need to track order history"', '"Add tags to posts"'],
   },
   {
     title: 'Data Operations',
-    examples: [
-      '"Add some sample products"',
-      '"Show me all published posts"',
-      '"Update prices for the summer sale"',
-    ],
+    examples: ['"Add some sample products"', '"Show me all published posts"', '"Update prices for the summer sale"'],
   },
   {
     title: 'Version Control',
-    examples: [
-      '"What did I change?"',
-      '"Save my changes"',
-      '"Undo everything"',
-    ],
+    examples: ['"What did I change?"', '"Save my changes"', '"Undo everything"'],
   },
 ]
 

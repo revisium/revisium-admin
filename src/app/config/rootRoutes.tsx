@@ -14,6 +14,7 @@ import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
 import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
 import { EndpointsPage } from 'src/pages/EndpointsPage'
+import { McpPage } from 'src/pages/McpPage'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
 
@@ -53,6 +54,7 @@ import {
   PROJECT_SETTINGS_ROUTE,
   PROJECT_USERS_ROUTE,
   PROJECT_API_KEYS_ROUTE,
+  PROJECT_MCP_ROUTE,
   CHANGES_ROUTE,
   MIGRATIONS_ROUTE,
   ENDPOINTS_ROUTE,
@@ -130,6 +132,11 @@ const organizationRouteObject = {
           path: ENDPOINTS_ROUTE,
           element: <EndpointsPage />,
           id: RouteIds.Endpoints,
+        },
+        {
+          path: PROJECT_MCP_ROUTE,
+          element: <McpPage />,
+          id: RouteIds.ProjectMcp,
         },
         {
           path: PROJECT_USERS_ROUTE,

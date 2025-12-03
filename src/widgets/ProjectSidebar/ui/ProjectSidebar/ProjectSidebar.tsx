@@ -11,6 +11,7 @@ import {
   PiShuffleLight,
   PiMagnifyingGlassLight,
   PiPlugLight,
+  PiRobotLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { CHANGES_ROUTE, MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
@@ -36,6 +37,7 @@ export const ProjectSidebar: FC = observer(() => {
     isProjectSettingsActive,
     isEndpointsActive,
     isProjectUsersActive,
+    isMcpActive,
     isProjectLevelActive,
   } = useNavigationState()
 
@@ -103,6 +105,12 @@ export const ProjectSidebar: FC = observer(() => {
             label="Endpoints"
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
+          />
+          <NavigationButton
+            to={linkMaker.makeMcpLink()}
+            label="MCP Server"
+            icon={<PiRobotLight />}
+            isActive={isMcpActive}
           />
           {model.canManageUsers && (
             <NavigationButton

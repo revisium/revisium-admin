@@ -10,6 +10,7 @@ import {
   HEAD_TAG,
   MIGRATIONS_ROUTE,
   ORGANIZATION_ROUTE,
+  PROJECT_MCP_ROUTE,
   PROJECT_ROUTE,
   PROJECT_SETTINGS_ROUTE,
   PROJECT_USERS_ROUTE,
@@ -92,6 +93,13 @@ export class LinkMaker {
 
   public makeProjectUsersLink() {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_USERS_ROUTE}`, {
+      organizationId: this.organization.id,
+      projectName: this.project.name,
+    })
+  }
+
+  public makeMcpLink() {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_MCP_ROUTE}`, {
       organizationId: this.organization.id,
       projectName: this.project.name,
     })

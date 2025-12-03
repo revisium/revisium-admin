@@ -15,6 +15,7 @@ export const PROJECT_ROUTE = ':projectName'
 export const PROJECT_SETTINGS_ROUTE = '-/settings'
 export const PROJECT_USERS_ROUTE = '-/users'
 export const PROJECT_API_KEYS_ROUTE = '-/api-keys'
+export const PROJECT_MCP_ROUTE = '-/mcp'
 
 export const BRANCH_ROUTE = ':branchName'
 export const CHANGES_ROUTE = '-/changes'
@@ -43,4 +44,5 @@ export enum RouteIds {
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',
   ProjectApiKeys = 'projectApiKeys',
+  ProjectMcp = 'projectMcp',
 }

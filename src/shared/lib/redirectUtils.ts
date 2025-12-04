@@ -6,6 +6,16 @@ export const getSafeRedirectUrl = (redirect: string | null | undefined): string 
   return undefined
 }
 
+export const parseOAuthStateRedirect = (state: string | null): string | null => {
+  if (!state) return null
+  try {
+    const parsed = JSON.parse(state)
+    return parsed?.redirect || null
+  } catch {
+    return null
+  }
+}
+
 export const getRedirectFromSearchParams = (): string | undefined => {
   const params = new URLSearchParams(window.location.search)
   return getSafeRedirectUrl(params.get('redirect'))

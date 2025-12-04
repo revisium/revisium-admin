@@ -14,9 +14,9 @@ export class LoginGoogleViewModel implements IViewModel {
     makeAutoObservable(this)
   }
 
-  public async login(code: string | null, redirectAfterLogin?: string) {
+  public async login(code: string | null) {
     if (code) {
-      await this.loginRequest(code, redirectAfterLogin)
+      await this.loginRequest(code)
     } else {
       console.error('Invalid code')
     }
@@ -26,14 +26,14 @@ export class LoginGoogleViewModel implements IViewModel {
 
   public init(): void {}
 
-  private async loginRequest(code: string, redirectAfterLogin?: string) {
+  private async loginRequest(code: string) {
     this.setIsLoading(true)
 
     try {
       const result = await this.apiService.client.loginGoogle({
         data: {
           code,
-          redirectUrl: googleRedirectUrl(redirectAfterLogin),
+          redirectUrl: googleRedirectUrl(),
         },
       })
 

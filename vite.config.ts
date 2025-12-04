@@ -44,6 +44,10 @@ export default ({ mode }) => {
           target: `http://${process.env.REACT_APP_ENDPOINT_HOST}:${process.env.REACT_APP_ENDPOINT_PORT}`,
           changeOrigin: true,
         },
+        '/mcp': {
+          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          changeOrigin: true,
+        },
       },
     },
     envDir: ENV_DIR,

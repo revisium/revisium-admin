@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { loginRequest } from 'src/pages/LoginPage/api/login/loginRequest.ts'
 import { ROOT_ROUTE } from 'src/shared/config/routes.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, FormState } from 'src/shared/lib'
+import { container, FormState, getRedirectFromSearchParams } from 'src/shared/lib'
 import { githubOauth } from 'src/shared/lib/githubOauth.ts'
 import { googleOauth } from 'src/shared/lib/googleOauth.ts'
 import { AuthService } from 'src/shared/model'
@@ -46,18 +46,18 @@ export class LoginViewModel implements IViewModel {
   }
 
   public toGoogleOauth() {
-    googleOauth(this.configurationService.googleOauthClientId)
+    googleOauth(this.configurationService.googleOauthClientId, getRedirectFromSearchParams())
   }
 
   public toGithubOauth() {
-    githubOauth(this.configurationService.githubOauthClientId)
+    githubOauth(this.configurationService.githubOauthClientId, getRedirectFromSearchParams())
   }
 
   public async submit() {
     const result = await this.login()
 
     if (result) {
-      await this.routerService.navigate(ROOT_ROUTE)
+      await this.routerService.navigate(getRedirectFromSearchParams() || ROOT_ROUTE)
     }
   }
 

@@ -2,13 +2,11 @@ import { makeAutoObservable } from 'mobx'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ApiService, AuthService } from 'src/shared/model'
-import { RouterService } from 'src/shared/model/RouterService.ts'
 
 export class LoginGithubViewModel implements IViewModel {
   public isLoading: boolean = false
 
   constructor(
-    private readonly routerService: RouterService,
     private readonly apiService: ApiService,
     private readonly authService: AuthService,
   ) {
@@ -18,7 +16,6 @@ export class LoginGithubViewModel implements IViewModel {
   public async login(code: string | null) {
     if (code) {
       await this.loginRequest(code)
-      await this.routerService.navigate(`/`)
     } else {
       console.error('Invalid code')
     }
@@ -56,11 +53,10 @@ export class LoginGithubViewModel implements IViewModel {
 container.register(
   LoginGithubViewModel,
   () => {
-    const routerService = container.get(RouterService)
     const apiService = container.get(ApiService)
     const authService = container.get(AuthService)
 
-    return new LoginGithubViewModel(routerService, apiService, authService)
+    return new LoginGithubViewModel(apiService, authService)
   },
   { scope: 'request' },
 )

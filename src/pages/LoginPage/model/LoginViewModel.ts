@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { loginRequest } from 'src/pages/LoginPage/api/login/loginRequest.ts'
 import { ROOT_ROUTE } from 'src/shared/config/routes.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, FormState } from 'src/shared/lib'
+import { container, FormState, getRedirectFromSearchParams } from 'src/shared/lib'
 import { githubOauth } from 'src/shared/lib/githubOauth.ts'
 import { googleOauth } from 'src/shared/lib/googleOauth.ts'
 import { AuthService } from 'src/shared/model'
@@ -45,25 +45,19 @@ export class LoginViewModel implements IViewModel {
     return this.configurationService.availableGithubOauth
   }
 
-  private get redirectAfterLogin(): string | undefined {
-    const params = new URLSearchParams(window.location.search)
-    const redirect = params.get('redirect')
-    return redirect && redirect.startsWith('/') ? redirect : undefined
-  }
-
   public toGoogleOauth() {
-    googleOauth(this.configurationService.googleOauthClientId, this.redirectAfterLogin)
+    googleOauth(this.configurationService.googleOauthClientId, getRedirectFromSearchParams())
   }
 
   public toGithubOauth() {
-    githubOauth(this.configurationService.githubOauthClientId, this.redirectAfterLogin)
+    githubOauth(this.configurationService.githubOauthClientId, getRedirectFromSearchParams())
   }
 
   public async submit() {
     const result = await this.login()
 
     if (result) {
-      await this.routerService.navigate(this.redirectAfterLogin || ROOT_ROUTE)
+      await this.routerService.navigate(getRedirectFromSearchParams() || ROOT_ROUTE)
     }
   }
 

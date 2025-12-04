@@ -16,9 +16,19 @@ export class McpTokenPageViewModel implements IViewModel {
     return this.authService.token || ''
   }
 
-  public copyAccessToken(): void {
-    if (this.authService.token) {
-      void copyToClipboard(this.authService.token)
+  public get truncatedToken(): string {
+    const token = this.accessToken
+    if (token.length <= 30) return token
+    return `${token.slice(0, 20)}...${token.slice(-10)}`
+  }
+
+  public async copyAccessToken(): Promise<boolean> {
+    if (!this.authService.token) return false
+    try {
+      await copyToClipboard(this.authService.token)
+      return true
+    } catch {
+      return false
     }
   }
 

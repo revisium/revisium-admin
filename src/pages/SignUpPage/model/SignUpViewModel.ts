@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { SIGN_UP_COMPLETED_ROUTE, SIGN_UP_ROUTE } from 'src/shared/config/routes.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container, FormState } from 'src/shared/lib'
+import { container, FormState, getRedirectFromSearchParams } from 'src/shared/lib'
 import { githubOauth } from 'src/shared/lib/githubOauth.ts'
 import { googleOauth } from 'src/shared/lib/googleOauth.ts'
 import { ApiService } from 'src/shared/model'
@@ -45,18 +45,12 @@ export class SignUpViewModel implements IViewModel {
     return this.configurationService.availableGithubOauth
   }
 
-  private get redirectAfterLogin(): string | undefined {
-    const params = new URLSearchParams(window.location.search)
-    const redirect = params.get('redirect')
-    return redirect && redirect.startsWith('/') ? redirect : undefined
-  }
-
   public toGoogleOauth() {
-    googleOauth(this.configurationService.googleOauthClientId, this.redirectAfterLogin)
+    googleOauth(this.configurationService.googleOauthClientId, getRedirectFromSearchParams())
   }
 
   public toGithubOauth() {
-    githubOauth(this.configurationService.githubOauthClientId, this.redirectAfterLogin)
+    githubOauth(this.configurationService.githubOauthClientId, getRedirectFromSearchParams())
   }
 
   public async submit() {

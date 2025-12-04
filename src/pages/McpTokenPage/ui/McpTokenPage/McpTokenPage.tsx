@@ -12,9 +12,13 @@ export const McpTokenPage = observer(() => {
   const model = useViewModel(McpTokenPageViewModel)
   const navigate = useNavigate()
 
-  const handleCopyToken = useCallback(() => {
-    model.copyAccessToken()
-    toaster.info({ duration: 1500, description: 'Access token copied to clipboard' })
+  const handleCopyToken = useCallback(async () => {
+    const success = await model.copyAccessToken()
+    if (success) {
+      toaster.info({ duration: 1500, description: 'Access token copied to clipboard' })
+    } else {
+      toaster.error({ duration: 2000, description: 'Failed to copy token' })
+    }
   }, [model])
 
   const handleGoToMain = useCallback(() => {
@@ -61,7 +65,7 @@ export const McpTokenPage = observer(() => {
                 textOverflow="ellipsis"
                 whiteSpace="nowrap"
               >
-                {model.accessToken.slice(0, 50)}...
+                {model.truncatedToken}
               </Code>
               <IconButton
                 aria-label="Copy token"

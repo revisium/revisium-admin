@@ -6,6 +6,7 @@ export const checkLoginGithub: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
   const searchParams = url.searchParams
   const code = searchParams.get('code')
+  const redirectTo = searchParams.get('redirect')
 
   if (!code) {
     throw new Error('Invalid code')
@@ -14,5 +15,5 @@ export const checkLoginGithub: LoaderFunction = async ({ request }) => {
   const model = container.get(LoginGithubViewModel)
   await model.login(code)
 
-  return redirect('/')
+  return redirect(redirectTo && redirectTo.startsWith('/') ? redirectTo : '/')
 }

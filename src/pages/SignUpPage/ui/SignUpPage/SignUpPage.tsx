@@ -1,8 +1,8 @@
 import { Box, Flex, Link as ChakraLink, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useMemo } from 'react'
 import { PiGithubLogoFill, PiGoogleLogoFill } from 'react-icons/pi'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { SignUpViewModel } from 'src/pages/SignUpPage/model/SignUpViewModel.ts'
 import { LOGIN_ROUTE } from 'src/shared/config/routes.ts'
 import { useViewModel } from 'src/shared/lib'
@@ -11,6 +11,12 @@ import { GrayButton } from 'src/shared/ui/GreyButton/GrayButton.tsx'
 
 export const SignUpPage: FC = observer(() => {
   const model = useViewModel(SignUpViewModel)
+  const [searchParams] = useSearchParams()
+
+  const loginUrl = useMemo(() => {
+    const redirect = searchParams.get('redirect')
+    return redirect ? `/${LOGIN_ROUTE}?redirect=${encodeURIComponent(redirect)}` : `/${LOGIN_ROUTE}`
+  }, [searchParams])
 
   const handleChangeUsername: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -49,7 +55,7 @@ export const SignUpPage: FC = observer(() => {
     <Page hideSidebar>
       <Flex width="100%" gap="8px" justifyContent="flex-end">
         <Text color="gray.300">Already have an account?</Text>
-        <Link to={`/${LOGIN_ROUTE}`}>
+        <Link to={loginUrl}>
           <ChakraLink color="gray.300" alignSelf="center">
             Log in
           </ChakraLink>

@@ -45,19 +45,25 @@ export class LoginViewModel implements IViewModel {
     return this.configurationService.availableGithubOauth
   }
 
+  private get redirectAfterLogin(): string | undefined {
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get('redirect')
+    return redirect && redirect.startsWith('/') ? redirect : undefined
+  }
+
   public toGoogleOauth() {
-    googleOauth(this.configurationService.googleOauthClientId)
+    googleOauth(this.configurationService.googleOauthClientId, this.redirectAfterLogin)
   }
 
   public toGithubOauth() {
-    githubOauth(this.configurationService.githubOauthClientId)
+    githubOauth(this.configurationService.githubOauthClientId, this.redirectAfterLogin)
   }
 
   public async submit() {
     const result = await this.login()
 
     if (result) {
-      await this.routerService.navigate(ROOT_ROUTE)
+      await this.routerService.navigate(this.redirectAfterLogin || ROOT_ROUTE)
     }
   }
 

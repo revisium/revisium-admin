@@ -1,4 +1,4 @@
-import { Accordion, Box, Code, Flex, HStack, IconButton, Link, Text, VStack } from '@chakra-ui/react'
+import { Accordion, Box, Code, Flex, IconButton, Link, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { PiCopyLight } from 'react-icons/pi'
@@ -6,69 +6,6 @@ import { McpPageViewModel } from 'src/pages/McpPage/model/McpPageViewModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page, toaster } from 'src/shared/ui'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
-
-const TOOL_GROUPS = [
-  {
-    title: 'Projects & Branches',
-    tools: [
-      { name: 'getProjects', desc: 'List all projects in organization' },
-      { name: 'createProject', desc: 'Create new project' },
-      { name: 'deleteProject', desc: 'Delete project' },
-      { name: 'getBranch', desc: 'Get branch info with revision IDs' },
-      { name: 'createBranch', desc: 'Create branch from revision' },
-      { name: 'revertChanges', desc: 'Discard uncommitted changes' },
-    ],
-  },
-  {
-    title: 'Schema & Tables',
-    tools: [
-      { name: 'getTables', desc: 'List tables in revision' },
-      { name: 'getTable', desc: 'Get table info' },
-      { name: 'getTableSchema', desc: 'Get table JSON Schema definition' },
-      { name: 'createTable', desc: 'Create table with schema' },
-      { name: 'updateTable', desc: 'Modify schema using JSON Patch' },
-      { name: 'renameTable', desc: 'Rename table ID' },
-      { name: 'removeTable', desc: 'Delete table' },
-    ],
-  },
-  {
-    title: 'Data & Rows',
-    tools: [
-      { name: 'getRows', desc: 'Query rows (supports where/orderBy)' },
-      { name: 'getRow', desc: 'Get single row by ID' },
-      { name: 'createRow', desc: 'Insert new row' },
-      { name: 'updateRow', desc: 'Replace entire row data' },
-      { name: 'patchRow', desc: 'Update specific fields (JSON Patch)' },
-      { name: 'renameRow', desc: 'Change row ID' },
-      { name: 'removeRow', desc: 'Delete row' },
-    ],
-  },
-  {
-    title: 'Version Control',
-    tools: [
-      { name: 'getRevision', desc: 'Get revision details' },
-      { name: 'getDraftRevision', desc: 'Get draft revision for editing' },
-      { name: 'commitRevision', desc: 'Commit changes with comment' },
-    ],
-  },
-  {
-    title: 'Changes & Migrations',
-    tools: [
-      { name: 'getRevisionChanges', desc: 'View changes in revision' },
-      { name: 'getTableChanges', desc: 'View table schema changes' },
-      { name: 'getRowChanges', desc: 'View row data changes' },
-      { name: 'getMigrations', desc: 'Get pending schema migrations' },
-      { name: 'applyMigrations', desc: 'Apply migrations to branch' },
-    ],
-  },
-  {
-    title: 'Users',
-    tools: [
-      { name: 'getUser', desc: 'Get user by ID' },
-      { name: 'searchUsers', desc: 'Search users by username or email' },
-    ],
-  },
-]
 
 const FEATURES = [
   {
@@ -86,6 +23,14 @@ const FEATURES = [
   {
     title: 'Version Control',
     examples: ['"What did I change?"', '"Save my changes"', '"Undo everything"'],
+  },
+  {
+    title: 'API Endpoints',
+    examples: [
+      '"Create a GraphQL endpoint"',
+      '"Show me the API schema"',
+      '"Help me write a query to get all posts with their authors"',
+    ],
   },
 ]
 
@@ -119,19 +64,44 @@ export const McpPage = observer(() => {
           Connect AI assistants to manage your Revisium data using natural language.
         </Text>
 
-        {/* What is MCP Section */}
         <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md" mb={4}>
           <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={2}>
             What is MCP?
           </Text>
-          <Text fontSize="xs" color="newGray.400" lineHeight="1.6">
+          <Text fontSize="xs" color="newGray.400" lineHeight="1.6" mb={2}>
             MCP (Model Context Protocol) is an open standard that enables AI assistants to securely interact with
             external data sources. With Revisium MCP server, you can use natural language to manage your projects,
             schemas, and data directly from any MCP-compatible AI assistant.
           </Text>
+          <Text fontSize="xs" color="newGray.400" lineHeight="1.6">
+            MCP servers expose <strong>tools</strong> — functions that AI can call on your behalf. Revisium provides
+            tools for managing projects, tables, rows, branches, and API endpoints.
+          </Text>
         </Box>
 
-        {/* Connection Section */}
+        <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md" mb={4}>
+          <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={3}>
+            What You Can Do
+          </Text>
+
+          <VStack align="stretch" gap={4}>
+            {FEATURES.map((feature) => (
+              <Box key={feature.title}>
+                <Text fontSize="xs" fontWeight="500" color="newGray.500" mb={1}>
+                  {feature.title}
+                </Text>
+                <VStack align="stretch" gap={1}>
+                  {feature.examples.map((example, idx) => (
+                    <Text key={idx} fontSize="xs" color="newGray.400" fontStyle="italic">
+                      {example}
+                    </Text>
+                  ))}
+                </VStack>
+              </Box>
+            ))}
+          </VStack>
+        </Box>
+
         <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md" mb={4}>
           <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={3}>
             Connection
@@ -180,14 +150,12 @@ export const McpPage = observer(() => {
           </VStack>
         </Box>
 
-        {/* Setup Section */}
         <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md" mb={4}>
           <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={3}>
             Setup with Claude Code
           </Text>
 
           <Accordion.Root collapsible defaultValue={['cli']}>
-            {/* CLI Setup */}
             <Accordion.Item value="cli" borderWidth="0">
               <Accordion.ItemTrigger
                 cursor="pointer"
@@ -258,7 +226,7 @@ export const McpPage = observer(() => {
                       {`# List configured servers
 claude mcp list
 
-# View server details
+# View server details and available tools
 claude mcp show ${model.serverName}
 
 # Remove server
@@ -269,7 +237,6 @@ claude mcp remove ${model.serverName}`}
               </Accordion.ItemContent>
             </Accordion.Item>
 
-            {/* Config File Setup */}
             <Accordion.Item value="config" borderWidth="0">
               <Accordion.ItemTrigger
                 cursor="pointer"
@@ -326,98 +293,15 @@ claude mcp remove ${model.serverName}`}
             </Accordion.Item>
           </Accordion.Root>
 
-          {/* Authentication */}
           <Box mt={4} pt={4} borderTopWidth="1px" borderColor="newGray.100">
             <Text fontSize="xs" fontWeight="500" color="newGray.500" mb={2}>
               Authentication
             </Text>
-            <Text fontSize="xs" color="newGray.400" mb={2}>
-              When you start working with the MCP server, it will prompt you to authenticate. You can also initiate
-              login yourself using the <Code fontSize="xs">login</Code> tool with your Revisium credentials:
-            </Text>
-            <Code fontSize="xs" p={2} bg="newGray.50" borderRadius="sm" display="block" mb={2}>
-              login(email or username, password)
-            </Code>
             <Text fontSize="xs" color="newGray.400">
-              Verify connection with <Code fontSize="xs">me()</Code> — returns your user info if authenticated.
+              When you start working with the MCP server, you will be prompted to authenticate using one of the
+              available methods.
             </Text>
           </Box>
-        </Box>
-
-        {/* Features Section */}
-        <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md" mb={4}>
-          <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={3}>
-            What You Can Do
-          </Text>
-
-          <VStack align="stretch" gap={4}>
-            {FEATURES.map((feature) => (
-              <Box key={feature.title}>
-                <Text fontSize="xs" fontWeight="500" color="newGray.500" mb={1}>
-                  {feature.title}
-                </Text>
-                <VStack align="stretch" gap={1}>
-                  {feature.examples.map((example, idx) => (
-                    <Text key={idx} fontSize="xs" color="newGray.400" fontStyle="italic">
-                      {example}
-                    </Text>
-                  ))}
-                </VStack>
-              </Box>
-            ))}
-          </VStack>
-        </Box>
-
-        {/* Available Tools Section */}
-        <Box p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md">
-          <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={3}>
-            Available Tools
-          </Text>
-
-          <Accordion.Root collapsible defaultValue={[]}>
-            {TOOL_GROUPS.map((group) => (
-              <Accordion.Item key={group.title} value={group.title} borderWidth="0">
-                <Accordion.ItemTrigger
-                  cursor="pointer"
-                  py={2}
-                  _hover={{ bg: 'newGray.50' }}
-                  fontSize="xs"
-                  color="newGray.500"
-                  fontWeight="500"
-                  borderRadius="sm"
-                  px={2}
-                  mx={-2}
-                >
-                  <HStack flex="1" textAlign="left" gap={2}>
-                    <Text>{group.title}</Text>
-                    <Text color="newGray.300" fontWeight="400">
-                      ({group.tools.length})
-                    </Text>
-                  </HStack>
-                  <Accordion.ItemIndicator />
-                </Accordion.ItemTrigger>
-                <Accordion.ItemContent>
-                  <VStack align="stretch" gap={1} pt={1} pb={2}>
-                    {group.tools.map((tool) => (
-                      <Flex key={tool.name} gap={3} fontSize="xs" py={0.5}>
-                        <Code
-                          fontSize="xs"
-                          color="newGray.500"
-                          bg="transparent"
-                          p={0}
-                          minWidth="140px"
-                          fontWeight="500"
-                        >
-                          {tool.name}
-                        </Code>
-                        <Text color="newGray.400">{tool.desc}</Text>
-                      </Flex>
-                    ))}
-                  </VStack>
-                </Accordion.ItemContent>
-              </Accordion.Item>
-            ))}
-          </Accordion.Root>
         </Box>
       </Box>
     </Page>

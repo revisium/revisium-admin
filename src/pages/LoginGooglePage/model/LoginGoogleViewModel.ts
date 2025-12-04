@@ -3,23 +3,20 @@ import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { googleRedirectUrl } from 'src/shared/lib/googleOauth.ts'
 import { ApiService, AuthService } from 'src/shared/model'
-import { RouterService } from 'src/shared/model/RouterService.ts'
 
 export class LoginGoogleViewModel implements IViewModel {
   public isLoading: boolean = false
 
   constructor(
-    private readonly routerService: RouterService,
     private readonly apiService: ApiService,
     private readonly authService: AuthService,
   ) {
     makeAutoObservable(this)
   }
 
-  public async login(code: string | null) {
+  public async login(code: string | null, redirectAfterLogin?: string) {
     if (code) {
-      await this.loginRequest(code)
-      await this.routerService.navigate(`/`)
+      await this.loginRequest(code, redirectAfterLogin)
     } else {
       console.error('Invalid code')
     }
@@ -29,14 +26,14 @@ export class LoginGoogleViewModel implements IViewModel {
 
   public init(): void {}
 
-  private async loginRequest(code: string) {
+  private async loginRequest(code: string, redirectAfterLogin?: string) {
     this.setIsLoading(true)
 
     try {
       const result = await this.apiService.client.loginGoogle({
         data: {
           code,
-          redirectUrl: googleRedirectUrl(),
+          redirectUrl: googleRedirectUrl(redirectAfterLogin),
         },
       })
 
@@ -58,11 +55,10 @@ export class LoginGoogleViewModel implements IViewModel {
 container.register(
   LoginGoogleViewModel,
   () => {
-    const routerService = container.get(RouterService)
     const apiService = container.get(ApiService)
     const authService = container.get(AuthService)
 
-    return new LoginGoogleViewModel(routerService, apiService, authService)
+    return new LoginGoogleViewModel(apiService, authService)
   },
   { scope: 'request' },
 )

@@ -10,10 +10,16 @@ export const parseOAuthStateRedirect = (state: string | null): string | null => 
   if (!state) return null
   try {
     const parsed = JSON.parse(state)
-    return parsed?.redirect || null
+    const redirect = parsed?.redirect
+    return typeof redirect === 'string' ? redirect : null
   } catch {
     return null
   }
+}
+
+export const buildOAuthState = (redirectAfterLogin?: string): string | undefined => {
+  if (!redirectAfterLogin) return undefined
+  return JSON.stringify({ redirect: redirectAfterLogin })
 }
 
 export const getRedirectFromSearchParams = (): string | undefined => {

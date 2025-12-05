@@ -1,26 +1,27 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, IconButton, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
-import { CreateRowButton } from 'src/features/CreateRowButton'
-import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
-import { RowList } from 'src/widgets/RowList'
-
-import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
-import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
-import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
-import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
+import { PiPlus } from 'react-icons/pi'
+import { JsonSchema } from 'src/entities/Schema'
+import { useViewModel } from 'src/shared/lib/hooks'
+import { Tooltip } from 'src/shared/ui'
+import { RowList, RowListViewModel, SearchInput } from 'src/widgets/RowList'
+import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel'
+import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext'
+import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader'
+import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider'
 
 export const RowStackList: React.FC = observer(() => {
-  const projectPageModel = useProjectPageModel()
-  const permissionContext = container.get(PermissionContext)
   const { root, item } = useRowStackModel()
 
-  const canCreateRow = projectPageModel.isEditableRevision && permissionContext.canCreateRow
+  const tableId = item.table.id
+  const schema = item.schema as JsonSchema
+
+  const model = useViewModel(RowListViewModel, tableId, schema)
 
   const isFirstLevel = root.stack.indexOf(item) === 0
   const showBreadcrumbs = isFirstLevel && !item.state.isSelectingForeignKey
+  const isSelectMode = item.state.isSelectingForeignKey
 
   const handleSelectRow = useCallback(
     (rowId: string) => {
@@ -33,17 +34,50 @@ export const RowStackList: React.FC = observer(() => {
     return null
   }
 
+  const createRowButton = model.canCreateRow ? (
+    <Tooltip content="New row" openDelay={300}>
+      <IconButton
+        aria-label="New row"
+        size="xs"
+        variant="ghost"
+        onClick={item.toCreatingRow}
+        data-testid="create-row-button"
+        color="gray.500"
+        _hover={{ bg: 'gray.100' }}
+      >
+        <PiPlus />
+      </IconButton>
+    </Tooltip>
+  ) : null
+
   return (
     <Flex flexDirection="column" flex={1}>
-      {showBreadcrumbs && <RowStackHeader showBreadcrumbs />}
-      {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
-      <Box paddingTop="1rem">{canCreateRow && <CreateRowButton onClick={item.toCreatingRow} />}</Box>
-      <Box paddingTop="0.5rem" paddingBottom="1rem" flex={1}>
-        <RowList
-          table={item.table}
-          onSelect={item.state.isSelectingForeignKey ? handleSelectRow : undefined}
-          onCopy={item.toCloneRow}
+      {showBreadcrumbs && (
+        <RowStackHeader
+          showBreadcrumbs
+          actions={createRowButton}
+          search={<SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />}
         />
+      )}
+      {isSelectMode && (
+        <>
+          <SelectingForeignKeyDivider tableId={item.table.id} />
+          <RowStackHeader
+            tableTitle={item.table.id}
+            actions={createRowButton}
+            search={
+              <SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />
+            }
+          />
+        </>
+      )}
+      <Flex alignItems="center" paddingX="8px" paddingY="8px">
+        <Text fontSize="sm" color="gray.500">
+          {model.rowCountText}
+        </Text>
+      </Flex>
+      <Box flex={1} paddingBottom="1rem">
+        <RowList model={model} onSelect={isSelectMode ? handleSelectRow : undefined} onCopy={item.toCloneRow} />
       </Box>
     </Flex>
   )

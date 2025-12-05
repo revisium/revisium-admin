@@ -6,11 +6,19 @@ import { Either } from 'src/shared/lib/Either.ts'
 type FetchFunction<T, A extends any[]> = (...args: A) => Promise<T>
 type Options = { skipResetting?: boolean }
 
+export class AbortError extends Error {
+  constructor() {
+    super('Aborted')
+    this.name = 'AbortError'
+  }
+}
+
 export class ObservableRequest<T, Args extends any[], E extends ClientError> {
   private _data: T | null = null
   private _error: E | null = null
   private _isLoading: boolean = false
   private _isLoaded: boolean = false
+  private _abortController: AbortController | null = null
 
   public static of<T, Args extends any[], E extends ClientError>(
     fetchFunction: FetchFunction<T, Args>,
@@ -46,7 +54,16 @@ export class ObservableRequest<T, Args extends any[], E extends ClientError> {
     return this._error?.response.errors?.[0].message
   }
 
-  public async fetch(...args: Args): Promise<Either<E, T>> {
+  public abort(): void {
+    this._abortController?.abort()
+    this._abortController = null
+  }
+
+  public async fetch(...args: Args): Promise<Either<E | AbortError, T>> {
+    this.abort()
+    this._abortController = new AbortController()
+    const signal = this._abortController.signal
+
     if (!this.options?.skipResetting) {
       this.reset()
     }
@@ -55,6 +72,14 @@ export class ObservableRequest<T, Args extends any[], E extends ClientError> {
       this.setIsLoading(true)
 
       const result = await this.fetchFunction(...args)
+
+      if (signal.aborted) {
+        return {
+          isRight: false,
+          error: new AbortError() as E | AbortError,
+        }
+      }
+
       this.setData(result)
 
       return {
@@ -62,6 +87,13 @@ export class ObservableRequest<T, Args extends any[], E extends ClientError> {
         data: result,
       }
     } catch (e) {
+      if (signal.aborted) {
+        return {
+          isRight: false,
+          error: new AbortError() as E | AbortError,
+        }
+      }
+
       console.error(e)
       this.setError(e as E)
 

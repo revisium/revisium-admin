@@ -1,16 +1,15 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import React, { useCallback } from 'react'
-import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
+import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
 import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
-interface RowListItemProps {
-  row: RowListItemType
-  store: RowListModel
+interface SelectRowListItemProps {
+  row: RowItemViewModel
   onSelect?: (rowId: string) => void
 }
 
-export const SelectRowListItem: React.FC<RowListItemProps> = ({ row, store, onSelect }) => {
+export const SelectRowListItem: React.FC<SelectRowListItemProps> = ({ row, onSelect }) => {
   const handleClickOnRowId = useCallback(() => {
     onSelect?.(row.id)
   }, [onSelect, row.id])
@@ -43,7 +42,7 @@ export const SelectRowListItem: React.FC<RowListItemProps> = ({ row, store, onSe
             {row.id}
           </Text>
 
-          {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
+          {row.showModifiedIndicator && <Text color="gray.400">*</Text>}
         </Flex>
       </Box>
 

@@ -3,17 +3,16 @@ import React, { useCallback } from 'react'
 import { PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { DotsThreeButton } from 'src/shared/ui'
-import { RowListItemType, RowListModel } from 'src/widgets/RowList/model/RowListModel.ts'
+import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
 import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
-interface RowListItem2Props {
-  row: RowListItemType
-  store: RowListModel
+interface RowListItemProps {
+  row: RowItemViewModel
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy }) => {
+export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleCopyRow = useCallback(() => {
@@ -21,8 +20,8 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
   }, [onCopy, row.versionId])
 
   const handleDeleteRow = useCallback(async () => {
-    await store.deleteRow(row.id)
-  }, [row.id, store])
+    await row.delete()
+  }, [row])
 
   const lastCellIndex = row.cells.length - 1
 
@@ -56,7 +55,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
               {row.id}
             </Link>
           </Text>
-          {!row.readonly && store.isEdit && <Text color="gray.400">*</Text>}
+          {row.showModifiedIndicator && <Text color="gray.400">*</Text>}
         </Flex>
       </Box>
 
@@ -65,7 +64,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
       ))}
 
       <Box as="td" width="100%"></Box>
-      {store.showMenu && (
+      {row.showMenu && (
         <Box
           className={!menuOpen ? styles.Actions : undefined}
           as="td"
@@ -93,7 +92,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
               <Portal>
                 <Menu.Positioner>
                   <Menu.Content>
-                    {store.canCreateRow && (
+                    {row.canCreateRow && (
                       <Menu.Item
                         color="gray.600"
                         value="copy"
@@ -104,7 +103,7 @@ export const RowListItem: React.FC<RowListItem2Props> = ({ row, store, onCopy })
                         <Box flex="1">Duplicate</Box>
                       </Menu.Item>
                     )}
-                    {store.canDeleteRow && (
+                    {row.canDeleteRow && (
                       <Menu.Item
                         color="gray.600"
                         value="delete"

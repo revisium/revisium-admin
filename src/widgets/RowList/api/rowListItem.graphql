@@ -1,0 +1,21 @@
+fragment RowListItem on RowModel {
+  id
+  versionId
+  readonly
+  data
+}
+
+query RowListRows($data: GetRowsInput!) {
+  rows(data: $data) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...RowListItem
+      }
+    }
+  }
+}

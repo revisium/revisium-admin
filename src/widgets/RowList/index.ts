@@ -1,1 +1,5 @@
 export { RowList } from './ui/RowList/RowList'
+export { SearchInput } from './ui/SearchInput/SearchInput'
+export { RowListViewModel } from './model/RowListViewModel'
+export { RowItemViewModel } from './model/RowItemViewModel'
+export type { ColumnType } from './model/types'

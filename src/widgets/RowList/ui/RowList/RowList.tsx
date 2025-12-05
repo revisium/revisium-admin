@@ -1,39 +1,57 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { TableVirtuoso } from 'react-virtuoso'
-import { ITableModel } from 'src/shared/model/BackendStore'
-import { useRowListModel } from 'src/widgets/RowList/hooks/useRowListModel.ts'
-import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem.tsx'
-import { SelectRowListItem } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem.tsx'
+import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
+import { RowListEmptyState } from 'src/widgets/RowList/ui/RowListEmptyState/RowListEmptyState'
+import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem'
+import { SelectRowListItem } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem'
 
 interface RowListProps {
-  table: ITableModel
+  model: RowListViewModel
   onSelect?: (rowId: string) => void
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCopy }) => {
-  const store = useRowListModel(table)
-
+export const RowList: React.FC<RowListProps> = observer(({ model, onSelect, onCopy }) => {
   const isSelectMode = Boolean(onSelect)
 
-  const { columns, data, showHeader } = store.columns
+  if (model.showLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+        <Spinner size="lg" color="gray.400" />
+      </Box>
+    )
+  }
 
-  if (!data.length) {
+  if (model.showError) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+        <Text color="red.500">Error loading rows</Text>
+      </Box>
+    )
+  }
+
+  if (model.showEmpty || model.showNotFound) {
+    return <RowListEmptyState model={model} />
+  }
+
+  if (!model.showList) {
     return null
   }
+
+  const { items, columns, showHeader } = model
 
   return (
     <TableVirtuoso
       style={{
         height: '100%',
       }}
-      totalCount={store.totalCount}
+      totalCount={items.length}
       defaultItemHeight={40}
       increaseViewportBy={40 * 100}
-      endReached={store.hasNextPage ? store.tryToFetchNextPage : undefined}
-      data={data}
+      endReached={model.hasNextPage ? model.tryToFetchNextPage : undefined}
+      data={items}
       components={{
         Table: ({ style, ...props }) => {
           return (
@@ -49,12 +67,12 @@ export const RowList: React.FC<RowListProps> = observer(({ table, onSelect, onCo
         },
         TableRow: (props) => {
           const index = props['data-index']
-          const row = data[index]
+          const row = items[index]
 
           return isSelectMode ? (
-            <SelectRowListItem row={row} store={store} onSelect={onSelect} />
+            <SelectRowListItem row={row} onSelect={onSelect} />
           ) : (
-            <RowListItem row={row} store={store} onCopy={onCopy} />
+            <RowListItem row={row} onCopy={onCopy} />
           )
         },
       }}

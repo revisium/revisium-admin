@@ -3052,6 +3052,32 @@ export type GetTableChangesForFilterQuery = {
   }
 }
 
+export type RowListItemFragment = {
+  id: string
+  versionId: string
+  readonly: boolean
+  data: { [key: string]: any } | string | number | boolean | null
+}
+
+export type RowListRowsQueryVariables = Exact<{
+  data: GetRowsInput
+}>
+
+export type RowListRowsQuery = {
+  rows: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      node: {
+        id: string
+        versionId: string
+        readonly: boolean
+        data: { [key: string]: any } | string | number | boolean | null
+      }
+    }>
+  }
+}
+
 export type SearchResultFragment = {
   row: { id: string }
   table: { id: string }
@@ -3390,6 +3416,14 @@ export const FieldChangeFieldsFragmentDoc = gql`
     oldValue
     newValue
     movedFrom
+  }
+`
+export const RowListItemFragmentDoc = gql`
+  fragment RowListItem on RowModel {
+    id
+    versionId
+    readonly
+    data
   }
 `
 export const SearchResultFragmentDoc = gql`
@@ -4208,6 +4242,23 @@ export const GetTableChangesForFilterDocument = gql`
       }
     }
   }
+`
+export const RowListRowsDocument = gql`
+  query RowListRows($data: GetRowsInput!) {
+    rows(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...RowListItem
+        }
+      }
+    }
+  }
+  ${RowListItemFragmentDoc}
 `
 export const SearchRowsDocument = gql`
   query searchRows($data: SearchRowsInput!) {
@@ -5029,6 +5080,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'GetTableChangesForFilter',
+        'query',
+        variables,
+      )
+    },
+    RowListRows(
+      variables: RowListRowsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RowListRowsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RowListRowsQuery>(RowListRowsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RowListRows',
         'query',
         variables,
       )

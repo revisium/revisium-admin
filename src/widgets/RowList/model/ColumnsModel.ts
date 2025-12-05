@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
 import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
+import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
@@ -15,7 +16,7 @@ import { ColumnType } from './types'
 export class ColumnsModel {
   private _columns: ColumnType[] = []
   private _schemaStore: ReturnType<typeof createJsonSchemaStore> | null = null
-  private _schemaStoreList: JsonSchemaStore[] = []
+  private _columnNodeIds: Set<string> = new Set()
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -31,7 +32,7 @@ export class ColumnsModel {
 
   public init(schema: JsonSchema): void {
     this._schemaStore = createJsonSchemaStore(schema)
-    const list: JsonSchemaStore[] = []
+    const schemaList: JsonSchemaStore[] = []
 
     priorityColumnTraverseStore(this._schemaStore, (node) => {
       if (
@@ -39,10 +40,10 @@ export class ColumnsModel {
         node.type === JsonSchemaTypeName.Number ||
         node.type === JsonSchemaTypeName.Boolean
       ) {
-        list.push(node)
+        schemaList.push(node)
       } else if (node.type === JsonSchemaTypeName.Object) {
         if (node.$ref) {
-          list.push(node)
+          schemaList.push(node)
           return true
         }
       } else {
@@ -50,8 +51,8 @@ export class ColumnsModel {
       }
     })
 
-    this._schemaStoreList = list
-    this._columns = list.map((item) => ({
+    this._columnNodeIds = new Set(schemaList.map((item) => item.nodeId))
+    this._columns = schemaList.map((item) => ({
       id: item.nodeId,
       title: item.name,
       width: getColumnBySchema(item),
@@ -70,11 +71,8 @@ export class ColumnsModel {
     if (!schemaStore) return []
 
     return rows.map((row) => {
-      createJsonValueStore(schemaStore, row.id, (row.data ?? {}) as JsonValue)
-
-      const cells = this._schemaStoreList
-        .map((item) => item.getValue(row.id))
-        .filter((value): value is JsonValueStore => Boolean(value))
+      const rootValue = createJsonValueStore(schemaStore, row.id, (row.data ?? {}) as JsonValue)
+      const cells = this.collectCells(rootValue)
 
       return new RowItemViewModel({
         item: row,
@@ -84,5 +82,17 @@ export class ColumnsModel {
         onDelete: options.onDelete,
       })
     })
+  }
+
+  private collectCells(rootValue: JsonValueStore): JsonValueStore[] {
+    const cells: JsonValueStore[] = []
+
+    traverseValue(rootValue, (node) => {
+      if (this._columnNodeIds.has(node.schema.nodeId)) {
+        cells.push(node)
+      }
+    })
+
+    return cells
   }
 }

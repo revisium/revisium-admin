@@ -110,8 +110,10 @@ export class AsyncListState<T> {
   }
 
   public removeItem(predicate: (item: T) => boolean): void {
+    const originalLength = this._items.length
     this._items = this._items.filter((item) => !predicate(item))
-    this._totalCount = Math.max(0, this._totalCount - 1)
+    const removedCount = originalLength - this._items.length
+    this._totalCount = Math.max(0, this._totalCount - removedCount)
   }
 
   public updateStateAfterRemove(isSearching: boolean): void {

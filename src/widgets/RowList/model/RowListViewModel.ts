@@ -16,9 +16,9 @@ import { ColumnType } from './types'
 export type { ColumnType }
 
 export class RowListViewModel implements IViewModel {
-  public readonly listState = new AsyncListState<RowItemViewModel>()
   public readonly search: SearchController
   public readonly columnsModel = new ColumnsModel()
+  public readonly listState = new AsyncListState<RowItemViewModel>()
 
   private _tableId = ''
   private _baseTotalCount = 0
@@ -101,11 +101,11 @@ export class RowListViewModel implements IViewModel {
     return this.projectContext.revision.id
   }
 
-  public init(tableId: string, schema: JsonSchema): void {
+  public init(tableId: string, schema: JsonSchema, options?: { showAllColumns?: boolean }): void {
     this._tableId = tableId
     this._baseTotalCount = 0
     this.search.reset()
-    this.columnsModel.init(schema)
+    this.columnsModel.init(schema, options)
     void this.loadInitial()
   }
 
@@ -139,14 +139,12 @@ export class RowListViewModel implements IViewModel {
 
     runInAction(() => {
       if (result.isRight) {
-        const newItems = this.columnsModel.createRowViewModels(
-          result.data.rows.edges.map((edge) => edge.node),
-          {
-            isEdit: this.isEdit,
-            permissionContext: this.permissionContext,
-            onDelete: this.deleteRow,
-          },
-        )
+        const newRows = result.data.rows.edges.map((edge) => edge.node)
+        const newItems = this.columnsModel.createRowViewModels(newRows, {
+          isEdit: this.isEdit,
+          permissionContext: this.permissionContext,
+          onDelete: this.deleteRow,
+        })
         this.listState.appendItems(newItems, {
           hasNextPage: result.data.rows.pageInfo.hasNextPage,
           endCursor: result.data.rows.pageInfo.endCursor ?? null,
@@ -212,14 +210,12 @@ export class RowListViewModel implements IViewModel {
     }
 
     runInAction(() => {
-      const items = this.columnsModel.createRowViewModels(
-        result.data.rows.edges.map((edge) => edge.node),
-        {
-          isEdit: this.isEdit,
-          permissionContext: this.permissionContext,
-          onDelete: this.deleteRow,
-        },
-      )
+      const rawData = result.data.rows.edges.map((edge) => edge.node)
+      const items = this.columnsModel.createRowViewModels(rawData, {
+        isEdit: this.isEdit,
+        permissionContext: this.permissionContext,
+        onDelete: this.deleteRow,
+      })
 
       this.listState.setItems(items, {
         hasNextPage: result.data.rows.pageInfo.hasNextPage,

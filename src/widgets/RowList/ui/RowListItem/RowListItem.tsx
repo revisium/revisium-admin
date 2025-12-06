@@ -1,18 +1,21 @@
 import { Box, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { DotsThreeButton } from 'src/shared/ui'
+import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
-import { Cell } from 'src/widgets/RowList/ui/Cell/Cell.tsx'
+import { CellsRow } from 'src/widgets/RowList/ui/CellsRow/CellsRow'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
   row: RowItemViewModel
+  columnsModel: ColumnsModel
   onCopy?: (rowVersionId: string) => void
 }
 
-export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
+export const RowListItem: React.FC<RowListItemProps> = observer(({ row, columnsModel, onCopy }) => {
   const { open: menuOpen, setOpen } = useDisclosure()
 
   const handleCopyRow = useCallback(() => {
@@ -22,8 +25,6 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
   const handleDeleteRow = useCallback(async () => {
     await row.delete()
   }, [row])
-
-  const lastCellIndex = row.cells.length - 1
 
   return (
     <Box
@@ -45,6 +46,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
         zIndex={1}
         backgroundColor="white"
         width="200px"
+        minWidth="200px"
         maxWidth="200px"
         pl="8px"
         pr="24px"
@@ -59,9 +61,7 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
         </Flex>
       </Box>
 
-      {row.cells.map((cell, index) => (
-        <Cell store={cell} key={cell.nodeId} isLastCell={lastCellIndex === index} />
-      ))}
+      <CellsRow columnsModel={columnsModel} cellsMap={row.cellsMap} />
 
       <Box as="td" width="100%"></Box>
       {row.showMenu && (
@@ -123,4 +123,4 @@ export const RowListItem: React.FC<RowListItemProps> = ({ row, onCopy }) => {
       )}
     </Box>
   )
-}
+})

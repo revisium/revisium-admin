@@ -455,6 +455,7 @@ export type Mutation = {
   loginGoogle: LoginModel
   patchRow: PatchRowResultModel
   removeRow: RemoveRowResultModel
+  removeRows: RemoveRowsResultModel
   removeTable: RemoveTableResultModel
   removeUserFromOrganization: Scalars['Boolean']['output']
   removeUserFromProject: Scalars['Boolean']['output']
@@ -536,6 +537,10 @@ export type MutationPatchRowArgs = {
 
 export type MutationRemoveRowArgs = {
   data: RemoveRowInput
+}
+
+export type MutationRemoveRowsArgs = {
+  data: RemoveRowsInput
 }
 
 export type MutationRemoveTableArgs = {
@@ -814,6 +819,18 @@ export type RemoveRowInput = {
 }
 
 export type RemoveRowResultModel = {
+  branch: BranchModel
+  previousVersionTableId?: Maybe<Scalars['String']['output']>
+  table?: Maybe<TableModel>
+}
+
+export type RemoveRowsInput = {
+  revisionId: Scalars['String']['input']
+  rowIds: Array<Scalars['String']['input']>
+  tableId: Scalars['String']['input']
+}
+
+export type RemoveRowsResultModel = {
   branch: BranchModel
   previousVersionTableId?: Maybe<Scalars['String']['output']>
   table?: Maybe<TableModel>
@@ -3078,6 +3095,12 @@ export type RowListRowsQuery = {
   }
 }
 
+export type RemoveRowsMutationVariables = Exact<{
+  data: RemoveRowsInput
+}>
+
+export type RemoveRowsMutation = { removeRows: { branch: { id: string } } }
+
 export type SearchResultFragment = {
   row: { id: string }
   table: { id: string }
@@ -4260,6 +4283,15 @@ export const RowListRowsDocument = gql`
   }
   ${RowListItemFragmentDoc}
 `
+export const RemoveRowsDocument = gql`
+  mutation RemoveRows($data: RemoveRowsInput!) {
+    removeRows(data: $data) {
+      branch {
+        id
+      }
+    }
+  }
+`
 export const SearchRowsDocument = gql`
   query searchRows($data: SearchRowsInput!) {
     searchRows(data: $data) {
@@ -5096,6 +5128,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'RowListRows',
         'query',
+        variables,
+      )
+    },
+    RemoveRows(
+      variables: RemoveRowsMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RemoveRowsMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RemoveRowsMutation>(RemoveRowsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RemoveRows',
+        'mutation',
         variables,
       )
     },

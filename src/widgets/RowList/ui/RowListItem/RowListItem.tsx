@@ -1,126 +1,175 @@
-import { Box, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
+import { Box, Checkbox, Flex, Menu, Portal, Text, useDisclosure } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
-import { PiCopy, PiTrash } from 'react-icons/pi'
+import { PiCheckSquare, PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { DotsThreeButton } from 'src/shared/ui'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
+import { SelectionViewModel } from 'src/widgets/RowList/model/SelectionViewModel'
 import { CellsRow } from 'src/widgets/RowList/ui/CellsRow/CellsRow'
+import { SELECTION_COLUMN_WIDTH } from 'src/widgets/RowList/ui/RowList/RowListContext'
 import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 
 interface RowListItemProps {
   row: RowItemViewModel
   columnsModel: ColumnsModel
   onCopy?: (rowVersionId: string) => void
+  selection?: SelectionViewModel
+  showSelectionColumn?: boolean
 }
 
-export const RowListItem: React.FC<RowListItemProps> = observer(({ row, columnsModel, onCopy }) => {
-  const { open: menuOpen, setOpen } = useDisclosure()
+export const RowListItem: React.FC<RowListItemProps> = observer(
+  ({ row, columnsModel, onCopy, selection, showSelectionColumn }) => {
+    const { open: menuOpen, setOpen } = useDisclosure()
 
-  const handleCopyRow = useCallback(() => {
-    onCopy?.(row.versionId)
-  }, [onCopy, row.versionId])
+    const handleCopyRow = useCallback(() => {
+      onCopy?.(row.versionId)
+    }, [onCopy, row.versionId])
 
-  const handleDeleteRow = useCallback(async () => {
-    await row.delete()
-  }, [row])
+    const handleDeleteRow = useCallback(() => {
+      selection?.selectSingleForDeletion(row.id)
+      selection?.openDeleteConfirmation()
+    }, [selection, row.id])
 
-  return (
-    <Box
-      height="40px"
-      as="tr"
-      _hover={{
-        '& td': {
-          bg: 'gray.50',
-        },
-      }}
-      bg="white"
-      className={styles.Row}
-      data-testid={`row-${row.id}`}
-    >
+    const handleSelectRow = useCallback(() => {
+      selection?.enterSelectionMode(row.id)
+    }, [selection, row.id])
+
+    const handleToggleSelection = useCallback(() => {
+      selection?.toggle(row.id)
+    }, [selection, row.id])
+
+    const isSelected = selection?.isSelected(row.id) ?? false
+
+    return (
       <Box
-        as="td"
-        position="sticky"
-        left={0}
-        zIndex={1}
-        backgroundColor="white"
-        width="200px"
-        minWidth="200px"
-        maxWidth="200px"
-        pl="8px"
-        pr="24px"
+        height="40px"
+        as="tr"
+        _hover={{
+          '& td': {
+            bg: 'gray.50',
+          },
+        }}
+        bg="white"
+        className={styles.Row}
+        data-testid={`row-${row.id}`}
       >
-        <Flex alignItems="center">
-          <Text textDecoration="underline" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-            <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
-              {row.id}
-            </Link>
-          </Text>
-          {row.showModifiedIndicator && <Text color="gray.400">*</Text>}
-        </Flex>
-      </Box>
-
-      <CellsRow columnsModel={columnsModel} cellsMap={row.cellsMap} />
-
-      <Box as="td" width="100%"></Box>
-      {row.showMenu && (
         <Box
-          className={!menuOpen ? styles.Actions : undefined}
           as="td"
           position="sticky"
-          right={0}
+          left={0}
           zIndex={1}
           backgroundColor="white"
-          width="40px"
+          width={showSelectionColumn ? SELECTION_COLUMN_WIDTH : '0px'}
+          minWidth={showSelectionColumn ? SELECTION_COLUMN_WIDTH : '0px'}
+          maxWidth={showSelectionColumn ? SELECTION_COLUMN_WIDTH : '0px'}
+          pl={showSelectionColumn ? '8px' : '0px'}
+          overflow="hidden"
+          transition="width 0.15s, min-width 0.15s, max-width 0.15s, padding 0.15s"
         >
-          <Flex justifyContent="flex-end">
-            <Menu.Root
-              positioning={{
-                placement: 'bottom-start',
-              }}
-              open={menuOpen}
-              onOpenChange={(e) => {
-                setOpen(e.open)
-              }}
-            >
-              <Menu.Trigger>
-                <Box paddingRight="2px">
-                  <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
-                </Box>
-              </Menu.Trigger>
-              <Portal>
-                <Menu.Positioner>
-                  <Menu.Content>
-                    {row.canCreateRow && (
-                      <Menu.Item
-                        color="gray.600"
-                        value="copy"
-                        data-testid={`copy-row-${row.id}`}
-                        onClick={handleCopyRow}
-                      >
-                        <PiCopy />
-                        <Box flex="1">Duplicate</Box>
-                      </Menu.Item>
-                    )}
-                    {row.canDeleteRow && (
-                      <Menu.Item
-                        color="gray.600"
-                        value="delete"
-                        data-restid={`remove-row-${row.id}`}
-                        onClick={handleDeleteRow}
-                      >
-                        <PiTrash />
-                        <Box flex={1}>Delete</Box>
-                      </Menu.Item>
-                    )}
-                  </Menu.Content>
-                </Menu.Positioner>
-              </Portal>
-            </Menu.Root>
+          <Flex alignItems="center" height="100%">
+            <Checkbox.Root checked={isSelected} onCheckedChange={handleToggleSelection}>
+              <Checkbox.HiddenInput />
+              <Checkbox.Control />
+            </Checkbox.Root>
           </Flex>
         </Box>
-      )}
-    </Box>
-  )
-})
+        <Box
+          as="td"
+          position="sticky"
+          left={showSelectionColumn ? SELECTION_COLUMN_WIDTH : 0}
+          zIndex={1}
+          backgroundColor="white"
+          width="200px"
+          minWidth="200px"
+          maxWidth="200px"
+          pl="8px"
+          pr="24px"
+          transition="left 0.15s"
+        >
+          <Flex alignItems="center">
+            <Text textDecoration="underline" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+              <Link to={`${row.id}`} data-testid={`row-${row.id}-link`}>
+                {row.id}
+              </Link>
+            </Text>
+            {row.showModifiedIndicator && <Text color="gray.400">*</Text>}
+          </Flex>
+        </Box>
+
+        <CellsRow columnsModel={columnsModel} cellsMap={row.cellsMap} />
+
+        <Box as="td" width="100%"></Box>
+        {row.showMenu && (
+          <Box
+            className={!menuOpen ? styles.Actions : undefined}
+            as="td"
+            position="sticky"
+            right={0}
+            zIndex={1}
+            backgroundColor="white"
+            width="40px"
+          >
+            <Flex justifyContent="flex-end">
+              <Menu.Root
+                positioning={{
+                  placement: 'bottom-start',
+                }}
+                open={menuOpen}
+                onOpenChange={(e) => {
+                  setOpen(e.open)
+                }}
+              >
+                <Menu.Trigger>
+                  <Box paddingRight="2px">
+                    <DotsThreeButton dataTestId={`row-list-menu-${row.id}`} />
+                  </Box>
+                </Menu.Trigger>
+                <Portal>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      {row.canDeleteRow && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="select"
+                          data-testid={`select-row-${row.id}`}
+                          onClick={handleSelectRow}
+                        >
+                          <PiCheckSquare />
+                          <Box flex="1">Select</Box>
+                        </Menu.Item>
+                      )}
+                      {row.canCreateRow && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="copy"
+                          data-testid={`copy-row-${row.id}`}
+                          onClick={handleCopyRow}
+                        >
+                          <PiCopy />
+                          <Box flex="1">Duplicate</Box>
+                        </Menu.Item>
+                      )}
+                      {row.canDeleteRow && (
+                        <Menu.Item
+                          color="gray.600"
+                          value="delete"
+                          data-testid={`remove-row-${row.id}`}
+                          onClick={handleDeleteRow}
+                        >
+                          <PiTrash />
+                          <Box flex={1}>Delete</Box>
+                        </Menu.Item>
+                      )}
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Portal>
+              </Menu.Root>
+            </Flex>
+          </Box>
+        )}
+      </Box>
+    )
+  },
+)

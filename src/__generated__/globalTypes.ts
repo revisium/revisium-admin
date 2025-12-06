@@ -470,6 +470,7 @@ export type Mutation = {
   loginGoogle: LoginModel
   patchRow: PatchRowResultModel
   removeRow: RemoveRowResultModel
+  removeRows: RemoveRowsResultModel
   removeTable: RemoveTableResultModel
   removeUserFromOrganization: Scalars['Boolean']['output']
   removeUserFromProject: Scalars['Boolean']['output']
@@ -551,6 +552,10 @@ export type MutationPatchRowArgs = {
 
 export type MutationRemoveRowArgs = {
   data: RemoveRowInput
+}
+
+export type MutationRemoveRowsArgs = {
+  data: RemoveRowsInput
 }
 
 export type MutationRemoveTableArgs = {
@@ -840,6 +845,19 @@ export type RemoveRowInput = {
 
 export type RemoveRowResultModel = {
   __typename: 'RemoveRowResultModel'
+  branch: BranchModel
+  previousVersionTableId?: Maybe<Scalars['String']['output']>
+  table?: Maybe<TableModel>
+}
+
+export type RemoveRowsInput = {
+  revisionId: Scalars['String']['input']
+  rowIds: Array<Scalars['String']['input']>
+  tableId: Scalars['String']['input']
+}
+
+export type RemoveRowsResultModel = {
+  __typename: 'RemoveRowsResultModel'
   branch: BranchModel
   previousVersionTableId?: Maybe<Scalars['String']['output']>
   table?: Maybe<TableModel>

@@ -19,15 +19,15 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
   ({ availableFields, hasHiddenColumns, onAddColumn, onAddAll }) => {
     if (!hasHiddenColumns) {
       return (
-        <Box as="th" backgroundColor="white" width="100%">
+        <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
           <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
         </Box>
       )
     }
 
     return (
-      <Box as="th" backgroundColor="white" width="100%">
-        <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" pl="8px" display="flex" alignItems="center">
+      <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
+        <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" display="flex" alignItems="center">
           <Menu.Root positioning={{ placement: 'bottom-start' }}>
             <Menu.Trigger asChild>
               <IconButton

@@ -36,16 +36,12 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
           onHideAll={columnsModel.hideAll}
         />
       ))}
-      <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
-        <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" display="flex" alignItems="center">
-          <AddColumnButton
-            availableFields={columnsModel.availableFieldsToAdd}
-            hasHiddenColumns={columnsModel.hasHiddenColumns}
-            onAddColumn={columnsModel.addColumn}
-            onAddAll={columnsModel.addAll}
-          />
-        </Box>
-      </Box>
+      <AddColumnButton
+        availableFields={columnsModel.availableFieldsToAdd}
+        hasHiddenColumns={columnsModel.hasHiddenColumns}
+        onAddColumn={columnsModel.addColumn}
+        onAddAll={columnsModel.addAll}
+      />
     </Box>
   )
 })

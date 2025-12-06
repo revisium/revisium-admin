@@ -2,7 +2,7 @@ import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mo
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
-import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { AbortError, ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { GetRevisionChangesQuery } from 'src/__generated__/graphql-request'
@@ -133,30 +133,29 @@ export class ChangesPageViewModel implements IViewModel {
   }
 
   private async request(): Promise<void> {
-    try {
-      const result = await this.getRevisionChangesRequest.fetch({
-        revisionId: this.context.revision.id,
-        includeSystem: false,
-      })
+    const result = await this.getRevisionChangesRequest.fetch({
+      revisionId: this.context.revision.id,
+      includeSystem: false,
+    })
 
-      runInAction(() => {
-        if (result.isRight) {
-          const totalChanges = result.data.revisionChanges.totalChanges
-          if (totalChanges > 0) {
-            this.state = State.list
-          } else {
-            this.state = State.empty
-          }
-        } else {
-          this.state = State.error
-        }
-      })
-    } catch (e) {
+    if (!result.isRight) {
+      if (result.error instanceof AbortError) {
+        return
+      }
       runInAction(() => {
         this.state = State.error
       })
-      console.error(e)
+      return
     }
+
+    runInAction(() => {
+      const totalChanges = result.data.revisionChanges.totalChanges
+      if (totalChanges > 0) {
+        this.state = State.list
+      } else {
+        this.state = State.empty
+      }
+    })
   }
 }
 

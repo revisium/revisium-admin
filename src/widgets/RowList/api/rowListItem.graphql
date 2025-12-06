@@ -19,3 +19,11 @@ query RowListRows($data: GetRowsInput!) {
     }
   }
 }
+
+mutation RemoveRows($data: RemoveRowsInput!) {
+  removeRows(data: $data) {
+    branch {
+      id
+    }
+  }
+}

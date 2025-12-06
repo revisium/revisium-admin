@@ -3,14 +3,15 @@ import { SearchIn, SearchType } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
 import { IViewModel } from 'src/shared/config/types'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { AsyncListState } from 'src/shared/lib/AsyncListState'
-import { AbortError, ObservableRequest } from 'src/shared/lib/ObservableRequest'
+import { ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { SearchController } from 'src/shared/lib/SearchController'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
 import { ColumnsModel } from './ColumnsModel'
 import { RowItemViewModel } from './RowItemViewModel'
+import { SelectionViewModel } from './SelectionViewModel'
 import { ColumnType } from './types'
 
 export type { ColumnType }
@@ -19,12 +20,15 @@ export class RowListViewModel implements IViewModel {
   public readonly search: SearchController
   public readonly columnsModel = new ColumnsModel()
   public readonly listState = new AsyncListState<RowItemViewModel>()
+  public readonly selection = new SelectionViewModel()
 
   private _tableId = ''
   private _baseTotalCount = 0
+  private _isDeleting = false
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
   private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRowMst)
+  private readonly removeRowsRequest = ObservableRequest.of(client.RemoveRows)
 
   constructor(
     private readonly projectContext: ProjectContext,
@@ -97,6 +101,22 @@ export class RowListViewModel implements IViewModel {
     return this.isEdit && this.permissionContext.canCreateRow
   }
 
+  public get canDeleteRow(): boolean {
+    return this.isEdit && this.permissionContext.canDeleteRow
+  }
+
+  public get showSelectionColumn(): boolean {
+    return this.canDeleteRow && this.selection.isSelectionMode
+  }
+
+  public get isDeleting(): boolean {
+    return this._isDeleting
+  }
+
+  public get allRowIds(): string[] {
+    return this.items.map((item) => item.id)
+  }
+
   private get revisionId(): string {
     return this.projectContext.revision.id
   }
@@ -105,12 +125,14 @@ export class RowListViewModel implements IViewModel {
     this._tableId = tableId
     this._baseTotalCount = 0
     this.search.reset()
+    this.selection.exitSelectionMode()
     this.columnsModel.init(schema, options)
     void this.loadInitial()
   }
 
   public dispose(): void {
     this.search.dispose()
+    this.selection.exitSelectionMode()
     this.getRowsRequest.abort()
   }
 
@@ -180,6 +202,46 @@ export class RowListViewModel implements IViewModel {
     }
   }
 
+  public async deleteRows(rowIds: string[]): Promise<boolean> {
+    if (rowIds.length === 0) {
+      return true
+    }
+
+    try {
+      runInAction(() => {
+        this._isDeleting = true
+      })
+
+      const result = await this.removeRowsRequest.fetch({
+        data: {
+          revisionId: this.revisionId,
+          tableId: this._tableId,
+          rowIds,
+        },
+      })
+
+      if (result.isRight) {
+        runInAction(() => {
+          for (const rowId of rowIds) {
+            this.listState.removeItem((item) => item.id === rowId)
+          }
+          this._baseTotalCount = Math.max(0, this._baseTotalCount - rowIds.length)
+          this.listState.updateStateAfterRemove(this.isSearching)
+          this.selection.removeDeletedRows(rowIds)
+        })
+        return true
+      }
+      return false
+    } catch (e) {
+      console.error(e)
+      return false
+    } finally {
+      runInAction(() => {
+        this._isDeleting = false
+      })
+    }
+  }
+
   private handleSearch = (): void => {
     void this.reload()
   }
@@ -200,9 +262,10 @@ export class RowListViewModel implements IViewModel {
     })
 
     if (!result.isRight) {
-      if (result.error instanceof AbortError) {
+      if (isAborted(result)) {
         return
       }
+
       runInAction(() => {
         this.listState.setError()
       })

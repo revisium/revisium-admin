@@ -6,6 +6,7 @@ import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 import { HeaderContent } from './HeaderContent'
 import { RowListContext } from './RowListContext'
 import { RowListEmptyState } from 'src/widgets/RowList/ui/RowListEmptyState/RowListEmptyState'
+import { RowListActionBar } from 'src/widgets/RowList/ui/RowListActionBar/RowListActionBar'
 import { TableComponent } from './TableComponent'
 import { TableRowComponent } from './TableRowComponent'
 
@@ -21,18 +22,20 @@ const components = {
 }
 
 export const RowList: React.FC<RowListProps> = observer(({ model, onSelect, onCopy }) => {
-  const isSelectMode = Boolean(onSelect)
-  const { items, columnsModel, showHeader } = model
+  const isRowPickerMode = Boolean(onSelect)
+  const { items, columnsModel, showHeader, selection, showSelectionColumn } = model
 
   const contextValue = useMemo(
     () => ({
       items,
       columnsModel,
-      isSelectMode,
+      isRowPickerMode,
       onSelect,
       onCopy,
+      selection,
+      showSelectionColumn,
     }),
-    [items, columnsModel, isSelectMode, onSelect, onCopy],
+    [items, columnsModel, isRowPickerMode, onSelect, onCopy, selection, showSelectionColumn],
   )
 
   const fixedHeaderContent = useMemo(
@@ -78,6 +81,7 @@ export const RowList: React.FC<RowListProps> = observer(({ model, onSelect, onCo
         components={components}
         fixedHeaderContent={fixedHeaderContent}
       />
+      <RowListActionBar model={model} />
     </RowListContext.Provider>
   )
 })

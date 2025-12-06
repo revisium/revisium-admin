@@ -1,3 +1,5 @@
+import { AbortError } from './ObservableRequest'
+
 export type Right<T> = {
   isRight: true
   data: T
@@ -16,4 +18,8 @@ export function isRight<E, T>(res: Either<E, T>): res is Right<T> {
 
 export function isLeft<E, T>(res: Either<E, T>): res is Left<E> {
   return res.isRight === false
+}
+
+export function isAborted<E, T>(res: Either<E, T>): boolean {
+  return !res.isRight && res.error instanceof AbortError
 }

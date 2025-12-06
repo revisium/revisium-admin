@@ -13,6 +13,7 @@ interface RowListActionBarProps {
 export const RowListActionBar: React.FC<RowListActionBarProps> = observer(({ model }) => {
   const { selection, isDeleting, allRowIds } = model
   const selectedCount = selection.selectedCount
+  const deleteCount = selection.deleteCount
   const isAllSelected = selection.isAllSelected(allRowIds)
 
   const handleSelectAll = useCallback(() => {
@@ -24,12 +25,17 @@ export const RowListActionBar: React.FC<RowListActionBarProps> = observer(({ mod
   }, [selection])
 
   const handleConfirmDelete = useCallback(async () => {
-    const count = selection.selectedCount
+    const rowIds = selection.rowIdsToDelete
+    const count = rowIds.length
+    const wasInSelectionMode = selection.isSelectionMode
     selection.closeDeleteConfirmation()
-    const success = await model.deleteSelectedRows()
+
+    const success = await model.deleteRows(rowIds)
     if (success) {
       toaster.info({ description: `${count} ${count === 1 ? 'row' : 'rows'} deleted` })
-      selection.exitSelectionMode()
+      if (wasInSelectionMode) {
+        selection.exitSelectionMode()
+      }
     } else {
       toaster.error({ description: 'Failed to delete rows' })
     }
@@ -79,8 +85,7 @@ export const RowListActionBar: React.FC<RowListActionBarProps> = observer(({ mod
 
       <DeleteRowsConfirmDialog
         isOpen={selection.isConfirmDeleteOpen}
-        selectedCount={selectedCount}
-        isDeleting={isDeleting}
+        count={deleteCount}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />

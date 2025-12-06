@@ -28,8 +28,7 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
     }, [onCopy, row.versionId])
 
     const handleDeleteRow = useCallback(() => {
-      selection?.selectSingleForDeletion(row.id)
-      selection?.openDeleteConfirmation()
+      selection?.requestSingleDelete(row.id)
     }, [selection, row.id])
 
     const handleSelectRow = useCallback(() => {

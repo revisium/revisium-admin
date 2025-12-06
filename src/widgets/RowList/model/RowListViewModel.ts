@@ -202,8 +202,7 @@ export class RowListViewModel implements IViewModel {
     }
   }
 
-  public async deleteSelectedRows(): Promise<boolean> {
-    const rowIds = this.selection.selectedRowIds
+  public async deleteRows(rowIds: string[]): Promise<boolean> {
     if (rowIds.length === 0) {
       return true
     }

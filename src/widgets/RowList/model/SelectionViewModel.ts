@@ -4,6 +4,7 @@ export class SelectionViewModel {
   private readonly _selectedRowIds = observable.map<string, boolean>()
   private _isSelectionMode = false
   private _isConfirmDeleteOpen = false
+  private _pendingDeleteRowId: string | null = null
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -13,10 +14,17 @@ export class SelectionViewModel {
     return this._isConfirmDeleteOpen
   }
 
-  public selectSingleForDeletion(rowId: string): void {
-    this._selectedRowIds.clear()
-    this._selectedRowIds.set(rowId, true)
-    this._isSelectionMode = true
+  public get deleteCount(): number {
+    return this._pendingDeleteRowId ? 1 : this._selectedRowIds.size
+  }
+
+  public get rowIdsToDelete(): string[] {
+    return this._pendingDeleteRowId ? [this._pendingDeleteRowId] : Array.from(this._selectedRowIds.keys())
+  }
+
+  public requestSingleDelete(rowId: string): void {
+    this._pendingDeleteRowId = rowId
+    this._isConfirmDeleteOpen = true
   }
 
   public openDeleteConfirmation(): void {
@@ -25,6 +33,7 @@ export class SelectionViewModel {
 
   public closeDeleteConfirmation(): void {
     this._isConfirmDeleteOpen = false
+    this._pendingDeleteRowId = null
   }
 
   public get isSelectionMode(): boolean {

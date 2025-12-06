@@ -3,9 +3,9 @@ import { SearchIn, SearchType } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
 import { IViewModel } from 'src/shared/config/types'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { AsyncListState } from 'src/shared/lib/AsyncListState'
-import { AbortError, ObservableRequest } from 'src/shared/lib/ObservableRequest'
+import { ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { SearchController } from 'src/shared/lib/SearchController'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
@@ -263,9 +263,10 @@ export class RowListViewModel implements IViewModel {
     })
 
     if (!result.isRight) {
-      if (result.error instanceof AbortError) {
+      if (isAborted(result)) {
         return
       }
+
       runInAction(() => {
         this.listState.setError()
       })

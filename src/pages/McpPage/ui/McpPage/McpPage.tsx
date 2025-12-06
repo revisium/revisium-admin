@@ -39,17 +39,17 @@ export const McpPage = observer(() => {
 
   const handleCopyUrl = useCallback(() => {
     model.copyUrl()
-    toaster.info({ duration: 1500, description: 'Copied to clipboard' })
+    toaster.info({ description: 'Copied to clipboard' })
   }, [model])
 
   const handleCopyConfig = useCallback(() => {
     model.copyConfig()
-    toaster.info({ duration: 1500, description: 'Configuration copied to clipboard' })
+    toaster.info({ description: 'Configuration copied to clipboard' })
   }, [model])
 
   const handleCopyCommand = useCallback((text: string) => {
     void navigator.clipboard.writeText(text)
-    toaster.info({ duration: 1500, description: 'Copied to clipboard' })
+    toaster.info({ description: 'Copied to clipboard' })
   }, [])
 
   const cliAddCommand = `claude mcp add --transport http ${model.serverName} ${model.mcpUrl}`

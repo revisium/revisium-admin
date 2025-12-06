@@ -15,9 +15,9 @@ export const McpTokenPage = observer(() => {
   const handleCopyToken = useCallback(async () => {
     const success = await model.copyAccessToken()
     if (success) {
-      toaster.info({ duration: 1500, description: 'Access token copied to clipboard' })
+      toaster.info({ description: 'Access token copied to clipboard' })
     } else {
-      toaster.error({ duration: 2000, description: 'Failed to copy token' })
+      toaster.error({ description: 'Failed to copy token' })
     }
   }, [model])
 

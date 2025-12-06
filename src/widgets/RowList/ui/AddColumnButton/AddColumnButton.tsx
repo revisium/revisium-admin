@@ -31,6 +31,7 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
           <Menu.Root positioning={{ placement: 'bottom-start' }}>
             <Menu.Trigger asChild>
               <IconButton
+                focusRing="none"
                 aria-label="Add column"
                 size="xs"
                 variant="ghost"

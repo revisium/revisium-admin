@@ -5,7 +5,7 @@ import { PermissionContext } from 'src/shared/model/AbilityService'
 
 interface RowItemViewModelParams {
   item: RowListItemFragment
-  cells: JsonValueStore[]
+  cellsMap: Map<string, JsonValueStore>
   isEdit: boolean
   permissionContext: PermissionContext
   onDelete: (rowId: string) => Promise<boolean>
@@ -28,8 +28,8 @@ export class RowItemViewModel {
     return this.params.item.readonly
   }
 
-  public get cells(): JsonValueStore[] {
-    return this.params.cells
+  public get cellsMap(): Map<string, JsonValueStore> {
+    return this.params.cellsMap
   }
 
   public get isEdit(): boolean {

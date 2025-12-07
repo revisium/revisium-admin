@@ -50,6 +50,7 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
             size="sm"
             variant={filterModel.isFilterBarOpen ? 'subtle' : 'ghost'}
             colorPalette="gray"
+            color={filterModel.hasAppliedFilters ? undefined : 'gray.300'}
           >
             <LuFilter />
           </IconButton>

@@ -1,4 +1,5 @@
 import { JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 
 export enum FilterFieldType {
@@ -6,6 +7,7 @@ export enum FilterFieldType {
   Number = 'number',
   Boolean = 'boolean',
   ForeignKey = 'foreignKey',
+  File = 'file',
 }
 
 export enum FilterOperator {
@@ -64,6 +66,10 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
     { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
     { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
   ],
+  [FilterFieldType.File]: [
+    { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
+    { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
+  ],
 }
 
 export interface FilterCondition {
@@ -101,6 +107,11 @@ export function getFieldTypeFromSchema(schemaStore: JsonSchemaStore): FilterFiel
       return FilterFieldType.Number
     case JsonSchemaTypeName.Boolean:
       return FilterFieldType.Boolean
+    case JsonSchemaTypeName.Object:
+      if (schemaStore.$ref === SystemSchemaIds.File) {
+        return FilterFieldType.File
+      }
+      return null
     default:
       return null
   }
@@ -115,6 +126,8 @@ export function getDefaultOperator(fieldType: FilterFieldType): FilterOperator {
       return FilterOperator.Equals
     case FilterFieldType.Boolean:
       return FilterOperator.IsTrue
+    case FilterFieldType.File:
+      return FilterOperator.IsNotEmpty
   }
 }
 

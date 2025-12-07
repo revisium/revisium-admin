@@ -45,14 +45,7 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
         <Box height="30px" borderBottomWidth="1px" borderColor="gray.100"></Box>
       </Box>
       {columns.map((column) => (
-        <ColumnHeader
-          key={column.id}
-          column={column}
-          canRemove={columnsModel.canRemoveColumn}
-          canHideAll={columnsModel.canHideAll}
-          onRemove={() => columnsModel.removeColumn(column.id)}
-          onHideAll={columnsModel.hideAll}
-        />
+        <ColumnHeader key={column.id} column={column} columnsModel={columnsModel} />
       ))}
       <AddColumnButton
         availableFields={columnsModel.availableFieldsToAdd}

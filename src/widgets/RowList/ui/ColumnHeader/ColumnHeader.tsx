@@ -1,73 +1,163 @@
-import { Box, Flex, IconButton, Menu, Portal, Text } from '@chakra-ui/react'
+import { Box, Flex, Menu, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
-import { PiDotsThreeVerticalBold, PiEyeSlash, PiListBullets } from 'react-icons/pi'
+import { FC, useCallback } from 'react'
+import { LuChevronRight } from 'react-icons/lu'
+import { PiEyeSlash, PiListBullets } from 'react-icons/pi'
+import { useTruncatedTooltip } from 'src/shared/hooks/useTruncatedTooltip'
+import { Tooltip } from 'src/shared/ui/Tooltip/tooltip'
+import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
+import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { ColumnType } from 'src/widgets/RowList/model/types'
+import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
 
 interface ColumnHeaderProps {
   column: ColumnType
-  canRemove: boolean
-  canHideAll: boolean
-  onRemove: () => void
-  onHideAll: () => void
+  columnsModel: ColumnsModel
 }
 
-export const ColumnHeader: FC<ColumnHeaderProps> = observer(
-  ({ column, canRemove, canHideAll, onRemove, onHideAll }) => {
-    return (
-      <Box
-        as="th"
-        textAlign="start"
-        width={`${column.width}px`}
-        maxWidth={`${column.width}px`}
-        minWidth={`${column.width}px`}
-        backgroundColor="white"
-      >
-        <Flex
-          alignItems="center"
-          height="30px"
-          borderBottomWidth="1px"
-          borderColor="gray.100"
-          pl="16px"
-          pr="4px"
-          gap="4px"
-          _hover={{ '& .column-menu': { opacity: 1 } }}
-        >
-          <Text flex={1} whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" color="gray.400" fontSize="sm">
-            {column.title}
-          </Text>
-          <Menu.Root positioning={{ placement: 'bottom-end' }}>
-            <Menu.Trigger asChild>
-              <IconButton
-                className="column-menu"
-                aria-label="Column menu"
-                size="xs"
-                variant="ghost"
-                opacity={0}
-                transition="opacity 0.2s"
+export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel }) => {
+  const {
+    ref: textRef,
+    isOpen: tooltipOpen,
+    onMouseEnter,
+    onMouseLeave,
+    onClose,
+  } = useTruncatedTooltip<HTMLParagraphElement>()
+
+  const availableFields = columnsModel.availableFieldsToAdd
+  const hasAvailableFields = availableFields.length > 0
+  const canRemove = columnsModel.canRemoveColumn
+  const canHideAll = columnsModel.canHideAll
+
+  const handleRemove = useCallback(() => {
+    columnsModel.removeColumn(column.id)
+  }, [columnsModel, column.id])
+
+  const handleInsertBefore = useCallback(
+    (nodeId: string) => {
+      columnsModel.insertColumnBefore(column.id, nodeId)
+    },
+    [columnsModel, column.id],
+  )
+
+  const handleInsertAfter = useCallback(
+    (nodeId: string) => {
+      columnsModel.insertColumnAfter(column.id, nodeId)
+    },
+    [columnsModel, column.id],
+  )
+
+  return (
+    <Box
+      as="th"
+      textAlign="start"
+      width={`${column.width}px`}
+      maxWidth={`${column.width}px`}
+      minWidth={`${column.width}px`}
+      backgroundColor="white"
+    >
+      <Menu.Root positioning={{ placement: 'bottom-end' }} lazyMount unmountOnExit>
+        <Menu.Trigger asChild>
+          <Flex
+            alignItems="center"
+            height="30px"
+            borderBottomWidth="1px"
+            borderColor="gray.100"
+            pl="16px"
+            pr="8px"
+            gap="4px"
+            cursor="pointer"
+            transition="background 0.15s"
+            _hover={{ bg: 'gray.50' }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onClick={onClose}
+          >
+            {column.fieldType && (
+              <Box as="span" fontSize="xs" fontWeight="medium" color="gray.300" fontFamily="mono" flexShrink={0} mr={1}>
+                {getFieldTypeIcon(column.fieldType)}
+              </Box>
+            )}
+            <Tooltip content={column.title} open={tooltipOpen} positioning={{ placement: 'top' }}>
+              <Text
+                ref={textRef}
+                flex={1}
+                minWidth={0}
+                whiteSpace="nowrap"
+                textOverflow="ellipsis"
+                overflow="hidden"
                 color="gray.400"
-                _hover={{ bg: 'gray.100', color: 'gray.600' }}
+                fontSize="sm"
               >
-                <PiDotsThreeVerticalBold />
-              </IconButton>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content minW="150px">
-                  <Menu.Item value="hide" disabled={!canRemove} onClick={onRemove}>
-                    <PiEyeSlash />
-                    <Text>Hide column</Text>
-                  </Menu.Item>
-                  <Menu.Item value="hide-all" disabled={!canHideAll} onClick={onHideAll}>
-                    <PiListBullets />
-                    <Text>Hide all columns</Text>
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
-        </Flex>
-      </Box>
-    )
-  },
-)
+                {column.title}
+              </Text>
+            </Tooltip>
+          </Flex>
+        </Menu.Trigger>
+        <Portal>
+          <Menu.Positioner>
+            <Menu.Content minW="180px">
+              {hasAvailableFields && (
+                <>
+                  <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>
+                    <Menu.TriggerItem>
+                      <Text flex={1}>Insert before</Text>
+                      <LuChevronRight />
+                    </Menu.TriggerItem>
+                    <Portal>
+                      <Menu.Positioner>
+                        <Menu.Content maxH="300px" minW="200px">
+                          {availableFields.map((field) => (
+                            <FieldMenuItem
+                              key={field.nodeId}
+                              nodeId={field.nodeId}
+                              name={field.name}
+                              fieldType={field.fieldType}
+                              valuePrefix="before"
+                              onClick={handleInsertBefore}
+                            />
+                          ))}
+                        </Menu.Content>
+                      </Menu.Positioner>
+                    </Portal>
+                  </Menu.Root>
+                  <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>
+                    <Menu.TriggerItem>
+                      <Text flex={1}>Insert after</Text>
+                      <LuChevronRight />
+                    </Menu.TriggerItem>
+                    <Portal>
+                      <Menu.Positioner>
+                        <Menu.Content maxH="300px" minW="200px">
+                          {availableFields.map((field) => (
+                            <FieldMenuItem
+                              key={field.nodeId}
+                              nodeId={field.nodeId}
+                              name={field.name}
+                              fieldType={field.fieldType}
+                              valuePrefix="after"
+                              onClick={handleInsertAfter}
+                            />
+                          ))}
+                        </Menu.Content>
+                      </Menu.Positioner>
+                    </Portal>
+                  </Menu.Root>
+                  <Menu.Separator />
+                </>
+              )}
+              <Menu.Item value="hide" disabled={!canRemove} onClick={handleRemove}>
+                <PiEyeSlash />
+                <Text>Hide column</Text>
+              </Menu.Item>
+              <Menu.Item value="hide-all" disabled={!canHideAll} onClick={columnsModel.hideAll}>
+                <PiListBullets />
+                <Text>Hide all columns</Text>
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Positioner>
+        </Portal>
+      </Menu.Root>
+    </Box>
+  )
+})

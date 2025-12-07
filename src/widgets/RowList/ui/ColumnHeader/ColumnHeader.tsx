@@ -7,15 +7,19 @@ import { useTruncatedTooltip } from 'src/shared/hooks/useTruncatedTooltip'
 import { Tooltip } from 'src/shared/ui/Tooltip/tooltip'
 import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
+import { SortModel } from 'src/widgets/RowList/model/SortModel'
 import { ColumnType } from 'src/widgets/RowList/model/types'
 import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
+import { SortIndicator } from './SortIndicator'
+import { SortSubmenu } from './SortSubmenu'
 
 interface ColumnHeaderProps {
   column: ColumnType
   columnsModel: ColumnsModel
+  sortModel?: SortModel
 }
 
-export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel }) => {
+export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel, sortModel }) => {
   const {
     ref: textRef,
     isOpen: tooltipOpen,
@@ -92,11 +96,18 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
                 {column.title}
               </Text>
             </Tooltip>
+            {sortModel && <SortIndicator columnId={column.id} sortModel={sortModel} />}
           </Flex>
         </Menu.Trigger>
         <Portal>
           <Menu.Positioner>
             <Menu.Content minW="180px">
+              {sortModel && (
+                <>
+                  <SortSubmenu columnId={column.id} sortModel={sortModel} />
+                  <Menu.Separator />
+                </>
+              )}
               {hasAvailableFields && (
                 <>
                   <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>

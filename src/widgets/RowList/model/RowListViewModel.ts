@@ -13,6 +13,7 @@ import { ColumnsModel } from './ColumnsModel'
 import { FilterModel } from './FilterModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { SelectionViewModel } from './SelectionViewModel'
+import { SortModel } from './SortModel'
 import { ColumnType } from './types'
 
 export type { ColumnType }
@@ -21,6 +22,7 @@ export class RowListViewModel implements IViewModel {
   public readonly search: SearchController
   public readonly columnsModel = new ColumnsModel()
   public readonly filterModel = new FilterModel()
+  public readonly sortModel = new SortModel()
   public readonly listState = new AsyncListState<RowItemViewModel>()
   public readonly selection = new SelectionViewModel()
 
@@ -38,8 +40,8 @@ export class RowListViewModel implements IViewModel {
   ) {
     this.search = new SearchController(300, this.handleSearch)
     makeAutoObservable(this, {}, { autoBind: true })
-    // Set callback after makeAutoObservable to ensure proper binding
     this.filterModel.setOnFilterChange(this.handleFilterChange)
+    this.sortModel.setOnSortChange(this.handleSortChange)
   }
 
   public get showLoading(): boolean {
@@ -88,6 +90,14 @@ export class RowListViewModel implements IViewModel {
 
   public get isFiltering(): boolean {
     return this.filterModel.hasAppliedFilters
+  }
+
+  public get canFilter(): boolean {
+    return this.filterModel.availableFields.length > 0
+  }
+
+  public get canSort(): boolean {
+    return this.sortModel.availableFields.length > 0
   }
 
   public get isSearchingOrFiltering(): boolean {
@@ -163,6 +173,15 @@ export class RowListViewModel implements IViewModel {
     this.selection.exitSelectionMode()
     this.columnsModel.init(schema, options)
     this.filterModel.init(schema)
+    const sortableFields = this.columnsModel.allAvailableFields
+      .filter((f) => f.fieldType !== null)
+      .map((f) => ({
+        nodeId: f.nodeId,
+        name: f.name,
+        path: f.path,
+        fieldType: f.fieldType!,
+      }))
+    this.sortModel.init(sortableFields)
     void this.loadInitial()
   }
 
@@ -170,6 +189,7 @@ export class RowListViewModel implements IViewModel {
     this.search.dispose()
     this.selection.exitSelectionMode()
     this.filterModel.dispose()
+    this.sortModel.dispose()
     this.getRowsRequest.abort()
   }
 
@@ -193,6 +213,7 @@ export class RowListViewModel implements IViewModel {
         first: 50,
         after: this.listState.endCursor,
         where: this.buildWhereClause(),
+        orderBy: this.sortModel.toGraphQLOrderBy(),
       },
     })
 
@@ -287,6 +308,10 @@ export class RowListViewModel implements IViewModel {
     void this.reload()
   }
 
+  private handleSortChange = (): void => {
+    void this.reload()
+  }
+
   private async reload(): Promise<void> {
     this.listState.reset()
     await this.loadInitial()
@@ -299,6 +324,7 @@ export class RowListViewModel implements IViewModel {
         tableId: this._tableId,
         first: 50,
         where: this.buildWhereClause(),
+        orderBy: this.sortModel.toGraphQLOrderBy(),
       },
     })
 

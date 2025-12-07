@@ -7,6 +7,7 @@ import { useViewModel } from 'src/shared/lib/hooks'
 import { Tooltip } from 'src/shared/ui'
 import { RowList, RowListViewModel, SearchInput } from 'src/widgets/RowList'
 import { FilterPopover } from 'src/widgets/RowList/ui/FilterBar'
+import { SortPopover } from 'src/widgets/RowList/ui/SortPopover'
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader'
@@ -55,7 +56,8 @@ export const RowStackList: React.FC = observer(() => {
   const searchAndFilter = (
     <Flex alignItems="center" gap={2}>
       <SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />
-      <FilterPopover filterModel={model.filterModel} anchorRef={filterAnchorRef} />
+      {model.canFilter && <FilterPopover filterModel={model.filterModel} anchorRef={filterAnchorRef} />}
+      {model.canSort && <SortPopover sortModel={model.sortModel} anchorRef={filterAnchorRef} />}
     </Flex>
   )
 

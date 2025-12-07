@@ -1,12 +1,9 @@
 import { Box, IconButton, Menu, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { PiPlus, PiListBullets } from 'react-icons/pi'
-
-interface AvailableField {
-  nodeId: string
-  name: string
-}
+import { PiListBullets, PiPlus } from 'react-icons/pi'
+import { AvailableField } from 'src/widgets/RowList/model/types'
+import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
 
 interface AddColumnButtonProps {
   availableFields: AvailableField[]
@@ -28,7 +25,7 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
     return (
       <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
         <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" display="flex" alignItems="center">
-          <Menu.Root positioning={{ placement: 'bottom-start' }}>
+          <Menu.Root positioning={{ placement: 'bottom-start' }} lazyMount unmountOnExit>
             <Menu.Trigger asChild>
               <IconButton
                 focusRing="none"
@@ -43,16 +40,20 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
             </Menu.Trigger>
             <Portal>
               <Menu.Positioner>
-                <Menu.Content minW="180px">
+                <Menu.Content minW="200px">
                   <Menu.Item value="add-all" onClick={onAddAll}>
                     <PiListBullets />
                     <Text>Add all columns</Text>
                   </Menu.Item>
                   {availableFields.length > 0 && <Menu.Separator />}
                   {availableFields.map((field) => (
-                    <Menu.Item key={field.nodeId} value={field.nodeId} onClick={() => onAddColumn(field.nodeId)}>
-                      <Text>{field.name || '(unnamed)'}</Text>
-                    </Menu.Item>
+                    <FieldMenuItem
+                      key={field.nodeId}
+                      nodeId={field.nodeId}
+                      name={field.name}
+                      fieldType={field.fieldType}
+                      onClick={onAddColumn}
+                    />
                   ))}
                 </Menu.Content>
               </Menu.Positioner>

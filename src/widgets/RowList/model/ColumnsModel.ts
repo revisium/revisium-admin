@@ -1,16 +1,16 @@
 import { makeAutoObservable } from 'mobx'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
-import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { JsonSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
-import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { JsonValue } from 'src/entities/Schema/types/json.types'
 import { PermissionContext } from 'src/shared/model/AbilityService'
+import { extractAvailableFields } from 'src/widgets/RowList/lib/extractAvailableFields'
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
-import { priorityColumnTraverseStore } from 'src/widgets/RowList/lib/priorityColumnTraverseStore'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
+import { sortFieldsByPriority } from 'src/widgets/RowList/lib/sortFieldsByPriority'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
 
@@ -55,6 +55,7 @@ export class ColumnsModel {
       id: field.nodeId,
       title: field.name,
       width: getColumnBySchema(field.schemaStore),
+      fieldType: field.fieldType,
     }
     this._columnCache.set(field.nodeId, column)
     return column
@@ -66,7 +67,8 @@ export class ColumnsModel {
 
   public get availableFieldsToAdd(): AvailableField[] {
     const visibleSet = new Set(this._visibleColumnIds)
-    return this._availableFields.filter((field) => !visibleSet.has(field.nodeId))
+    const hidden = this._availableFields.filter((field) => !visibleSet.has(field.nodeId))
+    return sortFieldsByPriority(hidden)
   }
 
   public get hasHiddenColumns(): boolean {
@@ -99,33 +101,11 @@ export class ColumnsModel {
     this._schemaStore = createJsonSchemaStore(schema)
     this._rowCache.clear()
     this._columnCache.clear()
-    const allFields: JsonSchemaStore[] = []
 
-    priorityColumnTraverseStore(this._schemaStore, (node) => {
-      if (
-        node.type === JsonSchemaTypeName.String ||
-        node.type === JsonSchemaTypeName.Number ||
-        node.type === JsonSchemaTypeName.Boolean
-      ) {
-        allFields.push(node)
-      } else if (node.type === JsonSchemaTypeName.Object) {
-        if (node.$ref) {
-          allFields.push(node)
-          return true
-        }
-      } else {
-        return true
-      }
-    })
-
-    this._availableFields = allFields.map((item) => ({
-      nodeId: item.nodeId,
-      name: item.name,
-      schemaStore: item,
-    }))
+    this._availableFields = extractAvailableFields(this._schemaStore)
 
     if (options?.showAllColumns) {
-      this._visibleColumnIds = allFields.map((item) => item.nodeId)
+      this._visibleColumnIds = this._availableFields.map((item) => item.nodeId)
     } else {
       const defaultColumns = selectDefaultColumns(this._schemaStore, DEFAULT_VISIBLE_COLUMNS)
       this._visibleColumnIds = defaultColumns.map((item) => item.nodeId)
@@ -138,6 +118,24 @@ export class ColumnsModel {
       this._visibleColumnIds.push(nodeId)
       this._visibleColumnIdsSet.add(nodeId)
     }
+  }
+
+  public insertColumnBefore(targetColumnId: string, newColumnId: string): void {
+    if (this._visibleColumnIdsSet.has(newColumnId)) return
+    const targetIndex = this._visibleColumnIds.indexOf(targetColumnId)
+    if (targetIndex === -1) return
+
+    this._visibleColumnIds.splice(targetIndex, 0, newColumnId)
+    this._visibleColumnIdsSet.add(newColumnId)
+  }
+
+  public insertColumnAfter(targetColumnId: string, newColumnId: string): void {
+    if (this._visibleColumnIdsSet.has(newColumnId)) return
+    const targetIndex = this._visibleColumnIds.indexOf(targetColumnId)
+    if (targetIndex === -1) return
+
+    this._visibleColumnIds.splice(targetIndex + 1, 0, newColumnId)
+    this._visibleColumnIdsSet.add(newColumnId)
   }
 
   public removeColumn(nodeId: string): void {

@@ -13,7 +13,7 @@ interface HeaderContentProps {
 export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsModel }) => {
   const columns = columnsModel.columns
   const context = useContext(RowListContext)
-  const { showSelectionColumn } = context || {}
+  const { showSelectionColumn, sortModel } = context || {}
 
   return (
     <Box as="tr" height="40px">
@@ -45,7 +45,7 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
         <Box height="30px" borderBottomWidth="1px" borderColor="gray.100"></Box>
       </Box>
       {columns.map((column) => (
-        <ColumnHeader key={column.id} column={column} columnsModel={columnsModel} />
+        <ColumnHeader key={column.id} column={column} columnsModel={columnsModel} sortModel={sortModel} />
       ))}
       <AddColumnButton
         availableFields={columnsModel.availableFieldsToAdd}

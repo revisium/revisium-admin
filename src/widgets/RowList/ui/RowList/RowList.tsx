@@ -23,19 +23,20 @@ const components = {
 
 export const RowList: React.FC<RowListProps> = observer(({ model, onSelect, onCopy }) => {
   const isRowPickerMode = Boolean(onSelect)
-  const { items, columnsModel, showHeader, selection, showSelectionColumn } = model
+  const { items, columnsModel, sortModel, showHeader, selection, showSelectionColumn } = model
 
   const contextValue = useMemo(
     () => ({
       items,
       columnsModel,
+      sortModel,
       isRowPickerMode,
       onSelect,
       onCopy,
       selection,
       showSelectionColumn,
     }),
-    [items, columnsModel, isRowPickerMode, onSelect, onCopy, selection, showSelectionColumn],
+    [items, columnsModel, sortModel, isRowPickerMode, onSelect, onCopy, selection, showSelectionColumn],
   )
 
   const fixedHeaderContent = useMemo(

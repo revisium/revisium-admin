@@ -1,0 +1,152 @@
+import { JsonSchemaTypeName } from 'src/entities/Schema'
+import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
+
+export enum FilterFieldType {
+  String = 'string',
+  Number = 'number',
+  Boolean = 'boolean',
+  ForeignKey = 'foreignKey',
+}
+
+export enum FilterOperator {
+  Equals = 'equals',
+  NotEquals = 'not_equals',
+  Contains = 'contains',
+  NotContains = 'not_contains',
+  StartsWith = 'starts_with',
+  EndsWith = 'ends_with',
+  IsEmpty = 'is_empty',
+  IsNotEmpty = 'is_not_empty',
+
+  GreaterThan = 'greater_than',
+  GreaterThanOrEqual = 'greater_than_or_equal',
+  LessThan = 'less_than',
+  LessThanOrEqual = 'less_than_or_equal',
+
+  IsTrue = 'is_true',
+  IsFalse = 'is_false',
+}
+
+export interface OperatorInfo {
+  operator: FilterOperator
+  label: string
+  requiresValue: boolean
+}
+
+export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
+  [FilterFieldType.String]: [
+    { operator: FilterOperator.Equals, label: 'equals', requiresValue: true },
+    { operator: FilterOperator.NotEquals, label: 'not equals', requiresValue: true },
+    { operator: FilterOperator.Contains, label: 'contains', requiresValue: true },
+    { operator: FilterOperator.NotContains, label: 'not contains', requiresValue: true },
+    { operator: FilterOperator.StartsWith, label: 'starts with', requiresValue: true },
+    { operator: FilterOperator.EndsWith, label: 'ends with', requiresValue: true },
+    { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
+    { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
+  ],
+  [FilterFieldType.Number]: [
+    { operator: FilterOperator.Equals, label: '=', requiresValue: true },
+    { operator: FilterOperator.NotEquals, label: '!=', requiresValue: true },
+    { operator: FilterOperator.GreaterThan, label: '>', requiresValue: true },
+    { operator: FilterOperator.GreaterThanOrEqual, label: '>=', requiresValue: true },
+    { operator: FilterOperator.LessThan, label: '<', requiresValue: true },
+    { operator: FilterOperator.LessThanOrEqual, label: '<=', requiresValue: true },
+    { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
+    { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
+  ],
+  [FilterFieldType.Boolean]: [
+    { operator: FilterOperator.IsTrue, label: 'is true', requiresValue: false },
+    { operator: FilterOperator.IsFalse, label: 'is false', requiresValue: false },
+  ],
+  [FilterFieldType.ForeignKey]: [
+    { operator: FilterOperator.Equals, label: 'equals', requiresValue: true },
+    { operator: FilterOperator.NotEquals, label: 'not equals', requiresValue: true },
+    { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
+    { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
+  ],
+}
+
+export interface FilterCondition {
+  id: string
+  field: string
+  fieldPath: string[]
+  fieldType: FilterFieldType
+  operator: FilterOperator
+  value: string | number | boolean | null
+}
+
+export interface FilterGroup {
+  id: string
+  logic: 'and' | 'or'
+  conditions: FilterCondition[]
+  groups: FilterGroup[]
+}
+
+export interface FilterableField {
+  nodeId: string
+  name: string
+  path: string[]
+  fieldType: FilterFieldType
+  schemaStore: JsonSchemaStore
+}
+
+export function getFieldTypeFromSchema(schemaStore: JsonSchemaStore): FilterFieldType | null {
+  switch (schemaStore.type) {
+    case JsonSchemaTypeName.String:
+      if ('foreignKey' in schemaStore && schemaStore.foreignKey) {
+        return FilterFieldType.ForeignKey
+      }
+      return FilterFieldType.String
+    case JsonSchemaTypeName.Number:
+      return FilterFieldType.Number
+    case JsonSchemaTypeName.Boolean:
+      return FilterFieldType.Boolean
+    default:
+      return null
+  }
+}
+
+export function getDefaultOperator(fieldType: FilterFieldType): FilterOperator {
+  switch (fieldType) {
+    case FilterFieldType.String:
+    case FilterFieldType.ForeignKey:
+      return FilterOperator.Contains
+    case FilterFieldType.Number:
+      return FilterOperator.Equals
+    case FilterFieldType.Boolean:
+      return FilterOperator.IsTrue
+  }
+}
+
+export function getOperatorInfo(operator: FilterOperator, fieldType: FilterFieldType): OperatorInfo | undefined {
+  return OPERATORS_BY_TYPE[fieldType].find((info) => info.operator === operator)
+}
+
+export function operatorRequiresValue(operator: FilterOperator, fieldType: FilterFieldType): boolean {
+  const info = getOperatorInfo(operator, fieldType)
+  return info?.requiresValue ?? true
+}
+
+export function generateFilterId(): string {
+  return `filter_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+}
+
+export function createEmptyCondition(field: FilterableField): FilterCondition {
+  return {
+    id: generateFilterId(),
+    field: field.name,
+    fieldPath: field.path,
+    fieldType: field.fieldType,
+    operator: getDefaultOperator(field.fieldType),
+    value: field.fieldType === FilterFieldType.Boolean ? true : '',
+  }
+}
+
+export function createEmptyGroup(logic: 'and' | 'or' = 'and'): FilterGroup {
+  return {
+    id: generateFilterId(),
+    logic,
+    conditions: [],
+    groups: [],
+  }
+}

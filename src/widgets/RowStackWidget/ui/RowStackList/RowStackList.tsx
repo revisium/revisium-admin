@@ -1,11 +1,12 @@
 import { Box, Flex, IconButton, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useCallback } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { PiPlus } from 'react-icons/pi'
 import { JsonSchema } from 'src/entities/Schema'
 import { useViewModel } from 'src/shared/lib/hooks'
 import { Tooltip } from 'src/shared/ui'
 import { RowList, RowListViewModel, SearchInput } from 'src/widgets/RowList'
+import { FilterPopover } from 'src/widgets/RowList/ui/FilterBar'
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader'
@@ -13,6 +14,7 @@ import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/Select
 
 export const RowStackList: React.FC = observer(() => {
   const { root, item } = useRowStackModel()
+  const filterAnchorRef = useRef<HTMLDivElement>(null)
 
   const tableId = item.table.id
   const schema = item.schema as JsonSchema
@@ -50,27 +52,23 @@ export const RowStackList: React.FC = observer(() => {
     </Tooltip>
   ) : null
 
+  const searchAndFilter = (
+    <Flex alignItems="center" gap={2}>
+      <SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />
+      <FilterPopover filterModel={model.filterModel} anchorRef={filterAnchorRef} />
+    </Flex>
+  )
+
   return (
     <Flex flexDirection="column" flex={1}>
-      {showBreadcrumbs && (
-        <RowStackHeader
-          showBreadcrumbs
-          actions={createRowButton}
-          search={<SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />}
-        />
-      )}
+      {showBreadcrumbs && <RowStackHeader showBreadcrumbs actions={createRowButton} search={searchAndFilter} />}
       {isSelectMode && (
         <>
           <SelectingForeignKeyDivider tableId={item.table.id} />
-          <RowStackHeader
-            tableTitle={item.table.id}
-            actions={createRowButton}
-            search={
-              <SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />
-            }
-          />
+          <RowStackHeader tableTitle={item.table.id} actions={createRowButton} search={searchAndFilter} />
         </>
       )}
+      <Box ref={filterAnchorRef} paddingX="8px" />
       <Flex alignItems="center" paddingX="8px" paddingY="8px">
         <Text fontSize="sm" color="gray.500">
           {model.rowCountText}

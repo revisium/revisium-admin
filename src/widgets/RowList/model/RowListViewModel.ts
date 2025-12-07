@@ -10,6 +10,7 @@ import { SearchController } from 'src/shared/lib/SearchController'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
 import { ColumnsModel } from './ColumnsModel'
+import { FilterModel } from './FilterModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { SelectionViewModel } from './SelectionViewModel'
 import { ColumnType } from './types'
@@ -19,6 +20,7 @@ export type { ColumnType }
 export class RowListViewModel implements IViewModel {
   public readonly search: SearchController
   public readonly columnsModel = new ColumnsModel()
+  public readonly filterModel = new FilterModel()
   public readonly listState = new AsyncListState<RowItemViewModel>()
   public readonly selection = new SelectionViewModel()
 
@@ -36,6 +38,8 @@ export class RowListViewModel implements IViewModel {
   ) {
     this.search = new SearchController(300, this.handleSearch)
     makeAutoObservable(this, {}, { autoBind: true })
+    // Set callback after makeAutoObservable to ensure proper binding
+    this.filterModel.setOnFilterChange(this.handleFilterChange)
   }
 
   public get showLoading(): boolean {
@@ -82,12 +86,43 @@ export class RowListViewModel implements IViewModel {
     return this.search.isSearching
   }
 
+  public get isFiltering(): boolean {
+    return this.filterModel.hasAppliedFilters
+  }
+
+  public get isSearchingOrFiltering(): boolean {
+    return this.isSearching || this.isFiltering
+  }
+
+  public get hasActiveSearch(): boolean {
+    return this.searchQuery.trim().length > 0
+  }
+
+  public get emptyStateType(): 'search' | 'filters' | 'both' {
+    const hasSearch = this.hasActiveSearch
+    const hasFilters = this.filterModel.hasAppliedFilters
+    if (hasSearch && hasFilters) return 'both'
+    if (hasFilters) return 'filters'
+    return 'search'
+  }
+
+  public get emptyStateHint(): string {
+    switch (this.emptyStateType) {
+      case 'both':
+        return 'Try a different search term or adjust filters'
+      case 'filters':
+        return 'Try adjusting your filters'
+      case 'search':
+        return 'Try a different search term'
+    }
+  }
+
   public get isLoading(): boolean {
     return this.getRowsRequest.isLoading
   }
 
   public get rowCountText(): string {
-    if (this.isSearching) {
+    if (this.isSearchingOrFiltering) {
       return `${this.listState.totalCount} of ${this._baseTotalCount} rows`
     }
     return `${this.listState.totalCount} rows`
@@ -127,12 +162,14 @@ export class RowListViewModel implements IViewModel {
     this.search.reset()
     this.selection.exitSelectionMode()
     this.columnsModel.init(schema, options)
+    this.filterModel.init(schema)
     void this.loadInitial()
   }
 
   public dispose(): void {
     this.search.dispose()
     this.selection.exitSelectionMode()
+    this.filterModel.dispose()
     this.getRowsRequest.abort()
   }
 
@@ -191,7 +228,7 @@ export class RowListViewModel implements IViewModel {
         runInAction(() => {
           this.listState.removeItem((item) => item.id === rowId)
           this._baseTotalCount = Math.max(0, this._baseTotalCount - 1)
-          this.listState.updateStateAfterRemove(this.isSearching)
+          this.listState.updateStateAfterRemove(this.isSearchingOrFiltering)
         })
         return true
       }
@@ -226,7 +263,7 @@ export class RowListViewModel implements IViewModel {
             this.listState.removeItem((item) => item.id === rowId)
           }
           this._baseTotalCount = Math.max(0, this._baseTotalCount - rowIds.length)
-          this.listState.updateStateAfterRemove(this.isSearching)
+          this.listState.updateStateAfterRemove(this.isSearchingOrFiltering)
           this.selection.removeDeletedRows(rowIds)
         })
         return true
@@ -243,6 +280,10 @@ export class RowListViewModel implements IViewModel {
   }
 
   private handleSearch = (): void => {
+    void this.reload()
+  }
+
+  private handleFilterChange = (): void => {
     void this.reload()
   }
 
@@ -284,37 +325,52 @@ export class RowListViewModel implements IViewModel {
         hasNextPage: result.data.rows.pageInfo.hasNextPage,
         endCursor: result.data.rows.pageInfo.endCursor ?? null,
         totalCount: result.data.rows.totalCount,
-        isSearching: this.isSearching,
+        isSearching: this.isSearchingOrFiltering,
       })
 
-      if (!this.isSearching && this._baseTotalCount === 0) {
+      if (!this.isSearchingOrFiltering && this._baseTotalCount === 0) {
         this._baseTotalCount = result.data.rows.totalCount
       }
     })
   }
 
   private buildWhereClause() {
-    if (!this.search.query) {
+    const conditions: object[] = []
+
+    if (this.search.query) {
+      conditions.push({
+        OR: [
+          {
+            id: {
+              contains: this.search.query,
+            },
+          },
+          {
+            data: {
+              path: [],
+              search: this.search.query,
+              searchType: SearchType.Plain,
+              searchIn: SearchIn.Values,
+            },
+          },
+        ],
+      })
+    }
+
+    const filterWhere = this.filterModel.toGraphQLWhere()
+    if (filterWhere) {
+      conditions.push(filterWhere)
+    }
+
+    if (conditions.length === 0) {
       return undefined
     }
 
-    return {
-      OR: [
-        {
-          id: {
-            contains: this.search.query,
-          },
-        },
-        {
-          data: {
-            path: [],
-            search: this.search.query,
-            searchType: SearchType.Plain,
-            searchIn: SearchIn.Values,
-          },
-        },
-      ],
+    if (conditions.length === 1) {
+      return conditions[0]
     }
+
+    return { AND: conditions }
   }
 }
 

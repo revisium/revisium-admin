@@ -1,7 +1,7 @@
 import { Box, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { LuSearch, LuTable } from 'react-icons/lu'
+import { LuFilter, LuSearch, LuTable } from 'react-icons/lu'
 import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 
 interface RowListEmptyStateProps {
@@ -10,11 +10,13 @@ interface RowListEmptyStateProps {
 
 export const RowListEmptyState: FC<RowListEmptyStateProps> = observer(({ model }) => {
   if (model.showNotFound) {
+    const Icon = model.emptyStateType === 'filters' ? LuFilter : LuSearch
+
     return (
       <VStack paddingY="48px" gap="12px" color="gray.400">
-        <Box as={LuSearch} boxSize="48px" />
+        <Box as={Icon} boxSize="48px" />
         <Text fontSize="md">No rows found</Text>
-        <Text fontSize="sm">Try a different search term</Text>
+        <Text fontSize="sm">{model.emptyStateHint}</Text>
       </VStack>
     )
   }

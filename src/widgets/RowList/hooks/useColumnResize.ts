@@ -13,17 +13,14 @@ export const useColumnResize = (columnId: string, columnsModel: ColumnsModel) =>
   columnIdRef.current = columnId
   columnsModelRef.current = columnsModel
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      const currentWidth = columnsModelRef.current.getColumnWidth(columnIdRef.current)
-      startXRef.current = e.clientX
-      startWidthRef.current = currentWidth
-      setIsResizing(true)
-    },
-    [],
-  )
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const currentWidth = columnsModelRef.current.getColumnWidth(columnIdRef.current)
+    startXRef.current = e.clientX
+    startWidthRef.current = currentWidth
+    setIsResizing(true)
+  }, [])
 
   useEffect(() => {
     if (!isResizing) return

@@ -4,7 +4,6 @@ import { FilterFieldType } from './filterTypes'
 export type ColumnType = {
   id: string
   title: string
-  width: number
   fieldType: FilterFieldType | null
 }
 

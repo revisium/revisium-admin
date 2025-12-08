@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, observable } from 'mobx'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
@@ -11,6 +11,7 @@ import { extractAvailableFields } from 'src/widgets/RowList/lib/extractAvailable
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
 import { sortFieldsByPriority } from 'src/widgets/RowList/lib/sortFieldsByPriority'
+import { MIN_COLUMN_WIDTH } from 'src/widgets/RowList/config/constants'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
 
@@ -26,14 +27,25 @@ export class ColumnsModel {
   private _visibleColumnIds: string[] = []
   private _visibleColumnIdsSet = new Set<string>()
   private _availableFields: AvailableField[] = []
+  private _availableFieldsMap = new Map<string, AvailableField>()
   private _schemaStore: ReturnType<typeof createJsonSchemaStore> | null = null
   private _rowCache = new Map<string, CachedRowData>()
   private _columnCache = new Map<string, ColumnType>()
+  private _columnWidths = observable.map<string, number>()
 
   constructor() {
-    makeAutoObservable<ColumnsModel, '_rowCache' | '_columnCache' | '_visibleColumnIdsSet'>(
+    makeAutoObservable<
+      ColumnsModel,
+      '_rowCache' | '_columnCache' | '_visibleColumnIdsSet' | '_columnWidths' | '_availableFieldsMap'
+    >(
       this,
-      { _rowCache: false, _columnCache: false, _visibleColumnIdsSet: false },
+      {
+        _rowCache: false,
+        _columnCache: false,
+        _visibleColumnIdsSet: false,
+        _columnWidths: false,
+        _availableFieldsMap: false,
+      },
       { autoBind: true },
     )
   }
@@ -54,7 +66,6 @@ export class ColumnsModel {
     const column: ColumnType = {
       id: field.nodeId,
       title: field.name,
-      width: getColumnBySchema(field.schemaStore),
       fieldType: field.fieldType,
     }
     this._columnCache.set(field.nodeId, column)
@@ -101,8 +112,13 @@ export class ColumnsModel {
     this._schemaStore = createJsonSchemaStore(schema)
     this._rowCache.clear()
     this._columnCache.clear()
+    this._columnWidths.clear()
+    this._availableFieldsMap.clear()
 
     this._availableFields = extractAvailableFields(this._schemaStore)
+    for (const field of this._availableFields) {
+      this._availableFieldsMap.set(field.nodeId, field)
+    }
 
     if (options?.showAllColumns) {
       this._visibleColumnIds = this._availableFields.map((item) => item.nodeId)
@@ -163,6 +179,70 @@ export class ColumnsModel {
     const [removed] = ids.splice(fromIndex, 1)
     ids.splice(toIndex, 0, removed)
     this._visibleColumnIds = ids
+  }
+
+  public getColumnIndex(columnId: string): number {
+    return this._visibleColumnIds.indexOf(columnId)
+  }
+
+  public canMoveLeft(columnId: string): boolean {
+    return this.getColumnIndex(columnId) > 0
+  }
+
+  public canMoveRight(columnId: string): boolean {
+    const index = this.getColumnIndex(columnId)
+    return index >= 0 && index < this._visibleColumnIds.length - 1
+  }
+
+  public canMoveToStart(columnId: string): boolean {
+    return this.getColumnIndex(columnId) > 1
+  }
+
+  public canMoveToEnd(columnId: string): boolean {
+    const index = this.getColumnIndex(columnId)
+    return index >= 0 && index < this._visibleColumnIds.length - 2
+  }
+
+  public moveColumnLeft(columnId: string): void {
+    const index = this.getColumnIndex(columnId)
+    if (index > 0) {
+      this.reorderColumns(index, index - 1)
+    }
+  }
+
+  public moveColumnRight(columnId: string): void {
+    const index = this.getColumnIndex(columnId)
+    if (index >= 0 && index < this._visibleColumnIds.length - 1) {
+      this.reorderColumns(index, index + 1)
+    }
+  }
+
+  public moveColumnToStart(columnId: string): void {
+    const index = this.getColumnIndex(columnId)
+    if (index > 0) {
+      this.reorderColumns(index, 0)
+    }
+  }
+
+  public moveColumnToEnd(columnId: string): void {
+    const index = this.getColumnIndex(columnId)
+    if (index >= 0 && index < this._visibleColumnIds.length - 1) {
+      this.reorderColumns(index, this._visibleColumnIds.length - 1)
+    }
+  }
+
+  public setColumnWidth(columnId: string, width: number): void {
+    const clampedWidth = Math.max(MIN_COLUMN_WIDTH, width)
+    this._columnWidths.set(columnId, clampedWidth)
+  }
+
+  public getColumnWidth(columnId: string): number {
+    const customWidth = this._columnWidths.get(columnId)
+    if (customWidth !== undefined) {
+      return customWidth
+    }
+    const field = this._availableFieldsMap.get(columnId)
+    return field ? getColumnBySchema(field.schemaStore) : 200
   }
 
   public createRowViewModels(

@@ -10,14 +10,16 @@ interface CellsRowProps {
 }
 
 export const CellsRow: FC<CellsRowProps> = observer(({ columnsModel, cellsMap }) => {
-  const cells = columnsModel.getVisibleCells(cellsMap)
-  const lastCellIndex = cells.length - 1
+  const columns = columnsModel.columns
+  const lastCellIndex = columns.length - 1
 
   return (
     <>
-      {cells.map((cell, index) => (
-        <Cell store={cell} key={cell.nodeId} isLastCell={index === lastCellIndex} />
-      ))}
+      {columns.map((column, index) => {
+        const cell = cellsMap.get(column.id)
+        if (!cell) return null
+        return <Cell store={cell} key={column.id} isLastCell={index === lastCellIndex} />
+      })}
     </>
   )
 })

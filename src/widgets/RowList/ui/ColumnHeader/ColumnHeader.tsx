@@ -1,15 +1,17 @@
 import { Box, Flex, Menu, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
-import { LuChevronRight } from 'react-icons/lu'
+import { LuArrowLeftToLine, LuArrowRightToLine, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { PiEyeSlash, PiListBullets } from 'react-icons/pi'
 import { useTruncatedTooltip } from 'src/shared/hooks/useTruncatedTooltip'
 import { Tooltip } from 'src/shared/ui/Tooltip/tooltip'
+import { useColumnResize } from 'src/widgets/RowList/hooks/useColumnResize'
 import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
 import { ColumnType } from 'src/widgets/RowList/model/types'
 import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
+import { ColumnResizer } from './ColumnResizer'
 import { SortIndicator } from './SortIndicator'
 import { SortSubmenu } from './SortSubmenu'
 
@@ -28,10 +30,18 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
     onClose,
   } = useTruncatedTooltip<HTMLParagraphElement>()
 
+  const width = columnsModel.getColumnWidth(column.id)
+  const { isResizing, handleMouseDown: handleResizeMouseDown } = useColumnResize(column.id, columnsModel)
+
   const availableFields = columnsModel.availableFieldsToAdd
   const hasAvailableFields = availableFields.length > 0
   const canRemove = columnsModel.canRemoveColumn
   const canHideAll = columnsModel.canHideAll
+
+  const canMoveLeft = columnsModel.canMoveLeft(column.id)
+  const canMoveRight = columnsModel.canMoveRight(column.id)
+  const canMoveToStart = columnsModel.canMoveToStart(column.id)
+  const canMoveToEnd = columnsModel.canMoveToEnd(column.id)
 
   const handleRemove = useCallback(() => {
     columnsModel.removeColumn(column.id)
@@ -51,14 +61,31 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
     [columnsModel, column.id],
   )
 
+  const handleMoveLeft = useCallback(() => {
+    columnsModel.moveColumnLeft(column.id)
+  }, [columnsModel, column.id])
+
+  const handleMoveRight = useCallback(() => {
+    columnsModel.moveColumnRight(column.id)
+  }, [columnsModel, column.id])
+
+  const handleMoveToStart = useCallback(() => {
+    columnsModel.moveColumnToStart(column.id)
+  }, [columnsModel, column.id])
+
+  const handleMoveToEnd = useCallback(() => {
+    columnsModel.moveColumnToEnd(column.id)
+  }, [columnsModel, column.id])
+
   return (
     <Box
       as="th"
       textAlign="start"
-      width={`${column.width}px`}
-      maxWidth={`${column.width}px`}
-      minWidth={`${column.width}px`}
+      width={`${width}px`}
+      maxWidth={`${width}px`}
+      minWidth={`${width}px`}
       backgroundColor="white"
+      position="relative"
     >
       <Menu.Root positioning={{ placement: 'bottom-end' }} lazyMount unmountOnExit>
         <Menu.Trigger asChild>
@@ -105,6 +132,47 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
               {sortModel && (
                 <>
                   <SortSubmenu columnId={column.id} sortModel={sortModel} />
+                  <Menu.Separator />
+                </>
+              )}
+              {(canMoveLeft || canMoveRight) && (
+                <>
+                  <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>
+                    <Menu.TriggerItem>
+                      <Text flex={1}>Move column</Text>
+                      <LuChevronRight />
+                    </Menu.TriggerItem>
+                    <Portal>
+                      <Menu.Positioner>
+                        <Menu.Content minW="160px">
+                          {canMoveLeft && (
+                            <Menu.Item value="move-left" onClick={handleMoveLeft}>
+                              <LuChevronLeft />
+                              <Text>Move left</Text>
+                            </Menu.Item>
+                          )}
+                          {canMoveToStart && (
+                            <Menu.Item value="move-to-start" onClick={handleMoveToStart}>
+                              <LuArrowLeftToLine />
+                              <Text>Move to start</Text>
+                            </Menu.Item>
+                          )}
+                          {canMoveRight && (
+                            <Menu.Item value="move-right" onClick={handleMoveRight}>
+                              <LuChevronRight />
+                              <Text>Move right</Text>
+                            </Menu.Item>
+                          )}
+                          {canMoveToEnd && (
+                            <Menu.Item value="move-to-end" onClick={handleMoveToEnd}>
+                              <LuArrowRightToLine />
+                              <Text>Move to end</Text>
+                            </Menu.Item>
+                          )}
+                        </Menu.Content>
+                      </Menu.Positioner>
+                    </Portal>
+                  </Menu.Root>
                   <Menu.Separator />
                 </>
               )}
@@ -169,6 +237,7 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
           </Menu.Positioner>
         </Portal>
       </Menu.Root>
+      <ColumnResizer isResizing={isResizing} onMouseDown={handleResizeMouseDown} />
     </Box>
   )
 })

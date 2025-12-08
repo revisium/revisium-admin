@@ -11,6 +11,7 @@ export const TableComponent: React.FC<TableProps> = ({ style, ...props }) => (
       ...style,
       width: 'max-content',
       minWidth: '100%',
+      tableLayout: 'fixed',
     }}
   />
 )

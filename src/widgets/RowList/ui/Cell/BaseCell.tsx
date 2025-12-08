@@ -2,18 +2,17 @@ import { Box, Text } from '@chakra-ui/react'
 import { FC, PropsWithChildren } from 'react'
 
 interface BaseCellProps extends PropsWithChildren {
-  width: string
   isLastCell: boolean
 }
 
-export const BaseCell: FC<BaseCellProps> = ({ width, isLastCell, children }) => {
+export const BaseCell: FC<BaseCellProps> = ({ isLastCell, children }) => {
   return (
     <Box
       minHeight="40px"
       as="td"
       {...(isLastCell ? {} : { borderRightWidth: '1px', borderColor: 'gray.100' })}
-      width={width}
-      maxWidth={width}
+      overflow="hidden"
+      maxWidth="0"
       pl="16px"
       pr="16px"
     >

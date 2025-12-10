@@ -14,7 +14,7 @@ export const TableRowComponent: React.FC<TableRowProps> = observer(({ 'data-inde
     return null
   }
 
-  const { model, revisionId, tableId, isRevisionReadonly, isRowPickerMode, onSelect, onCopy } = context
+  const { model, revisionId, tableId, isRowPickerMode, onSelect, onCopy } = context
   const { items, columnsModel, selection, showSelectionColumn } = model
   const row = items[index]
 
@@ -32,7 +32,6 @@ export const TableRowComponent: React.FC<TableRowProps> = observer(({ 'data-inde
       columnsModel={columnsModel}
       revisionId={revisionId}
       tableId={tableId}
-      isRevisionReadonly={isRevisionReadonly}
       onCopy={onCopy}
       selection={selection}
       showSelectionColumn={showSelectionColumn}

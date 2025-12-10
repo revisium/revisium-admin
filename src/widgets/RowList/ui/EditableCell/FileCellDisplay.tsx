@@ -27,7 +27,7 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
 
   const handleOpenFile = useCallback(() => {
     if (url) {
-      window.open(url, '_blank')
+      window.open(url, '_blank', 'noopener,noreferrer')
     }
   }, [url])
 
@@ -59,7 +59,7 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
   }
 
   return (
-    <Box display="flex" alignItems="center" gap={1}>
+    <Box display="flex" alignItems="center" gap={1} role="group">
       {hasUrl && (
         <>
           {isImage ? (
@@ -82,7 +82,7 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
                     <HoverCard.Arrow>
                       <HoverCard.ArrowTip />
                     </HoverCard.Arrow>
-                    <Image aspectRatio={width / height || 1} width="300px" src={url} />
+                    <Image aspectRatio={width > 0 && height > 0 ? width / height : 1} width="300px" src={url} />
                   </HoverCard.Content>
                 </HoverCard.Positioner>
               </Portal>

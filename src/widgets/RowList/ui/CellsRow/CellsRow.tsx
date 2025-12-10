@@ -9,7 +9,6 @@ interface CellsRowProps {
   row: RowItemViewModel
   columnsModel: ColumnsModel
   revisionId: string
-  isRevisionReadonly?: boolean
   onFileUpload?: (fileId: string, file: File) => void
 }
 

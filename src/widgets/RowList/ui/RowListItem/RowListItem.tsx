@@ -17,14 +17,13 @@ interface RowListItemProps {
   columnsModel: ColumnsModel
   revisionId: string
   tableId: string
-  isRevisionReadonly?: boolean
   onCopy?: (rowVersionId: string) => void
   selection?: SelectionViewModel
   showSelectionColumn?: boolean
 }
 
 export const RowListItem: React.FC<RowListItemProps> = observer(
-  ({ row, columnsModel, revisionId, tableId, isRevisionReadonly, onCopy, selection, showSelectionColumn }) => {
+  ({ row, columnsModel, revisionId, tableId, onCopy, selection, showSelectionColumn }) => {
     const { open: menuOpen, setOpen } = useDisclosure()
 
     const handleCopyRow = useCallback(() => {
@@ -109,13 +108,7 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
           </Flex>
         </Box>
 
-        <CellsRow
-          row={row}
-          columnsModel={columnsModel}
-          revisionId={revisionId}
-          isRevisionReadonly={isRevisionReadonly}
-          onFileUpload={handleFileUpload}
-        />
+        <CellsRow row={row} columnsModel={columnsModel} revisionId={revisionId} onFileUpload={handleFileUpload} />
 
         <Box as="td" width="100%"></Box>
         {row.showMenu && (

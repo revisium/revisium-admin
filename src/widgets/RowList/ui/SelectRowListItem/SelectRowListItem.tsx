@@ -49,7 +49,7 @@ export const SelectRowListItem: React.FC<SelectRowListItemProps> = observer(
           </Flex>
         </Box>
 
-        <CellsRow row={row} columnsModel={columnsModel} revisionId={revisionId} isRevisionReadonly={true} />
+        <CellsRow row={row} columnsModel={columnsModel} revisionId={revisionId} />
 
         <Box as="td" width="100%"></Box>
         <Box as="td"></Box>

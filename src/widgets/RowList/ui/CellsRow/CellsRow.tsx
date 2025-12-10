@@ -1,24 +1,42 @@
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
-import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
+import { FC, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
-import { Cell } from 'src/widgets/RowList/ui/Cell/Cell'
+import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
+import { EditableCell } from 'src/widgets/RowList/ui/EditableCell'
 
 interface CellsRowProps {
+  row: RowItemViewModel
   columnsModel: ColumnsModel
-  cellsMap: Map<string, JsonValueStore>
+  revisionId: string
+  onFileUpload?: (fileId: string, file: File) => void
 }
 
-export const CellsRow: FC<CellsRowProps> = observer(({ columnsModel, cellsMap }) => {
-  const columns = columnsModel.columns
-  const lastCellIndex = columns.length - 1
+export const CellsRow: FC<CellsRowProps> = observer(({ row, columnsModel, revisionId, onFileUpload }) => {
+  const navigate = useNavigate()
+
+  const handleNavigateToRow = useCallback(() => {
+    navigate(row.id)
+  }, [navigate, row.id])
 
   return (
     <>
-      {columns.map((column, index) => {
-        const cell = cellsMap.get(column.id)
-        if (!cell) return null
-        return <Cell store={cell} key={column.id} isLastCell={index === lastCellIndex} />
+      {columnsModel.columns.map((column) => {
+        const cellVM = row.getCellViewModel(column.id)
+        if (!cellVM) {
+          return null
+        }
+        return (
+          <EditableCell
+            key={column.id}
+            cellVM={cellVM}
+            fieldName={column.name}
+            revisionId={revisionId}
+            isLastColumn={columnsModel.isLastColumn(column.id)}
+            onNavigateToRow={handleNavigateToRow}
+            onFileUpload={onFileUpload}
+          />
+        )
       })}
     </>
   )

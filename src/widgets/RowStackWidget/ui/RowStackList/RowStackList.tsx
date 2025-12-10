@@ -77,7 +77,14 @@ export const RowStackList: React.FC = observer(() => {
         </Text>
       </Flex>
       <Box flex={1} paddingBottom="1rem">
-        <RowList model={model} onSelect={isSelectMode ? handleSelectRow : undefined} onCopy={item.toCloneRow} />
+        <RowList
+          model={model}
+          revisionId={item.revisionId}
+          tableId={tableId}
+          isRevisionReadonly={!item.isEditableRevision}
+          onSelect={isSelectMode ? handleSelectRow : undefined}
+          onCopy={item.toCloneRow}
+        />
       </Box>
     </Flex>
   )

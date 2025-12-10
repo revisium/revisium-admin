@@ -77,6 +77,10 @@ export class RowStackModel {
     return this.projectPageModel.isEditableRevision
   }
 
+  public get revisionId(): string {
+    return this.projectPageModel.revisionOrThrow.id
+  }
+
   public get currentForeignKeyPath() {
     if (this.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
       return createJsonValuePathByStore(this.state.foreignKeyNode)

@@ -27,3 +27,11 @@ mutation RemoveRows($data: RemoveRowsInput!) {
     }
   }
 }
+
+mutation PatchRowInline($data: PatchRowInput!) {
+  patchRow(data: $data) {
+    row {
+      ...RowListItem
+    }
+  }
+}

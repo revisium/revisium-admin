@@ -9,9 +9,13 @@ import { RowListEmptyState } from 'src/widgets/RowList/ui/RowListEmptyState/RowL
 import { RowListActionBar } from 'src/widgets/RowList/ui/RowListActionBar/RowListActionBar'
 import { TableComponent } from './TableComponent'
 import { TableRowComponent } from './TableRowComponent'
+import { useInlineEditKeyboard } from 'src/widgets/RowList/hooks/useInlineEditKeyboard'
 
 interface RowListProps {
   model: RowListViewModel
+  revisionId: string
+  tableId: string
+  isRevisionReadonly?: boolean
   onSelect?: (rowId: string) => void
   onCopy?: (rowVersionId: string) => void
 }
@@ -21,68 +25,74 @@ const components = {
   TableRow: TableRowComponent,
 }
 
-export const RowList: React.FC<RowListProps> = observer(({ model, onSelect, onCopy }) => {
-  const isRowPickerMode = Boolean(onSelect)
-  const { items, columnsModel, sortModel, showHeader, selection, showSelectionColumn } = model
+export const RowList: React.FC<RowListProps> = observer(
+  ({ model, revisionId, tableId, isRevisionReadonly = false, onSelect, onCopy }) => {
+    const isRowPickerMode = Boolean(onSelect)
+    const { items, columnsModel, inlineEdit, showHeader } = model
 
-  const contextValue = useMemo(
-    () => ({
-      items,
-      columnsModel,
-      sortModel,
-      isRowPickerMode,
-      onSelect,
-      onCopy,
-      selection,
-      showSelectionColumn,
-    }),
-    [items, columnsModel, sortModel, isRowPickerMode, onSelect, onCopy, selection, showSelectionColumn],
-  )
+    useInlineEditKeyboard({
+      inlineEditModel: inlineEdit,
+      enabled: !isRowPickerMode && !isRevisionReadonly,
+    })
 
-  const fixedHeaderContent = useMemo(
-    () => (showHeader ? () => <HeaderContent columnsModel={columnsModel} /> : undefined),
-    [showHeader, columnsModel],
-  )
-
-  if (model.showLoading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="200px">
-        <Spinner size="lg" color="gray.400" />
-      </Box>
+    const contextValue = useMemo(
+      () => ({
+        model,
+        revisionId,
+        tableId,
+        isRevisionReadonly,
+        isRowPickerMode,
+        onSelect,
+        onCopy,
+      }),
+      [model, revisionId, tableId, isRevisionReadonly, isRowPickerMode, onSelect, onCopy],
     )
-  }
 
-  if (model.showError) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="200px">
-        <Text color="red.500">Error loading rows</Text>
-      </Box>
+    const fixedHeaderContent = useMemo(
+      () => (showHeader ? () => <HeaderContent columnsModel={columnsModel} /> : undefined),
+      [showHeader, columnsModel],
     )
-  }
 
-  if (model.showEmpty || model.showNotFound) {
-    return <RowListEmptyState model={model} />
-  }
+    if (model.showLoading) {
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+          <Spinner size="lg" color="gray.400" />
+        </Box>
+      )
+    }
 
-  if (!model.showList) {
-    return null
-  }
+    if (model.showError) {
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+          <Text color="red.500">Error loading rows</Text>
+        </Box>
+      )
+    }
 
-  return (
-    <RowListContext.Provider value={contextValue}>
-      <TableVirtuoso
-        style={{
-          height: '100%',
-        }}
-        totalCount={items.length}
-        defaultItemHeight={40}
-        increaseViewportBy={40 * 100}
-        endReached={model.hasNextPage ? model.tryToFetchNextPage : undefined}
-        data={items}
-        components={components}
-        fixedHeaderContent={fixedHeaderContent}
-      />
-      <RowListActionBar model={model} />
-    </RowListContext.Provider>
-  )
-})
+    if (model.showEmpty || model.showNotFound) {
+      return <RowListEmptyState model={model} />
+    }
+
+    if (!model.showList) {
+      return null
+    }
+
+    return (
+      <RowListContext.Provider value={contextValue}>
+        <TableVirtuoso
+          style={{
+            height: '100%',
+          }}
+          totalCount={items.length}
+          defaultItemHeight={40}
+          increaseViewportBy={40 * 100}
+          endReached={model.hasNextPage ? model.tryToFetchNextPage : undefined}
+          data={items}
+          components={components}
+          fixedHeaderContent={fixedHeaderContent}
+        />
+        <RowListActionBar model={model} />
+      </RowListContext.Provider>
+    )
+  },
+)

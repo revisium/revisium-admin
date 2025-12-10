@@ -11,6 +11,7 @@ import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
 import { ColumnsModel } from './ColumnsModel'
 import { FilterModel } from './FilterModel'
+import { InlineEditModel } from './InlineEditModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { SelectionViewModel } from './SelectionViewModel'
 import { SortModel } from './SortModel'
@@ -25,6 +26,7 @@ export class RowListViewModel implements IViewModel {
   public readonly sortModel = new SortModel()
   public readonly listState = new AsyncListState<RowItemViewModel>()
   public readonly selection = new SelectionViewModel()
+  public readonly inlineEdit = new InlineEditModel()
 
   private _tableId = ''
   private _baseTotalCount = 0
@@ -173,16 +175,47 @@ export class RowListViewModel implements IViewModel {
     this.selection.exitSelectionMode()
     this.columnsModel.init(schema, options)
     this.filterModel.init(schema)
-    const sortableFields = this.columnsModel.allAvailableFields
-      .filter((f) => f.fieldType !== null)
-      .map((f) => ({
-        nodeId: f.nodeId,
-        name: f.name,
-        path: f.path,
-        fieldType: f.fieldType!,
-      }))
-    this.sortModel.init(sortableFields)
+    this.sortModel.init(this.columnsModel.getSortableFields())
+    this.inlineEdit.init({
+      revisionId: this.revisionId,
+      tableId: this._tableId,
+      getVisibleFields: this.getVisibleFields,
+      getVisibleRowIds: this.getVisibleRowIds,
+      getCellStore: this.getCellStore,
+      isCellReadonly: this.isCellReadonly,
+    })
     void this.loadInitial()
+  }
+
+  private readonly getVisibleFields = (): string[] => {
+    return this.columnsModel.columns.map((c) => c.id)
+  }
+
+  private readonly getVisibleRowIds = (): string[] => {
+    return this.items.map((item) => item.id)
+  }
+
+  private readonly getCellStore = (rowId: string, field: string) => {
+    const row = this.items.find((item) => item.id === rowId)
+    return row?.cellsMap.get(field)
+  }
+
+  private readonly isCellReadonly = (rowId: string, field: string): boolean => {
+    if (!this.isEdit) {
+      return true
+    }
+    const row = this.items.find((item) => item.id === rowId)
+    if (!row) {
+      return true
+    }
+    const store = row.cellsMap.get(field)
+    if (!store) {
+      return true
+    }
+    if ('readOnly' in store && store.readOnly) {
+      return true
+    }
+    return false
   }
 
   public dispose(): void {
@@ -190,6 +223,7 @@ export class RowListViewModel implements IViewModel {
     this.selection.exitSelectionMode()
     this.filterModel.dispose()
     this.sortModel.dispose()
+    this.inlineEdit.dispose()
     this.getRowsRequest.abort()
   }
 
@@ -223,6 +257,7 @@ export class RowListViewModel implements IViewModel {
         const newItems = this.columnsModel.createRowViewModels(newRows, {
           isEdit: this.isEdit,
           permissionContext: this.permissionContext,
+          inlineEditModel: this.inlineEdit,
           onDelete: this.deleteRow,
         })
         this.listState.appendItems(newItems, {
@@ -344,6 +379,7 @@ export class RowListViewModel implements IViewModel {
       const items = this.columnsModel.createRowViewModels(rawData, {
         isEdit: this.isEdit,
         permissionContext: this.permissionContext,
+        inlineEditModel: this.inlineEdit,
         onDelete: this.deleteRow,
       })
 

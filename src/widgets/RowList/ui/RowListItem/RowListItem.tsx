@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { PiCheckSquare, PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
+import { useFileUpload } from 'src/shared/lib'
 import { DotsThreeButton } from 'src/shared/ui'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
@@ -14,13 +15,15 @@ import styles from 'src/widgets/RowList/ui/RowList/RowList.module.scss'
 interface RowListItemProps {
   row: RowItemViewModel
   columnsModel: ColumnsModel
+  revisionId: string
+  tableId: string
   onCopy?: (rowVersionId: string) => void
   selection?: SelectionViewModel
   showSelectionColumn?: boolean
 }
 
 export const RowListItem: React.FC<RowListItemProps> = observer(
-  ({ row, columnsModel, onCopy, selection, showSelectionColumn }) => {
+  ({ row, columnsModel, revisionId, tableId, onCopy, selection, showSelectionColumn }) => {
     const { open: menuOpen, setOpen } = useDisclosure()
 
     const handleCopyRow = useCallback(() => {
@@ -39,6 +42,12 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
       selection?.toggle(row.id)
     }, [selection, row.id])
 
+    const { upload: handleFileUpload } = useFileUpload({
+      revisionId,
+      tableId,
+      rowId: row.id,
+    })
+
     const isSelected = selection?.isSelected(row.id) ?? false
 
     return (
@@ -51,8 +60,10 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
           },
         }}
         bg="white"
-        className={styles.Row}
+        className={`${styles.Row} group`}
         data-testid={`row-${row.id}`}
+        position={row.isRowEditing ? 'relative' : undefined}
+        zIndex={row.isRowEditing ? 100 : undefined}
       >
         <Box
           as="td"
@@ -97,7 +108,7 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
           </Flex>
         </Box>
 
-        <CellsRow columnsModel={columnsModel} cellsMap={row.cellsMap} />
+        <CellsRow row={row} columnsModel={columnsModel} revisionId={revisionId} onFileUpload={handleFileUpload} />
 
         <Box as="td" width="100%"></Box>
         {row.showMenu && (

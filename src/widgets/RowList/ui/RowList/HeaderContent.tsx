@@ -13,7 +13,9 @@ interface HeaderContentProps {
 export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsModel }) => {
   const columns = columnsModel.columns
   const context = useContext(RowListContext)
-  const { showSelectionColumn, sortModel } = context || {}
+  const model = context?.model
+  const showSelectionColumn = model?.showSelectionColumn ?? false
+  const sortModel = model?.sortModel
 
   return (
     <Box as="tr" height="40px">

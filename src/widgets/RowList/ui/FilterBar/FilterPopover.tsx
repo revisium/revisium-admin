@@ -1,6 +1,6 @@
 import { Badge, Box, Button, IconButton, Popover, Portal } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, useCallback, useRef } from 'react'
 import { LuFilter } from 'react-icons/lu'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
 import { FilterGroupComponent } from './FilterGroupComponent'
@@ -11,6 +11,15 @@ interface FilterPopoverProps {
 }
 
 export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, anchorRef }) => {
+  const lastRectRef = useRef<DOMRect | null>(null)
+
+  const getAnchorRect = useCallback(() => {
+    const rect = anchorRef.current?.getBoundingClientRect()
+    if (rect && rect.width > 0) {
+      lastRectRef.current = rect
+    }
+    return lastRectRef.current
+  }, [anchorRef])
   const handleApply = () => {
     const success = filterModel.apply()
     if (success) {
@@ -40,7 +49,7 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
       modal={false}
       positioning={{
         placement: 'bottom-start',
-        getAnchorRect: () => anchorRef.current?.getBoundingClientRect() || null,
+        getAnchorRect,
       }}
     >
       <Box position="relative" display="inline-flex">

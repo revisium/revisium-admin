@@ -12,6 +12,8 @@ import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
 import { sortFieldsByPriority } from 'src/widgets/RowList/lib/sortFieldsByPriority'
 import { MIN_COLUMN_WIDTH } from 'src/widgets/RowList/config/constants'
+import { SortableField } from 'src/widgets/RowList/config/sortTypes'
+import { InlineEditModel } from './InlineEditModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
 
@@ -65,6 +67,7 @@ export class ColumnsModel {
 
     const column: ColumnType = {
       id: field.nodeId,
+      name: field.name,
       title: field.name,
       fieldType: field.fieldType,
     }
@@ -96,6 +99,22 @@ export class ColumnsModel {
 
   public get allAvailableFields(): AvailableField[] {
     return this._availableFields
+  }
+
+  public getSortableFields(): SortableField[] {
+    return this._availableFields
+      .filter((f) => f.fieldType !== null)
+      .map((f) => ({
+        nodeId: f.nodeId,
+        name: f.name,
+        path: f.path,
+        fieldType: f.fieldType!,
+      }))
+  }
+
+  public isLastColumn(columnId: string): boolean {
+    const lastIndex = this._visibleColumnIds.length - 1
+    return lastIndex >= 0 && this._visibleColumnIds[lastIndex] === columnId
   }
 
   public isColumnVisible(nodeId: string): boolean {
@@ -250,11 +269,14 @@ export class ColumnsModel {
     options: {
       isEdit: boolean
       permissionContext: PermissionContext
+      inlineEditModel: InlineEditModel
       onDelete: (rowId: string) => Promise<boolean>
     },
   ): RowItemViewModel[] {
     const schemaStore = this._schemaStore
-    if (!schemaStore) return []
+    if (!schemaStore) {
+      return []
+    }
 
     const currentRowIds = new Set(rows.map((r) => r.id))
     this.cleanupStaleCache(currentRowIds)
@@ -267,6 +289,7 @@ export class ColumnsModel {
         cellsMap: cachedData.cells,
         isEdit: options.isEdit,
         permissionContext: options.permissionContext,
+        inlineEditModel: options.inlineEditModel,
         onDelete: options.onDelete,
       })
     })

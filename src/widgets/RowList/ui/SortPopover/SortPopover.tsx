@@ -1,6 +1,6 @@
 import { Badge, Box, Button, IconButton, Popover, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useRef } from 'react'
 import { LuArrowUpDown, LuPlus } from 'react-icons/lu'
 import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
@@ -12,6 +12,15 @@ interface SortPopoverProps {
 }
 
 export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRef }) => {
+  const lastRectRef = useRef<DOMRect | null>(null)
+
+  const getAnchorRect = useCallback(() => {
+    const rect = anchorRef.current?.getBoundingClientRect()
+    if (rect && rect.width > 0) {
+      lastRectRef.current = rect
+    }
+    return lastRectRef.current
+  }, [anchorRef])
   const handleApply = () => {
     sortModel.apply()
     sortModel.close()
@@ -72,7 +81,7 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
       modal={false}
       positioning={{
         placement: 'bottom-start',
-        getAnchorRect: () => anchorRef.current?.getBoundingClientRect() || null,
+        getAnchorRect,
       }}
     >
       <Box position="relative" display="inline-flex">

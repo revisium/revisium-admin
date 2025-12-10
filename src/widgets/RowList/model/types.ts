@@ -3,6 +3,7 @@ import { FilterFieldType } from './filterTypes'
 
 export type ColumnType = {
   id: string
+  name: string
   title: string
   fieldType: FilterFieldType | null
 }

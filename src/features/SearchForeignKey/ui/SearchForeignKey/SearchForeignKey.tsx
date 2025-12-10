@@ -13,13 +13,24 @@ interface SearchForeignKeyProps {
   revisionId: string
   tableId: string
   onChange: (value: string) => void
-  onOpenTableSearch: () => void
-  onCreateAndConnect: () => void
+  onOpenTableSearch?: () => void
+  onCreateAndConnect?: () => void
   onClose?: () => void
+  disableFooterActions?: boolean
+  rowLinkPath?: string
 }
 
 export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
-  ({ revisionId, tableId, onChange, onOpenTableSearch, onCreateAndConnect, onClose }) => {
+  ({
+    revisionId,
+    tableId,
+    onChange,
+    onOpenTableSearch,
+    onCreateAndConnect,
+    onClose,
+    disableFooterActions,
+    rowLinkPath,
+  }) => {
     const model = useViewModel(SearchForeignKeyViewModel, revisionId, tableId)
 
     const handleSelect = useCallback(
@@ -65,7 +76,14 @@ export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
 
         {model.showList && <List ids={model.items} onSelect={handleSelect} />}
 
-        {model.showFooter && <Footer onTable={handleOpenTableSearch} onCreate={onCreateAndConnect} />}
+        {model.showFooter && (
+          <Footer
+            onTable={handleOpenTableSearch}
+            onCreate={onCreateAndConnect ?? (() => {})}
+            disabled={disableFooterActions}
+            rowLinkPath={rowLinkPath}
+          />
+        )}
       </Flex>
     )
   },

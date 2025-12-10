@@ -12,6 +12,15 @@ interface BooleanMenuProps {
 
 export const FocusPopover: FC<BooleanMenuProps> = ({ isOpen, setIsOpen, trigger, children, disabled, width }) => {
   const triggerRef = useRef<HTMLDivElement>(null)
+  const lastRectRef = useRef<DOMRect | null>(null)
+
+  const getAnchorRect = useCallback(() => {
+    const rect = triggerRef.current?.getBoundingClientRect()
+    if (rect && rect.width > 0) {
+      lastRectRef.current = rect
+    }
+    return lastRectRef.current
+  }, [])
 
   const handleFocus = useCallback(() => {
     if (!disabled) {
@@ -35,7 +44,7 @@ export const FocusPopover: FC<BooleanMenuProps> = ({ isOpen, setIsOpen, trigger,
           modal={false}
           positioning={{
             placement: 'bottom-start',
-            getAnchorRect: () => triggerRef.current?.getBoundingClientRect() || null,
+            getAnchorRect,
           }}
         >
           <Portal>

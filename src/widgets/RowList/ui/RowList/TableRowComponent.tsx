@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import React, { useContext } from 'react'
 import { RowListItem } from 'src/widgets/RowList/ui/RowListItem/RowListItem'
 import { SelectRowListItem } from 'src/widgets/RowList/ui/SelectRowListItem/SelectRowListItem'
@@ -7,24 +8,34 @@ interface TableRowProps {
   'data-index': number
 }
 
-export const TableRowComponent: React.FC<TableRowProps> = ({ 'data-index': index }) => {
+export const TableRowComponent: React.FC<TableRowProps> = observer(({ 'data-index': index }) => {
   const context = useContext(RowListContext)
-  if (!context) return null
+  if (!context) {
+    return null
+  }
 
-  const { items, columnsModel, isRowPickerMode, onSelect, onCopy, selection, showSelectionColumn } = context
+  const { model, revisionId, tableId, isRevisionReadonly, isRowPickerMode, onSelect, onCopy } = context
+  const { items, columnsModel, selection, showSelectionColumn } = model
   const row = items[index]
 
-  if (!row) return null
+  if (!row) {
+    return null
+  }
 
-  return isRowPickerMode ? (
-    <SelectRowListItem row={row} columnsModel={columnsModel} onSelect={onSelect} />
-  ) : (
+  if (isRowPickerMode) {
+    return <SelectRowListItem row={row} columnsModel={columnsModel} revisionId={revisionId} onSelect={onSelect} />
+  }
+
+  return (
     <RowListItem
       row={row}
       columnsModel={columnsModel}
+      revisionId={revisionId}
+      tableId={tableId}
+      isRevisionReadonly={isRevisionReadonly}
       onCopy={onCopy}
       selection={selection}
       showSelectionColumn={showSelectionColumn}
     />
   )
-}
+})

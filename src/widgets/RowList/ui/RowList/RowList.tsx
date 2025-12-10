@@ -32,7 +32,7 @@ export const RowList: React.FC<RowListProps> = observer(
 
     useInlineEditKeyboard({
       inlineEditModel: inlineEdit,
-      enabled: !isRowPickerMode && !isRevisionReadonly,
+      enabled: !isRowPickerMode,
     })
 
     const contextValue = useMemo(

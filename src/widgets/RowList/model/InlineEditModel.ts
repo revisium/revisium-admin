@@ -206,10 +206,6 @@ export class InlineEditModel {
       return
     }
 
-    if (this._context.isCellReadonly(this._focusedCell.rowId, this._focusedCell.field)) {
-      return
-    }
-
     this._editingCell = { ...this._focusedCell }
     this._clickOffset = clickOffset
     this._cellPosition = cellPosition

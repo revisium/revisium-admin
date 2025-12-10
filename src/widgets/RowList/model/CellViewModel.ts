@@ -83,6 +83,13 @@ export class CellViewModel {
     return false
   }
 
+  public get supportsViewMode(): boolean {
+    if (!this._isRevisionReadonly) {
+      return false
+    }
+    return this.fieldType === 'string' || this.fieldType === 'number'
+  }
+
   public get displayValue(): string {
     if (this._store instanceof JsonStringValueStore) {
       return this._store.value
@@ -119,7 +126,7 @@ export class CellViewModel {
   }
 
   public get cellState(): CellState {
-    if (this.isReadonly) {
+    if (this.isReadonly && !this.supportsViewMode) {
       return 'readonly'
     }
     if (this.error) {
@@ -181,7 +188,7 @@ export class CellViewModel {
   }
 
   public enterEditMode(clickOffset?: number, position?: CellPosition): void {
-    if (this.isReadonly) {
+    if (this.isReadonly && !this.supportsViewMode) {
       return
     }
     this._inlineEditModel.focusCell(this._rowId, this._columnId)

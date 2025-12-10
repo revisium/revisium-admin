@@ -54,6 +54,7 @@ export const EditableCell: FC<EditableCellProps> = observer(
         fieldType,
         isReadonly,
         isEditing,
+        supportsViewMode,
         displayValue,
         foreignKey,
         stringValue,
@@ -70,10 +71,6 @@ export const EditableCell: FC<EditableCellProps> = observer(
 
       if (fieldType === 'object' || fieldType === 'array') {
         return <ReadonlyCell value={displayValue} type={fieldType} onClick={onNavigateToRow} />
-      }
-
-      if (isReadonly) {
-        return <ReadonlyCell value={displayValue} type="readonly" />
       }
 
       if (isEditing) {
@@ -96,9 +93,10 @@ export const EditableCell: FC<EditableCellProps> = observer(
               value={stringValue}
               onSave={(v) => handleSave(v)}
               onCancel={handleCancel}
-              onCommitAndMove={handleCommitAndMove}
+              onCommitAndMove={isReadonly ? undefined : handleCommitAndMove}
               clickOffset={clickOffset}
               initialPosition={cellPosition}
+              readOnly={isReadonly}
             />
           )
         }
@@ -110,10 +108,11 @@ export const EditableCell: FC<EditableCellProps> = observer(
               defaultValue={numberDefault}
               onSave={(v) => handleSave(v)}
               onCancel={handleCancel}
-              onCommitAndMove={handleCommitAndMove}
+              onCommitAndMove={isReadonly ? undefined : handleCommitAndMove}
               clickOffset={clickOffset}
               initialPosition={cellPosition}
               type="number"
+              readOnly={isReadonly}
             />
           )
         }
@@ -121,6 +120,10 @@ export const EditableCell: FC<EditableCellProps> = observer(
         if (fieldType === 'boolean') {
           return <BooleanCellEditor value={booleanValue} onSave={(v) => handleSave(v)} onCancel={handleCancel} />
         }
+      }
+
+      if (isReadonly && !supportsViewMode) {
+        return <ReadonlyCell value={displayValue} type="readonly" />
       }
 
       return displayValue

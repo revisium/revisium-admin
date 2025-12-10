@@ -44,12 +44,15 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
   const inputId = `file-cell-${fileId}`
 
   if (!hasUrl && !canUpload) {
+    if (isReadonly) {
+      return null
+    }
     return (
       <Tooltip
         openDelay={50}
         closeDelay={50}
         positioning={{ placement: 'right' }}
-        content={isReadonly ? 'File not uploaded' : 'Save row first to upload file'}
+        content="Save row first to upload file"
       >
         <Box display="flex" alignItems="center" color="gray.400" cursor="default">
           <PiFile />
@@ -59,7 +62,7 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
   }
 
   return (
-    <Box display="flex" alignItems="center" gap={1} role="group">
+    <Box display="flex" alignItems="center" justifyContent="center" gap={1} role="group" width="100%">
       {hasUrl && (
         <>
           {isImage ? (

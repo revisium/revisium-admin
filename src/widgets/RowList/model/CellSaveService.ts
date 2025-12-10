@@ -7,9 +7,7 @@ import { client } from 'src/shared/model/ApiService'
 
 const SAVING_INDICATOR_DELAY = 1000
 
-type CellKey = string
-
-const makeCellKey = (rowId: string, field: string): CellKey => `${rowId}:${field}`
+const makeCellKey = (rowId: string, field: string): string => `${rowId}:${field}`
 
 interface SaveContext {
   revisionId: string
@@ -26,9 +24,9 @@ const isCellStoreAccessor = (store: JsonValueStore): store is JsonValueStore & C
 }
 
 export class CellSaveService {
-  private readonly _savingCells = observable.map<CellKey, boolean>()
-  private readonly _savingTimers = new Map<CellKey, ReturnType<typeof setTimeout>>()
-  private readonly _errorCells = observable.map<CellKey, string>()
+  private readonly _savingCells = observable.map<string, boolean>()
+  private readonly _savingTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  private readonly _errorCells = observable.map<string, string>()
   private readonly patchRowRequest = ObservableRequest.of(client.PatchRowInline)
 
   public isSaving(rowId: string, field: string): boolean {
@@ -114,7 +112,7 @@ export class CellSaveService {
     store.updateBaseValue(oldValue)
   }
 
-  private startSavingIndicator(key: CellKey): void {
+  private startSavingIndicator(key: string): void {
     const existingTimer = this._savingTimers.get(key)
     if (existingTimer) {
       clearTimeout(existingTimer)
@@ -129,7 +127,7 @@ export class CellSaveService {
     this._savingTimers.set(key, timer)
   }
 
-  private stopSavingIndicator(key: CellKey): void {
+  private stopSavingIndicator(key: string): void {
     const pendingTimer = this._savingTimers.get(key)
     if (pendingTimer) {
       clearTimeout(pendingTimer)
@@ -158,7 +156,7 @@ export class CellSaveService {
   }
 
   private handleError(
-    key: CellKey,
+    key: string,
     store: JsonValueStore | undefined,
     oldValue: JsonValue | undefined,
     message: string,

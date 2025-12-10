@@ -21,7 +21,7 @@ export const getClickOffset = (
 
   if (document.caretRangeFromPoint) {
     const range = document.caretRangeFromPoint(clientX, textElement.getBoundingClientRect().top + 10)
-    if (range && range.startContainer === textNode) {
+    if (range?.startContainer === textNode) {
       return range.startOffset
     }
   }
@@ -31,7 +31,7 @@ export const getClickOffset = (
   }
   if (doc.caretPositionFromPoint) {
     const pos = doc.caretPositionFromPoint(clientX, textElement.getBoundingClientRect().top + 10)
-    if (pos && pos.offsetNode === textNode) {
+    if (pos?.offsetNode === textNode) {
       return pos.offset
     }
   }

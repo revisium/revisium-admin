@@ -146,7 +146,7 @@ export class CellViewModel {
 
   public get numberDefault(): number {
     if (this._store instanceof JsonNumberValueStore) {
-      return this._store.schema.default !== null ? this._store.schema.default : 0
+      return this._store.schema.default ?? 0
     }
     return 0
   }

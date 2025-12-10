@@ -187,20 +187,20 @@ export class RowListViewModel implements IViewModel {
     void this.loadInitial()
   }
 
-  private getVisibleFields = (): string[] => {
+  private readonly getVisibleFields = (): string[] => {
     return this.columnsModel.columns.map((c) => c.id)
   }
 
-  private getVisibleRowIds = (): string[] => {
+  private readonly getVisibleRowIds = (): string[] => {
     return this.items.map((item) => item.id)
   }
 
-  private getCellStore = (rowId: string, field: string) => {
+  private readonly getCellStore = (rowId: string, field: string) => {
     const row = this.items.find((item) => item.id === rowId)
     return row?.cellsMap.get(field)
   }
 
-  private isCellReadonly = (rowId: string, field: string): boolean => {
+  private readonly isCellReadonly = (rowId: string, field: string): boolean => {
     if (!this.isEdit) {
       return true
     }

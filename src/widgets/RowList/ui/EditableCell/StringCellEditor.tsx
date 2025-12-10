@@ -27,7 +27,13 @@ const CELL_HEIGHT = 40
 const VERTICAL_PADDING = (CELL_HEIGHT - LINE_HEIGHT) / 2
 const MAX_HEIGHT = MAX_VISIBLE_LINES * LINE_HEIGHT + VERTICAL_PADDING * 2
 
-const NUMBER_PATTERN = /^-?\d*\.?\d*$/
+const isValidNumberInput = (value: string): boolean => {
+  if (value === '' || value === '-' || value === '.') {
+    return true
+  }
+  const num = Number(value)
+  return !Number.isNaN(num) || value === '-.' || value.endsWith('.')
+}
 
 export const StringCellEditor: FC<StringCellEditorProps> = observer(
   ({ value, onSave, onCancel, onCommitAndMove, clickOffset, type = 'string', defaultValue = 0, initialPosition }) => {
@@ -62,13 +68,10 @@ export const StringCellEditor: FC<StringCellEditorProps> = observer(
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value
-        if (type === 'number') {
-          if (newValue === '' || NUMBER_PATTERN.test(newValue)) {
-            setLocalValue(newValue)
-          }
-        } else {
-          setLocalValue(newValue)
+        if (type === 'number' && !isValidNumberInput(newValue)) {
+          return
         }
+        setLocalValue(newValue)
       },
       [type],
     )

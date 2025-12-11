@@ -14,7 +14,7 @@ export const DatabaseLayout: React.FC = observer(() => {
 
   return (
     <Page sidebar={<ProjectSidebar />}>
-      <Flex flex={1} flexDirection="column" position="relative">
+      <Flex flex={1} flexDirection="column" position="relative" marginTop="-12px">
         <Outlet />
         {showReadonlyBanner && <ReadonlyBanner />}
       </Flex>

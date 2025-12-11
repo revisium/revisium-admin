@@ -2,6 +2,7 @@ import { Badge, Box, Button, IconButton, Popover, Portal } from '@chakra-ui/reac
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useRef } from 'react'
 import { LuFilter } from 'react-icons/lu'
+import { Tooltip } from 'src/shared/ui'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
 import { FilterGroupComponent } from './FilterGroupComponent'
 
@@ -52,38 +53,44 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
         getAnchorRect,
       }}
     >
-      <Box position="relative" display="inline-flex">
-        <Popover.Trigger asChild>
-          <IconButton
-            aria-label="Toggle filters"
-            size="sm"
-            variant={filterModel.isFilterBarOpen ? 'subtle' : 'ghost'}
-            colorPalette="gray"
-            color={filterModel.hasAppliedFilters ? undefined : 'gray.300'}
-          >
-            <LuFilter />
-          </IconButton>
-        </Popover.Trigger>
-        {showBadge && (
-          <Badge
-            position="absolute"
-            top="-1"
-            right="-1"
-            colorPalette={badgeColor}
-            variant="solid"
-            size="xs"
-            borderRadius="full"
-            minWidth="16px"
-            height="16px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="10px"
-          >
-            {filterModel.filterCount}
-          </Badge>
-        )}
-      </Box>
+      <Tooltip
+        content={filterModel.tooltipContent}
+        positioning={{ placement: 'top' }}
+        disabled={filterModel.isFilterBarOpen}
+      >
+        <Box position="relative" display="inline-flex">
+          <Popover.Trigger asChild>
+            <IconButton
+              aria-label="Toggle filters"
+              size="sm"
+              variant={filterModel.isFilterBarOpen ? 'subtle' : 'ghost'}
+              colorPalette="gray"
+              color={filterModel.hasAppliedFilters ? undefined : 'gray.300'}
+            >
+              <LuFilter />
+            </IconButton>
+          </Popover.Trigger>
+          {showBadge && (
+            <Badge
+              position="absolute"
+              top="-1"
+              right="-1"
+              colorPalette={badgeColor}
+              variant="solid"
+              size="xs"
+              borderRadius="full"
+              minWidth="16px"
+              height="16px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              fontSize="10px"
+            >
+              {filterModel.filterCount}
+            </Badge>
+          )}
+        </Box>
+      </Tooltip>
       <Portal>
         <Popover.Positioner>
           <Popover.Content

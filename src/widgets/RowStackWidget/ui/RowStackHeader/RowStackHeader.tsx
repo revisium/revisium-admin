@@ -25,8 +25,6 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
     <Flex
       alignItems="center"
       backgroundColor="white"
-      borderBottom="1px solid"
-      borderBottomColor="gray.50"
       justifyContent="space-between"
       width="100%"
       position="sticky"

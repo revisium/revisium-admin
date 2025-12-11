@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid'
 import { useCallback } from 'react'
+import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
+import { JsonValue } from 'src/entities/Schema/types/json.types'
 import { container } from 'src/shared/lib/DIContainer'
 import { FileService } from 'src/shared/model/FileService'
 import { toaster } from 'src/shared/ui'
@@ -8,30 +10,58 @@ interface UseFileUploadOptions {
   revisionId: string
   tableId: string
   rowId: string
-  onSuccess?: () => void
   onError?: (error: Error) => void
 }
 
 interface UseFileUploadResult {
-  upload: (fileId: string, file: File) => Promise<boolean>
+  upload: (fileId: string, file: File, store: JsonObjectValueStore) => Promise<boolean>
 }
 
-export const useFileUpload = ({
-  revisionId,
-  tableId,
-  rowId,
-  onSuccess,
-  onError,
-}: UseFileUploadOptions): UseFileUploadResult => {
+const MAX_RECURSION_DEPTH = 20
+
+const findFileDataByFileId = (data: JsonValue, fileId: string, depth = 0): Record<string, JsonValue> | undefined => {
+  if (depth > MAX_RECURSION_DEPTH) {
+    return undefined
+  }
+
+  if (typeof data !== 'object' || data === null) {
+    return undefined
+  }
+
+  if (Array.isArray(data)) {
+    for (const item of data) {
+      const result = findFileDataByFileId(item, fileId, depth + 1)
+      if (result) return result
+    }
+    return undefined
+  }
+
+  const obj = data as Record<string, JsonValue>
+  if (obj.fileId === fileId) {
+    return obj
+  }
+
+  for (const value of Object.values(obj)) {
+    const result = findFileDataByFileId(value, fileId, depth + 1)
+
+    if (result) {
+      return result
+    }
+  }
+
+  return undefined
+}
+
+export const useFileUpload = ({ revisionId, tableId, rowId, onError }: UseFileUploadOptions): UseFileUploadResult => {
   const upload = useCallback(
-    async (fileId: string, file: File): Promise<boolean> => {
+    async (fileId: string, file: File, store: JsonObjectValueStore): Promise<boolean> => {
       const fileService = container.get(FileService)
       const toastId = nanoid()
 
       toaster.loading({ id: toastId, title: 'Uploading...' })
 
       try {
-        await fileService.add({
+        const result = await fileService.add({
           revisionId,
           tableId,
           rowId,
@@ -45,7 +75,13 @@ export const useFileUpload = ({
           duration: 1500,
         })
 
-        onSuccess?.()
+        if (result.row?.data) {
+          const fileData = findFileDataByFileId(result.row.data as JsonValue, fileId)
+          if (fileData) {
+            store.updateBaseValue(fileData)
+          }
+        }
+
         return true
       } catch (error) {
         toaster.update(toastId, {
@@ -58,7 +94,7 @@ export const useFileUpload = ({
         return false
       }
     },
-    [revisionId, tableId, rowId, onSuccess, onError],
+    [revisionId, tableId, rowId, onError],
   )
 
   return { upload }

@@ -1,6 +1,6 @@
 import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { TableVirtuoso } from 'react-virtuoso'
 import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 import { HeaderContent } from './HeaderContent'
@@ -18,6 +18,7 @@ interface RowListProps {
   isRevisionReadonly?: boolean
   onSelect?: (rowId: string) => void
   onCopy?: (rowVersionId: string) => void
+  onCreate?: () => void
 }
 
 const components = {
@@ -26,7 +27,7 @@ const components = {
 }
 
 export const RowList: React.FC<RowListProps> = observer(
-  ({ model, revisionId, tableId, isRevisionReadonly = false, onSelect, onCopy }) => {
+  ({ model, revisionId, tableId, isRevisionReadonly = false, onSelect, onCopy, onCreate }) => {
     const isRowPickerMode = Boolean(onSelect)
     const { items, columnsModel, inlineEdit, showHeader } = model
 
@@ -53,10 +54,30 @@ export const RowList: React.FC<RowListProps> = observer(
       [showHeader, columnsModel],
     )
 
+    const LoadingMoreFooter = useCallback(
+      () =>
+        model.isLoadingMore ? (
+          <Box display="flex" justifyContent="center" alignItems="center" py="16px">
+            <Spinner size="sm" color="gray.400" />
+          </Box>
+        ) : null,
+      [model.isLoadingMore],
+    )
+
+    const tableComponents = useMemo(
+      () => ({
+        ...components,
+        Footer: LoadingMoreFooter,
+      }),
+      [LoadingMoreFooter],
+    )
+
     if (model.showLoading) {
       return (
-        <Box display="flex" justifyContent="center" alignItems="center" height="200px">
-          <Spinner size="lg" color="gray.400" />
+        <Box display="flex" flexDirection="column" height="100%">
+          <Box display="flex" flex={1} justifyContent="center" alignItems="center">
+            <Spinner size="lg" color="gray.400" />
+          </Box>
         </Box>
       )
     }
@@ -69,8 +90,31 @@ export const RowList: React.FC<RowListProps> = observer(
       )
     }
 
-    if (model.showEmpty || model.showNotFound) {
-      return <RowListEmptyState model={model} />
+    if (model.showEmpty) {
+      return (
+        <Box display="flex" flexDirection="column" height="100%">
+          <RowListEmptyState model={model} onCreate={onCreate} />
+        </Box>
+      )
+    }
+
+    if (model.showNotFound) {
+      return (
+        <RowListContext.Provider value={contextValue}>
+          <Box display="flex" flexDirection="column" height="100%">
+            <Box overflowX="auto">
+              <table
+                style={{ width: 'max-content', minWidth: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}
+              >
+                <Box as="thead" position="sticky" top={0} zIndex={2} bg="white">
+                  <HeaderContent columnsModel={columnsModel} />
+                </Box>
+              </table>
+            </Box>
+            <RowListEmptyState model={model} onCreate={onCreate} />
+          </Box>
+        </RowListContext.Provider>
+      )
     }
 
     if (!model.showList) {
@@ -88,7 +132,7 @@ export const RowList: React.FC<RowListProps> = observer(
           increaseViewportBy={40 * 100}
           endReached={model.hasNextPage ? model.tryToFetchNextPage : undefined}
           data={items}
-          components={components}
+          components={tableComponents}
           fixedHeaderContent={fixedHeaderContent}
         />
         <RowListActionBar model={model} />

@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Text } from '@chakra-ui/react'
+import { Box, Flex, IconButton, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useRef } from 'react'
 import { PiPlus } from 'react-icons/pi'
@@ -53,7 +53,7 @@ export const RowStackList: React.FC = observer(() => {
     </Tooltip>
   ) : null
 
-  const searchAndFilter = (
+  const searchAndFilter = model.showEmpty ? null : (
     <Flex alignItems="center" gap={2}>
       <SearchInput value={model.searchQuery} onChange={model.setSearchQuery} onClear={model.clearSearch} />
       {model.canFilter && <FilterPopover filterModel={model.filterModel} anchorRef={filterAnchorRef} />}
@@ -71,12 +71,7 @@ export const RowStackList: React.FC = observer(() => {
         </>
       )}
       <Box ref={filterAnchorRef} paddingX="8px" />
-      <Flex alignItems="center" paddingX="8px" paddingY="8px">
-        <Text fontSize="sm" color="gray.500">
-          {model.rowCountText}
-        </Text>
-      </Flex>
-      <Box flex={1} paddingBottom="1rem">
+      <Box flex={1} position="relative" marginTop="16px">
         <RowList
           model={model}
           revisionId={item.revisionId}
@@ -84,8 +79,25 @@ export const RowStackList: React.FC = observer(() => {
           isRevisionReadonly={!item.isEditableRevision}
           onSelect={isSelectMode ? handleSelectRow : undefined}
           onCopy={item.toCloneRow}
+          onCreate={model.canCreateRow ? item.toCreatingRow : undefined}
         />
       </Box>
+      {!model.showEmpty && !model.showLoading && (
+        <Flex
+          alignItems="center"
+          gap="8px"
+          paddingX="12px"
+          paddingY="8px"
+          marginTop="4px"
+          borderTop="1px solid"
+          borderColor="gray.100"
+        >
+          <Text fontSize="sm" color="gray.500">
+            {model.rowCountText}
+          </Text>
+          {model.isRefetching && <Spinner size="xs" color="gray.400" />}
+        </Flex>
+      )}
     </Flex>
   )
 })

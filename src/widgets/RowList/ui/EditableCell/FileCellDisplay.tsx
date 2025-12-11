@@ -10,7 +10,7 @@ import { Tooltip } from 'src/shared/ui'
 interface FileCellDisplayProps {
   store: JsonObjectValueStore
   isReadonly?: boolean
-  onUpload?: (fileId: string, file: File) => void
+  onUpload?: (fileId: string, file: File, store: JsonObjectValueStore) => void
 }
 
 export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isReadonly, onUpload }) => {
@@ -35,10 +35,10 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       if (!file) return
-      onUpload?.(fileId, file)
+      onUpload?.(fileId, file, store)
       event.target.value = ''
     },
-    [fileId, onUpload],
+    [fileId, onUpload, store],
   )
 
   const inputId = `file-cell-${fileId}`

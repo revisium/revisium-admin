@@ -1,16 +1,18 @@
 import { Box, Flex, Menu, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
-import { LuArrowLeftToLine, LuArrowRightToLine, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import { FC, useCallback, useRef, useState } from 'react'
+import { LuArrowLeftToLine, LuArrowRightToLine, LuChevronLeft, LuChevronRight, LuFilter } from 'react-icons/lu'
 import { PiEyeSlash, PiListBullets } from 'react-icons/pi'
 import { useTruncatedTooltip } from 'src/shared/hooks/useTruncatedTooltip'
 import { Tooltip } from 'src/shared/ui/Tooltip/tooltip'
 import { useColumnResize } from 'src/widgets/RowList/hooks/useColumnResize'
 import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
+import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
 import { ColumnType } from 'src/widgets/RowList/model/types'
 import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
+import { AddFilterPopover } from './AddFilterPopover'
 import { ColumnResizer } from './ColumnResizer'
 import { SortIndicator } from './SortIndicator'
 import { SortSubmenu } from './SortSubmenu'
@@ -19,9 +21,10 @@ interface ColumnHeaderProps {
   column: ColumnType
   columnsModel: ColumnsModel
   sortModel?: SortModel
+  filterModel?: FilterModel
 }
 
-export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel, sortModel }) => {
+export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel, sortModel, filterModel }) => {
   const {
     ref: textRef,
     isOpen: tooltipOpen,
@@ -29,6 +32,9 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
     onMouseLeave,
     onClose,
   } = useTruncatedTooltip<HTMLParagraphElement>()
+
+  const headerRef = useRef<HTMLTableCellElement>(null)
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false)
 
   const width = columnsModel.getColumnWidth(column.id)
   const { isResizing, handleMouseDown: handleResizeMouseDown } = useColumnResize(column.id, columnsModel)
@@ -42,6 +48,9 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
   const canMoveRight = columnsModel.canMoveRight(column.id)
   const canMoveToStart = columnsModel.canMoveToStart(column.id)
   const canMoveToEnd = columnsModel.canMoveToEnd(column.id)
+
+  const filterableField = filterModel?.availableFields.find((f) => f.name === column.name)
+  const canFilter = Boolean(filterableField)
 
   const handleRemove = useCallback(() => {
     columnsModel.removeColumn(column.id)
@@ -77,8 +86,17 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
     columnsModel.moveColumnToEnd(column.id)
   }, [columnsModel, column.id])
 
+  const handleOpenFilterPopover = useCallback(() => {
+    setIsFilterPopoverOpen(true)
+  }, [])
+
+  const handleCloseFilterPopover = useCallback(() => {
+    setIsFilterPopoverOpen(false)
+  }, [])
+
   return (
     <Box
+      ref={headerRef}
       as="th"
       textAlign="start"
       width={`${width}px`}
@@ -132,6 +150,15 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
               {sortModel && (
                 <>
                   <SortSubmenu columnId={column.id} sortModel={sortModel} />
+                  <Menu.Separator />
+                </>
+              )}
+              {canFilter && (
+                <>
+                  <Menu.Item value="add-filter" onClick={handleOpenFilterPopover}>
+                    <LuFilter />
+                    <Text>Add filter</Text>
+                  </Menu.Item>
                   <Menu.Separator />
                 </>
               )}
@@ -238,6 +265,15 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
         </Portal>
       </Menu.Root>
       <ColumnResizer isResizing={isResizing} onMouseDown={handleResizeMouseDown} />
+      {filterModel && filterableField && (
+        <AddFilterPopover
+          field={filterableField}
+          filterModel={filterModel}
+          isOpen={isFilterPopoverOpen}
+          onClose={handleCloseFilterPopover}
+          anchorRef={headerRef}
+        />
+      )}
     </Box>
   )
 })

@@ -9,7 +9,6 @@ export type { CellState, CellPosition }
 interface CellWrapperProps extends PropsWithChildren {
   state: CellState
   errorMessage?: string
-  isLastCell?: boolean
   displayValue?: string
   onFocus?: () => void
   onDoubleClick?: (clickOffset?: number, position?: CellPosition) => void
@@ -56,7 +55,7 @@ const stateStyles: Record<CellState, object> = {
 }
 
 export const CellWrapper: FC<CellWrapperProps> = observer(
-  ({ children, state, errorMessage, isLastCell, displayValue, onFocus, onDoubleClick }) => {
+  ({ children, state, errorMessage, displayValue, onFocus, onDoubleClick }) => {
     const cellRef = useRef<HTMLTableCellElement>(null)
     const textRef = useRef<HTMLParagraphElement>(null)
 
@@ -94,7 +93,8 @@ export const CellWrapper: FC<CellWrapperProps> = observer(
         as="td"
         minHeight="40px"
         height="40px"
-        {...(isLastCell ? {} : { borderRightWidth: '1px', borderColor: 'gray.100' })}
+        borderRightWidth="1px"
+        borderColor="gray.100"
         overflow="hidden"
         maxWidth="0"
         pl="8px"

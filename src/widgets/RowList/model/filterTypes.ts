@@ -2,25 +2,10 @@ import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 
-export enum FilterFieldType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  ForeignKey = 'foreignKey',
-  File = 'file',
-  DateTime = 'dateTime',
-}
-
-export enum SystemFieldId {
-  Id = 'system:id',
-  CreatedAt = 'system:createdAt',
-  UpdatedAt = 'system:updatedAt',
-  PublishedAt = 'system:publishedAt',
-  VersionId = 'system:versionId',
-  CreatedId = 'system:createdId',
-}
-
+export { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 export { getSystemFieldBySchemaRef, SYSTEM_FIELDS_CONFIG } from '../config/systemFields'
+
+import { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 
 export enum FilterOperator {
   Equals = 'equals',

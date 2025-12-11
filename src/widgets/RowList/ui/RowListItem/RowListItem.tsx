@@ -106,6 +106,7 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
             </Text>
             {row.showModifiedIndicator && <Text color="gray.400">*</Text>}
           </Flex>
+          <Box position="absolute" right={0} top={0} bottom={0} width="1px" bg="gray.100" />
         </Box>
 
         <CellsRow row={row} columnsModel={columnsModel} revisionId={revisionId} onFileUpload={handleFileUpload} />

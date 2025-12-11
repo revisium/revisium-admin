@@ -31,6 +31,8 @@ export class RowListViewModel implements IViewModel {
   private _tableId = ''
   private _baseTotalCount = 0
   private _isDeleting = false
+  private _isRefetching = false
+  private _isLoadingMore = false
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
   private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRowMst)
@@ -160,6 +162,14 @@ export class RowListViewModel implements IViewModel {
     return this._isDeleting
   }
 
+  public get isRefetching(): boolean {
+    return this._isRefetching
+  }
+
+  public get isLoadingMore(): boolean {
+    return this._isLoadingMore
+  }
+
   public get allRowIds(): string[] {
     return this.items.map((item) => item.id)
   }
@@ -173,6 +183,7 @@ export class RowListViewModel implements IViewModel {
     this._baseTotalCount = 0
     this.search.reset()
     this.selection.exitSelectionMode()
+    this.listState.resetToLoading()
     this.columnsModel.init(schema, options)
     this.filterModel.init(schema)
     this.sortModel.init(this.columnsModel.getSortableFields())
@@ -236,38 +247,46 @@ export class RowListViewModel implements IViewModel {
   }
 
   public async tryToFetchNextPage(): Promise<void> {
-    if (!this.listState.hasNextPage || this.isLoading || !this.listState.endCursor) {
+    if (!this.listState.hasNextPage || this._isLoadingMore || !this.listState.endCursor) {
       return
     }
 
-    const result = await this.getRowsRequest.fetch({
-      data: {
-        revisionId: this.revisionId,
-        tableId: this._tableId,
-        first: 50,
-        after: this.listState.endCursor,
-        where: this.buildWhereClause(),
-        orderBy: this.sortModel.toGraphQLOrderBy(),
-      },
-    })
+    this._isLoadingMore = true
 
-    runInAction(() => {
-      if (result.isRight) {
-        const newRows = result.data.rows.edges.map((edge) => edge.node)
-        const newItems = this.columnsModel.createRowViewModels(newRows, {
-          isEdit: this.isEdit,
-          permissionContext: this.permissionContext,
-          inlineEditModel: this.inlineEdit,
-          onDelete: this.deleteRow,
-        })
-        this.listState.appendItems(newItems, {
-          hasNextPage: result.data.rows.pageInfo.hasNextPage,
-          endCursor: result.data.rows.pageInfo.endCursor ?? null,
-        })
-      } else {
-        console.error('Failed to fetch next page')
-      }
-    })
+    try {
+      const result = await this.getRowsRequest.fetch({
+        data: {
+          revisionId: this.revisionId,
+          tableId: this._tableId,
+          first: 50,
+          after: this.listState.endCursor,
+          where: this.buildWhereClause(),
+          orderBy: this.sortModel.toGraphQLOrderBy(),
+        },
+      })
+
+      runInAction(() => {
+        if (result.isRight) {
+          const newRows = result.data.rows.edges.map((edge) => edge.node)
+          const newItems = this.columnsModel.createRowViewModels(newRows, {
+            isEdit: this.isEdit,
+            permissionContext: this.permissionContext,
+            inlineEditModel: this.inlineEdit,
+            onDelete: this.deleteRow,
+          })
+          this.listState.appendItems(newItems, {
+            hasNextPage: result.data.rows.pageInfo.hasNextPage,
+            endCursor: result.data.rows.pageInfo.endCursor ?? null,
+          })
+        } else {
+          console.error('Failed to fetch next page')
+        }
+      })
+    } finally {
+      runInAction(() => {
+        this._isLoadingMore = false
+      })
+    }
   }
 
   public async deleteRow(rowId: string): Promise<boolean> {
@@ -348,8 +367,14 @@ export class RowListViewModel implements IViewModel {
   }
 
   private async reload(): Promise<void> {
-    this.listState.reset()
-    await this.loadInitial()
+    this._isRefetching = true
+    try {
+      await this.loadInitial()
+    } finally {
+      runInAction(() => {
+        this._isRefetching = false
+      })
+    }
   }
 
   private async loadInitial(): Promise<void> {

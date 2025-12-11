@@ -129,4 +129,13 @@ export class AsyncListState<T> {
     this._isInitialLoad = false
     this._state = ListState.loading
   }
+
+  public resetToLoading(): void {
+    this._items = []
+    this._hasNextPage = false
+    this._endCursor = null
+    this._totalCount = 0
+    this._isInitialLoad = true
+    this._state = ListState.loading
+  }
 }

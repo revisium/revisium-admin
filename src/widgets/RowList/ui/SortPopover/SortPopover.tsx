@@ -1,7 +1,8 @@
 import { Badge, Box, Button, IconButton, Popover, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useRef } from 'react'
+import { FC, useCallback, useMemo, useRef } from 'react'
 import { LuArrowUpDown, LuPlus } from 'react-icons/lu'
+import { Tooltip } from 'src/shared/ui'
 import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
 import { SortConditionRow } from './SortConditionRow'
@@ -70,6 +71,13 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
   const showBadge = sortModel.hasAppliedSorts || sortModel.hasPendingChanges
   const badgeColor = sortModel.hasPendingChanges ? 'orange' : 'gray'
 
+  const tooltipContent = useMemo(() => {
+    if (sortModel.hasAppliedSorts) {
+      return `Sort: ${sortModel.sortCount} active`
+    }
+    return 'Sort'
+  }, [sortModel.hasAppliedSorts, sortModel.sortCount])
+
   return (
     <Popover.Root
       open={sortModel.isOpen}
@@ -84,38 +92,44 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
         getAnchorRect,
       }}
     >
-      <Box position="relative" display="inline-flex">
-        <Popover.Trigger asChild>
-          <IconButton
-            aria-label="Toggle sorting"
-            size="sm"
-            variant={sortModel.isOpen ? 'subtle' : 'ghost'}
-            colorPalette="gray"
-            color={sortModel.hasAppliedSorts ? undefined : 'gray.300'}
-          >
-            <LuArrowUpDown />
-          </IconButton>
-        </Popover.Trigger>
-        {showBadge && (
-          <Badge
-            position="absolute"
-            top="-1"
-            right="-1"
-            colorPalette={badgeColor}
-            variant="solid"
-            size="xs"
-            borderRadius="full"
-            minWidth="16px"
-            height="16px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="10px"
-          >
-            {sortModel.sortCount}
-          </Badge>
-        )}
-      </Box>
+      <Tooltip
+        content={tooltipContent}
+        positioning={{ placement: 'top' }}
+        disabled={sortModel.isOpen}
+      >
+        <Box position="relative" display="inline-flex">
+          <Popover.Trigger asChild>
+            <IconButton
+              aria-label="Toggle sorting"
+              size="sm"
+              variant={sortModel.isOpen ? 'subtle' : 'ghost'}
+              colorPalette="gray"
+              color={sortModel.hasAppliedSorts ? undefined : 'gray.300'}
+            >
+              <LuArrowUpDown />
+            </IconButton>
+          </Popover.Trigger>
+          {showBadge && (
+            <Badge
+              position="absolute"
+              top="-1"
+              right="-1"
+              colorPalette={badgeColor}
+              variant="solid"
+              size="xs"
+              borderRadius="full"
+              minWidth="16px"
+              height="16px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              fontSize="10px"
+            >
+              {sortModel.sortCount}
+            </Badge>
+          )}
+        </Box>
+      </Tooltip>
       <Portal>
         <Popover.Positioner>
           <Popover.Content

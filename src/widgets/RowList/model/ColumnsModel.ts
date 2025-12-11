@@ -112,11 +112,6 @@ export class ColumnsModel {
       }))
   }
 
-  public isLastColumn(columnId: string): boolean {
-    const lastIndex = this._visibleColumnIds.length - 1
-    return lastIndex >= 0 && this._visibleColumnIds[lastIndex] === columnId
-  }
-
   public isColumnVisible(nodeId: string): boolean {
     return this._visibleColumnIdsSet.has(nodeId)
   }

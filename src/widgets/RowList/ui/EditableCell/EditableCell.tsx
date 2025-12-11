@@ -13,13 +13,12 @@ interface EditableCellProps {
   cellVM: CellViewModel
   fieldName: string
   revisionId: string
-  isLastColumn?: boolean
   onNavigateToRow?: () => void
-  onFileUpload?: (fileId: string, file: File) => void
+  onFileUpload?: (fileId: string, file: File, store: JsonObjectValueStore) => void
 }
 
 export const EditableCell: FC<EditableCellProps> = observer(
-  ({ cellVM, fieldName, revisionId, isLastColumn, onNavigateToRow, onFileUpload }) => {
+  ({ cellVM, fieldName, revisionId, onNavigateToRow, onFileUpload }) => {
     const handleFocus = useCallback(() => {
       cellVM.focus()
     }, [cellVM])
@@ -133,7 +132,6 @@ export const EditableCell: FC<EditableCellProps> = observer(
       <CellWrapper
         state={cellVM.cellState}
         errorMessage={cellVM.error}
-        isLastCell={isLastColumn}
         displayValue={cellVM.displayValue}
         onFocus={handleFocus}
         onDoubleClick={handleDoubleClick}

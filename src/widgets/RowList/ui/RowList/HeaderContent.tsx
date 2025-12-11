@@ -1,6 +1,7 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useContext } from 'react'
+import { LuText } from 'react-icons/lu'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { AddColumnButton } from 'src/widgets/RowList/ui/AddColumnButton/AddColumnButton'
 import { ColumnHeader } from 'src/widgets/RowList/ui/ColumnHeader/ColumnHeader'
@@ -16,6 +17,7 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
   const model = context?.model
   const showSelectionColumn = model?.showSelectionColumn ?? false
   const sortModel = model?.sortModel
+  const filterModel = model?.filterModel
 
   return (
     <Box as="tr" height="40px">
@@ -43,11 +45,37 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
         maxWidth="200px"
         minWidth="200px"
         transition="left 0.15s"
+        textAlign="start"
       >
-        <Box height="30px" borderBottomWidth="1px" borderColor="gray.100"></Box>
+        <Flex
+          alignItems="center"
+          height="30px"
+          borderBottomWidth="1px"
+          borderColor="gray.100"
+          pl="8px"
+          pr="8px"
+          gap="4px"
+        >
+          <Box as={LuText} fontSize="xs" color="gray.300" flexShrink={0} />
+          <Text
+            color="gray.400"
+            fontSize="sm"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+            overflow="hidden"
+          >
+            id
+          </Text>
+        </Flex>
       </Box>
       {columns.map((column) => (
-        <ColumnHeader key={column.id} column={column} columnsModel={columnsModel} sortModel={sortModel} />
+        <ColumnHeader
+          key={column.id}
+          column={column}
+          columnsModel={columnsModel}
+          sortModel={sortModel}
+          filterModel={filterModel}
+        />
       ))}
       <AddColumnButton
         availableFields={columnsModel.availableFieldsToAdd}

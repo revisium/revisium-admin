@@ -1,5 +1,5 @@
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
-import { FilterFieldType, SystemFieldId } from '../model/filterTypes'
+import { FilterFieldType, SystemFieldId } from './fieldTypes'
 
 export interface SystemFieldConfig {
   id: SystemFieldId

@@ -110,11 +110,14 @@ export const StringCellEditor: FC<StringCellEditorProps> = observer(
           onCancel()
         }
       } else {
-        const trimmedValue = localValue.replace(/\n+$/, '')
-        if (trimmedValue !== value) {
-          onSave(trimmedValue)
-        } else {
+        let trimmedValue = localValue
+        while (trimmedValue.endsWith('\n')) {
+          trimmedValue = trimmedValue.slice(0, -1)
+        }
+        if (trimmedValue === value) {
           onCancel()
+        } else {
+          onSave(trimmedValue)
         }
       }
     }, [localValue, value, onSave, onCancel, type, defaultValue])

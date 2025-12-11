@@ -47,13 +47,9 @@ export const SYSTEM_FIELDS_CONFIG: SystemFieldConfig[] = [
   },
 ]
 
-const schemaRefToFieldMap = new Map<string, SystemFieldConfig>(
-  SYSTEM_FIELDS_CONFIG.map((f) => [f.schemaRef, f]),
-)
+const schemaRefToFieldMap = new Map<string, SystemFieldConfig>(SYSTEM_FIELDS_CONFIG.map((f) => [f.schemaRef, f]))
 
-const systemFieldIdToConfigMap = new Map<SystemFieldId, SystemFieldConfig>(
-  SYSTEM_FIELDS_CONFIG.map((f) => [f.id, f]),
-)
+const systemFieldIdToConfigMap = new Map<SystemFieldId, SystemFieldConfig>(SYSTEM_FIELDS_CONFIG.map((f) => [f.id, f]))
 
 export function getSystemFieldBySchemaRef(ref: string): SystemFieldConfig | undefined {
   return schemaRefToFieldMap.get(ref)

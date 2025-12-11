@@ -50,7 +50,11 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
   const canMoveToStart = columnsModel.canMoveToStart(column.id)
   const canMoveToEnd = columnsModel.canMoveToEnd(column.id)
 
-  const filterableField = filterModel?.getFilterableFieldForColumn(column.name, column.isSystemField, column.systemFieldId)
+  const filterableField = filterModel?.getFilterableFieldForColumn(
+    column.name,
+    column.isSystemField,
+    column.systemFieldId,
+  )
   const canFilter = Boolean(filterableField)
 
   const handleRemove = useCallback(() => {

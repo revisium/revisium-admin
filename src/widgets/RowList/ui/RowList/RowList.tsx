@@ -1,6 +1,6 @@
 import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { TableVirtuoso } from 'react-virtuoso'
 import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 import { HeaderContent } from './HeaderContent'
@@ -20,12 +20,6 @@ interface RowListProps {
   onCopy?: (rowVersionId: string) => void
   onCreate?: () => void
 }
-
-const LoadingMoreFooter = () => (
-  <Box display="flex" justifyContent="center" alignItems="center" py="16px">
-    <Spinner size="sm" color="gray.400" />
-  </Box>
-)
 
 const components = {
   Table: TableComponent,
@@ -60,12 +54,22 @@ export const RowList: React.FC<RowListProps> = observer(
       [showHeader, columnsModel],
     )
 
+    const LoadingMoreFooter = useCallback(
+      () =>
+        model.isLoadingMore ? (
+          <Box display="flex" justifyContent="center" alignItems="center" py="16px">
+            <Spinner size="sm" color="gray.400" />
+          </Box>
+        ) : null,
+      [model.isLoadingMore],
+    )
+
     const tableComponents = useMemo(
       () => ({
         ...components,
-        ...(model.isLoadingMore ? { Footer: LoadingMoreFooter } : {}),
+        Footer: LoadingMoreFooter,
       }),
-      [model.isLoadingMore],
+      [LoadingMoreFooter],
     )
 
     if (model.showLoading) {
@@ -107,7 +111,7 @@ export const RowList: React.FC<RowListProps> = observer(
                 </Box>
               </table>
             </Box>
-            <RowListEmptyState model={model} />
+            <RowListEmptyState model={model} onCreate={onCreate} />
           </Box>
         </RowListContext.Provider>
       )

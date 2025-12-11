@@ -17,14 +17,20 @@ interface UseFileUploadResult {
   upload: (fileId: string, file: File, store: JsonObjectValueStore) => Promise<boolean>
 }
 
-const findFileDataByFileId = (data: JsonValue, fileId: string): Record<string, JsonValue> | undefined => {
+const MAX_RECURSION_DEPTH = 20
+
+const findFileDataByFileId = (data: JsonValue, fileId: string, depth = 0): Record<string, JsonValue> | undefined => {
+  if (depth > MAX_RECURSION_DEPTH) {
+    return undefined
+  }
+
   if (typeof data !== 'object' || data === null) {
     return undefined
   }
 
   if (Array.isArray(data)) {
     for (const item of data) {
-      const result = findFileDataByFileId(item, fileId)
+      const result = findFileDataByFileId(item, fileId, depth + 1)
       if (result) return result
     }
     return undefined
@@ -36,7 +42,7 @@ const findFileDataByFileId = (data: JsonValue, fileId: string): Record<string, J
   }
 
   for (const value of Object.values(obj)) {
-    const result = findFileDataByFileId(value, fileId)
+    const result = findFileDataByFileId(value, fileId, depth + 1)
 
     if (result) {
       return result

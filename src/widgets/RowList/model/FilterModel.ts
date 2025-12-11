@@ -10,6 +10,7 @@ import {
   FilterCondition,
   FilterFieldType,
   FilterGroup,
+  FilterOperator,
   getDefaultOperator,
   operatorRequiresValue,
 } from './filterTypes'
@@ -56,6 +57,13 @@ export class FilterModel {
   public get hasAppliedFilters(): boolean {
     if (!this._appliedGroup) return false
     return this._appliedGroup.conditions.length > 0 || this._appliedGroup.groups.length > 0
+  }
+
+  public get tooltipContent(): string {
+    if (this.hasAppliedFilters) {
+      return `Filters: ${this.filterCount} active`
+    }
+    return 'Filter'
   }
 
   public get showValidationErrors(): boolean {
@@ -176,6 +184,30 @@ export class FilterModel {
       group.conditions.push(condition)
       this.markAsPending()
     }
+  }
+
+  public addQuickFilter(
+    field: FilterableField,
+    operator: FilterOperator,
+    value: string | number | boolean | null,
+  ): boolean {
+    if (operatorRequiresValue(operator, field.fieldType) && (value === '' || value === null)) {
+      return false
+    }
+
+    this.addCondition(this._rootGroup.id, field)
+
+    const conditions = this._rootGroup.conditions
+    const lastCondition = conditions[conditions.length - 1]
+    if (lastCondition) {
+      this.updateCondition(lastCondition.id, {
+        operator,
+        value: operatorRequiresValue(operator, field.fieldType) ? value : null,
+      })
+    }
+
+    this.apply()
+    return true
   }
 
   public updateCondition(conditionId: string, updates: Partial<FilterCondition>): void {

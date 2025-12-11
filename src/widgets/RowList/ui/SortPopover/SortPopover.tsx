@@ -1,6 +1,6 @@
 import { Badge, Box, Button, IconButton, Popover, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useMemo, useRef } from 'react'
+import { FC, useCallback, useRef } from 'react'
 import { LuArrowUpDown, LuPlus } from 'react-icons/lu'
 import { Tooltip } from 'src/shared/ui'
 import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
@@ -71,13 +71,6 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
   const showBadge = sortModel.hasAppliedSorts || sortModel.hasPendingChanges
   const badgeColor = sortModel.hasPendingChanges ? 'orange' : 'gray'
 
-  const tooltipContent = useMemo(() => {
-    if (sortModel.hasAppliedSorts) {
-      return `Sort: ${sortModel.sortCount} active`
-    }
-    return 'Sort'
-  }, [sortModel.hasAppliedSorts, sortModel.sortCount])
-
   return (
     <Popover.Root
       open={sortModel.isOpen}
@@ -92,11 +85,7 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
         getAnchorRect,
       }}
     >
-      <Tooltip
-        content={tooltipContent}
-        positioning={{ placement: 'top' }}
-        disabled={sortModel.isOpen}
-      >
+      <Tooltip content={sortModel.tooltipContent} positioning={{ placement: 'top' }} disabled={sortModel.isOpen}>
         <Box position="relative" display="inline-flex">
           <Popover.Trigger asChild>
             <IconButton

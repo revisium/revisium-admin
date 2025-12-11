@@ -1,6 +1,6 @@
 import { Badge, Box, Button, IconButton, Popover, Portal } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useMemo, useRef } from 'react'
+import { FC, useCallback, useRef } from 'react'
 import { LuFilter } from 'react-icons/lu'
 import { Tooltip } from 'src/shared/ui'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
@@ -39,13 +39,6 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
   const showBadge = filterModel.hasAppliedFilters || filterModel.hasPendingChanges
   const badgeColor = filterModel.hasPendingChanges ? 'orange' : 'gray'
 
-  const tooltipContent = useMemo(() => {
-    if (filterModel.hasAppliedFilters) {
-      return `Filters: ${filterModel.filterCount} active`
-    }
-    return 'Filter'
-  }, [filterModel.hasAppliedFilters, filterModel.filterCount])
-
   return (
     <Popover.Root
       open={filterModel.isFilterBarOpen}
@@ -61,7 +54,7 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
       }}
     >
       <Tooltip
-        content={tooltipContent}
+        content={filterModel.tooltipContent}
         positioning={{ placement: 'top' }}
         disabled={filterModel.isFilterBarOpen}
       >

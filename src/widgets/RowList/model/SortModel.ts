@@ -44,6 +44,13 @@ export class SortModel {
     return this._appliedSorts.length > 0
   }
 
+  public get tooltipContent(): string {
+    if (this.hasAppliedSorts) {
+      return `Sort: ${this.sortCount} active`
+    }
+    return 'Sort'
+  }
+
   public setOnSortChange(callback: () => void): void {
     this._onSortChange = callback
   }

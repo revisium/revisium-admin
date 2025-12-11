@@ -57,13 +57,7 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
           gap="4px"
         >
           <Box as={LuText} fontSize="xs" color="gray.300" flexShrink={0} />
-          <Text
-            color="gray.400"
-            fontSize="sm"
-            whiteSpace="nowrap"
-            textOverflow="ellipsis"
-            overflow="hidden"
-          >
+          <Text color="gray.400" fontSize="sm" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden">
             id
           </Text>
         </Flex>

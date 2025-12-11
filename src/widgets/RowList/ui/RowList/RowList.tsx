@@ -99,7 +99,9 @@ export const RowList: React.FC<RowListProps> = observer(
         <RowListContext.Provider value={contextValue}>
           <Box display="flex" flexDirection="column" height="100%">
             <Box overflowX="auto">
-              <table style={{ width: 'max-content', minWidth: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+              <table
+                style={{ width: 'max-content', minWidth: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}
+              >
                 <Box as="thead" position="sticky" top={0} zIndex={2} bg="white">
                   <HeaderContent columnsModel={columnsModel} />
                 </Box>

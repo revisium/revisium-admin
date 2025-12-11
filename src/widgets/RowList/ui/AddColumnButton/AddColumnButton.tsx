@@ -7,13 +7,14 @@ import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
 
 interface AddColumnButtonProps {
   availableFields: AvailableField[]
+  availableSystemFields: AvailableField[]
   hasHiddenColumns: boolean
   onAddColumn: (nodeId: string) => void
   onAddAll: () => void
 }
 
 export const AddColumnButton: FC<AddColumnButtonProps> = observer(
-  ({ availableFields, hasHiddenColumns, onAddColumn, onAddAll }) => {
+  ({ availableFields, availableSystemFields, hasHiddenColumns, onAddColumn, onAddAll }) => {
     if (!hasHiddenColumns) {
       return (
         <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
@@ -40,21 +41,49 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
             </Menu.Trigger>
             <Portal>
               <Menu.Positioner>
-                <Menu.Content minW="200px">
+                <Menu.Content minW="200px" maxH="340px" overflowY="auto">
                   <Menu.Item value="add-all" onClick={onAddAll}>
                     <PiListBullets />
                     <Text>Add all columns</Text>
                   </Menu.Item>
-                  {availableFields.length > 0 && <Menu.Separator />}
-                  {availableFields.map((field) => (
-                    <FieldMenuItem
-                      key={field.nodeId}
-                      nodeId={field.nodeId}
-                      name={field.name}
-                      fieldType={field.fieldType}
-                      onClick={onAddColumn}
-                    />
-                  ))}
+                  {availableFields.length > 0 && (
+                    <>
+                      <Menu.Separator />
+                      <Menu.ItemGroup>
+                        <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                          Data fields
+                        </Menu.ItemGroupLabel>
+                        {availableFields.map((field) => (
+                          <FieldMenuItem
+                            key={field.nodeId}
+                            nodeId={field.nodeId}
+                            name={field.name}
+                            fieldType={field.fieldType}
+                            onClick={onAddColumn}
+                          />
+                        ))}
+                      </Menu.ItemGroup>
+                    </>
+                  )}
+                  {availableSystemFields.length > 0 && (
+                    <>
+                      <Menu.Separator />
+                      <Menu.ItemGroup>
+                        <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                          System fields
+                        </Menu.ItemGroupLabel>
+                        {availableSystemFields.map((field) => (
+                          <FieldMenuItem
+                            key={field.nodeId}
+                            nodeId={field.nodeId}
+                            name={field.name}
+                            fieldType={field.fieldType}
+                            onClick={onAddColumn}
+                          />
+                        ))}
+                      </Menu.ItemGroup>
+                    </>
+                  )}
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>

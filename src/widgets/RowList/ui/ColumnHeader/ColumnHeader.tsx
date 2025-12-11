@@ -40,7 +40,8 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
   const { isResizing, handleMouseDown: handleResizeMouseDown } = useColumnResize(column.id, columnsModel)
 
   const availableFields = columnsModel.availableFieldsToAdd
-  const hasAvailableFields = availableFields.length > 0
+  const availableSystemFields = columnsModel.availableSystemFieldsToAdd
+  const hasAvailableFields = availableFields.length > 0 || availableSystemFields.length > 0
   const canRemove = columnsModel.canRemoveColumn
   const canHideAll = columnsModel.canHideAll
 
@@ -49,7 +50,7 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
   const canMoveToStart = columnsModel.canMoveToStart(column.id)
   const canMoveToEnd = columnsModel.canMoveToEnd(column.id)
 
-  const filterableField = filterModel?.availableFields.find((f) => f.name === column.name)
+  const filterableField = filterModel?.getFilterableFieldForColumn(column.name, column.isSystemField, column.systemFieldId)
   const canFilter = Boolean(filterableField)
 
   const handleRemove = useCallback(() => {
@@ -212,17 +213,41 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
                     </Menu.TriggerItem>
                     <Portal>
                       <Menu.Positioner>
-                        <Menu.Content maxH="300px" minW="200px">
-                          {availableFields.map((field) => (
-                            <FieldMenuItem
-                              key={field.nodeId}
-                              nodeId={field.nodeId}
-                              name={field.name}
-                              fieldType={field.fieldType}
-                              valuePrefix="before"
-                              onClick={handleInsertBefore}
-                            />
-                          ))}
+                        <Menu.Content maxH="300px" minW="200px" overflowY="auto">
+                          {availableFields.length > 0 && (
+                            <Menu.ItemGroup>
+                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                                Data fields
+                              </Menu.ItemGroupLabel>
+                              {availableFields.map((field) => (
+                                <FieldMenuItem
+                                  key={field.nodeId}
+                                  nodeId={field.nodeId}
+                                  name={field.name}
+                                  fieldType={field.fieldType}
+                                  valuePrefix="before"
+                                  onClick={handleInsertBefore}
+                                />
+                              ))}
+                            </Menu.ItemGroup>
+                          )}
+                          {availableSystemFields.length > 0 && (
+                            <Menu.ItemGroup>
+                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                                System fields
+                              </Menu.ItemGroupLabel>
+                              {availableSystemFields.map((field) => (
+                                <FieldMenuItem
+                                  key={field.nodeId}
+                                  nodeId={field.nodeId}
+                                  name={field.name}
+                                  fieldType={field.fieldType}
+                                  valuePrefix="before"
+                                  onClick={handleInsertBefore}
+                                />
+                              ))}
+                            </Menu.ItemGroup>
+                          )}
                         </Menu.Content>
                       </Menu.Positioner>
                     </Portal>
@@ -234,17 +259,41 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
                     </Menu.TriggerItem>
                     <Portal>
                       <Menu.Positioner>
-                        <Menu.Content maxH="300px" minW="200px">
-                          {availableFields.map((field) => (
-                            <FieldMenuItem
-                              key={field.nodeId}
-                              nodeId={field.nodeId}
-                              name={field.name}
-                              fieldType={field.fieldType}
-                              valuePrefix="after"
-                              onClick={handleInsertAfter}
-                            />
-                          ))}
+                        <Menu.Content maxH="300px" minW="200px" overflowY="auto">
+                          {availableFields.length > 0 && (
+                            <Menu.ItemGroup>
+                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                                Data fields
+                              </Menu.ItemGroupLabel>
+                              {availableFields.map((field) => (
+                                <FieldMenuItem
+                                  key={field.nodeId}
+                                  nodeId={field.nodeId}
+                                  name={field.name}
+                                  fieldType={field.fieldType}
+                                  valuePrefix="after"
+                                  onClick={handleInsertAfter}
+                                />
+                              ))}
+                            </Menu.ItemGroup>
+                          )}
+                          {availableSystemFields.length > 0 && (
+                            <Menu.ItemGroup>
+                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
+                                System fields
+                              </Menu.ItemGroupLabel>
+                              {availableSystemFields.map((field) => (
+                                <FieldMenuItem
+                                  key={field.nodeId}
+                                  nodeId={field.nodeId}
+                                  name={field.name}
+                                  fieldType={field.fieldType}
+                                  valuePrefix="after"
+                                  onClick={handleInsertAfter}
+                                />
+                              ))}
+                            </Menu.ItemGroup>
+                          )}
                         </Menu.Content>
                       </Menu.Positioner>
                     </Portal>

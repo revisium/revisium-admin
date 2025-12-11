@@ -19,7 +19,7 @@ interface FilterConditionRowProps {
 }
 
 export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filterModel, condition }) => {
-  const selectedField = filterModel.availableFields.find((f) => f.name === condition.field)
+  const selectedField = filterModel.allFields.find((f) => f.name === condition.field)
   const showValueInput = operatorRequiresValue(condition.operator, condition.fieldType)
   const error = filterModel.getErrorForCondition(condition.id)
 
@@ -28,6 +28,8 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
       field: field.name,
       fieldPath: field.path,
       fieldType: field.fieldType,
+      isSystemField: field.isSystemField,
+      systemFieldId: field.systemFieldId,
     })
   }
 
@@ -46,7 +48,8 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
       <Box display="flex" alignItems="center" gap={2} py={1}>
         <FilterFieldSelect
           selectedField={selectedField}
-          availableFields={filterModel.availableFields}
+          dataFields={filterModel.availableFields}
+          systemFields={filterModel.systemFields}
           onSelect={handleFieldSelect}
         />
 

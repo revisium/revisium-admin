@@ -1,5 +1,5 @@
 import { Input, Switch } from '@chakra-ui/react'
-import { ChangeEvent, FC } from 'react'
+import { ChangeEvent, FC, useCallback, useMemo } from 'react'
 import { FilterFieldType } from 'src/widgets/RowList/model/filterTypes'
 
 interface FilterValueInputProps {
@@ -10,19 +10,65 @@ interface FilterValueInputProps {
   onChange: (value: string | number | boolean) => void
 }
 
+function toDateTimeLocalValue(isoString: string | null | undefined): string {
+  if (!isoString) return ''
+  try {
+    const date = new Date(isoString)
+    if (isNaN(date.getTime())) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+  } catch {
+    return ''
+  }
+}
+
+function fromDateTimeLocalValue(localValue: string): string {
+  if (!localValue) return ''
+  try {
+    const date = new Date(localValue)
+    if (isNaN(date.getTime())) return ''
+    return date.toISOString()
+  } catch {
+    return ''
+  }
+}
+
 export const FilterValueInput: FC<FilterValueInputProps> = ({ value, fieldType, disabled, error, onChange }) => {
-  const handleStringChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value)
-  }
+  const handleStringChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value)
+    },
+    [onChange],
+  )
 
-  const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const numValue = e.target.value === '' ? '' : Number(e.target.value)
-    onChange(numValue)
-  }
+  const handleNumberChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const numValue = e.target.value === '' ? '' : Number(e.target.value)
+      onChange(numValue)
+    },
+    [onChange],
+  )
 
-  const handleBooleanChange = (details: { checked: boolean }) => {
-    onChange(details.checked)
-  }
+  const handleBooleanChange = useCallback(
+    (details: { checked: boolean }) => {
+      onChange(details.checked)
+    },
+    [onChange],
+  )
+
+  const handleDateTimeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const isoValue = fromDateTimeLocalValue(e.target.value)
+      onChange(isoValue)
+    },
+    [onChange],
+  )
+
+  const dateTimeValue = useMemo(() => toDateTimeLocalValue(String(value ?? '')), [value])
 
   if (disabled) {
     return null
@@ -48,6 +94,19 @@ export const FilterValueInput: FC<FilterValueInputProps> = ({ value, fieldType, 
           size="sm"
           width="100px"
           placeholder="Value"
+          borderColor={error ? 'red.500' : undefined}
+          _focus={{ borderColor: error ? 'red.500' : undefined }}
+        />
+      )
+
+    case FilterFieldType.DateTime:
+      return (
+        <Input
+          type="datetime-local"
+          value={dateTimeValue}
+          onChange={handleDateTimeChange}
+          size="sm"
+          width="200px"
           borderColor={error ? 'red.500' : undefined}
           _focus={{ borderColor: error ? 'red.500' : undefined }}
         />

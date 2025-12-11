@@ -3,6 +3,7 @@ import { RowListItemFragment } from 'src/__generated__/graphql-request'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { CellViewModel } from './CellViewModel'
+import { SystemFieldId } from './filterTypes'
 import { InlineEditModel } from './InlineEditModel'
 
 interface RowItemViewModelParams {
@@ -33,6 +34,25 @@ export class RowItemViewModel {
       this._cellViewModels.set(columnId, cellVM)
     }
     return cellVM
+  }
+
+  public getSystemFieldValue(systemFieldId: SystemFieldId): string | null {
+    switch (systemFieldId) {
+      case SystemFieldId.Id:
+        return this.params.item.id
+      case SystemFieldId.CreatedAt:
+        return this.params.item.createdAt
+      case SystemFieldId.UpdatedAt:
+        return this.params.item.updatedAt
+      case SystemFieldId.PublishedAt:
+        return this.params.item.publishedAt
+      case SystemFieldId.VersionId:
+        return this.params.item.versionId
+      case SystemFieldId.CreatedId:
+        return this.params.item.createdId
+      default:
+        return null
+    }
   }
 
   public get id(): string {

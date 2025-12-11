@@ -186,7 +186,7 @@ export class RowListViewModel implements IViewModel {
     this.listState.resetToLoading()
     this.columnsModel.init(schema, options)
     this.filterModel.init(schema)
-    this.sortModel.init(this.columnsModel.getSortableFields())
+    this.sortModel.init(this.columnsModel.sortableFields)
     this.inlineEdit.init({
       revisionId: this.revisionId,
       tableId: this._tableId,

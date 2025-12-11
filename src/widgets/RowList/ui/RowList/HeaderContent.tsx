@@ -1,10 +1,11 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useContext } from 'react'
-import { LuText } from 'react-icons/lu'
+import { useIdColumnResize } from 'src/widgets/RowList/hooks/useIdColumnResize'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { AddColumnButton } from 'src/widgets/RowList/ui/AddColumnButton/AddColumnButton'
 import { ColumnHeader } from 'src/widgets/RowList/ui/ColumnHeader/ColumnHeader'
+import { IdColumnHeader } from 'src/widgets/RowList/ui/ColumnHeader/IdColumnHeader'
 import { RowListContext, SELECTION_COLUMN_WIDTH } from './RowListContext'
 
 interface HeaderContentProps {
@@ -18,6 +19,8 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
   const showSelectionColumn = model?.showSelectionColumn ?? false
   const sortModel = model?.sortModel
   const filterModel = model?.filterModel
+  const idColumnWidth = columnsModel.idColumnWidth
+  const { isResizing, handleMouseDown } = useIdColumnResize(columnsModel)
 
   return (
     <Box as="tr" height="40px">
@@ -35,33 +38,14 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
       >
         <Box height="30px" borderBottomWidth="1px" borderColor="gray.100" />
       </Box>
-      <Box
-        as="th"
-        backgroundColor="white"
-        position="sticky"
+      <IdColumnHeader
+        width={idColumnWidth}
         left={showSelectionColumn ? SELECTION_COLUMN_WIDTH : 0}
-        zIndex={1}
-        width="200px"
-        maxWidth="200px"
-        minWidth="200px"
-        transition="left 0.15s"
-        textAlign="start"
-      >
-        <Flex
-          alignItems="center"
-          height="30px"
-          borderBottomWidth="1px"
-          borderColor="gray.100"
-          pl="8px"
-          pr="8px"
-          gap="4px"
-        >
-          <Box as={LuText} fontSize="xs" color="gray.300" flexShrink={0} />
-          <Text color="gray.400" fontSize="sm" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden">
-            id
-          </Text>
-        </Flex>
-      </Box>
+        isResizing={isResizing}
+        onResizeMouseDown={handleMouseDown}
+        sortModel={sortModel}
+        filterModel={filterModel}
+      />
       {columns.map((column) => (
         <ColumnHeader
           key={column.id}
@@ -73,6 +57,7 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
       ))}
       <AddColumnButton
         availableFields={columnsModel.availableFieldsToAdd}
+        availableSystemFields={columnsModel.availableSystemFieldsToAdd}
         hasHiddenColumns={columnsModel.hasHiddenColumns}
         onAddColumn={columnsModel.addColumn}
         onAddAll={columnsModel.addAll}

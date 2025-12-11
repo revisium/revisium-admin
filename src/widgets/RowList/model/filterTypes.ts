@@ -1,6 +1,6 @@
 import { JsonSchemaTypeName } from 'src/entities/Schema'
-import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 
 export enum FilterFieldType {
   String = 'string',
@@ -8,7 +8,19 @@ export enum FilterFieldType {
   Boolean = 'boolean',
   ForeignKey = 'foreignKey',
   File = 'file',
+  DateTime = 'dateTime',
 }
+
+export enum SystemFieldId {
+  Id = 'system:id',
+  CreatedAt = 'system:createdAt',
+  UpdatedAt = 'system:updatedAt',
+  PublishedAt = 'system:publishedAt',
+  VersionId = 'system:versionId',
+  CreatedId = 'system:createdId',
+}
+
+export { getSystemFieldBySchemaRef, SYSTEM_FIELDS_CONFIG } from '../config/systemFields'
 
 export enum FilterOperator {
   Equals = 'equals',
@@ -27,6 +39,11 @@ export enum FilterOperator {
 
   IsTrue = 'is_true',
   IsFalse = 'is_false',
+
+  Before = 'before',
+  After = 'after',
+  OnOrBefore = 'on_or_before',
+  OnOrAfter = 'on_or_after',
 }
 
 export interface OperatorInfo {
@@ -70,6 +87,14 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
     { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
     { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
   ],
+  [FilterFieldType.DateTime]: [
+    { operator: FilterOperator.Equals, label: 'is', requiresValue: true },
+    { operator: FilterOperator.NotEquals, label: 'is not', requiresValue: true },
+    { operator: FilterOperator.Before, label: 'before', requiresValue: true },
+    { operator: FilterOperator.After, label: 'after', requiresValue: true },
+    { operator: FilterOperator.OnOrBefore, label: 'on or before', requiresValue: true },
+    { operator: FilterOperator.OnOrAfter, label: 'on or after', requiresValue: true },
+  ],
 }
 
 export interface FilterCondition {
@@ -79,6 +104,8 @@ export interface FilterCondition {
   fieldType: FilterFieldType
   operator: FilterOperator
   value: string | number | boolean | null
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
 }
 
 export interface FilterGroup {
@@ -93,7 +120,9 @@ export interface FilterableField {
   name: string
   path: string[]
   fieldType: FilterFieldType
-  schemaStore: JsonSchemaStore
+  schemaStore?: JsonSchemaStore
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
 }
 
 export function getFieldTypeFromSchema(schemaStore: JsonSchemaStore): FilterFieldType | null {
@@ -128,6 +157,8 @@ export function getDefaultOperator(fieldType: FilterFieldType): FilterOperator {
       return FilterOperator.IsTrue
     case FilterFieldType.File:
       return FilterOperator.IsNotEmpty
+    case FilterFieldType.DateTime:
+      return FilterOperator.After
   }
 }
 
@@ -152,6 +183,8 @@ export function createEmptyCondition(field: FilterableField): FilterCondition {
     fieldType: field.fieldType,
     operator: getDefaultOperator(field.fieldType),
     value: field.fieldType === FilterFieldType.Boolean ? true : '',
+    isSystemField: field.isSystemField,
+    systemFieldId: field.systemFieldId,
   }
 }
 

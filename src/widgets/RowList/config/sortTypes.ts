@@ -1,4 +1,4 @@
-import { FilterFieldType } from '../model/filterTypes'
+import { FilterFieldType, SystemFieldId } from '../model/filterTypes'
 
 export type SortDirection = 'asc' | 'desc'
 
@@ -8,6 +8,8 @@ export interface SortConfig {
   fieldPath: string[]
   fieldType: FilterFieldType
   direction: SortDirection
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
 }
 
 export interface SortableField {
@@ -15,4 +17,6 @@ export interface SortableField {
   name: string
   path: string[]
   fieldType: FilterFieldType
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
 }

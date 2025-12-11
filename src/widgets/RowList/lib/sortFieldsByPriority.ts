@@ -7,6 +7,7 @@ const TYPE_PRIORITY: Record<FilterFieldType, number> = {
   [FilterFieldType.Number]: 3,
   [FilterFieldType.Boolean]: 4,
   [FilterFieldType.ForeignKey]: 5,
+  [FilterFieldType.DateTime]: 6,
 }
 
 export function sortFieldsByPriority(fields: AvailableField[]): AvailableField[] {

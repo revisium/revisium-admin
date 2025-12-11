@@ -1,11 +1,14 @@
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
-import { FilterFieldType } from './filterTypes'
+import { FilterFieldType, SystemFieldId } from './filterTypes'
 
 export type ColumnType = {
   id: string
   name: string
   title: string
   fieldType: FilterFieldType | null
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
+  isSystemColumn?: boolean
 }
 
 export interface AvailableField {
@@ -13,5 +16,8 @@ export interface AvailableField {
   name: string
   path: string[]
   fieldType: FilterFieldType | null
-  schemaStore: JsonSchemaStore
+  schemaStore?: JsonSchemaStore
+  isSystemField?: boolean
+  systemFieldId?: SystemFieldId
+  isSystemColumn?: boolean
 }

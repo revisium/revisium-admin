@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { OrderBy, OrderByField, OrderDataType, SortOrder } from 'src/__generated__/graphql-request'
-import { FilterFieldType } from './filterTypes'
+import { FilterFieldType, SystemFieldId } from './filterTypes'
 import { SortConfig, SortDirection, SortableField } from '../config/sortTypes'
 
 export class SortModel {
@@ -71,6 +71,7 @@ export class SortModel {
       [FilterFieldType.Number]: 3,
       [FilterFieldType.ForeignKey]: 4,
       [FilterFieldType.File]: 5,
+      [FilterFieldType.DateTime]: 6,
     }
 
     return [...fields].sort((a, b) => {
@@ -137,6 +138,8 @@ export class SortModel {
         fieldPath: field.path,
         fieldType: field.fieldType,
         direction,
+        isSystemField: field.isSystemField,
+        systemFieldId: field.systemFieldId,
       })
     }
 
@@ -168,6 +171,8 @@ export class SortModel {
         fieldPath: field.path,
         fieldType: field.fieldType,
         direction: this._sorts[existingIndex].direction,
+        isSystemField: field.isSystemField,
+        systemFieldId: field.systemFieldId,
       }
     }
     this.markAsPending()
@@ -224,12 +229,39 @@ export class SortModel {
       return undefined
     }
 
-    return this._appliedSorts.map((sort) => ({
-      field: OrderByField.Data,
-      path: this.buildSortPath(sort),
-      direction: sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc,
-      type: this.mapFieldTypeToOrderDataType(sort.fieldType),
-    }))
+    return this._appliedSorts.map((sort) => {
+      if (sort.isSystemField && sort.systemFieldId) {
+        return this.buildSystemFieldOrderBy(sort)
+      }
+      return {
+        field: OrderByField.Data,
+        path: this.buildSortPath(sort),
+        direction: sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc,
+        type: this.mapFieldTypeToOrderDataType(sort.fieldType),
+      }
+    })
+  }
+
+  private buildSystemFieldOrderBy(sort: SortConfig): OrderBy {
+    const direction = sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc
+
+    switch (sort.systemFieldId) {
+      case SystemFieldId.Id:
+        return { field: OrderByField.Id, direction }
+      case SystemFieldId.CreatedAt:
+        return { field: OrderByField.CreatedAt, direction }
+      case SystemFieldId.UpdatedAt:
+        return { field: OrderByField.UpdatedAt, direction }
+      case SystemFieldId.PublishedAt:
+        return { field: OrderByField.PublishedAt, direction }
+      default:
+        return {
+          field: OrderByField.Data,
+          path: sort.field,
+          direction,
+          type: this.mapFieldTypeToOrderDataType(sort.fieldType),
+        }
+    }
   }
 
   private buildSortPath(sort: SortConfig): string {
@@ -245,6 +277,7 @@ export class SortModel {
       case FilterFieldType.String:
       case FilterFieldType.ForeignKey:
       case FilterFieldType.File:
+      case FilterFieldType.DateTime:
         return OrderDataType.Text
       case FilterFieldType.Number:
         return OrderDataType.Float

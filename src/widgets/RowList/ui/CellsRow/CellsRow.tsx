@@ -5,6 +5,7 @@ import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-objec
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
 import { EditableCell } from 'src/widgets/RowList/ui/EditableCell'
+import { SystemFieldCell } from 'src/widgets/RowList/ui/EditableCell/SystemFieldCell'
 
 interface CellsRowProps {
   row: RowItemViewModel
@@ -23,6 +24,11 @@ export const CellsRow: FC<CellsRowProps> = observer(({ row, columnsModel, revisi
   return (
     <>
       {columnsModel.columns.map((column) => {
+        if (column.isSystemColumn && column.systemFieldId) {
+          const value = row.getSystemFieldValue(column.systemFieldId)
+          return <SystemFieldCell key={column.id} value={value} fieldType={column.fieldType} />
+        }
+
         const cellVM = row.getCellViewModel(column.id)
         if (!cellVM) {
           return null

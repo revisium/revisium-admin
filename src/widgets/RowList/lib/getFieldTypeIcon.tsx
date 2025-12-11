@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { PiFile } from 'react-icons/pi'
+import { PiCalendar, PiFile } from 'react-icons/pi'
 import { FilterFieldType } from '../model/filterTypes'
 
 export const getFieldTypeIcon = (fieldType: FilterFieldType): ReactNode => {
@@ -14,6 +14,8 @@ export const getFieldTypeIcon = (fieldType: FilterFieldType): ReactNode => {
       return '->'
     case FilterFieldType.File:
       return <PiFile size={14} />
+    case FilterFieldType.DateTime:
+      return <PiCalendar size={14} />
     default: {
       const _exhaustiveCheck: never = fieldType
       return _exhaustiveCheck

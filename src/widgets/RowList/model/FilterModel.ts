@@ -1,6 +1,7 @@
 import { makeAutoObservable, observable } from 'mobx'
 import { JsonSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
+import { SYSTEM_FIELDS_CONFIG } from '../config/systemFields'
 import { extractFilterableFields } from '../lib/extractFilterableFields'
 import { buildGraphQLWhere } from '../lib/filterGraphQLBuilder'
 import {
@@ -18,6 +19,7 @@ import {
 export class FilterModel {
   private _rootGroup: FilterGroup = createEmptyGroup('and')
   private _availableFields: FilterableField[] = []
+  private _systemFields: FilterableField[] = []
   private _isFilterBarOpen = false
   private _onFilterChange: (() => void) | null = null
   private _appliedFilterSnapshot: string = ''
@@ -36,6 +38,25 @@ export class FilterModel {
 
   public get availableFields(): FilterableField[] {
     return this._availableFields
+  }
+
+  public get systemFields(): FilterableField[] {
+    return this._systemFields
+  }
+
+  public get allFields(): FilterableField[] {
+    return [...this._availableFields, ...this._systemFields]
+  }
+
+  public getFilterableFieldForColumn(
+    columnName: string,
+    isSystemField?: boolean,
+    systemFieldId?: string,
+  ): FilterableField | undefined {
+    if (isSystemField && systemFieldId) {
+      return this._systemFields.find((f) => f.systemFieldId === systemFieldId)
+    }
+    return this._availableFields.find((f) => f.name === columnName)
   }
 
   public get isFilterBarOpen(): boolean {
@@ -81,7 +102,16 @@ export class FilterModel {
 
   public init(schema: JsonSchema): void {
     const schemaStore = createJsonSchemaStore(schema)
-    this._availableFields = extractFilterableFields(schemaStore)
+    const { dataFields, usedSystemFieldIds } = extractFilterableFields(schemaStore)
+    this._availableFields = dataFields
+    this._systemFields = SYSTEM_FIELDS_CONFIG.filter((config) => !usedSystemFieldIds.has(config.id)).map((config) => ({
+      nodeId: config.id,
+      name: config.name,
+      path: [],
+      fieldType: config.fieldType,
+      isSystemField: true,
+      systemFieldId: config.id,
+    }))
     this._rootGroup = createEmptyGroup('and')
     this._isFilterBarOpen = false
     this._appliedFilterSnapshot = this.getEmptySnapshot()

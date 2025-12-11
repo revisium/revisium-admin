@@ -11,13 +11,31 @@ import { extractAvailableFields } from 'src/widgets/RowList/lib/extractAvailable
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
 import { sortFieldsByPriority } from 'src/widgets/RowList/lib/sortFieldsByPriority'
-import { MIN_COLUMN_WIDTH } from 'src/widgets/RowList/config/constants'
-import { SortableField } from 'src/widgets/RowList/config/sortTypes'
+import { DEFAULT_ID_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from 'src/widgets/RowList/config/constants'
+import { ADDABLE_SYSTEM_FIELD_IDS, getSystemFieldConfigById, SortableField } from 'src/widgets/RowList/config'
+import { SystemFieldId } from './filterTypes'
 import { InlineEditModel } from './InlineEditModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
 
 const DEFAULT_VISIBLE_COLUMNS = 3
+
+function buildSystemColumns(): AvailableField[] {
+  return ADDABLE_SYSTEM_FIELD_IDS.map((id) => {
+    const config = getSystemFieldConfigById(id)!
+    return {
+      nodeId: id,
+      name: config.name,
+      path: [],
+      fieldType: config.fieldType,
+      isSystemField: true,
+      systemFieldId: id,
+      isSystemColumn: true,
+    }
+  })
+}
+
+const SYSTEM_COLUMNS = buildSystemColumns()
 
 interface CachedRowData {
   versionId: string
@@ -30,10 +48,12 @@ export class ColumnsModel {
   private _visibleColumnIdsSet = new Set<string>()
   private _availableFields: AvailableField[] = []
   private _availableFieldsMap = new Map<string, AvailableField>()
+  private _availableSystemFields: AvailableField[] = []
   private _schemaStore: ReturnType<typeof createJsonSchemaStore> | null = null
   private _rowCache = new Map<string, CachedRowData>()
   private _columnCache = new Map<string, ColumnType>()
   private _columnWidths = observable.map<string, number>()
+  private _idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
 
   constructor() {
     makeAutoObservable<
@@ -54,7 +74,7 @@ export class ColumnsModel {
 
   public get columns(): ColumnType[] {
     return this._visibleColumnIds
-      .map((id) => this._availableFields.find((f) => f.nodeId === id))
+      .map((id) => this._availableFieldsMap.get(id))
       .filter((field): field is AvailableField => Boolean(field))
       .map((field) => this.getOrCreateColumn(field))
   }
@@ -70,6 +90,9 @@ export class ColumnsModel {
       name: field.name,
       title: field.name,
       fieldType: field.fieldType,
+      isSystemField: field.isSystemField,
+      systemFieldId: field.systemFieldId,
+      isSystemColumn: field.isSystemColumn,
     }
     this._columnCache.set(field.nodeId, column)
     return column
@@ -85,8 +108,13 @@ export class ColumnsModel {
     return sortFieldsByPriority(hidden)
   }
 
+  public get availableSystemFieldsToAdd(): AvailableField[] {
+    const visibleSet = new Set(this._visibleColumnIds)
+    return this._availableSystemFields.filter((field) => !visibleSet.has(field.nodeId))
+  }
+
   public get hasHiddenColumns(): boolean {
-    return this.availableFieldsToAdd.length > 0
+    return this.availableFieldsToAdd.length > 0 || this.availableSystemFieldsToAdd.length > 0
   }
 
   public get canRemoveColumn(): boolean {
@@ -101,15 +129,40 @@ export class ColumnsModel {
     return this._availableFields
   }
 
-  public getSortableFields(): SortableField[] {
-    return this._availableFields
+  public get sortableFields(): SortableField[] {
+    const idConfig = getSystemFieldConfigById(SystemFieldId.Id)!
+    const idField: SortableField = {
+      nodeId: SystemFieldId.Id,
+      name: idConfig.name,
+      path: [],
+      fieldType: idConfig.fieldType,
+      isSystemField: true,
+      systemFieldId: SystemFieldId.Id,
+    }
+
+    const dataFields: SortableField[] = this._availableFields
       .filter((f) => f.fieldType !== null)
       .map((f) => ({
         nodeId: f.nodeId,
         name: f.name,
         path: f.path,
         fieldType: f.fieldType!,
+        isSystemField: f.isSystemField,
+        systemFieldId: f.systemFieldId,
       }))
+
+    const systemFields: SortableField[] = this._availableSystemFields
+      .filter((f) => f.fieldType !== null)
+      .map((f) => ({
+        nodeId: f.nodeId,
+        name: f.name,
+        path: f.path,
+        fieldType: f.fieldType!,
+        isSystemField: f.isSystemField,
+        systemFieldId: f.systemFieldId,
+      }))
+
+    return [idField, ...dataFields, ...systemFields]
   }
 
   public isColumnVisible(nodeId: string): boolean {
@@ -128,9 +181,20 @@ export class ColumnsModel {
     this._columnCache.clear()
     this._columnWidths.clear()
     this._availableFieldsMap.clear()
+    this._idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
 
-    this._availableFields = extractAvailableFields(this._schemaStore)
+    const { fields, usedSystemFieldIds } = extractAvailableFields(this._schemaStore)
+    this._availableFields = fields
+
     for (const field of this._availableFields) {
+      this._availableFieldsMap.set(field.nodeId, field)
+    }
+
+    this._availableSystemFields = SYSTEM_COLUMNS.filter(
+      (sf) => !sf.systemFieldId || !usedSystemFieldIds.has(sf.systemFieldId),
+    )
+
+    for (const field of this._availableSystemFields) {
       this._availableFieldsMap.set(field.nodeId, field)
     }
 
@@ -250,13 +314,21 @@ export class ColumnsModel {
     this._columnWidths.set(columnId, clampedWidth)
   }
 
+  public get idColumnWidth(): number {
+    return this._idColumnWidth
+  }
+
+  public setIdColumnWidth(width: number): void {
+    this._idColumnWidth = Math.max(MIN_COLUMN_WIDTH, width)
+  }
+
   public getColumnWidth(columnId: string): number {
     const customWidth = this._columnWidths.get(columnId)
     if (customWidth !== undefined) {
       return customWidth
     }
     const field = this._availableFieldsMap.get(columnId)
-    return field ? getColumnBySchema(field.schemaStore) : 200
+    return field?.schemaStore ? getColumnBySchema(field.schemaStore) : 200
   }
 
   public createRowViewModels(

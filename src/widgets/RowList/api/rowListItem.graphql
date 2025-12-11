@@ -3,6 +3,10 @@ fragment RowListItem on RowModel {
   versionId
   readonly
   data
+  createdAt
+  updatedAt
+  publishedAt
+  createdId
 }
 
 query RowListRows($data: GetRowsInput!) {

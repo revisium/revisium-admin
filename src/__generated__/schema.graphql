@@ -206,7 +206,9 @@ input GetBranchRevisionsInput {
   comment: String
   first: Int!
   inclusive: Boolean
-  """Sort order: asc (default) or desc"""
+  """
+  Sort order: asc (default) or desc
+  """
   sort: SortOrder
 }
 
@@ -474,6 +476,7 @@ enum OrderByField {
   createdAt
   data
   id
+  publishedAt
   updatedAt
 }
 
@@ -573,7 +576,8 @@ type Query {
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int! @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
+    @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
   me: UserModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
   project(data: GetProjectInput!): ProjectModel!

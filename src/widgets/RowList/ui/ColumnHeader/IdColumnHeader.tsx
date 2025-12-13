@@ -24,9 +24,9 @@ export const IdColumnHeader: FC<IdColumnHeaderProps> = observer(
     const headerRef = useRef<HTMLTableCellElement>(null)
     const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false)
 
-    const idFilterField: FilterableField | undefined = filterModel?.systemFields.find(
-      (f) => f.systemFieldId === SystemFieldId.Id,
-    )
+    const idFilterField: FilterableField | undefined =
+      filterModel?.systemFields.find((f) => f.systemFieldId === SystemFieldId.Id) ||
+      filterModel?.availableFields.find((f) => f.systemFieldId === SystemFieldId.Id)
 
     const canFilter = Boolean(idFilterField)
 

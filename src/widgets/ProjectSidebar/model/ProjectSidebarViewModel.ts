@@ -68,7 +68,7 @@ export class ProjectSidebarViewModel {
     try {
       await this.getRevisionChangesRequest.fetch({
         revisionId: this.context.revision.id,
-        includeSystem: false,
+        includeSystem: true,
       })
     } catch (e) {
       console.error('Failed to load changes count', e)

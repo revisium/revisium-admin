@@ -54,7 +54,10 @@ export class FilterModel {
     systemFieldId?: string,
   ): FilterableField | undefined {
     if (isSystemField && systemFieldId) {
-      return this._systemFields.find((f) => f.systemFieldId === systemFieldId)
+      return (
+        this._systemFields.find((f) => f.systemFieldId === systemFieldId) ||
+        this._availableFields.find((f) => f.systemFieldId === systemFieldId)
+      )
     }
     return this._availableFields.find((f) => f.name === columnName)
   }

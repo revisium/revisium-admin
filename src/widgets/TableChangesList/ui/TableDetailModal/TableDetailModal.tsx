@@ -4,7 +4,24 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { PiArrowRight, PiX } from 'react-icons/pi'
+import { ChangeType } from 'src/__generated__/graphql-request'
 import { TableDetailModalModel } from '../../model/TableDetailModalModel'
+
+const getViewChangeTypeColor = (changeType: ChangeType): string => {
+  switch (changeType) {
+    case ChangeType.Added:
+      return 'green.500'
+    case ChangeType.Modified:
+      return 'orange.500'
+    case ChangeType.Removed:
+      return 'red.500'
+    case ChangeType.Renamed:
+    case ChangeType.RenamedAndModified:
+      return 'blue.500'
+    default:
+      return 'gray.500'
+  }
+}
 
 interface TableDetailModalProps {
   model: TableDetailModalModel
@@ -117,6 +134,65 @@ export const TableDetailModal: React.FC<TableDetailModalProps> = observer(({ mod
                             </Text>
                           ))}
                         </Box>
+                      )}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
+              {model.hasViewsChanges && (
+                <Box mb="1rem">
+                  <Text fontSize="14px" fontWeight="500" color="newGray.500" mb="0.5rem">
+                    Views Changes ({model.viewsChangesCount})
+                  </Text>
+                  <Flex gap="1rem" fontSize="13px" color="gray.500" flexWrap="wrap" mb="0.5rem">
+                    {model.addedViewsCount > 0 && (
+                      <Flex alignItems="center" gap="0.25rem">
+                        <Box width="8px" height="8px" borderRadius="50%" backgroundColor="green.500" />
+                        <Text>Added: {model.addedViewsCount}</Text>
+                      </Flex>
+                    )}
+                    {model.modifiedViewsCount > 0 && (
+                      <Flex alignItems="center" gap="0.25rem">
+                        <Box width="8px" height="8px" borderRadius="50%" backgroundColor="orange.500" />
+                        <Text>Modified: {model.modifiedViewsCount}</Text>
+                      </Flex>
+                    )}
+                    {model.removedViewsCount > 0 && (
+                      <Flex alignItems="center" gap="0.25rem">
+                        <Box width="8px" height="8px" borderRadius="50%" backgroundColor="red.500" />
+                        <Text>Removed: {model.removedViewsCount}</Text>
+                      </Flex>
+                    )}
+                    {model.renamedViewsCount > 0 && (
+                      <Flex alignItems="center" gap="0.25rem">
+                        <Box width="8px" height="8px" borderRadius="50%" backgroundColor="blue.500" />
+                        <Text>Renamed: {model.renamedViewsCount}</Text>
+                      </Flex>
+                    )}
+                  </Flex>
+                  {model.viewsChanges.map((viewChange, index) => (
+                    <Box
+                      key={index}
+                      mb="0.5rem"
+                      paddingY="0.5rem"
+                      paddingX="0.75rem"
+                      borderWidth="1px"
+                      borderColor="gray.200"
+                      borderRadius="4px"
+                    >
+                      <Flex alignItems="center" gap="0.5rem">
+                        <Text fontSize="12px" fontWeight="500" color="gray.700">
+                          {viewChange.viewName}
+                        </Text>
+                        <Text fontSize="11px" color={getViewChangeTypeColor(viewChange.changeType)}>
+                          {viewChange.changeType.toLowerCase().replace('_', ' ')}
+                        </Text>
+                      </Flex>
+                      {viewChange.oldViewName && (
+                        <Text fontSize="11px" color="gray.500">
+                          Renamed from: {viewChange.oldViewName}
+                        </Text>
                       )}
                     </Box>
                   ))}

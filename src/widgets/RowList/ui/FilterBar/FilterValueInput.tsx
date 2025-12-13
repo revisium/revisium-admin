@@ -1,5 +1,6 @@
 import { Input, Switch } from '@chakra-ui/react'
 import { ChangeEvent, FC, useCallback, useMemo } from 'react'
+import { toDateTimeLocalValue, fromDateTimeLocalValue } from 'src/widgets/RowList/lib/dateTimeLocalUtils'
 import { FilterFieldType } from 'src/widgets/RowList/model/filterTypes'
 
 interface FilterValueInputProps {
@@ -8,33 +9,6 @@ interface FilterValueInputProps {
   disabled?: boolean
   error?: boolean
   onChange: (value: string | number | boolean) => void
-}
-
-function toDateTimeLocalValue(isoString: string | null | undefined): string {
-  if (!isoString) return ''
-  try {
-    const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}-${month}-${day}T${hours}:${minutes}`
-  } catch {
-    return ''
-  }
-}
-
-function fromDateTimeLocalValue(localValue: string): string {
-  if (!localValue) return ''
-  try {
-    const date = new Date(localValue)
-    if (isNaN(date.getTime())) return ''
-    return date.toISOString()
-  } catch {
-    return ''
-  }
 }
 
 export const FilterValueInput: FC<FilterValueInputProps> = ({ value, fieldType, disabled, error, onChange }) => {

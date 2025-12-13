@@ -1,0 +1,34 @@
+fragment TableViewsData on TableViewsDataModel {
+  version
+  defaultViewId
+  views {
+    id
+    name
+    description
+    columns {
+      field
+      width
+    }
+    filters
+    sorts {
+      field
+      direction
+    }
+    search
+  }
+}
+
+query GetTableViews($data: GetTableInput!) {
+  table(data: $data) {
+    id
+    views {
+      ...TableViewsData
+    }
+  }
+}
+
+mutation UpdateTableViews($data: UpdateTableViewsInput!) {
+  updateTableViews(data: $data) {
+    ...TableViewsData
+  }
+}

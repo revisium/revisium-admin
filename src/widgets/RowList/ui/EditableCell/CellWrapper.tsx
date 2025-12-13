@@ -1,4 +1,4 @@
-import { Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, PropsWithChildren, useCallback, useRef } from 'react'
 import { CellPosition, getClickOffset, getCellPosition } from '../../lib/getClickOffset'
@@ -8,7 +8,6 @@ export type { CellState, CellPosition }
 
 interface CellWrapperProps extends PropsWithChildren {
   state: CellState
-  errorMessage?: string
   displayValue?: string
   onFocus?: () => void
   onDoubleClick?: (clickOffset?: number, position?: CellPosition) => void
@@ -55,7 +54,7 @@ const stateStyles: Record<CellState, object> = {
 }
 
 export const CellWrapper: FC<CellWrapperProps> = observer(
-  ({ children, state, errorMessage, displayValue, onFocus, onDoubleClick }) => {
+  ({ children, state, displayValue, onFocus, onDoubleClick }) => {
     const cellRef = useRef<HTMLTableCellElement>(null)
     const textRef = useRef<HTMLParagraphElement>(null)
 
@@ -131,19 +130,6 @@ export const CellWrapper: FC<CellWrapperProps> = observer(
         </Box>
       </Box>
     )
-
-    if (state === 'error' && errorMessage) {
-      return (
-        <Tooltip.Root>
-          <Tooltip.Trigger asChild>{content}</Tooltip.Trigger>
-          <Tooltip.Positioner>
-            <Tooltip.Content bg="red.600" color="white">
-              {errorMessage}
-            </Tooltip.Content>
-          </Tooltip.Positioner>
-        </Tooltip.Root>
-      )
-    }
 
     return content
   },

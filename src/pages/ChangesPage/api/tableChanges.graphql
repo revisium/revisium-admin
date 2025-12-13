@@ -18,6 +18,19 @@ query GetTableChanges($revisionId: String!, $first: Int!, $after: String, $filte
             from
           }
         }
+        viewsChanges {
+          hasChanges
+          changes {
+            viewId
+            viewName
+            changeType
+            oldViewName
+          }
+          addedCount
+          modifiedCount
+          removedCount
+          renamedCount
+        }
         rowChangesCount
         addedRowsCount
         modifiedRowsCount

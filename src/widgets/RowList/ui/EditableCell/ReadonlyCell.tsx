@@ -1,4 +1,4 @@
-import { Box, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { PiFile } from 'react-icons/pi'
@@ -35,21 +35,6 @@ export const ReadonlyCell: FC<ReadonlyCellProps> = observer(({ value, type, file
     }
   }
 
-  const getTooltipContent = () => {
-    switch (type) {
-      case 'file':
-        return 'Click to view file details'
-      case 'object':
-      case 'array':
-        return 'Click to edit on row page'
-      case 'readonly':
-        return 'This field is read-only'
-      default:
-        return undefined
-    }
-  }
-
-  const tooltipContent = getTooltipContent()
   const isClickable = type !== 'readonly' && onClick
 
   const content = (
@@ -66,17 +51,6 @@ export const ReadonlyCell: FC<ReadonlyCellProps> = observer(({ value, type, file
       {getDisplayValue()}
     </Box>
   )
-
-  if (tooltipContent) {
-    return (
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>{content}</Tooltip.Trigger>
-        <Tooltip.Positioner>
-          <Tooltip.Content>{tooltipContent}</Tooltip.Content>
-        </Tooltip.Positioner>
-      </Tooltip.Root>
-    )
-  }
 
   return content
 })

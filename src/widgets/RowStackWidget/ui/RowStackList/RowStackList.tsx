@@ -8,6 +8,7 @@ import { Tooltip } from 'src/shared/ui'
 import { RowList, RowListViewModel, SearchInput } from 'src/widgets/RowList'
 import { FilterPopover } from 'src/widgets/RowList/ui/FilterBar'
 import { SortPopover } from 'src/widgets/RowList/ui/SortPopover'
+import { ViewSettingsBadge } from 'src/widgets/RowList/ui/ViewSettingsBadge'
 import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel'
 import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader'
@@ -85,17 +86,20 @@ export const RowStackList: React.FC = observer(() => {
       {!model.showEmpty && !model.showLoading && (
         <Flex
           alignItems="center"
-          gap="8px"
+          justifyContent="space-between"
           paddingX="12px"
           paddingY="8px"
           marginTop="4px"
           borderTop="1px solid"
           borderColor="gray.100"
         >
-          <Text fontSize="sm" color="gray.500">
-            {model.rowCountText}
-          </Text>
-          {model.isRefetching && <Spinner size="xs" color="gray.400" />}
+          <Flex alignItems="center" gap="8px">
+            <Text fontSize="sm" color="gray.500">
+              {model.rowCountText}
+            </Text>
+            {model.isRefetching && <Spinner size="xs" color="gray.400" />}
+          </Flex>
+          <ViewSettingsBadge model={model.viewSettingsBadge} />
         </Flex>
       )}
     </Flex>

@@ -135,7 +135,7 @@ export class ChangesPageViewModel implements IViewModel {
   private async request(): Promise<void> {
     const result = await this.getRevisionChangesRequest.fetch({
       revisionId: this.context.revision.id,
-      includeSystem: false,
+      includeSystem: true,
     })
 
     if (!result.isRight) {

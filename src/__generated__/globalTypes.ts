@@ -342,6 +342,11 @@ export type GetTableRowsInput = {
   first: Scalars['Int']['input']
 }
 
+export type GetTableViewsInput = {
+  revisionId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
 export type GetTablesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
@@ -483,6 +488,7 @@ export type Mutation = {
   updateProject: Scalars['Boolean']['output']
   updateRow: UpdateRowResultModel
   updateTable: UpdateTableResultModel
+  updateTableViews: TableViewsDataModel
   updateUserProjectRole: Scalars['Boolean']['output']
 }
 
@@ -604,6 +610,10 @@ export type MutationUpdateRowArgs = {
 
 export type MutationUpdateTableArgs = {
   data: UpdateTableInput
+}
+
+export type MutationUpdateTableViewsArgs = {
+  data: UpdateTableViewsInput
 }
 
 export type MutationUpdateUserProjectRoleArgs = {
@@ -752,6 +762,7 @@ export type Query = {
   searchUsers: UsersConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
+  tableViews: TableViewsDataModel
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
   usersProject: UsersProjectConnection
@@ -819,6 +830,10 @@ export type QueryTableArgs = {
 
 export type QueryTableChangesArgs = {
   data: GetTableChangesInput
+}
+
+export type QueryTableViewsArgs = {
+  data: GetTableViewsInput
 }
 
 export type QueryTablesArgs = {
@@ -1197,6 +1212,7 @@ export type TableChangeModel = {
   tableCreatedId: Scalars['String']['output']
   tableId: Scalars['String']['output']
   toVersionId?: Maybe<Scalars['String']['output']>
+  viewsChanges: ViewsChangeDetailModel
 }
 
 export type TableChangeModelEdge = {
@@ -1234,6 +1250,7 @@ export type TableModel = {
   schema: Scalars['JSON']['output']
   updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
+  views: TableViewsDataModel
 }
 
 export type TableModelForeignKeysByArgs = {
@@ -1252,6 +1269,19 @@ export type TableModelEdge = {
   __typename: 'TableModelEdge'
   cursor: Scalars['String']['output']
   node: TableModel
+}
+
+export type TableViewsDataInput = {
+  defaultViewId: Scalars['String']['input']
+  version: Scalars['Int']['input']
+  views: Array<ViewInput>
+}
+
+export type TableViewsDataModel = {
+  __typename: 'TableViewsDataModel'
+  defaultViewId: Scalars['String']['output']
+  version: Scalars['Int']['output']
+  views: Array<ViewModel>
 }
 
 export type TablesConnection = {
@@ -1297,6 +1327,12 @@ export type UpdateTableResultModel = {
   __typename: 'UpdateTableResultModel'
   previousVersionTableId: Scalars['String']['output']
   table: TableModel
+}
+
+export type UpdateTableViewsInput = {
+  revisionId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+  viewsData: TableViewsDataInput
 }
 
 export type UpdateUserProjectRoleInput = {
@@ -1386,6 +1422,67 @@ export type UsersProjectModelEdge = {
   __typename: 'UsersProjectModelEdge'
   cursor: Scalars['String']['output']
   node: UsersProjectModel
+}
+
+export type ViewChangeModel = {
+  __typename: 'ViewChangeModel'
+  changeType: ChangeType
+  oldViewName?: Maybe<Scalars['String']['output']>
+  viewId: Scalars['String']['output']
+  viewName: Scalars['String']['output']
+}
+
+export type ViewColumnInput = {
+  field: Scalars['String']['input']
+  width?: InputMaybe<Scalars['Float']['input']>
+}
+
+export type ViewColumnModel = {
+  __typename: 'ViewColumnModel'
+  field: Scalars['String']['output']
+  width?: Maybe<Scalars['Float']['output']>
+}
+
+export type ViewInput = {
+  columns?: InputMaybe<Array<ViewColumnInput>>
+  description?: InputMaybe<Scalars['String']['input']>
+  filters?: InputMaybe<Scalars['JSON']['input']>
+  id: Scalars['String']['input']
+  name: Scalars['String']['input']
+  search?: InputMaybe<Scalars['String']['input']>
+  sorts?: InputMaybe<Array<ViewSortInput>>
+}
+
+export type ViewModel = {
+  __typename: 'ViewModel'
+  columns?: Maybe<Array<ViewColumnModel>>
+  description?: Maybe<Scalars['String']['output']>
+  filters?: Maybe<Scalars['JSON']['output']>
+  id: Scalars['String']['output']
+  name: Scalars['String']['output']
+  search?: Maybe<Scalars['String']['output']>
+  sorts?: Maybe<Array<ViewSortModel>>
+}
+
+export type ViewSortInput = {
+  direction: SortOrder
+  field: Scalars['String']['input']
+}
+
+export type ViewSortModel = {
+  __typename: 'ViewSortModel'
+  direction: Scalars['String']['output']
+  field: Scalars['String']['output']
+}
+
+export type ViewsChangeDetailModel = {
+  __typename: 'ViewsChangeDetailModel'
+  addedCount: Scalars['Int']['output']
+  changes: Array<ViewChangeModel>
+  hasChanges: Scalars['Boolean']['output']
+  modifiedCount: Scalars['Int']['output']
+  removedCount: Scalars['Int']['output']
+  renamedCount: Scalars['Int']['output']
 }
 
 export type WhereInput = {

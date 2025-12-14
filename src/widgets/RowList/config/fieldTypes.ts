@@ -8,10 +8,16 @@ export enum FilterFieldType {
 }
 
 export enum SystemFieldId {
-  Id = 'system:id',
-  CreatedAt = 'system:createdAt',
-  UpdatedAt = 'system:updatedAt',
-  PublishedAt = 'system:publishedAt',
-  VersionId = 'system:versionId',
-  CreatedId = 'system:createdId',
+  Id = 'id',
+  CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt',
+  PublishedAt = 'publishedAt',
+  VersionId = 'versionId',
+  CreatedId = 'createdId',
 }
+
+export const ROW_LEVEL_SYSTEM_FIELDS = new Set<SystemFieldId>([
+  SystemFieldId.Id,
+  SystemFieldId.CreatedAt,
+  SystemFieldId.UpdatedAt,
+])

@@ -1,6 +1,14 @@
 import { makeAutoObservable } from 'mobx'
-import { OrderBy, OrderByField, OrderDataType, SortOrder } from 'src/__generated__/graphql-request'
+import {
+  OrderBy,
+  OrderByField,
+  OrderDataType,
+  SortOrder,
+  TableViewsDataFragment,
+  ViewSortInput,
+} from 'src/__generated__/graphql-request'
 import { FilterFieldType, SystemFieldId } from './filterTypes'
+import { ROW_LEVEL_SYSTEM_FIELDS } from '../config'
 import { SortConfig, SortDirection, SortableField } from '../config/sortTypes'
 
 export class SortModel {
@@ -295,5 +303,59 @@ export class SortModel {
     if (this._onSortChange) {
       this._onSortChange()
     }
+  }
+
+  public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {
+    if (!view || !view.sorts || view.sorts.length === 0) {
+      return
+    }
+
+    const restoredSorts: SortConfig[] = []
+
+    for (const sortConfig of view.sorts) {
+      const field = this.findFieldByViewField(sortConfig.field)
+      if (field) {
+        restoredSorts.push({
+          id: field.nodeId,
+          field: field.name,
+          fieldPath: field.path,
+          fieldType: field.fieldType,
+          direction: sortConfig.direction as SortDirection,
+          isSystemField: field.isSystemField,
+          systemFieldId: field.systemFieldId,
+        })
+      }
+    }
+
+    if (restoredSorts.length > 0) {
+      this._sorts = restoredSorts
+      this._appliedSortSnapshot = JSON.stringify(this._sorts)
+      this._appliedSorts = JSON.parse(this._appliedSortSnapshot)
+      this._hasPendingChanges = false
+    }
+  }
+
+  public serializeToViewSorts(): ViewSortInput[] {
+    return this._appliedSorts.map((sort) => ({
+      field: this.sortConfigToViewField(sort),
+      direction: sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc,
+    }))
+  }
+
+  private findFieldByViewField(viewField: string): SortableField | undefined {
+    if (!viewField.startsWith('data.')) {
+      return this._availableFields.find((f) => f.isSystemField && f.systemFieldId === viewField)
+    }
+
+    const fieldName = viewField.slice(5) // Remove "data." prefix
+    return this._availableFields.find((f) => f.name === fieldName)
+  }
+
+  private sortConfigToViewField(sort: SortConfig): string {
+    if (sort.isSystemField && sort.systemFieldId && ROW_LEVEL_SYSTEM_FIELDS.has(sort.systemFieldId as SystemFieldId)) {
+      return sort.systemFieldId
+    }
+
+    return `data.${sort.field}`
   }
 }

@@ -334,6 +334,11 @@ export type GetTableRowsInput = {
   first: Scalars['Int']['input']
 }
 
+export type GetTableViewsInput = {
+  revisionId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+}
+
 export type GetTablesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
@@ -468,6 +473,7 @@ export type Mutation = {
   updateProject: Scalars['Boolean']['output']
   updateRow: UpdateRowResultModel
   updateTable: UpdateTableResultModel
+  updateTableViews: TableViewsDataModel
   updateUserProjectRole: Scalars['Boolean']['output']
 }
 
@@ -589,6 +595,10 @@ export type MutationUpdateRowArgs = {
 
 export type MutationUpdateTableArgs = {
   data: UpdateTableInput
+}
+
+export type MutationUpdateTableViewsArgs = {
+  data: UpdateTableViewsInput
 }
 
 export type MutationUpdateUserProjectRoleArgs = {
@@ -727,6 +737,7 @@ export type Query = {
   searchUsers: UsersConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
+  tableViews: TableViewsDataModel
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
   usersProject: UsersProjectConnection
@@ -794,6 +805,10 @@ export type QueryTableArgs = {
 
 export type QueryTableChangesArgs = {
   data: GetTableChangesInput
+}
+
+export type QueryTableViewsArgs = {
+  data: GetTableViewsInput
 }
 
 export type QueryTablesArgs = {
@@ -1146,6 +1161,7 @@ export type TableChangeModel = {
   tableCreatedId: Scalars['String']['output']
   tableId: Scalars['String']['output']
   toVersionId?: Maybe<Scalars['String']['output']>
+  viewsChanges: ViewsChangeDetailModel
 }
 
 export type TableChangeModelEdge = {
@@ -1180,6 +1196,7 @@ export type TableModel = {
   schema: Scalars['JSON']['output']
   updatedAt: Scalars['DateTime']['output']
   versionId: Scalars['String']['output']
+  views: TableViewsDataModel
 }
 
 export type TableModelForeignKeysByArgs = {
@@ -1197,6 +1214,18 @@ export type TableModelRowsArgs = {
 export type TableModelEdge = {
   cursor: Scalars['String']['output']
   node: TableModel
+}
+
+export type TableViewsDataInput = {
+  defaultViewId: Scalars['String']['input']
+  version: Scalars['Int']['input']
+  views: Array<ViewInput>
+}
+
+export type TableViewsDataModel = {
+  defaultViewId: Scalars['String']['output']
+  version: Scalars['Int']['output']
+  views: Array<ViewModel>
 }
 
 export type TablesConnection = {
@@ -1239,6 +1268,12 @@ export type UpdateTableInput = {
 export type UpdateTableResultModel = {
   previousVersionTableId: Scalars['String']['output']
   table: TableModel
+}
+
+export type UpdateTableViewsInput = {
+  revisionId: Scalars['String']['input']
+  tableId: Scalars['String']['input']
+  viewsData: TableViewsDataInput
 }
 
 export type UpdateUserProjectRoleInput = {
@@ -1319,6 +1354,62 @@ export type UsersProjectModel = {
 export type UsersProjectModelEdge = {
   cursor: Scalars['String']['output']
   node: UsersProjectModel
+}
+
+export type ViewChangeModel = {
+  changeType: ChangeType
+  oldViewName?: Maybe<Scalars['String']['output']>
+  viewId: Scalars['String']['output']
+  viewName: Scalars['String']['output']
+}
+
+export type ViewColumnInput = {
+  field: Scalars['String']['input']
+  width?: InputMaybe<Scalars['Float']['input']>
+}
+
+export type ViewColumnModel = {
+  field: Scalars['String']['output']
+  width?: Maybe<Scalars['Float']['output']>
+}
+
+export type ViewInput = {
+  columns?: InputMaybe<Array<ViewColumnInput>>
+  description?: InputMaybe<Scalars['String']['input']>
+  filters?: InputMaybe<Scalars['JSON']['input']>
+  id: Scalars['String']['input']
+  name: Scalars['String']['input']
+  search?: InputMaybe<Scalars['String']['input']>
+  sorts?: InputMaybe<Array<ViewSortInput>>
+}
+
+export type ViewModel = {
+  columns?: Maybe<Array<ViewColumnModel>>
+  description?: Maybe<Scalars['String']['output']>
+  filters?: Maybe<Scalars['JSON']['output']>
+  id: Scalars['String']['output']
+  name: Scalars['String']['output']
+  search?: Maybe<Scalars['String']['output']>
+  sorts?: Maybe<Array<ViewSortModel>>
+}
+
+export type ViewSortInput = {
+  direction: SortOrder
+  field: Scalars['String']['input']
+}
+
+export type ViewSortModel = {
+  direction: Scalars['String']['output']
+  field: Scalars['String']['output']
+}
+
+export type ViewsChangeDetailModel = {
+  addedCount: Scalars['Int']['output']
+  changes: Array<ViewChangeModel>
+  hasChanges: Scalars['Boolean']['output']
+  modifiedCount: Scalars['Int']['output']
+  removedCount: Scalars['Int']['output']
+  renamedCount: Scalars['Int']['output']
 }
 
 export type WhereInput = {
@@ -1459,6 +1550,14 @@ export type GetTableChangesQuery = {
             from?: string | null
           }> | null
         }>
+        viewsChanges: {
+          hasChanges: boolean
+          addedCount: number
+          modifiedCount: number
+          removedCount: number
+          renamedCount: number
+          changes: Array<{ viewId: string; viewName: string; changeType: ChangeType; oldViewName?: string | null }>
+        }
       }
     }>
     pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
@@ -3129,6 +3228,63 @@ export type PatchRowInlineMutation = {
   }
 }
 
+export type TableViewsDataFragment = {
+  version: number
+  defaultViewId: string
+  views: Array<{
+    id: string
+    name: string
+    description?: string | null
+    filters?: { [key: string]: any } | string | number | boolean | null | null
+    search?: string | null
+    columns?: Array<{ field: string; width?: number | null }> | null
+    sorts?: Array<{ field: string; direction: string }> | null
+  }>
+}
+
+export type GetTableViewsQueryVariables = Exact<{
+  data: GetTableInput
+}>
+
+export type GetTableViewsQuery = {
+  table?: {
+    id: string
+    views: {
+      version: number
+      defaultViewId: string
+      views: Array<{
+        id: string
+        name: string
+        description?: string | null
+        filters?: { [key: string]: any } | string | number | boolean | null | null
+        search?: string | null
+        columns?: Array<{ field: string; width?: number | null }> | null
+        sorts?: Array<{ field: string; direction: string }> | null
+      }>
+    }
+  } | null
+}
+
+export type UpdateTableViewsMutationVariables = Exact<{
+  data: UpdateTableViewsInput
+}>
+
+export type UpdateTableViewsMutation = {
+  updateTableViews: {
+    version: number
+    defaultViewId: string
+    views: Array<{
+      id: string
+      name: string
+      description?: string | null
+      filters?: { [key: string]: any } | string | number | boolean | null | null
+      search?: string | null
+      columns?: Array<{ field: string; width?: number | null }> | null
+      sorts?: Array<{ field: string; direction: string }> | null
+    }>
+  }
+}
+
 export type SearchResultFragment = {
   row: { id: string }
   table: { id: string }
@@ -3481,6 +3637,27 @@ export const RowListItemFragmentDoc = gql`
     createdId
   }
 `
+export const TableViewsDataFragmentDoc = gql`
+  fragment TableViewsData on TableViewsDataModel {
+    version
+    defaultViewId
+    views {
+      id
+      name
+      description
+      columns {
+        field
+        width
+      }
+      filters
+      sorts {
+        field
+        direction
+      }
+      search
+    }
+  }
+`
 export const SearchResultFragmentDoc = gql`
   fragment SearchResult on SearchResult {
     row {
@@ -3612,6 +3789,19 @@ export const GetTableChangesDocument = gql`
               value
               from
             }
+          }
+          viewsChanges {
+            hasChanges
+            changes {
+              viewId
+              viewName
+              changeType
+              oldViewName
+            }
+            addedCount
+            modifiedCount
+            removedCount
+            renamedCount
           }
           rowChangesCount
           addedRowsCount
@@ -4285,7 +4475,7 @@ export const GetRowChangesDocument = gql`
 `
 export const GetTableChangesForFilterDocument = gql`
   query GetTableChangesForFilter($revisionId: String!) {
-    tableChanges(data: { revisionId: $revisionId, first: 1000 }) {
+    tableChanges(data: { revisionId: $revisionId, first: 1000, filters: { includeSystem: true } }) {
       edges {
         node {
           tableId
@@ -4333,6 +4523,25 @@ export const PatchRowInlineDocument = gql`
     }
   }
   ${RowListItemFragmentDoc}
+`
+export const GetTableViewsDocument = gql`
+  query GetTableViews($data: GetTableInput!) {
+    table(data: $data) {
+      id
+      views {
+        ...TableViewsData
+      }
+    }
+  }
+  ${TableViewsDataFragmentDoc}
+`
+export const UpdateTableViewsDocument = gql`
+  mutation UpdateTableViews($data: UpdateTableViewsInput!) {
+    updateTableViews(data: $data) {
+      ...TableViewsData
+    }
+  }
+  ${TableViewsDataFragmentDoc}
 `
 export const SearchRowsDocument = gql`
   query searchRows($data: SearchRowsInput!) {
@@ -5199,6 +5408,36 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'PatchRowInline',
+        'mutation',
+        variables,
+      )
+    },
+    GetTableViews(
+      variables: GetTableViewsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetTableViewsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetTableViewsQuery>(GetTableViewsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'GetTableViews',
+        'query',
+        variables,
+      )
+    },
+    UpdateTableViews(
+      variables: UpdateTableViewsMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateTableViewsMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateTableViewsMutation>(UpdateTableViewsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'UpdateTableViews',
         'mutation',
         variables,
       )

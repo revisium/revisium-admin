@@ -101,7 +101,7 @@ export class TableChangesListModel implements IViewModel {
     }
 
     return {
-      includeSystem: false,
+      includeSystem: true,
       ...(changeTypes.length > 0 && { changeTypes }),
     }
   }

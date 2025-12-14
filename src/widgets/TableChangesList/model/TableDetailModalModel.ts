@@ -80,6 +80,34 @@ export class TableDetailModalModel {
     return this._item?.renamedRowsCount ?? 0
   }
 
+  public get hasViewsChanges(): boolean {
+    return this._item?.viewsChanges?.hasChanges ?? false
+  }
+
+  public get viewsChanges() {
+    return this._item?.viewsChanges?.changes ?? []
+  }
+
+  public get viewsChangesCount(): number {
+    return this.viewsChanges.length
+  }
+
+  public get addedViewsCount(): number {
+    return this._item?.viewsChanges?.addedCount ?? 0
+  }
+
+  public get modifiedViewsCount(): number {
+    return this._item?.viewsChanges?.modifiedCount ?? 0
+  }
+
+  public get removedViewsCount(): number {
+    return this._item?.viewsChanges?.removedCount ?? 0
+  }
+
+  public get renamedViewsCount(): number {
+    return this._item?.viewsChanges?.renamedCount ?? 0
+  }
+
   public get changeTypeBadgeColor(): string {
     return getChangeTypeBadgeColor(this.changeType)
   }

@@ -1,5 +1,5 @@
 import { makeAutoObservable, observable } from 'mobx'
-import { RowListItemFragment } from 'src/__generated__/graphql-request'
+import { RowListItemFragment, TableViewsDataFragment } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
@@ -12,11 +12,22 @@ import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
 import { sortFieldsByPriority } from 'src/widgets/RowList/lib/sortFieldsByPriority'
 import { DEFAULT_ID_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from 'src/widgets/RowList/config/constants'
-import { ADDABLE_SYSTEM_FIELD_IDS, getSystemFieldConfigById, SortableField } from 'src/widgets/RowList/config'
+import {
+  ADDABLE_SYSTEM_FIELD_IDS,
+  getSystemFieldConfigById,
+  ROW_LEVEL_SYSTEM_FIELDS,
+  SortableField,
+} from 'src/widgets/RowList/config'
 import { SystemFieldId } from './filterTypes'
 import { InlineEditModel } from './InlineEditModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
+
+export interface SerializedColumnSettings {
+  visibleColumnIds: string[]
+  columnWidths: Record<string, number>
+  idColumnWidth: number
+}
 
 const DEFAULT_VISIBLE_COLUMNS = 3
 
@@ -54,6 +65,7 @@ export class ColumnsModel {
   private _columnCache = new Map<string, ColumnType>()
   private _columnWidths = observable.map<string, number>()
   private _idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
+  private _onColumnsChange: (() => void) | null = null
 
   constructor() {
     makeAutoObservable<
@@ -123,6 +135,16 @@ export class ColumnsModel {
 
   public get visibleColumnIds(): string[] {
     return this._visibleColumnIds
+  }
+
+  public setOnColumnsChange(callback: () => void): void {
+    this._onColumnsChange = callback
+  }
+
+  private notifyColumnsChange(): void {
+    if (this._onColumnsChange) {
+      this._onColumnsChange()
+    }
   }
 
   public get allAvailableFields(): AvailableField[] {
@@ -211,6 +233,7 @@ export class ColumnsModel {
     if (!this._visibleColumnIdsSet.has(nodeId)) {
       this._visibleColumnIds.push(nodeId)
       this._visibleColumnIdsSet.add(nodeId)
+      this.notifyColumnsChange()
     }
   }
 
@@ -221,6 +244,7 @@ export class ColumnsModel {
 
     this._visibleColumnIds.splice(targetIndex, 0, newColumnId)
     this._visibleColumnIdsSet.add(newColumnId)
+    this.notifyColumnsChange()
   }
 
   public insertColumnAfter(targetColumnId: string, newColumnId: string): void {
@@ -230,22 +254,26 @@ export class ColumnsModel {
 
     this._visibleColumnIds.splice(targetIndex + 1, 0, newColumnId)
     this._visibleColumnIdsSet.add(newColumnId)
+    this.notifyColumnsChange()
   }
 
   public removeColumn(nodeId: string): void {
     if (!this.canRemoveColumn) return
     this._visibleColumnIds = this._visibleColumnIds.filter((id) => id !== nodeId)
     this._visibleColumnIdsSet.delete(nodeId)
+    this.notifyColumnsChange()
   }
 
   public addAll(): void {
     this._visibleColumnIds = this._availableFields.map((f) => f.nodeId)
     this._visibleColumnIdsSet = new Set(this._visibleColumnIds)
+    this.notifyColumnsChange()
   }
 
   public hideAll(): void {
     this._visibleColumnIds = []
     this._visibleColumnIdsSet.clear()
+    this.notifyColumnsChange()
   }
 
   public get canHideAll(): boolean {
@@ -257,6 +285,7 @@ export class ColumnsModel {
     const [removed] = ids.splice(fromIndex, 1)
     ids.splice(toIndex, 0, removed)
     this._visibleColumnIds = ids
+    this.notifyColumnsChange()
   }
 
   public getColumnIndex(columnId: string): number {
@@ -312,6 +341,7 @@ export class ColumnsModel {
   public setColumnWidth(columnId: string, width: number): void {
     const clampedWidth = Math.max(MIN_COLUMN_WIDTH, width)
     this._columnWidths.set(columnId, clampedWidth)
+    this.notifyColumnsChange()
   }
 
   public get idColumnWidth(): number {
@@ -320,6 +350,7 @@ export class ColumnsModel {
 
   public setIdColumnWidth(width: number): void {
     this._idColumnWidth = Math.max(MIN_COLUMN_WIDTH, width)
+    this.notifyColumnsChange()
   }
 
   public getColumnWidth(columnId: string): number {
@@ -397,5 +428,90 @@ export class ColumnsModel {
     this._rowCache.set(row.id, newCachedData)
 
     return newCachedData
+  }
+
+  public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {
+    if (!view || !view.columns) {
+      return
+    }
+
+    const validColumnIds = view.columns
+      .map((col) => this.fieldToColumnId(col.field))
+      .filter((id) => this._availableFieldsMap.has(id))
+
+    this._visibleColumnIds = validColumnIds
+    this._visibleColumnIdsSet = new Set(validColumnIds)
+
+    this._columnWidths.clear()
+
+    for (const col of view.columns) {
+      if (col.width != null) {
+        const columnId = this.fieldToColumnId(col.field)
+        if (this._availableFieldsMap.has(columnId)) {
+          this._columnWidths.set(columnId, Math.max(MIN_COLUMN_WIDTH, col.width))
+        }
+      }
+    }
+
+    // Check for id column width (special field name)
+    const idCol = view.columns.find((col) => col.field === 'id')
+    if (idCol?.width != null) {
+      this._idColumnWidth = Math.max(MIN_COLUMN_WIDTH, idCol.width)
+    }
+  }
+
+  public serializeToViewColumns(): Array<{ field: string; width?: number }> {
+    const columns: Array<{ field: string; width?: number }> = []
+
+    const idColumn: { field: string; width?: number } = { field: 'id' }
+    if (this._idColumnWidth !== DEFAULT_ID_COLUMN_WIDTH) {
+      idColumn.width = this._idColumnWidth
+    }
+    columns.push(idColumn)
+
+    for (const columnId of this._visibleColumnIds) {
+      const field = this._availableFieldsMap.get(columnId)
+      if (field) {
+        const customWidth = this._columnWidths.get(columnId)
+        const column: { field: string; width?: number } = {
+          field: this.columnIdToField(columnId),
+        }
+        if (customWidth !== undefined) {
+          column.width = customWidth
+        }
+        columns.push(column)
+      }
+    }
+
+    return columns
+  }
+
+  private fieldToColumnId(field: string): string {
+    if (!field.startsWith('data.')) {
+      return field
+    }
+
+    const fieldName = field.slice(5) // Remove "data." prefix
+
+    for (const [nodeId, availableField] of this._availableFieldsMap.entries()) {
+      if (availableField.name === fieldName) {
+        return nodeId
+      }
+    }
+
+    return field
+  }
+
+  private columnIdToField(columnId: string): string {
+    const field = this._availableFieldsMap.get(columnId)
+    if (!field) {
+      return columnId
+    }
+
+    if (field.systemFieldId && ROW_LEVEL_SYSTEM_FIELDS.has(field.systemFieldId as SystemFieldId)) {
+      return field.systemFieldId
+    }
+
+    return `data.${field.name}`
   }
 }

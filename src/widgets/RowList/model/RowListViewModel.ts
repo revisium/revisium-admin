@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { SearchIn, SearchType } from 'src/__generated__/graphql-request'
+import { SearchIn, SearchType, SortOrder, TableViewsDataFragment, ViewInput } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
 import { IViewModel } from 'src/shared/config/types'
@@ -9,6 +9,7 @@ import { ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { SearchController } from 'src/shared/lib/SearchController'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
+import { toaster } from 'src/shared/ui'
 import { ColumnsModel } from './ColumnsModel'
 import { FilterModel } from './FilterModel'
 import { InlineEditModel } from './InlineEditModel'
@@ -16,6 +17,9 @@ import { RowItemViewModel } from './RowItemViewModel'
 import { SelectionViewModel } from './SelectionViewModel'
 import { SortModel } from './SortModel'
 import { ColumnType } from './types'
+import { ViewSettingsBadgeModel } from '../ui/ViewSettingsBadge'
+
+const PAGE_SIZE = 50
 
 export type { ColumnType }
 
@@ -27,25 +31,34 @@ export class RowListViewModel implements IViewModel {
   public readonly listState = new AsyncListState<RowItemViewModel>()
   public readonly selection = new SelectionViewModel()
   public readonly inlineEdit = new InlineEditModel()
+  public readonly viewSettingsBadge: ViewSettingsBadgeModel
 
   private _tableId = ''
   private _baseTotalCount = 0
   private _isDeleting = false
   private _isRefetching = false
   private _isLoadingMore = false
+  private _viewsData: TableViewsDataFragment | null = null
+  private _savedViewsSnapshot: string | null = null
+  private _hasPendingViewChanges = false
+  private _isSavingViews = false
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
   private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRowMst)
   private readonly removeRowsRequest = ObservableRequest.of(client.RemoveRows)
+  private readonly getViewsRequest = ObservableRequest.of(client.GetTableViews)
+  private readonly updateViewsRequest = ObservableRequest.of(client.UpdateTableViews)
 
   constructor(
     private readonly projectContext: ProjectContext,
     private readonly permissionContext: PermissionContext,
   ) {
     this.search = new SearchController(300, this.handleSearch)
+    this.viewSettingsBadge = new ViewSettingsBadgeModel(this)
     makeAutoObservable(this, {}, { autoBind: true })
     this.filterModel.setOnFilterChange(this.handleFilterChange)
     this.sortModel.setOnSortChange(this.handleSortChange)
+    this.columnsModel.setOnColumnsChange(this.handleColumnsChange)
   }
 
   public get showLoading(): boolean {
@@ -170,6 +183,18 @@ export class RowListViewModel implements IViewModel {
     return this._isLoadingMore
   }
 
+  public get hasPendingViewChanges(): boolean {
+    return this._hasPendingViewChanges
+  }
+
+  public get isSavingViews(): boolean {
+    return this._isSavingViews
+  }
+
+  public get isDraftRevision(): boolean {
+    return this.projectContext.isDraftRevision
+  }
+
   public get allRowIds(): string[] {
     return this.items.map((item) => item.id)
   }
@@ -181,6 +206,10 @@ export class RowListViewModel implements IViewModel {
   public init(tableId: string, schema: JsonSchema, options?: { showAllColumns?: boolean }): void {
     this._tableId = tableId
     this._baseTotalCount = 0
+    this._viewsData = null
+    this._savedViewsSnapshot = null
+    this._hasPendingViewChanges = false
+    this._isSavingViews = false
     this.search.reset()
     this.selection.exitSelectionMode()
     this.listState.resetToLoading()
@@ -195,7 +224,173 @@ export class RowListViewModel implements IViewModel {
       getCellStore: this.getCellStore,
       isCellReadonly: this.isCellReadonly,
     })
-    void this.loadInitial()
+    void this.loadViewsAndData()
+  }
+
+  private async loadViewsAndData(): Promise<void> {
+    await this.loadViews()
+    await this.loadInitial()
+  }
+
+  private async loadViews(): Promise<void> {
+    try {
+      const result = await this.getViewsRequest.fetch({
+        data: {
+          revisionId: this.revisionId,
+          tableId: this._tableId,
+        },
+      })
+
+      const views = result.isRight ? result.data.table?.views : null
+      if (views) {
+        runInAction(() => {
+          this._viewsData = views
+          this.applyViewSettings()
+        })
+      }
+    } catch (e) {
+      console.error('Failed to load views:', e)
+    }
+  }
+
+  private applyViewSettings(): void {
+    this.restoreViewFromSaved()
+    this._savedViewsSnapshot = this.getCurrentViewSnapshot()
+    this._hasPendingViewChanges = false
+  }
+
+  private restoreViewFromSaved(): void {
+    const viewsData = this._viewsData
+    if (!viewsData) {
+      return
+    }
+
+    const defaultView = viewsData.views.find((v) => v.id === viewsData.defaultViewId)
+    if (defaultView) {
+      this.columnsModel.restoreFromView(defaultView)
+      this.sortModel.restoreFromView(defaultView)
+    }
+  }
+
+  private markViewsAsChanged(): void {
+    if (!this._savedViewsSnapshot) {
+      this._hasPendingViewChanges = true
+      return
+    }
+
+    const currentSnapshot = this.getCurrentViewSnapshot()
+    this._hasPendingViewChanges = currentSnapshot !== this._savedViewsSnapshot
+  }
+
+  private getCurrentViewSnapshot(): string {
+    const columns = this.columnsModel.serializeToViewColumns()
+    const sorts = this.sortModel.serializeToViewSorts()
+    return JSON.stringify({ columns, sorts })
+  }
+
+  public async saveViewSettings(): Promise<boolean> {
+    if (!this.projectContext.isDraftRevision) {
+      return false
+    }
+
+    this._isSavingViews = true
+    this.ensureViewsData()
+
+    const viewsData = this._viewsData
+    if (!viewsData) {
+      this._isSavingViews = false
+      return false
+    }
+
+    const updatedView = this.buildDefaultView()
+    const updatedViews = this.buildUpdatedViews(updatedView)
+
+    try {
+      const result = await this.updateViewsRequest.fetch({
+        data: {
+          revisionId: this.revisionId,
+          tableId: this._tableId,
+          viewsData: {
+            version: viewsData.version,
+            defaultViewId: viewsData.defaultViewId,
+            views: updatedViews,
+          },
+        },
+      })
+
+      if (result.isRight) {
+        runInAction(() => {
+          this._viewsData = result.data.updateTableViews
+          this._savedViewsSnapshot = this.getCurrentViewSnapshot()
+          this._hasPendingViewChanges = false
+        })
+        return true
+      } else {
+        toaster.error({ description: 'Failed to save view settings' })
+        return false
+      }
+    } catch (e) {
+      console.error('Failed to save views:', e)
+      toaster.error({ description: 'Failed to save view settings' })
+      return false
+    } finally {
+      runInAction(() => {
+        this._isSavingViews = false
+      })
+    }
+  }
+
+  public revertViewSettings(): void {
+    this.restoreViewFromSaved()
+    this._savedViewsSnapshot = this.getCurrentViewSnapshot()
+    this._hasPendingViewChanges = false
+  }
+
+  private ensureViewsData(): void {
+    if (!this._viewsData) {
+      this._viewsData = {
+        version: 1,
+        defaultViewId: 'default',
+        views: [],
+      }
+    }
+  }
+
+  private buildDefaultView(): ViewInput {
+    const columns = this.columnsModel.serializeToViewColumns()
+    const sorts = this.sortModel.serializeToViewSorts()
+
+    return {
+      id: 'default',
+      name: 'Default',
+      ...(columns.length > 0 && { columns }),
+      ...(sorts.length > 0 && { sorts }),
+    }
+  }
+
+  private buildUpdatedViews(updatedView: ViewInput): ViewInput[] {
+    const views = this._viewsData?.views ?? []
+    const defaultViewIndex = views.findIndex((v) => v.id === 'default')
+
+    const convertToInput = (v: (typeof views)[0]): ViewInput => ({
+      id: v.id,
+      name: v.name,
+      ...(v.description && { description: v.description }),
+      ...(v.filters && { filters: v.filters }),
+      ...(v.search && { search: v.search }),
+      ...(v.columns && { columns: v.columns }),
+      ...(v.sorts && {
+        sorts: v.sorts.map((s) => ({
+          field: s.field,
+          direction: s.direction as SortOrder,
+        })),
+      }),
+    })
+
+    if (defaultViewIndex >= 0) {
+      return views.map((v, i) => (i === defaultViewIndex ? updatedView : convertToInput(v)))
+    }
+    return [...views.map(convertToInput), updatedView]
   }
 
   private readonly getVisibleFields = (): string[] => {
@@ -215,18 +410,13 @@ export class RowListViewModel implements IViewModel {
     if (!this.isEdit) {
       return true
     }
-    const row = this.items.find((item) => item.id === rowId)
-    if (!row) {
-      return true
-    }
-    const store = row.cellsMap.get(field)
+
+    const store = this.getCellStore(rowId, field)
     if (!store) {
       return true
     }
-    if ('readOnly' in store && store.readOnly) {
-      return true
-    }
-    return false
+
+    return 'readOnly' in store && store.readOnly === true
   }
 
   public dispose(): void {
@@ -258,7 +448,7 @@ export class RowListViewModel implements IViewModel {
         data: {
           revisionId: this.revisionId,
           tableId: this._tableId,
-          first: 50,
+          first: PAGE_SIZE,
           after: this.listState.endCursor,
           where: this.buildWhereClause(),
           orderBy: this.sortModel.toGraphQLOrderBy(),
@@ -364,6 +554,11 @@ export class RowListViewModel implements IViewModel {
 
   private handleSortChange = (): void => {
     void this.reload()
+    this.markViewsAsChanged()
+  }
+
+  private handleColumnsChange = (): void => {
+    this.markViewsAsChanged()
   }
 
   private async reload(): Promise<void> {
@@ -382,7 +577,7 @@ export class RowListViewModel implements IViewModel {
       data: {
         revisionId: this.revisionId,
         tableId: this._tableId,
-        first: 50,
+        first: PAGE_SIZE,
         where: this.buildWhereClause(),
         orderBy: this.sortModel.toGraphQLOrderBy(),
       },

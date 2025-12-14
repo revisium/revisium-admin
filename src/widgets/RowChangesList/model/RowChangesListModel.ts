@@ -151,7 +151,7 @@ export class RowChangesListModel implements IViewModel {
     const tableId = this.tableFilterModel.selectedTableId
 
     return {
-      includeSystem: false,
+      includeSystem: true,
       ...(tableId && { tableId }),
       ...(changeTypes.length > 0 && { changeTypes }),
       ...(this._search.trim() && { search: this._search.trim() }),

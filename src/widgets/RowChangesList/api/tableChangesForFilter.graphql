@@ -1,5 +1,5 @@
 query GetTableChangesForFilter($revisionId: String!) {
-  tableChanges(data: { revisionId: $revisionId, first: 1000 }) {
+  tableChanges(data: { revisionId: $revisionId, first: 1000, filters: { includeSystem: true } }) {
     edges {
       node {
         tableId

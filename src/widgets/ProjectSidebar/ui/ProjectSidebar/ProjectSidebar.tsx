@@ -80,7 +80,6 @@ export const ProjectSidebar: FC = observer(() => {
             label="Changes"
             icon={<PiFileTextLight />}
             isActive={isChangesActive}
-            badge={model.changesCount}
           />
           {/*<NavigationButton*/}
           {/*  to={`${linkMaker.currentBaseLink}/-/assets`}*/}

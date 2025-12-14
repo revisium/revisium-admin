@@ -442,19 +442,21 @@ export class ColumnsModel {
     this._visibleColumnIds = validColumnIds
     this._visibleColumnIdsSet = new Set(validColumnIds)
 
+    this._columnWidths.clear()
+
     for (const col of view.columns) {
-      if (col.width) {
+      if (col.width != null) {
         const columnId = this.fieldToColumnId(col.field)
         if (this._availableFieldsMap.has(columnId)) {
-          this._columnWidths.set(columnId, col.width)
+          this._columnWidths.set(columnId, Math.max(MIN_COLUMN_WIDTH, col.width))
         }
       }
     }
 
     // Check for id column width (special field name)
     const idCol = view.columns.find((col) => col.field === 'id')
-    if (idCol?.width) {
-      this._idColumnWidth = idCol.width
+    if (idCol?.width != null) {
+      this._idColumnWidth = Math.max(MIN_COLUMN_WIDTH, idCol.width)
     }
   }
 

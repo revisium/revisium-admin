@@ -16,10 +16,6 @@ export enum SystemFieldId {
   CreatedId = 'createdId',
 }
 
-/**
- * System fields that are actual row-level fields (not stored in data).
- * These should be serialized without 'data.' prefix.
- */
 export const ROW_LEVEL_SYSTEM_FIELDS = new Set<SystemFieldId>([
   SystemFieldId.Id,
   SystemFieldId.CreatedAt,

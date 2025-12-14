@@ -186,7 +186,7 @@ export const TableDetailModal: React.FC<TableDetailModalProps> = observer(({ mod
                           {viewChange.viewName}
                         </Text>
                         <Text fontSize="11px" color={getViewChangeTypeColor(viewChange.changeType)}>
-                          {viewChange.changeType.toLowerCase().replace('_', ' ')}
+                          {viewChange.changeType.toLowerCase().replaceAll('_', ' ')}
                         </Text>
                       </Flex>
                       {viewChange.oldViewName && (

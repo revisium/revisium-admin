@@ -23,7 +23,6 @@ import { InlineEditModel } from './InlineEditModel'
 import { RowItemViewModel } from './RowItemViewModel'
 import { AvailableField, ColumnType } from './types'
 
-// Types for serializing column settings to views
 export interface SerializedColumnSettings {
   visibleColumnIds: string[]
   columnWidths: Record<string, number>

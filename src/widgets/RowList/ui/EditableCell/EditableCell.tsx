@@ -132,6 +132,7 @@ export const EditableCell: FC<EditableCellProps> = observer(
       <CellWrapper
         state={cellVM.cellState}
         displayValue={cellVM.displayValue}
+        tooltip={cellVM.sizeTooltip}
         onFocus={handleFocus}
         onDoubleClick={handleDoubleClick}
       >

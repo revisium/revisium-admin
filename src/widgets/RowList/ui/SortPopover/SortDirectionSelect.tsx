@@ -1,8 +1,9 @@
 import { Box, Menu, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { LuArrowDown, LuArrowUp, LuChevronDown } from 'react-icons/lu'
+import { LuArrowDown, LuArrowUp } from 'react-icons/lu'
 import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
+import { SelectTrigger } from 'src/widgets/RowList/ui/shared'
 
 interface SortDirectionSelectProps {
   selectedDirection: SortDirection
@@ -21,29 +22,16 @@ export const SortDirectionSelect: FC<SortDirectionSelectProps> = observer(({ sel
   return (
     <Menu.Root positioning={{ placement: 'bottom-start' }}>
       <Menu.Trigger asChild>
-        <Box
-          as="button"
-          display="flex"
-          alignItems="center"
-          gap={1}
-          px={2}
-          py={1}
-          borderRadius="md"
-          bg="newGray.100"
-          _hover={{ bg: 'newGray.200' }}
-          cursor="pointer"
+        <SelectTrigger
+          icon={
+            <Box color="blue.500">
+              <Icon size={14} />
+            </Box>
+          }
           minWidth="80px"
         >
-          <Box color="blue.500">
-            <Icon size={14} />
-          </Box>
-          <Text fontSize="sm" fontWeight="medium" color="newGray.700">
-            {selected.label}
-          </Text>
-          <Box color="newGray.400">
-            <LuChevronDown size={14} />
-          </Box>
-        </Box>
+          {selected.label}
+        </SelectTrigger>
       </Menu.Trigger>
       <Menu.Positioner>
         <Menu.Content minW="120px">

@@ -27,5 +27,3 @@ export const FieldMenuItem: FC<FieldMenuItemProps> = memo(({ nodeId, name, field
     </Menu.Item>
   )
 })
-
-FieldMenuItem.displayName = 'FieldMenuItem'

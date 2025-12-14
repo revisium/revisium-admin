@@ -11,9 +11,9 @@ import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
 import { ColumnType } from 'src/widgets/RowList/model/types'
-import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
 import { AddFilterPopover } from './AddFilterPopover'
 import { ColumnResizer } from './ColumnResizer'
+import { InsertColumnSubmenu } from './InsertColumnSubmenu'
 import { SortIndicator } from './SortIndicator'
 import { SortSubmenu } from './SortSubmenu'
 
@@ -146,13 +146,13 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
                 {column.title}
               </Text>
             </Tooltip>
-            {sortModel && <SortIndicator columnId={column.id} sortModel={sortModel} />}
+            {sortModel && !column.isFileObject && <SortIndicator columnId={column.id} sortModel={sortModel} />}
           </Flex>
         </Menu.Trigger>
         <Portal>
           <Menu.Positioner>
             <Menu.Content minW="180px">
-              {sortModel && (
+              {sortModel && !column.isFileObject && (
                 <>
                   <SortSubmenu columnId={column.id} sortModel={sortModel} />
                   <Menu.Separator />
@@ -210,98 +210,24 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
               )}
               {hasAvailableFields && (
                 <>
-                  <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>
-                    <Menu.TriggerItem>
-                      <Text flex={1}>Insert before</Text>
-                      <LuChevronRight />
-                    </Menu.TriggerItem>
-                    <Portal>
-                      <Menu.Positioner>
-                        <Menu.Content maxH="300px" minW="200px" overflowY="auto">
-                          {availableFields.length > 0 && (
-                            <Menu.ItemGroup>
-                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
-                                Data fields
-                              </Menu.ItemGroupLabel>
-                              {availableFields.map((field) => (
-                                <FieldMenuItem
-                                  key={field.nodeId}
-                                  nodeId={field.nodeId}
-                                  name={field.name}
-                                  fieldType={field.fieldType}
-                                  valuePrefix="before"
-                                  onClick={handleInsertBefore}
-                                />
-                              ))}
-                            </Menu.ItemGroup>
-                          )}
-                          {availableSystemFields.length > 0 && (
-                            <Menu.ItemGroup>
-                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
-                                System fields
-                              </Menu.ItemGroupLabel>
-                              {availableSystemFields.map((field) => (
-                                <FieldMenuItem
-                                  key={field.nodeId}
-                                  nodeId={field.nodeId}
-                                  name={field.name}
-                                  fieldType={field.fieldType}
-                                  valuePrefix="before"
-                                  onClick={handleInsertBefore}
-                                />
-                              ))}
-                            </Menu.ItemGroup>
-                          )}
-                        </Menu.Content>
-                      </Menu.Positioner>
-                    </Portal>
-                  </Menu.Root>
-                  <Menu.Root positioning={{ placement: 'right-start', gutter: 2 }} lazyMount unmountOnExit>
-                    <Menu.TriggerItem>
-                      <Text flex={1}>Insert after</Text>
-                      <LuChevronRight />
-                    </Menu.TriggerItem>
-                    <Portal>
-                      <Menu.Positioner>
-                        <Menu.Content maxH="300px" minW="200px" overflowY="auto">
-                          {availableFields.length > 0 && (
-                            <Menu.ItemGroup>
-                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
-                                Data fields
-                              </Menu.ItemGroupLabel>
-                              {availableFields.map((field) => (
-                                <FieldMenuItem
-                                  key={field.nodeId}
-                                  nodeId={field.nodeId}
-                                  name={field.name}
-                                  fieldType={field.fieldType}
-                                  valuePrefix="after"
-                                  onClick={handleInsertAfter}
-                                />
-                              ))}
-                            </Menu.ItemGroup>
-                          )}
-                          {availableSystemFields.length > 0 && (
-                            <Menu.ItemGroup>
-                              <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
-                                System fields
-                              </Menu.ItemGroupLabel>
-                              {availableSystemFields.map((field) => (
-                                <FieldMenuItem
-                                  key={field.nodeId}
-                                  nodeId={field.nodeId}
-                                  name={field.name}
-                                  fieldType={field.fieldType}
-                                  valuePrefix="after"
-                                  onClick={handleInsertAfter}
-                                />
-                              ))}
-                            </Menu.ItemGroup>
-                          )}
-                        </Menu.Content>
-                      </Menu.Positioner>
-                    </Portal>
-                  </Menu.Root>
+                  <InsertColumnSubmenu
+                    label="Insert before"
+                    valuePrefix="before"
+                    availableFields={availableFields}
+                    availableSystemFields={availableSystemFields}
+                    onSelect={handleInsertBefore}
+                    getAvailableFileChildren={columnsModel.getAvailableFileChildren}
+                    isColumnVisible={columnsModel.isColumnVisible}
+                  />
+                  <InsertColumnSubmenu
+                    label="Insert after"
+                    valuePrefix="after"
+                    availableFields={availableFields}
+                    availableSystemFields={availableSystemFields}
+                    onSelect={handleInsertAfter}
+                    getAvailableFileChildren={columnsModel.getAvailableFileChildren}
+                    isColumnVisible={columnsModel.isColumnVisible}
+                  />
                   <Menu.Separator />
                 </>
               )}

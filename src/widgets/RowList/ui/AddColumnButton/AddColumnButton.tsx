@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { PiListBullets, PiPlus } from 'react-icons/pi'
 import { AvailableField } from 'src/widgets/RowList/model/types'
-import { FieldMenuItem } from 'src/widgets/RowList/ui/shared'
+import { FieldList, FieldMenuItem } from 'src/widgets/RowList/ui/shared'
 
 interface AddColumnButtonProps {
   availableFields: AvailableField[]
@@ -11,10 +11,20 @@ interface AddColumnButtonProps {
   hasHiddenColumns: boolean
   onAddColumn: (nodeId: string) => void
   onAddAll: () => void
+  getAvailableFileChildren: (field: AvailableField) => AvailableField[]
+  isColumnVisible: (nodeId: string) => boolean
 }
 
 export const AddColumnButton: FC<AddColumnButtonProps> = observer(
-  ({ availableFields, availableSystemFields, hasHiddenColumns, onAddColumn, onAddAll }) => {
+  ({
+    availableFields,
+    availableSystemFields,
+    hasHiddenColumns,
+    onAddColumn,
+    onAddAll,
+    getAvailableFileChildren,
+    isColumnVisible,
+  }) => {
     if (!hasHiddenColumns) {
       return (
         <Box as="th" backgroundColor="white" position="sticky" right={0} zIndex={1} width="40px">
@@ -53,15 +63,12 @@ export const AddColumnButton: FC<AddColumnButtonProps> = observer(
                         <Menu.ItemGroupLabel fontWeight="medium" color="gray.500" fontSize="xs">
                           Data fields
                         </Menu.ItemGroupLabel>
-                        {availableFields.map((field) => (
-                          <FieldMenuItem
-                            key={field.nodeId}
-                            nodeId={field.nodeId}
-                            name={field.name}
-                            fieldType={field.fieldType}
-                            onClick={onAddColumn}
-                          />
-                        ))}
+                        <FieldList
+                          fields={availableFields}
+                          onSelect={onAddColumn}
+                          getAvailableFileChildren={getAvailableFileChildren}
+                          isColumnVisible={isColumnVisible}
+                        />
                       </Menu.ItemGroup>
                     </>
                   )}

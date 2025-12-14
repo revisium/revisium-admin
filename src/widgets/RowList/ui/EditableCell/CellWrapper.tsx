@@ -1,4 +1,5 @@
 import { Box, Spinner, Text } from '@chakra-ui/react'
+import { Tooltip } from 'src/shared/ui'
 import { observer } from 'mobx-react-lite'
 import { FC, PropsWithChildren, useCallback, useRef } from 'react'
 import { CellPosition, getClickOffset, getCellPosition } from '../../lib/getClickOffset'
@@ -9,6 +10,7 @@ export type { CellState, CellPosition }
 interface CellWrapperProps extends PropsWithChildren {
   state: CellState
   displayValue?: string
+  tooltip?: string
   onFocus?: () => void
   onDoubleClick?: (clickOffset?: number, position?: CellPosition) => void
 }
@@ -54,7 +56,7 @@ const stateStyles: Record<CellState, object> = {
 }
 
 export const CellWrapper: FC<CellWrapperProps> = observer(
-  ({ children, state, displayValue, onFocus, onDoubleClick }) => {
+  ({ children, state, displayValue, tooltip, onFocus, onDoubleClick }) => {
     const cellRef = useRef<HTMLTableCellElement>(null)
     const textRef = useRef<HTMLParagraphElement>(null)
 
@@ -109,18 +111,20 @@ export const CellWrapper: FC<CellWrapperProps> = observer(
           {state === 'editing' ? (
             children
           ) : (
-            <Text
-              ref={textRef}
-              whiteSpace="nowrap"
-              textOverflow="ellipsis"
-              overflow="hidden"
-              color={state === 'readonly' ? 'gray.500' : 'black'}
-              fontWeight="300"
-              flex={1}
-              minWidth={0}
-            >
-              {children}
-            </Text>
+            <Tooltip content={tooltip} disabled={!tooltip}>
+              <Text
+                ref={textRef}
+                whiteSpace="nowrap"
+                textOverflow="ellipsis"
+                overflow="hidden"
+                color={state === 'readonly' ? 'gray.500' : 'black'}
+                fontWeight="300"
+                flex={1}
+                minWidth={0}
+              >
+                {children}
+              </Text>
+            </Tooltip>
           )}
           {state === 'saving' && (
             <Box position="absolute" right="8px" top="50%" transform="translateY(-50%)">

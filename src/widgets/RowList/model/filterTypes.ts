@@ -17,18 +17,13 @@ export enum FilterOperator {
   IsEmpty = 'is_empty',
   IsNotEmpty = 'is_not_empty',
 
-  GreaterThan = 'greater_than',
-  GreaterThanOrEqual = 'greater_than_or_equal',
-  LessThan = 'less_than',
-  LessThanOrEqual = 'less_than_or_equal',
+  Gt = 'gt',
+  Gte = 'gte',
+  Lt = 'lt',
+  Lte = 'lte',
 
   IsTrue = 'is_true',
   IsFalse = 'is_false',
-
-  Before = 'before',
-  After = 'after',
-  OnOrBefore = 'on_or_before',
-  OnOrAfter = 'on_or_after',
 }
 
 export interface OperatorInfo {
@@ -51,10 +46,10 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
   [FilterFieldType.Number]: [
     { operator: FilterOperator.Equals, label: '=', requiresValue: true },
     { operator: FilterOperator.NotEquals, label: '!=', requiresValue: true },
-    { operator: FilterOperator.GreaterThan, label: '>', requiresValue: true },
-    { operator: FilterOperator.GreaterThanOrEqual, label: '>=', requiresValue: true },
-    { operator: FilterOperator.LessThan, label: '<', requiresValue: true },
-    { operator: FilterOperator.LessThanOrEqual, label: '<=', requiresValue: true },
+    { operator: FilterOperator.Gt, label: '>', requiresValue: true },
+    { operator: FilterOperator.Gte, label: '>=', requiresValue: true },
+    { operator: FilterOperator.Lt, label: '<', requiresValue: true },
+    { operator: FilterOperator.Lte, label: '<=', requiresValue: true },
     { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
     { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
   ],
@@ -75,10 +70,10 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
   [FilterFieldType.DateTime]: [
     { operator: FilterOperator.Equals, label: 'is', requiresValue: true },
     { operator: FilterOperator.NotEquals, label: 'is not', requiresValue: true },
-    { operator: FilterOperator.Before, label: 'before', requiresValue: true },
-    { operator: FilterOperator.After, label: 'after', requiresValue: true },
-    { operator: FilterOperator.OnOrBefore, label: 'on or before', requiresValue: true },
-    { operator: FilterOperator.OnOrAfter, label: 'on or after', requiresValue: true },
+    { operator: FilterOperator.Lt, label: 'before', requiresValue: true },
+    { operator: FilterOperator.Gt, label: 'after', requiresValue: true },
+    { operator: FilterOperator.Lte, label: 'on or before', requiresValue: true },
+    { operator: FilterOperator.Gte, label: 'on or after', requiresValue: true },
   ],
 }
 
@@ -143,7 +138,7 @@ export function getDefaultOperator(fieldType: FilterFieldType): FilterOperator {
     case FilterFieldType.File:
       return FilterOperator.IsNotEmpty
     case FilterFieldType.DateTime:
-      return FilterOperator.After
+      return FilterOperator.Gt
   }
 }
 

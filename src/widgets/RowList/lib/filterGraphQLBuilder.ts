@@ -78,35 +78,31 @@ function conditionToGraphQL(condition: FilterCondition): object | undefined {
         NOT: [buildDataFilter(fieldPath, { equals: '' })],
       }
 
-    case FilterOperator.GreaterThan:
-      return buildDataFilter(fieldPath, { gt: Number(value) })
+    case FilterOperator.Gt:
+      return buildDataFilter(fieldPath, {
+        gt: fieldType === FilterFieldType.Number ? Number(value) : String(value),
+      })
 
-    case FilterOperator.GreaterThanOrEqual:
-      return buildDataFilter(fieldPath, { gte: Number(value) })
+    case FilterOperator.Gte:
+      return buildDataFilter(fieldPath, {
+        gte: fieldType === FilterFieldType.Number ? Number(value) : String(value),
+      })
 
-    case FilterOperator.LessThan:
-      return buildDataFilter(fieldPath, { lt: Number(value) })
+    case FilterOperator.Lt:
+      return buildDataFilter(fieldPath, {
+        lt: fieldType === FilterFieldType.Number ? Number(value) : String(value),
+      })
 
-    case FilterOperator.LessThanOrEqual:
-      return buildDataFilter(fieldPath, { lte: Number(value) })
+    case FilterOperator.Lte:
+      return buildDataFilter(fieldPath, {
+        lte: fieldType === FilterFieldType.Number ? Number(value) : String(value),
+      })
 
     case FilterOperator.IsTrue:
       return buildDataFilter(fieldPath, { equals: true })
 
     case FilterOperator.IsFalse:
       return buildDataFilter(fieldPath, { equals: false })
-
-    case FilterOperator.Before:
-      return buildDataFilter(fieldPath, { lt: String(value) })
-
-    case FilterOperator.After:
-      return buildDataFilter(fieldPath, { gt: String(value) })
-
-    case FilterOperator.OnOrBefore:
-      return buildDataFilter(fieldPath, { lte: String(value) })
-
-    case FilterOperator.OnOrAfter:
-      return buildDataFilter(fieldPath, { gte: String(value) })
 
     default:
       return undefined
@@ -158,20 +154,16 @@ function buildSystemFieldFilterValue(
     case FilterOperator.IsNotEmpty:
       return { not: '' }
 
-    case FilterOperator.GreaterThan:
-    case FilterOperator.After:
+    case FilterOperator.Gt:
       return { gt: fieldType === FilterFieldType.Number ? Number(value) : String(value) }
 
-    case FilterOperator.GreaterThanOrEqual:
-    case FilterOperator.OnOrAfter:
+    case FilterOperator.Gte:
       return { gte: fieldType === FilterFieldType.Number ? Number(value) : String(value) }
 
-    case FilterOperator.LessThan:
-    case FilterOperator.Before:
+    case FilterOperator.Lt:
       return { lt: fieldType === FilterFieldType.Number ? Number(value) : String(value) }
 
-    case FilterOperator.LessThanOrEqual:
-    case FilterOperator.OnOrBefore:
+    case FilterOperator.Lte:
       return { lte: fieldType === FilterFieldType.Number ? Number(value) : String(value) }
 
     default:

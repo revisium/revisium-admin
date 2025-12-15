@@ -1,6 +1,6 @@
-import { Menu, Text } from '@chakra-ui/react'
+import { Box, Menu, Text } from '@chakra-ui/react'
 import { FC } from 'react'
-import { SelectTrigger } from 'src/widgets/RowList/ui/shared'
+import { LuChevronDown } from 'react-icons/lu'
 
 interface LogicSelectProps {
   logic: 'and' | 'or'
@@ -10,9 +10,24 @@ interface LogicSelectProps {
 export const LogicSelect: FC<LogicSelectProps> = ({ logic, onChange }) => (
   <Menu.Root positioning={{ placement: 'bottom-start' }}>
     <Menu.Trigger asChild>
-      <SelectTrigger minWidth="60px" compact>
+      <Box
+        as="button"
+        display="inline-flex"
+        alignItems="center"
+        gap={1}
+        px={2}
+        py={0.5}
+        borderRadius="md"
+        bg="newGray.100"
+        color="newGray.700"
+        fontWeight="medium"
+        fontSize="sm"
+        _hover={{ bg: 'newGray.200' }}
+        cursor="pointer"
+      >
         {logic === 'and' ? 'All' : 'Any'}
-      </SelectTrigger>
+        <LuChevronDown size={12} />
+      </Box>
     </Menu.Trigger>
     <Menu.Positioner>
       <Menu.Content minW="100px">

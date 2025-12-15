@@ -1,9 +1,9 @@
 import { Box, Menu, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
+import { LuChevronDown } from 'react-icons/lu'
 import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
 import { FilterableField } from 'src/widgets/RowList/model/filterTypes'
-import { SelectTrigger } from 'src/widgets/RowList/ui/shared'
 
 interface FilterFieldSelectProps {
   selectedField: FilterableField | undefined
@@ -20,12 +20,31 @@ export const FilterFieldSelect: FC<FilterFieldSelectProps> = observer(
     return (
       <Menu.Root positioning={{ placement: 'bottom-start' }}>
         <Menu.Trigger asChild>
-          <SelectTrigger
-            icon={selectedField ? getFieldTypeIcon(selectedField.fieldType) : undefined}
-            placeholder="Select field"
+          <Box
+            as="button"
+            display="flex"
+            alignItems="center"
+            gap={1}
+            px={2}
+            py={1}
+            borderRadius="md"
+            bg="newGray.100"
+            _hover={{ bg: 'newGray.200' }}
+            cursor="pointer"
+            minWidth="100px"
           >
-            {selectedField?.name}
-          </SelectTrigger>
+            {selectedField && (
+              <Box fontSize="xs" fontFamily="mono" color="newGray.400">
+                {getFieldTypeIcon(selectedField.fieldType)}
+              </Box>
+            )}
+            <Text fontSize="sm" fontWeight="medium" color="newGray.700" truncate maxWidth="120px">
+              {selectedField?.name || 'Select field'}
+            </Text>
+            <Box color="newGray.400">
+              <LuChevronDown size={14} />
+            </Box>
+          </Box>
         </Menu.Trigger>
         <Menu.Positioner>
           <Menu.Content minW="180px" maxH="300px" overflow="auto">

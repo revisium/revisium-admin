@@ -12,6 +12,15 @@ import { InlineEditModel } from './InlineEditModel'
 export type FieldType = 'string' | 'number' | 'boolean' | 'foreignKey' | 'file' | 'object' | 'array'
 export type CellState = 'display' | 'focused' | 'editing' | 'saving' | 'error' | 'readonly'
 
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const k = 1024
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const value = bytes / Math.pow(k, i)
+  return `${value.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
+}
+
 export class CellViewModel {
   constructor(
     private readonly _rowId: string,
@@ -90,12 +99,50 @@ export class CellViewModel {
     return this.fieldType === 'string' || this.fieldType === 'number'
   }
 
+  public get isFileSizeField(): boolean {
+    return this._columnId.endsWith(':size')
+  }
+
+  public get sizeTooltip(): string | undefined {
+    if (!this.isFileSizeField) {
+      return undefined
+    }
+    if (this._store instanceof JsonNumberValueStore) {
+      const bytes = this._store.value
+      if (bytes === null) {
+        return undefined
+      }
+      return `${bytes.toLocaleString()} bytes`
+    }
+    return undefined
+  }
+
+  public get rawValue(): number | string | boolean | null {
+    if (this._store instanceof JsonNumberValueStore) {
+      return this._store.value
+    }
+    if (this._store instanceof JsonStringValueStore) {
+      return this._store.value
+    }
+    if (this._store instanceof JsonBooleanValueStore) {
+      return this._store.getPlainValue()
+    }
+    return null
+  }
+
   public get displayValue(): string {
     if (this._store instanceof JsonStringValueStore) {
       return this._store.value
     }
     if (this._store instanceof JsonNumberValueStore) {
-      return String(this._store.value)
+      const value = this._store.value
+      if (value === null) {
+        return ''
+      }
+      if (this.isFileSizeField) {
+        return formatFileSize(value)
+      }
+      return String(value)
     }
     if (this._store instanceof JsonBooleanValueStore) {
       return String(this._store.getPlainValue())

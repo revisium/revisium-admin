@@ -61,6 +61,8 @@ export const HeaderContent: React.FC<HeaderContentProps> = observer(({ columnsMo
         hasHiddenColumns={columnsModel.hasHiddenColumns}
         onAddColumn={columnsModel.addColumn}
         onAddAll={columnsModel.addAll}
+        getAvailableFileChildren={columnsModel.getAvailableFileChildren}
+        isColumnVisible={columnsModel.isColumnVisible}
       />
     </Box>
   )

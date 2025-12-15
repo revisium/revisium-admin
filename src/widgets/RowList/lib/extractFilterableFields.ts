@@ -1,7 +1,9 @@
 import { JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { getSystemFieldBySchemaRef } from '../config/systemFields'
 import { FilterableField, FilterFieldType, getFieldTypeFromSchema, SystemFieldId } from '../model/filterTypes'
+import { iterateFileSchemaProperties } from './fileSchemaUtils'
 
 interface ExtractResult {
   dataFields: FilterableField[]
@@ -68,8 +70,15 @@ function traverseSchemaWithPath(
     return
   }
 
-  const fieldType = getFieldTypeFromSchema(store)
   const fieldPath = store.name ? [...currentPath, store.name] : currentPath
+
+  if (store.type === JsonSchemaTypeName.Object && store.$ref === SystemSchemaIds.File) {
+    const displayName = fieldPath.length > 1 ? fieldPath.join('.') : store.name
+    addFileNestedFields(store.nodeId, displayName, fieldPath, fields)
+    return
+  }
+
+  const fieldType = getFieldTypeFromSchema(store)
 
   if (fieldType !== null) {
     const displayName = fieldPath.length > 1 ? fieldPath.join('.') : store.name
@@ -87,6 +96,24 @@ function traverseSchemaWithPath(
     const properties = Object.values(store.properties)
     for (const prop of properties) {
       traverseSchemaWithPath(prop, fieldPath, fields, usedSystemFieldIds)
+    }
+  }
+}
+
+function addFileNestedFields(
+  parentNodeId: string,
+  parentName: string,
+  parentPath: string[],
+  fields: FilterableField[],
+): void {
+  for (const info of iterateFileSchemaProperties(parentNodeId, parentName, parentPath)) {
+    if (info.fieldType !== null) {
+      fields.push({
+        nodeId: info.nodeId,
+        name: info.name,
+        path: info.path,
+        fieldType: info.fieldType,
+      })
     }
   }
 }

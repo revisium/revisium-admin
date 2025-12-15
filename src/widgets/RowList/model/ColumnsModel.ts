@@ -1,6 +1,7 @@
 import { makeAutoObservable, observable } from 'mobx'
 import { RowListItemFragment, TableViewsDataFragment } from 'src/__generated__/graphql-request'
-import { JsonSchema } from 'src/entities/Schema'
+import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore'
@@ -105,6 +106,7 @@ export class ColumnsModel {
       isSystemField: field.isSystemField,
       systemFieldId: field.systemFieldId,
       isSystemColumn: field.isSystemColumn,
+      isFileObject: field.isFileObject,
     }
     this._columnCache.set(field.nodeId, column)
     return column
@@ -115,18 +117,36 @@ export class ColumnsModel {
   }
 
   public get availableFieldsToAdd(): AvailableField[] {
-    const visibleSet = new Set(this._visibleColumnIds)
-    const hidden = this._availableFields.filter((field) => !visibleSet.has(field.nodeId))
+    const visibleSet = this._visibleColumnIdsSet
+    const hidden = this._availableFields.filter((field) => {
+      if (field.isFileObject && field.children) {
+        const hasHiddenSelf = !visibleSet.has(field.nodeId)
+        const hasHiddenChildren = field.children.some((child) => !visibleSet.has(child.nodeId))
+        return hasHiddenSelf || hasHiddenChildren
+      }
+      return !visibleSet.has(field.nodeId)
+    })
     return sortFieldsByPriority(hidden)
   }
 
   public get availableSystemFieldsToAdd(): AvailableField[] {
-    const visibleSet = new Set(this._visibleColumnIds)
-    return this._availableSystemFields.filter((field) => !visibleSet.has(field.nodeId))
+    return this._availableSystemFields.filter((field) => !this._visibleColumnIdsSet.has(field.nodeId))
   }
 
   public get hasHiddenColumns(): boolean {
     return this.availableFieldsToAdd.length > 0 || this.availableSystemFieldsToAdd.length > 0
+  }
+
+  public getAvailableFileChildren(field: AvailableField): AvailableField[] {
+    if (!field.children) return []
+    return field.children.filter((child) => !this._visibleColumnIdsSet.has(child.nodeId))
+  }
+
+  public isFileFieldFullyVisible(field: AvailableField): boolean {
+    if (!field.isFileObject) return this._visibleColumnIdsSet.has(field.nodeId)
+    const selfVisible = this._visibleColumnIdsSet.has(field.nodeId)
+    const allChildrenVisible = field.children?.every((child) => this._visibleColumnIdsSet.has(child.nodeId)) ?? true
+    return selfVisible && allChildrenVisible
   }
 
   public get canRemoveColumn(): boolean {
@@ -162,16 +182,32 @@ export class ColumnsModel {
       systemFieldId: SystemFieldId.Id,
     }
 
-    const dataFields: SortableField[] = this._availableFields
-      .filter((f) => f.fieldType !== null)
-      .map((f) => ({
-        nodeId: f.nodeId,
-        name: f.name,
-        path: f.path,
-        fieldType: f.fieldType!,
-        isSystemField: f.isSystemField,
-        systemFieldId: f.systemFieldId,
-      }))
+    const dataFields: SortableField[] = []
+    for (const f of this._availableFields) {
+      if (f.isFileObject && f.children) {
+        for (const child of f.children) {
+          if (child.fieldType !== null) {
+            dataFields.push({
+              nodeId: child.nodeId,
+              name: child.name,
+              path: child.path,
+              fieldType: child.fieldType,
+              isSystemField: child.isSystemField,
+              systemFieldId: child.systemFieldId,
+            })
+          }
+        }
+      } else if (f.fieldType !== null) {
+        dataFields.push({
+          nodeId: f.nodeId,
+          name: f.name,
+          path: f.path,
+          fieldType: f.fieldType,
+          isSystemField: f.isSystemField,
+          systemFieldId: f.systemFieldId,
+        })
+      }
+    }
 
     const systemFields: SortableField[] = this._availableSystemFields
       .filter((f) => f.fieldType !== null)
@@ -210,6 +246,11 @@ export class ColumnsModel {
 
     for (const field of this._availableFields) {
       this._availableFieldsMap.set(field.nodeId, field)
+      if (field.children) {
+        for (const child of field.children) {
+          this._availableFieldsMap.set(child.nodeId, child)
+        }
+      }
     }
 
     this._availableSystemFields = SYSTEM_COLUMNS.filter(
@@ -422,6 +463,13 @@ export class ColumnsModel {
 
     traverseValue(rootValue, (node) => {
       cells.set(node.schema.nodeId, node)
+
+      if (node.type === JsonSchemaTypeName.Object && node.$ref === SystemSchemaIds.File) {
+        for (const [propName, propValue] of Object.entries(node.value)) {
+          const syntheticNodeId = `${node.schema.nodeId}:${propName}`
+          cells.set(syntheticNodeId, propValue)
+        }
+      }
     })
 
     const newCachedData: CachedRowData = { versionId: row.versionId, rootValue, cells }

@@ -9,6 +9,7 @@ export type ColumnType = {
   isSystemField?: boolean
   systemFieldId?: SystemFieldId
   isSystemColumn?: boolean
+  isFileObject?: boolean
 }
 
 export interface AvailableField {
@@ -20,4 +21,8 @@ export interface AvailableField {
   isSystemField?: boolean
   systemFieldId?: SystemFieldId
   isSystemColumn?: boolean
+  children?: AvailableField[]
+  isFileObject?: boolean
+  isFileNestedField?: boolean
+  parentFieldName?: string
 }

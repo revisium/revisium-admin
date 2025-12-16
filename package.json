@@ -24,6 +24,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --detectOpenHandles --ci",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config=e2e/playwright.config.ts --ui",
+    "test:e2e:debug": "playwright test --config=e2e/playwright.config.ts --debug",
+    "test:e2e:report": "playwright show-report",
     "preview": "vite preview",
     "prettier": "prettier . --write",
     "gql:codegen": "graphql-codegen && npm run prettier",
@@ -70,6 +74,7 @@
     "@graphql-codegen/typescript-graphql-request": "6.2.0",
     "@graphql-codegen/typescript-operations": "4.2.0",
     "@graphql-codegen/typescript-react-apollo": "4.3.0",
+    "@playwright/test": "1.57.0",
     "@types/diff": "7.0.2",
     "@types/jest": "29.5.12",
     "@types/react": "18.2.64",
@@ -115,6 +120,10 @@
     ],
     "rootDir": "./",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/e2e/"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest",
       "^.+\\.(t|j)sx$": "ts-jest"

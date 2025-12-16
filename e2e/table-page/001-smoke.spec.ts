@@ -25,7 +25,7 @@ async function setupMocks(page: Page, rowsResponse: object) {
     const body = request.postDataJSON()
     const opName = body?.operationName as string
 
-    const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID, TABLE_ID)
+    const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
     const branchResponse = createFullBranchResponse(PROJECT_NAME)
 
     const responses: Record<string, object> = {
@@ -75,7 +75,7 @@ test.describe('TablePage - Smoke Tests', () => {
     const rows = createSampleRows(3)
     await setupMocks(page, createRowsResponse(rows))
 
-    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/main/draft/${TABLE_ID}`)
+    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
     await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
     await expect(page.getByText('User 2')).toBeVisible()
@@ -86,7 +86,7 @@ test.describe('TablePage - Smoke Tests', () => {
     const rows = createSampleRows(5)
     await setupMocks(page, createRowsResponse(rows, { totalCount: 5 }))
 
-    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/main/draft/${TABLE_ID}`)
+    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
     await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
     await expect(page.getByText(/5\s*rows?/i)).toBeVisible()
@@ -96,7 +96,7 @@ test.describe('TablePage - Smoke Tests', () => {
     const rows = createSampleRows(2)
     await setupMocks(page, createRowsResponse(rows))
 
-    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/main/draft/${TABLE_ID}`)
+    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
     await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
 
@@ -107,7 +107,7 @@ test.describe('TablePage - Smoke Tests', () => {
   test('shows empty state when no rows', async ({ page }) => {
     await setupMocks(page, emptyRowsResponse)
 
-    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/main/draft/${TABLE_ID}`)
+    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
     await expect(page.getByText('No rows yet')).toBeVisible({
       timeout: 15000,
@@ -134,7 +134,7 @@ test.describe('TablePage - Smoke Tests', () => {
       const responses: Record<string, object> = {
         configuration: createConfigurationResponse(),
         getMe: createMeResponse(ORG_ID),
-        ProjectMst: createFullProjectResponse(PROJECT_NAME, ORG_ID, TABLE_ID),
+        ProjectMst: createFullProjectResponse(PROJECT_NAME, ORG_ID),
         BranchMst: createFullBranchResponse(PROJECT_NAME),
         TableMst: createFullTableResponse(TABLE_ID),
         GetTableViews: createTableViewsResponse(TABLE_ID),
@@ -156,7 +156,7 @@ test.describe('TablePage - Smoke Tests', () => {
       })
     })
 
-    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/main/draft/${TABLE_ID}`)
+    await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
     await expect(page.getByText(/error/i)).toBeVisible({ timeout: 15000 })
   })

@@ -20,7 +20,7 @@ export function createConfigurationResponse() {
 }
 
 export function createFullBranchResponse(projectName: string) {
-  const branchId = `branch-${projectName}-main`
+  const branchId = `branch-${projectName}-master`
   const headRevId = `head-rev-${projectName}`
   const draftRevId = `draft-rev-${projectName}`
 
@@ -30,7 +30,7 @@ export function createFullBranchResponse(projectName: string) {
         __typename: 'BranchModel',
         id: branchId,
         createdAt: '2024-01-01T00:00:00Z',
-        name: 'main',
+        name: 'master',
         touched: true,
         projectId: projectName,
         parent: null,
@@ -66,8 +66,8 @@ export function createFullBranchResponse(projectName: string) {
   }
 }
 
-export function createFullProjectResponse(projectName: string, orgId: string = 'testuser', _: string = 'users') {
-  const branchId = `branch-${projectName}-main`
+export function createFullProjectResponse(projectName: string, orgId: string = 'testuser') {
+  const branchId = `branch-${projectName}-master`
   const headRevId = `head-rev-${projectName}`
   const draftRevId = `draft-rev-${projectName}`
 
@@ -84,7 +84,7 @@ export function createFullProjectResponse(projectName: string, orgId: string = '
           __typename: 'BranchModel',
           id: branchId,
           createdAt: '2024-01-01T00:00:00Z',
-          name: 'main',
+          name: 'master',
           touched: true,
           projectId: projectName,
           parent: null,

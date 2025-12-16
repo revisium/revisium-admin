@@ -14,8 +14,7 @@ export async function mockGraphQL(page: Page, handlers: GraphQLHandler[]) {
     const handler = handlers.find((h) => h.operationName === opName)
 
     if (handler) {
-      const response =
-        typeof handler.response === 'function' ? handler.response(variables) : handler.response
+      const response = typeof handler.response === 'function' ? handler.response(variables) : handler.response
 
       return route.fulfill({
         status: 200,

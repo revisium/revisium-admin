@@ -9,11 +9,7 @@ export type RowNode = {
   createdId: string
 }
 
-export function createRowNode(
-  id: string,
-  data: Record<string, unknown>,
-  options: Partial<RowNode> = {},
-): RowNode {
+export function createRowNode(id: string, data: Record<string, unknown>, options: Partial<RowNode> = {}): RowNode {
   return {
     id,
     versionId: options.versionId || `${id}-v1`,

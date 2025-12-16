@@ -66,11 +66,7 @@ export function createFullBranchResponse(projectName: string) {
   }
 }
 
-export function createFullProjectResponse(
-  projectName: string,
-  orgId: string = 'testuser',
-  tableId: string = 'users',
-) {
+export function createFullProjectResponse(projectName: string, orgId: string = 'testuser', _: string = 'users') {
   const branchId = `branch-${projectName}-main`
   const headRevId = `head-rev-${projectName}`
   const draftRevId = `draft-rev-${projectName}`

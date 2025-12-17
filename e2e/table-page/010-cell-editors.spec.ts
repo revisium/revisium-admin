@@ -922,7 +922,7 @@ test.describe('Cell Editors', () => {
   })
 
   test.describe('Save State', () => {
-    test('cell shows spinner during slow save', async ({ page }) => {
+    test('cell shows spinner during slow save', { timeout: 10000 }, async ({ page }) => {
       await setupAuth(page)
 
       const schema = {

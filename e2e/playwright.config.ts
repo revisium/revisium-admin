@@ -8,9 +8,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 4,
   reporter: [['html', { outputFolder: 'playwright-report' }], ['list']],
   outputDir: 'test-results',
-  timeout: 30000,
+  timeout: 5000,
   expect: {
-    timeout: 10000,
+    timeout: 2000,
   },
 
   use: {

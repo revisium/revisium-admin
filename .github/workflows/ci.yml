@@ -8,6 +8,13 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: 'Run E2E tests'
+        required: false
+        default: 'true'
+        type: boolean
 
 jobs:
   lint:
@@ -39,6 +46,11 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Run E2E on master branch automatically or via manual trigger
+    if: |
+      github.ref == 'refs/heads/master' ||
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_e2e)
 
     defaults:
       run:

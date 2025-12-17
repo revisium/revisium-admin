@@ -7,7 +7,6 @@ import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
 interface SortDirectionSelectProps {
   selectedDirection: SortDirection
   onSelect: (direction: SortDirection) => void
-  testId?: string
 }
 
 const directions: { value: SortDirection; label: string; icon: typeof LuArrowUp }[] = [

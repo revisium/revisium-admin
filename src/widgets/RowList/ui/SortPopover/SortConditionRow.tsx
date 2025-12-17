@@ -13,7 +13,6 @@ interface SortConditionRowProps {
   onFieldChange: (nodeId: string, newNodeId: string) => void
   onDirectionChange: (nodeId: string, direction: SortDirection) => void
   onRemove: (nodeId: string) => void
-  testId?: string
 }
 
 export const SortConditionRow: FC<SortConditionRowProps> = observer(

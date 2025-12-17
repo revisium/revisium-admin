@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { createSampleRows } from '../fixtures/full-fixtures'
-import { setupTablePageMocks, getTablePageUrl, TEST_CONFIG } from '../helpers/table-page-setup'
-
-const { orgId: ORG_ID, projectName: PROJECT_NAME, tableId: TABLE_ID } = TEST_CONFIG
+import { setupTablePageMocks, getTablePageUrl } from '../helpers/table-page-setup'
 
 test.describe('Inline Cell Editing', () => {
   test.describe('Cell Focus', () => {

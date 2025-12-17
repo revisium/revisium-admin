@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test'
-import { createSampleRows } from '../fixtures/full-fixtures'
 import { setupTablePageMocks, getTablePageUrl } from '../helpers/table-page-setup'
 
 test.describe('Permissions', () => {

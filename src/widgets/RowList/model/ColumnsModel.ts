@@ -57,7 +57,6 @@ interface CachedRowData {
 
 export class ColumnsModel {
   private _visibleColumnIds: string[] = []
-  private _visibleColumnIdsSet = new Set<string>()
   private _availableFields: AvailableField[] = []
   private _availableFieldsMap = new Map<string, AvailableField>()
   private _availableSystemFields: AvailableField[] = []
@@ -69,20 +68,20 @@ export class ColumnsModel {
   private _onColumnsChange: (() => void) | null = null
 
   constructor() {
-    makeAutoObservable<
-      ColumnsModel,
-      '_rowCache' | '_columnCache' | '_visibleColumnIdsSet' | '_columnWidths' | '_availableFieldsMap'
-    >(
+    makeAutoObservable<ColumnsModel, '_rowCache' | '_columnCache' | '_columnWidths' | '_availableFieldsMap'>(
       this,
       {
         _rowCache: false,
         _columnCache: false,
-        _visibleColumnIdsSet: false,
         _columnWidths: false,
         _availableFieldsMap: false,
       },
       { autoBind: true },
     )
+  }
+
+  private get _visibleColumnIdsSet(): Set<string> {
+    return new Set(this._visibleColumnIds)
   }
 
   public get columns(): ColumnType[] {
@@ -117,14 +116,13 @@ export class ColumnsModel {
   }
 
   public get availableFieldsToAdd(): AvailableField[] {
-    const visibleSet = this._visibleColumnIdsSet
     const hidden = this._availableFields.filter((field) => {
       if (field.isFileObject && field.children) {
-        const hasHiddenSelf = !visibleSet.has(field.nodeId)
-        const hasHiddenChildren = field.children.some((child) => !visibleSet.has(child.nodeId))
+        const hasHiddenSelf = !this._visibleColumnIdsSet.has(field.nodeId)
+        const hasHiddenChildren = field.children.some((child) => !this._visibleColumnIdsSet.has(child.nodeId))
         return hasHiddenSelf || hasHiddenChildren
       }
-      return !visibleSet.has(field.nodeId)
+      return !this._visibleColumnIdsSet.has(field.nodeId)
     })
     return sortFieldsByPriority(hidden)
   }
@@ -267,13 +265,11 @@ export class ColumnsModel {
       const defaultColumns = selectDefaultColumns(this._schemaStore, DEFAULT_VISIBLE_COLUMNS)
       this._visibleColumnIds = defaultColumns.map((item) => item.nodeId)
     }
-    this._visibleColumnIdsSet = new Set(this._visibleColumnIds)
   }
 
   public addColumn(nodeId: string): void {
     if (!this._visibleColumnIdsSet.has(nodeId)) {
       this._visibleColumnIds.push(nodeId)
-      this._visibleColumnIdsSet.add(nodeId)
       this.notifyColumnsChange()
     }
   }
@@ -284,7 +280,6 @@ export class ColumnsModel {
     if (targetIndex === -1) return
 
     this._visibleColumnIds.splice(targetIndex, 0, newColumnId)
-    this._visibleColumnIdsSet.add(newColumnId)
     this.notifyColumnsChange()
   }
 
@@ -294,26 +289,22 @@ export class ColumnsModel {
     if (targetIndex === -1) return
 
     this._visibleColumnIds.splice(targetIndex + 1, 0, newColumnId)
-    this._visibleColumnIdsSet.add(newColumnId)
     this.notifyColumnsChange()
   }
 
   public removeColumn(nodeId: string): void {
     if (!this.canRemoveColumn) return
     this._visibleColumnIds = this._visibleColumnIds.filter((id) => id !== nodeId)
-    this._visibleColumnIdsSet.delete(nodeId)
     this.notifyColumnsChange()
   }
 
   public addAll(): void {
     this._visibleColumnIds = this._availableFields.map((f) => f.nodeId)
-    this._visibleColumnIdsSet = new Set(this._visibleColumnIds)
     this.notifyColumnsChange()
   }
 
   public hideAll(): void {
     this._visibleColumnIds = []
-    this._visibleColumnIdsSet.clear()
     this.notifyColumnsChange()
   }
 
@@ -488,7 +479,6 @@ export class ColumnsModel {
       .filter((id) => this._availableFieldsMap.has(id))
 
     this._visibleColumnIds = validColumnIds
-    this._visibleColumnIdsSet = new Set(validColumnIds)
 
     this._columnWidths.clear()
 

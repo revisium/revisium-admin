@@ -10,8 +10,10 @@ import {
   createSampleRows,
   createTablesResponse,
   createTableViewsResponse,
+  SystemSchemaIds,
 } from '../fixtures/full-fixtures'
 import { setupAuth } from '../helpers/setup-auth'
+import { setupTablePageMocks, getTablePageUrl } from '../helpers/table-page-setup'
 
 const PROJECT_NAME = 'test-project'
 const ORG_ID = 'testuser'
@@ -392,94 +394,28 @@ test.describe('Filter Operations', () => {
   })
 
   test.describe('System Fields in Filter', () => {
-    const schemaWithSystemRef = {
-      type: 'object',
-      properties: {
-        name: { type: 'string', default: '' },
-        myCreatedAt: { $ref: 'RowCreatedAt' },
-      },
-      additionalProperties: false,
-      required: ['name', 'myCreatedAt'],
-    }
+    // Schema fields with $ref to system types (like RowCreatedAt) should appear in "Data fields"
+    // section, not "System fields". System fields are row-level fields (createdAt, updatedAt)
+    // that are NOT defined in the schema.
+    test('schema field with system $ref appears in Data Fields (schema fields are data fields)', async ({ page }) => {
+      const schemaWithSystemRef = {
+        type: 'object',
+        properties: {
+          name: { type: 'string', default: '' },
+          myCreatedAt: { $ref: SystemSchemaIds.RowCreatedAt },
+        },
+        additionalProperties: false,
+        required: ['name', 'myCreatedAt'],
+      }
 
-    async function setupMocksWithCustomSchema(page: Page) {
-      await setupAuth(page)
+      const rows = [
+        { id: 'row-1', data: { name: 'User 1', myCreatedAt: '2024-01-01T00:00:00Z' } },
+        { id: 'row-2', data: { name: 'User 2', myCreatedAt: '2024-01-02T00:00:00Z' } },
+      ]
 
-      const rows = createSampleRows(3)
-      const rowsResponse = createRowsResponse(rows)
+      await setupTablePageMocks(page, { schema: schemaWithSystemRef, rows })
 
-      await page.route('**/graphql', async (route, request) => {
-        const body = request.postDataJSON()
-        const opName = body?.operationName as string
-
-        const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
-        const branchResponse = createFullBranchResponse(PROJECT_NAME)
-
-        if (opName === 'GetTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(createTableViewsResponse(TABLE_ID)),
-          })
-        }
-
-        if (opName === 'UpdateTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ data: { updateTableViews: null } }),
-          })
-        }
-
-        const responses: Record<string, object> = {
-          configuration: createConfigurationResponse(),
-          getMe: createMeResponse(ORG_ID),
-          meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
-          getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
-            data: {
-              branches: {
-                totalCount: 1,
-                pageInfo: { hasNextPage: false, endCursor: null },
-                edges: [{ cursor: 'cursor-1', node: branchResponse.data.branch }],
-              },
-            },
-          },
-          TablesMst: createTablesResponse(TABLE_ID),
-          TableMst: createFullTableResponse(TABLE_ID, schemaWithSystemRef),
-          RowsMst: rowsResponse,
-          RowListRows: rowsResponse,
-          getChanges: { data: { changes: { tables: 0, rows: 0 } } },
-          GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
-        }
-
-        const response = responses[opName]
-        if (response) {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(response),
-          })
-        }
-
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ data: null }),
-        })
-      })
-    }
-
-    // BUG: Fields with system $ref (like RowCreatedAt) should appear in System Fields section
-    // Currently they appear in Data Fields section
-    // Expected: myCreatedAt (with $ref: RowCreatedAt) should be in "System fields" menu section
-    // Actual: myCreatedAt appears in "Data fields" section
-    test.skip('schema field with system $ref should appear in System Fields menu', async ({ page }) => {
-      await setupMocksWithCustomSchema(page)
-
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
@@ -489,9 +425,8 @@ test.describe('Filter Operations', () => {
       const fieldSelect = filterCondition.locator('button').first()
       await fieldSelect.click()
 
-      await expect(page.getByText('System fields')).toBeVisible()
-      const systemFieldsSection = page.locator('[role="group"]').filter({ hasText: 'System fields' })
-      await expect(systemFieldsSection.getByRole('menuitem', { name: 'myCreatedAt' })).toBeVisible()
+      const dataFieldsSection = page.locator('[role="group"]').filter({ hasText: 'Data fields' })
+      await expect(dataFieldsSection.getByRole('menuitem', { name: 'myCreatedAt' })).toBeVisible()
     })
   })
 

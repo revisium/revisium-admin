@@ -1,3 +1,5 @@
+export { SystemSchemaIds } from '../../src/entities/Schema/config/consts'
+
 export function createConfigurationResponse() {
   return {
     data: {

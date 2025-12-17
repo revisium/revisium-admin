@@ -453,8 +453,8 @@ test.describe('Sort Operations', () => {
       await page.getByTestId('sort-add').click()
       await page.getByTestId('sort-apply').click()
 
-      // Wait for API call
-      await page.waitForTimeout(500)
+      // Wait for UpdateTableViews API call
+      await page.waitForResponse((resp) => resp.url().includes('graphql'))
 
       expect(updateViewsCalled).toBe(true)
       expect(updateViewsPayload).toBeTruthy()
@@ -556,8 +556,8 @@ test.describe('Sort Operations', () => {
       await page.getByTestId('sort-add').click()
       await page.getByTestId('sort-apply').click()
 
-      // Wait for save
-      await page.waitForTimeout(500)
+      // Wait for UpdateTableViews API call
+      await page.waitForResponse((resp) => resp.url().includes('graphql'))
 
       // Reload page
       await page.reload()

@@ -222,8 +222,8 @@ test.describe('Search Functionality', () => {
       const searchInput = page.getByPlaceholder('Search...')
       await searchInput.fill('User 1')
 
-      // Wait for search to apply
-      await page.waitForTimeout(500)
+      // Wait for search response
+      await page.waitForResponse((resp) => resp.url().includes('graphql'))
 
       // Click outside
       await page.getByTestId('column-header-name').click()
@@ -259,13 +259,12 @@ test.describe('Search Functionality', () => {
       await page.getByRole('button', { name: /search/i }).click()
       await page.getByPlaceholder('Search...').fill('Alice')
 
-      // Wait for debounce and results
-      await page.waitForTimeout(500)
+      // Wait for search response and row to disappear
+      await expect(page.getByTestId('row-row-2')).not.toBeVisible()
 
       // Should show only Alice rows
       await expect(page.getByTestId('row-row-1')).toBeVisible()
       await expect(page.getByTestId('row-row-3')).toBeVisible()
-      await expect(page.getByTestId('row-row-2')).not.toBeVisible()
     })
 
     test('empty search results shows message', async ({ page }) => {
@@ -279,10 +278,7 @@ test.describe('Search Functionality', () => {
       await page.getByRole('button', { name: /search/i }).click()
       await page.getByPlaceholder('Search...').fill('nonexistent')
 
-      // Wait for debounce
-      await page.waitForTimeout(500)
-
-      // Should show no results message
+      // Should show no results message (waits for it to appear)
       await expect(page.getByText('No rows found')).toBeVisible()
     })
 
@@ -296,11 +292,12 @@ test.describe('Search Functionality', () => {
       // Search
       await page.getByRole('button', { name: /search/i }).click()
       await page.getByPlaceholder('Search...').fill('test')
-      await page.waitForTimeout(500)
+
+      // Wait for "No rows found" to appear (search returned empty)
+      await expect(page.getByText(/no rows/i).or(page.getByText('0 rows'))).toBeVisible()
 
       // Clear search
       await page.locator('[aria-label="Clear"]').click()
-      await page.waitForTimeout(500)
 
       // All rows should be back
       await expect(page.getByText('5 rows')).toBeVisible()
@@ -330,10 +327,7 @@ test.describe('Search Functionality', () => {
       await page.getByRole('button', { name: /search/i }).click()
       await page.getByPlaceholder('Search...').fill('Alice')
 
-      // Wait for debounce and results
-      await page.waitForTimeout(500)
-
-      // Should show "X of Y rows" format
+      // Should show "X of Y rows" format (waits for it to appear)
       await expect(page.getByText('2 of 5 rows')).toBeVisible()
     })
   })

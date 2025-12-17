@@ -581,8 +581,8 @@ test.describe('Column Operations', () => {
         await page.mouse.move(box.x + box.width / 2 + 50, box.y + box.height / 2)
         await page.mouse.up()
 
-        // Wait for view settings to be saved
-        await page.waitForTimeout(500)
+        // Wait for UpdateTableViews API call
+        await page.waitForResponse((resp) => resp.url().includes('graphql'))
 
         // Check that width was saved
         if (savedColumns) {
@@ -650,8 +650,11 @@ test.describe('Column Operations', () => {
         .or(nameHeader.locator('group'))
       await resizeHandle.dblclick()
 
-      // Wait for auto-fit animation
-      await page.waitForTimeout(200)
+      // Wait for width to change from initial value
+      await expect(async () => {
+        const width = await nameHeader.evaluate((el) => el.getBoundingClientRect().width)
+        expect(width).not.toBe(initialWidth)
+      }).toPass({ timeout: 2000 })
 
       const newWidth = await nameHeader.evaluate((el) => el.getBoundingClientRect().width)
       // Column should auto-fit to content, typically becoming wider

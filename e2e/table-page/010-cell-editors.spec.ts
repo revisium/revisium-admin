@@ -791,8 +791,7 @@ test.describe('Cell Editors', () => {
       if (await searchInput.isVisible()) {
         await searchInput.fill('book')
 
-        // Should filter results
-        await page.waitForTimeout(350) // Wait for search debounce
+        // Should filter results (waits for debounce automatically)
         await expect(page.getByText('books')).toBeVisible()
       }
     })
@@ -844,8 +843,8 @@ test.describe('Cell Editors', () => {
       const searchInput = page.getByPlaceholder('Search...')
       if (await searchInput.isVisible()) {
         await searchInput.fill('nonexistent')
-        await page.waitForTimeout(350) // Wait for search debounce
 
+        // Should show no results message (waits for debounce automatically)
         await expect(page.getByText('No results found')).toBeVisible()
       }
     })

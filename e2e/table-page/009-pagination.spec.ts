@@ -252,10 +252,7 @@ test.describe('Pagination', () => {
       if (await loadMoreButton.isVisible()) {
         await loadMoreButton.click()
 
-        // Wait for new rows to load
-        await page.waitForTimeout(300)
-
-        // Verify new rows are visible
+        // Verify new rows are visible (auto-waits for them to appear)
         await expect(page.getByTestId('row-row-21')).toBeVisible()
       }
     })

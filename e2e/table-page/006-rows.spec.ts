@@ -480,7 +480,8 @@ test.describe('Row Operations', () => {
       const loadMoreButton = page.getByText(/load more/i).or(page.getByRole('button', { name: /more/i }))
       if (await loadMoreButton.isVisible()) {
         await loadMoreButton.click()
-        await page.waitForTimeout(300)
+        // Wait for rows response
+        await page.waitForResponse((resp) => resp.url().includes('graphql'))
       }
 
       // Selection should still show 2 selected

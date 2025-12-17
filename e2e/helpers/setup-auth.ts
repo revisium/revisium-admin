@@ -5,15 +5,3 @@ export async function setupAuth(page: Page) {
     localStorage.setItem('token', 'mock-jwt-token-for-testing')
   })
 }
-
-export const authFixtures = {
-  me: {
-    data: {
-      me: {
-        id: 'test-user',
-        username: 'testuser',
-        email: 'test@example.com',
-      },
-    },
-  },
-}

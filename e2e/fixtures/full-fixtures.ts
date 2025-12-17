@@ -309,12 +309,12 @@ export function createTablesResponse(tableId: string) {
 
 export const emptyRowsResponse = createRowsResponse([])
 
-export function createSampleRows(count: number) {
+export function createSampleRows(count: number, startFrom: number = 0) {
   return Array.from({ length: count }, (_, i) => ({
-    id: `row-${i + 1}`,
+    id: `row-${startFrom + i + 1}`,
     data: {
-      name: `User ${i + 1}`,
-      age: 20 + i,
+      name: `User ${startFrom + i + 1}`,
+      age: 20 + startFrom + i,
       active: i % 2 === 0,
     },
   }))

@@ -11,6 +11,8 @@ interface CellWrapperProps extends PropsWithChildren {
   state: CellState
   displayValue?: string
   tooltip?: string
+  rowId?: string
+  fieldName?: string
   onFocus?: () => void
   onDoubleClick?: (clickOffset?: number, position?: CellPosition) => void
 }
@@ -56,7 +58,7 @@ const stateStyles: Record<CellState, object> = {
 }
 
 export const CellWrapper: FC<CellWrapperProps> = observer(
-  ({ children, state, displayValue, tooltip, onFocus, onDoubleClick }) => {
+  ({ children, state, displayValue, tooltip, rowId, fieldName, onFocus, onDoubleClick }) => {
     const cellRef = useRef<HTMLTableCellElement>(null)
     const textRef = useRef<HTMLParagraphElement>(null)
 
@@ -88,6 +90,8 @@ export const CellWrapper: FC<CellWrapperProps> = observer(
       [state, onDoubleClick, displayValue],
     )
 
+    const testId = rowId && fieldName ? `cell-${rowId}-${fieldName}` : undefined
+
     const content = (
       <Box
         ref={cellRef}
@@ -105,6 +109,7 @@ export const CellWrapper: FC<CellWrapperProps> = observer(
         onMouseDown={handleMouseDown}
         onDoubleClick={handleDoubleClick}
         tabIndex={state === 'focused' || state === 'editing' ? 0 : -1}
+        data-testid={testId}
         {...stateStyles[state]}
       >
         <Box display="flex" alignItems="center" height="100%" width="100%" minWidth={0}>

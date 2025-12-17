@@ -77,7 +77,7 @@ test.describe('TablePage - Smoke Tests', () => {
 
     await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
-    await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText('User 1')).toBeVisible()
     await expect(page.getByText('User 2')).toBeVisible()
     await expect(page.getByText('User 3')).toBeVisible()
   })
@@ -88,7 +88,7 @@ test.describe('TablePage - Smoke Tests', () => {
 
     await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
-    await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText('User 1')).toBeVisible()
     await expect(page.getByText(/5\s*rows?/i)).toBeVisible()
   })
 
@@ -98,7 +98,7 @@ test.describe('TablePage - Smoke Tests', () => {
 
     await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
-    await expect(page.getByText('User 1')).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText('User 1')).toBeVisible()
 
     const createButton = page.getByTestId('create-row-button').or(page.getByLabel('New row'))
     await expect(createButton).toBeVisible()
@@ -109,9 +109,7 @@ test.describe('TablePage - Smoke Tests', () => {
 
     await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
-    await expect(page.getByText('No rows yet')).toBeVisible({
-      timeout: 15000,
-    })
+    await expect(page.getByText('No rows yet')).toBeVisible()
   })
 
   test('shows error on API failure', async ({ page }) => {
@@ -158,6 +156,6 @@ test.describe('TablePage - Smoke Tests', () => {
 
     await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
 
-    await expect(page.getByText(/error/i)).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText(/error/i)).toBeVisible()
   })
 })

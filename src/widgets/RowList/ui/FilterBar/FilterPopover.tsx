@@ -66,6 +66,7 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
               variant={filterModel.isFilterBarOpen ? 'subtle' : 'ghost'}
               colorPalette="gray"
               color={filterModel.hasAppliedFilters ? undefined : 'gray.300'}
+              data-testid="filter-button"
             >
               <LuFilter />
             </IconButton>
@@ -85,6 +86,8 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
               alignItems="center"
               justifyContent="center"
               fontSize="10px"
+              data-testid="filter-badge"
+              data-badge-color={badgeColor}
             >
               {filterModel.filterCount}
             </Badge>
@@ -121,7 +124,13 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
                 </Box>
                 <Box display="flex" gap={2}>
                   {filterModel.hasFilters && (
-                    <Button size="xs" variant="ghost" colorPalette="gray" onClick={filterModel.reset}>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      colorPalette="gray"
+                      onClick={filterModel.reset}
+                      data-testid="filter-clear-all"
+                    >
                       Clear all
                     </Button>
                   )}
@@ -131,6 +140,7 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
                     colorPalette="gray"
                     onClick={handleApply}
                     disabled={!filterModel.hasPendingChanges}
+                    data-testid="filter-apply"
                   >
                     Apply
                   </Button>

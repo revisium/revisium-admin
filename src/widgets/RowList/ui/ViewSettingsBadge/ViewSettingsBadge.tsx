@@ -35,7 +35,12 @@ export const ViewSettingsBadge: FC<ViewSettingsBadgeProps> = observer(({ model }
     <Popover.Root open={model.isOpen} onOpenChange={(e) => model.setOpen(e.open)} lazyMount unmountOnExit>
       <Tooltip content={model.tooltipText} positioning={{ placement: 'top' }} disabled={model.isOpen}>
         <Popover.Trigger asChild>
-          <Badge colorPalette={model.badgeColor} {...badgeProps}>
+          <Badge
+            colorPalette={model.badgeColor}
+            {...badgeProps}
+            data-testid="view-settings-badge"
+            data-badge-color={model.badgeColor}
+          >
             <Box as="span" width="6px" height="6px" borderRadius="full" bg={model.dotColor} />
             {model.badgeText}
           </Badge>
@@ -66,6 +71,7 @@ export const ViewSettingsBadge: FC<ViewSettingsBadgeProps> = observer(({ model }
                   focusRing="none"
                   onClick={model.revert}
                   disabled={model.isRevertDisabled}
+                  data-testid="view-settings-revert"
                 >
                   <LuRotateCcw size={14} />
                   {model.revertButtonText}
@@ -78,6 +84,7 @@ export const ViewSettingsBadge: FC<ViewSettingsBadgeProps> = observer(({ model }
                     focusRing="none"
                     onClick={model.save}
                     disabled={model.isSaveDisabled}
+                    data-testid="view-settings-save"
                   >
                     {model.isSaving ? (
                       <Spinner size="xs" />

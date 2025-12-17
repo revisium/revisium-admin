@@ -94,6 +94,7 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
               variant={sortModel.isOpen ? 'subtle' : 'ghost'}
               colorPalette="gray"
               color={sortModel.hasAppliedSorts ? undefined : 'gray.300'}
+              data-testid="sort-button"
             >
               <LuArrowUpDown />
             </IconButton>
@@ -113,6 +114,8 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
               alignItems="center"
               justifyContent="center"
               fontSize="10px"
+              data-testid="sort-badge"
+              data-badge-color={badgeColor}
             >
               {sortModel.sortCount}
             </Badge>
@@ -150,7 +153,13 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
                 </Box>
                 <Box display="flex" gap={2}>
                   {sortModel.hasSorts && (
-                    <Button size="xs" variant="ghost" colorPalette="gray" onClick={handleClearAll}>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      colorPalette="gray"
+                      onClick={handleClearAll}
+                      data-testid="sort-clear-all"
+                    >
                       Clear all
                     </Button>
                   )}
@@ -160,6 +169,7 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
                     colorPalette="gray"
                     onClick={handleApply}
                     disabled={!sortModel.hasPendingChanges}
+                    data-testid="sort-apply"
                   >
                     Apply
                   </Button>
@@ -187,6 +197,7 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
                   colorPalette="gray"
                   onClick={handleAddSort}
                   mt={sortModel.hasSorts ? 1 : 0}
+                  data-testid="sort-add"
                 >
                   <LuPlus size={14} />
                   <Text ml={1}>Add sort</Text>

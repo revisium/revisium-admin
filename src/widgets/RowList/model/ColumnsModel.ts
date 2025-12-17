@@ -117,7 +117,7 @@ export class ColumnsModel {
   }
 
   public get availableFieldsToAdd(): AvailableField[] {
-    const visibleSet = this._visibleColumnIdsSet
+    const visibleSet = new Set(this._visibleColumnIds)
     const hidden = this._availableFields.filter((field) => {
       if (field.isFileObject && field.children) {
         const hasHiddenSelf = !visibleSet.has(field.nodeId)
@@ -130,7 +130,8 @@ export class ColumnsModel {
   }
 
   public get availableSystemFieldsToAdd(): AvailableField[] {
-    return this._availableSystemFields.filter((field) => !this._visibleColumnIdsSet.has(field.nodeId))
+    const visibleSet = new Set(this._visibleColumnIds)
+    return this._availableSystemFields.filter((field) => !visibleSet.has(field.nodeId))
   }
 
   public get hasHiddenColumns(): boolean {
@@ -139,13 +140,15 @@ export class ColumnsModel {
 
   public getAvailableFileChildren(field: AvailableField): AvailableField[] {
     if (!field.children) return []
-    return field.children.filter((child) => !this._visibleColumnIdsSet.has(child.nodeId))
+    const visibleSet = new Set(this._visibleColumnIds)
+    return field.children.filter((child) => !visibleSet.has(child.nodeId))
   }
 
   public isFileFieldFullyVisible(field: AvailableField): boolean {
-    if (!field.isFileObject) return this._visibleColumnIdsSet.has(field.nodeId)
-    const selfVisible = this._visibleColumnIdsSet.has(field.nodeId)
-    const allChildrenVisible = field.children?.every((child) => this._visibleColumnIdsSet.has(child.nodeId)) ?? true
+    const visibleSet = new Set(this._visibleColumnIds)
+    if (!field.isFileObject) return visibleSet.has(field.nodeId)
+    const selfVisible = visibleSet.has(field.nodeId)
+    const allChildrenVisible = field.children?.every((child) => visibleSet.has(child.nodeId)) ?? true
     return selfVisible && allChildrenVisible
   }
 
@@ -224,7 +227,7 @@ export class ColumnsModel {
   }
 
   public isColumnVisible(nodeId: string): boolean {
-    return this._visibleColumnIdsSet.has(nodeId)
+    return this._visibleColumnIds.includes(nodeId)
   }
 
   public getColumnByNodeId(nodeId: string): ColumnType | undefined {

@@ -124,11 +124,7 @@ async function setupMocks(
 
 test.describe('Column Operations', () => {
   test.describe('Hide Column', () => {
-    // BUG: Hidden data columns don't appear in Insert Before/After menus
-    // Only system fields are shown, but hidden user data fields are missing
-    // Expected: When 'name' column is hidden, it should appear in "Data fields" section
-    // Actual: Only "System fields" section is shown with createdAt, updatedAt, etc.
-    test.skip('hidden column appears in insert before menu', async ({ page }) => {
+    test('hidden column appears in insert before menu', async ({ page }) => {
       await setupMocks(page, {
         viewsResponse: createViewsResponse({
           columns: [
@@ -160,8 +156,7 @@ test.describe('Column Operations', () => {
       await expect(submenu.getByText('name', { exact: true })).toBeVisible()
     })
 
-    // BUG: Same issue as above - hidden data columns don't appear in Insert After menu
-    test.skip('hidden column appears in insert after menu', async ({ page }) => {
+    test('hidden column appears in insert after menu', async ({ page }) => {
       await setupMocks(page, {
         viewsResponse: createViewsResponse({
           columns: [

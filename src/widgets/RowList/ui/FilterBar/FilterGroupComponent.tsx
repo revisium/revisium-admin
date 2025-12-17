@@ -64,8 +64,13 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
           </Box>
         )}
 
-        {group.conditions.map((condition) => (
-          <FilterConditionRow key={condition.id} filterModel={filterModel} condition={condition} />
+        {group.conditions.map((condition, index) => (
+          <FilterConditionRow
+            key={condition.id}
+            filterModel={filterModel}
+            condition={condition}
+            testId={isRoot ? `filter-condition-${index}` : undefined}
+          />
         ))}
 
         {group.groups.map((nestedGroup) => (
@@ -80,6 +85,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
             variant="ghost"
             onClick={handleAddCondition}
             disabled={filterModel.availableFields.length === 0}
+            data-testid={isRoot ? 'filter-add-condition' : undefined}
           >
             <LuPlus />
             Add condition
@@ -90,6 +96,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
               variant="ghost"
               onClick={handleAddGroup}
               disabled={filterModel.availableFields.length === 0}
+              data-testid="filter-add-group"
             >
               <LuPlus />
               Add group

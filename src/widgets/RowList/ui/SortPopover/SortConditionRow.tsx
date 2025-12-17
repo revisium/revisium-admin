@@ -13,6 +13,7 @@ interface SortConditionRowProps {
   onFieldChange: (nodeId: string, newNodeId: string) => void
   onDirectionChange: (nodeId: string, direction: SortDirection) => void
   onRemove: (nodeId: string) => void
+  testId?: string
 }
 
 export const SortConditionRow: FC<SortConditionRowProps> = observer(
@@ -32,7 +33,7 @@ export const SortConditionRow: FC<SortConditionRowProps> = observer(
     const handleRemove = () => onRemove(sort.id)
 
     return (
-      <Box display="flex" alignItems="center" gap={2} py={1}>
+      <Box display="flex" alignItems="center" gap={2} py={1} data-testid={`sort-condition-${index}`}>
         <Text fontSize="xs" color="gray.400" fontWeight="medium" minW="16px">
           {index + 1}.
         </Text>

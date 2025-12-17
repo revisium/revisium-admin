@@ -26,7 +26,15 @@ export const CellsRow: FC<CellsRowProps> = observer(({ row, columnsModel, revisi
       {columnsModel.columns.map((column) => {
         if (column.isSystemColumn && column.systemFieldId) {
           const value = row.getSystemFieldValue(column.systemFieldId)
-          return <SystemFieldCell key={column.id} value={value} fieldType={column.fieldType} />
+          return (
+            <SystemFieldCell
+              key={column.id}
+              value={value}
+              fieldType={column.fieldType}
+              rowId={row.id}
+              fieldName={column.name}
+            />
+          )
         }
 
         const cellVM = row.getCellViewModel(column.id)

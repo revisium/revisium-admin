@@ -7,12 +7,15 @@ import { FilterFieldType } from '../../model/filterTypes'
 interface SystemFieldCellProps {
   value: string | null
   fieldType: FilterFieldType | null
+  rowId?: string
+  fieldName?: string
 }
 
-export const SystemFieldCell: FC<SystemFieldCellProps> = ({ value, fieldType }) => {
+export const SystemFieldCell: FC<SystemFieldCellProps> = ({ value, fieldType, rowId, fieldName }) => {
   const displayValue = formatValue(value, fieldType)
   const isDateTime = fieldType === FilterFieldType.DateTime
   const showTooltip = isDateTime && value !== null && value !== ''
+  const testId = rowId && fieldName ? `cell-${rowId}-${fieldName}` : undefined
 
   const content = (
     <Box
@@ -28,6 +31,7 @@ export const SystemFieldCell: FC<SystemFieldCellProps> = ({ value, fieldType }) 
       position="relative"
       cursor="default"
       color="gray.500"
+      data-testid={testId}
     >
       <Box display="flex" alignItems="center" height="100%" width="100%" minWidth={0}>
         <Text whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" fontWeight="300" flex={1} minWidth={0}>

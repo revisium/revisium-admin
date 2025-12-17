@@ -16,9 +16,10 @@ import { FilterValueInput } from './FilterValueInput'
 interface FilterConditionRowProps {
   filterModel: FilterModel
   condition: FilterCondition
+  testId?: string
 }
 
-export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filterModel, condition }) => {
+export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filterModel, condition, testId }) => {
   const selectedField = filterModel.allFields.find((f) => f.name === condition.field)
   const showValueInput = operatorRequiresValue(condition.operator, condition.fieldType)
   const error = filterModel.getErrorForCondition(condition.id)
@@ -44,7 +45,7 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
   const handleRemove = () => filterModel.removeCondition(condition.id)
 
   return (
-    <Box>
+    <Box data-testid={testId}>
       <Box display="flex" alignItems="center" gap={2} py={1}>
         <FilterFieldSelect
           selectedField={selectedField}

@@ -109,6 +109,7 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
       minWidth={`${width}px`}
       backgroundColor="white"
       position="relative"
+      data-testid={`column-header-${column.name}`}
     >
       <Menu.Root positioning={{ placement: 'bottom-end' }} lazyMount unmountOnExit>
         <Menu.Trigger asChild>

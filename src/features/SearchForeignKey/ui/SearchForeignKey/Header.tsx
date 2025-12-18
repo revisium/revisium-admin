@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export const Header: FC<HeaderProps> = ({ tableId, onClose }) => {
   return (
-    <Flex p="4px" align="center" justify="space-between">
+    <Flex p="4px" align="center" justify="space-between" data-testid="fk-header">
       <Text color="gray.600" fontWeight="medium">
         Select from "{tableId}"
       </Text>

@@ -20,9 +20,11 @@ function createTableWithSchema(tableId: string, schema: object) {
     data: {
       table: {
         __typename: 'TableModel',
+        createdId: tableId,
         id: tableId,
         versionId: `${tableId}-v1`,
         readonly: false,
+        count: 0,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         schema,
@@ -44,7 +46,7 @@ async function setupMocks(
     type: 'object',
     properties: {
       name: { type: 'string', default: '' },
-      age: { type: 'integer', default: 0 },
+      age: { type: 'number', default: 0 },
       active: { type: 'boolean', default: false },
     },
     additionalProperties: false,
@@ -84,18 +86,19 @@ async function setupMocks(
       })
     }
 
-    if (opName === 'UpdateRow') {
+    if (opName === 'UpdateRow' || opName === 'PatchRowInline') {
+      const data = body.variables?.data || {}
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           data: {
-            updateRow: {
+            [opName === 'PatchRowInline' ? 'patchRow' : 'updateRow']: {
               __typename: 'RowModel',
-              id: body.variables?.data?.rowId || 'row-1',
+              id: data.rowId || 'row-1',
               versionId: 'row-1-v2',
               readonly: false,
-              data: body.variables?.data?.data || {},
+              data: data.data || {},
               createdAt: '2024-01-01T00:00:00Z',
               updatedAt: new Date().toISOString(),
             },
@@ -120,7 +123,7 @@ async function setupMocks(
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID),
+      TablesMst: createTablesResponse(TABLE_ID, schema),
       RowsMst: createRowsResponse(rows),
       RowListRows: createRowsResponse(rows),
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
@@ -170,8 +173,7 @@ test.describe('Cell Editors', () => {
       await expect(input).toHaveValue('Hello World')
     })
 
-    test.skip('can clear and type new string value', async ({ page }) => {
-      // Skipped: save doesn't update cell without proper mock response
+    test('can clear and type new string value', async ({ page }) => {
       await setupMocks(page, {
         schema: {
           type: 'object',
@@ -223,14 +225,13 @@ test.describe('Cell Editors', () => {
     })
   })
 
-  test.describe.skip('Number Editor', () => {
-    // Skipped: number editor input selector needs investigation
-    test('renders number input for integer field', async ({ page }) => {
+  test.describe('Number Editor', () => {
+    test('renders number input for number field', async ({ page }) => {
       await setupMocks(page, {
         schema: {
           type: 'object',
           properties: {
-            count: { type: 'integer', default: 0 },
+            count: { type: 'number', default: 0 },
           },
           additionalProperties: false,
           required: ['count'],
@@ -244,7 +245,7 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-count')
       await cell.dblclick()
 
-      const input = cell.locator('input')
+      const input = page.locator('input:focus, textarea:focus')
       await expect(input).toBeVisible()
       await expect(input).toHaveValue('42')
     })
@@ -254,7 +255,7 @@ test.describe('Cell Editors', () => {
         schema: {
           type: 'object',
           properties: {
-            count: { type: 'integer', default: 0 },
+            count: { type: 'number', default: 0 },
           },
           additionalProperties: false,
           required: ['count'],
@@ -268,7 +269,7 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-count')
       await cell.dblclick()
 
-      const input = cell.locator('input')
+      const input = page.locator('input:focus, textarea:focus')
       await input.clear()
       await input.fill('99')
       await input.press('Enter')
@@ -296,8 +297,7 @@ test.describe('Cell Editors', () => {
     })
   })
 
-  test.describe.skip('Boolean Editor', () => {
-    // Skipped: boolean editor needs investigation
+  test.describe('Boolean Editor', () => {
     test('shows true/false toggle for boolean field', async ({ page }) => {
       await setupMocks(page, {
         schema: {
@@ -374,7 +374,7 @@ test.describe('Cell Editors', () => {
   })
 
   test.describe.skip('Array Editor', () => {
-    // Skipped: array editor needs investigation
+    // Skip: array columns don't show column headers - needs UI implementation
     test('displays array values', async ({ page }) => {
       await setupMocks(page, {
         schema: {
@@ -424,7 +424,7 @@ test.describe('Cell Editors', () => {
   })
 
   test.describe.skip('Object Editor', () => {
-    // Skipped: object editor needs investigation
+    // Skip: object columns don't show column headers - needs UI implementation
     test('displays nested object values', async ({ page }) => {
       await setupMocks(page, {
         schema: {
@@ -479,14 +479,13 @@ test.describe('Cell Editors', () => {
     })
   })
 
-  test.describe.skip('File Editor', () => {
-    // Skipped: file editor needs investigation
+  test.describe('File Editor', () => {
     test('displays file field', async ({ page }) => {
       await setupMocks(page, {
         schema: {
           type: 'object',
           properties: {
-            avatar: { $ref: 'File' },
+            avatar: { $ref: 'urn:jsonschema:io:revisium:file-schema:1.0.0' },
           },
           additionalProperties: false,
           required: ['avatar'],
@@ -521,7 +520,7 @@ test.describe('Cell Editors', () => {
         schema: {
           type: 'object',
           properties: {
-            document: { $ref: 'File' },
+            document: { $ref: 'urn:jsonschema:io:revisium:file-schema:1.0.0' },
           },
           additionalProperties: false,
           required: ['document'],
@@ -547,8 +546,7 @@ test.describe('Cell Editors', () => {
     })
   })
 
-  test.describe.skip('Foreign Key Editor', () => {
-    // Skipped: foreign key editor needs investigation
+  test.describe('Foreign Key Editor', () => {
     async function setupForeignKeyMocks(
       page: Page,
       options: {
@@ -654,18 +652,20 @@ test.describe('Cell Editors', () => {
           })
         }
 
-        if (opName === 'UpdateRow') {
+        if (opName === 'UpdateRow' || opName === 'PatchRowInline') {
+          const variables = body.variables?.data || {}
+          const rowData = variables.data || {}
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
               data: {
-                updateRow: {
+                [opName === 'PatchRowInline' ? 'patchRow' : 'updateRow']: {
                   __typename: 'RowModel',
-                  id: body.variables?.data?.rowId || 'row-1',
+                  id: variables.rowId || 'row-1',
                   versionId: 'row-1-v2',
                   readonly: false,
-                  data: body.variables?.data?.data || {},
+                  data: rowData,
                   createdAt: '2024-01-01T00:00:00Z',
                   updatedAt: new Date().toISOString(),
                 },
@@ -690,7 +690,7 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
+          TablesMst: createTablesResponse(TABLE_ID, schema),
           RowsMst: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
@@ -752,10 +752,10 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-categoryId')
       await cell.dblclick()
 
-      // Wait for options to load
-      await expect(page.getByText('cat-1')).toBeVisible()
-      await expect(page.getByText('cat-2')).toBeVisible()
-      await expect(page.getByText('cat-3')).toBeVisible()
+      // Wait for options to load using data-testid
+      await expect(page.getByTestId('fk-option-cat-1')).toBeVisible()
+      await expect(page.getByTestId('fk-option-cat-2')).toBeVisible()
+      await expect(page.getByTestId('fk-option-cat-3')).toBeVisible()
     })
 
     test('can select a different foreign key value', async ({ page }) => {
@@ -767,8 +767,8 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-categoryId')
       await cell.dblclick()
 
-      // Wait for options to load and select different value
-      await page.getByText('cat-2').click()
+      // Wait for options to load and select different value using data-testid
+      await page.getByTestId('fk-option-cat-2').click()
 
       // Cell should now show new value
       await expect(cell).toContainText('cat-2')
@@ -790,17 +790,17 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-categoryId')
       await cell.dblclick()
 
-      // Wait for picker to load
-      await expect(page.getByText('electronics')).toBeVisible()
+      // Wait for picker to load using data-testid
+      await expect(page.getByTestId('fk-option-electronics')).toBeVisible()
 
-      // Type in search field
-      const searchInput = page.getByPlaceholder('Search...')
-      if (await searchInput.isVisible()) {
-        await searchInput.fill('book')
+      // Type in search field using data-testid
+      const searchInput = page.getByTestId('fk-search-input')
+      await searchInput.fill('book')
 
-        // Should filter results (waits for debounce automatically)
-        await expect(page.getByText('books')).toBeVisible()
-      }
+      // Should filter results - only books should be visible
+      await expect(page.getByTestId('fk-option-books')).toBeVisible()
+      await expect(page.getByTestId('fk-option-electronics')).not.toBeVisible()
+      await expect(page.getByTestId('fk-option-clothing')).not.toBeVisible()
     })
 
     test('displays empty foreign key field placeholder', async ({ page }) => {
@@ -847,29 +847,22 @@ test.describe('Cell Editors', () => {
       const cell = page.getByTestId('cell-row-1-categoryId')
       await cell.dblclick()
 
-      const searchInput = page.getByPlaceholder('Search...')
-      if (await searchInput.isVisible()) {
-        await searchInput.fill('nonexistent')
+      // Wait for picker to load
+      await expect(page.getByTestId('fk-option-cat-1')).toBeVisible()
 
-        // Should show no results message (waits for debounce automatically)
-        await expect(page.getByText('No results found')).toBeVisible()
-      }
+      // Type in search field using data-testid
+      const searchInput = page.getByTestId('fk-search-input')
+      await searchInput.fill('nonexistent')
+
+      // Should show no results message using data-testid
+      await expect(page.getByTestId('fk-not-found')).toBeVisible()
     })
   })
 
-  test.describe.skip('Null Values', () => {
-    // Skipped: null values handling needs investigation
+  test.describe('Null Values', () => {
     test('handles null string value', async ({ page }) => {
       await setupMocks(page, {
-        schema: {
-          type: 'object',
-          properties: {
-            name: { type: 'string', default: '' },
-          },
-          additionalProperties: false,
-          required: ['name'],
-        },
-        rows: [{ id: 'row-1', data: { name: '' } }],
+        rows: [{ id: 'row-1', data: { name: '', age: 0, active: false } }],
       })
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
@@ -881,21 +874,13 @@ test.describe('Cell Editors', () => {
 
     test('handles null number value', async ({ page }) => {
       await setupMocks(page, {
-        schema: {
-          type: 'object',
-          properties: {
-            count: { type: 'integer', default: 0 },
-          },
-          additionalProperties: false,
-          required: ['count'],
-        },
-        rows: [{ id: 'row-1', data: { count: 0 } }],
+        rows: [{ id: 'row-1', data: { name: '', age: 0, active: false } }],
       })
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
-      await expect(page.getByTestId('column-header-count')).toBeVisible()
+      await expect(page.getByTestId('column-header-age')).toBeVisible()
 
-      const cell = page.getByTestId('cell-row-1-count')
+      const cell = page.getByTestId('cell-row-1-age')
       await expect(cell).toContainText('0')
     })
   })
@@ -907,7 +892,7 @@ test.describe('Cell Editors', () => {
         schema: {
           type: 'object',
           properties: {
-            count: { type: 'integer', default: 0 },
+            count: { type: 'number', default: 0 },
           },
           additionalProperties: false,
           required: ['count'],
@@ -928,9 +913,9 @@ test.describe('Cell Editors', () => {
     })
   })
 
-  test.describe.skip('Save State', () => {
-    // Skipped: save state needs investigation
-    test('cell shows spinner during slow save', { timeout: 10000 }, async ({ page }) => {
+  test.describe('Save State', () => {
+    test.skip('cell shows spinner during slow save', { timeout: 10000 }, async ({ page }) => {
+      // Skip: spinner element selector needs verification
       await setupAuth(page)
 
       const schema = {
@@ -1012,7 +997,7 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
+          TablesMst: createTablesResponse(TABLE_ID, schema),
           RowsMst: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
@@ -1121,7 +1106,7 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
+          TablesMst: createTablesResponse(TABLE_ID, schema),
           RowsMst: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
@@ -1230,7 +1215,7 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
+          TablesMst: createTablesResponse(TABLE_ID, schema),
           RowsMst: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },

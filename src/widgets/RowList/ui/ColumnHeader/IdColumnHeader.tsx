@@ -99,7 +99,7 @@ export const IdColumnHeader: FC<IdColumnHeaderProps> = observer(
             </Menu.Positioner>
           </Portal>
         </Menu.Root>
-        <ColumnResizer isResizing={isResizing} onMouseDown={onResizeMouseDown} />
+        <ColumnResizer columnName="id" isResizing={isResizing} onMouseDown={onResizeMouseDown} />
         {filterModel && idFilterField && (
           <AddFilterPopover
             field={idFilterField}

@@ -3,8 +3,7 @@ import { createRowsResponse, createSampleRows } from '../fixtures/full-fixtures'
 import { setupTablePageMocks, getTablePageUrl } from '../helpers/table-page-setup'
 
 test.describe('Error Handling', () => {
-  test.describe.skip('Network Errors', () => {
-    // Skipped: network error handling needs investigation
+  test.describe('Network Errors', () => {
     test('shows error or empty state when API request fails', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
@@ -44,18 +43,12 @@ test.describe('Error Handling', () => {
 
       await page.goto(getTablePageUrl())
 
-      // Page should handle error gracefully without crashing
-      await expect(
-        page
-          .getByText(/error/i)
-          .or(page.getByText(/failed/i))
-          .or(page.getByTestId('column-header-name')),
-      ).toBeVisible()
+      // Page should handle error gracefully - shows toast with error message
+      await expect(page.getByText('Internal server error')).toBeVisible()
     })
   })
 
-  test.describe.skip('GraphQL Errors', () => {
-    // Skipped: GraphQL error handling needs investigation
+  test.describe('GraphQL Errors', () => {
     test('handles GraphQL error in response', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
@@ -76,18 +69,12 @@ test.describe('Error Handling', () => {
 
       await page.goto(getTablePageUrl())
 
-      // Should display error or handle gracefully
-      await expect(
-        page
-          .getByText(/permission/i)
-          .or(page.getByText(/error/i))
-          .or(page.getByTestId('column-header-name')),
-      ).toBeVisible()
+      // Should display error toast
+      await expect(page.getByText('Permission denied')).toBeVisible()
     })
   })
 
-  test.describe.skip('Update Errors', () => {
-    // Skipped: update error handling needs investigation
+  test.describe('Update Errors', () => {
     test('shows error state when row update fails', async ({ page }) => {
       const rows = createSampleRows(3)
 
@@ -119,13 +106,8 @@ test.describe('Error Handling', () => {
       await input.fill('New Value')
       await input.press('Enter')
 
-      // Cell should show error state (red outline) or error message
-      await expect(
-        cell
-          .filter({ has: page.locator('[data-error="true"]') })
-          .or(page.getByText(/error/i))
-          .or(cell),
-      ).toBeVisible()
+      // Should show error toast
+      await expect(page.getByText('Validation error: Name cannot be empty')).toBeVisible()
     })
 
     test('shows error when delete fails', async ({ page }) => {
@@ -195,9 +177,9 @@ test.describe('Error Handling', () => {
     })
   })
 
-  test.describe.skip('Recovery', () => {
-    // Skipped: recovery handling needs investigation
-    test('can retry after error by reloading', async ({ page }) => {
+  test.describe('Recovery', () => {
+    test.skip('can retry after error by reloading', async ({ page }) => {
+      // Skip: Mock state (requestCount) doesn't behave correctly across page reload
       let requestCount = 0
 
       await setupTablePageMocks(page, {

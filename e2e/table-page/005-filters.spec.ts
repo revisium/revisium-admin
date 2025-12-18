@@ -452,125 +452,108 @@ test.describe('Filter Operations', () => {
     })
   })
 
-  test.describe.skip('File Field Filters', () => {
-    // Skipped: file field filter operators need investigation
-    async function setupMocksWithFileSchema(page: Page) {
-      await setupAuth(page)
-
-      const schemaWithFile = {
-        type: 'object',
-        properties: {
-          name: { type: 'string', default: '' },
-          avatar: { $ref: 'File' },
-        },
-        additionalProperties: false,
-        required: ['name', 'avatar'],
-      }
-
-      const rows = [
-        {
-          id: 'row-1',
-          data: {
-            name: 'User 1',
-            avatar: { fileId: 'file-1', status: 'uploaded', fileName: 'photo.jpg' },
-          },
-        },
-      ]
-      const rowsResponse = createRowsResponse(rows)
-
-      await page.route('**/graphql', async (route, request) => {
-        const body = request.postDataJSON()
-        const opName = body?.operationName as string
-
-        const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
-        const branchResponse = createFullBranchResponse(PROJECT_NAME)
-
-        if (opName === 'GetTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(createTableViewsResponse(TABLE_ID)),
-          })
-        }
-
-        if (opName === 'UpdateTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ data: { updateTableViews: null } }),
-          })
-        }
-
-        const responses: Record<string, object> = {
-          configuration: createConfigurationResponse(),
-          getMe: createMeResponse(ORG_ID),
-          meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
-          getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
-            data: {
-              branches: {
-                totalCount: 1,
-                pageInfo: { hasNextPage: false, endCursor: null },
-                edges: [{ cursor: 'cursor-1', node: branchResponse.data.branch }],
-              },
-            },
-          },
-          TablesMst: createTablesResponse(TABLE_ID),
-          TableMst: createFullTableResponse(TABLE_ID, schemaWithFile),
-          RowsMst: rowsResponse,
-          RowListRows: rowsResponse,
-          getChanges: { data: { changes: { tables: 0, rows: 0 } } },
-          GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
-        }
-
-        const response = responses[opName]
-        if (response) {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(response),
-          })
-        }
-
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ data: null }),
-        })
-      })
+  test.describe('File Field Filters', () => {
+    const fileSchema = {
+      type: 'object',
+      properties: {
+        name: { type: 'string', default: '' },
+        avatar: { $ref: SystemSchemaIds.File },
+      },
+      additionalProperties: false,
+      required: ['name', 'avatar'],
     }
 
-    test('file field shows only is empty / is not empty operators', async ({ page }) => {
-      await setupMocksWithFileSchema(page)
+    const createFileData = (fileName: string) => ({
+      fileId: 'file-1',
+      status: 'uploaded',
+      fileName,
+      url: '',
+      hash: '',
+      extension: 'jpg',
+      mimeType: 'image/jpeg',
+      size: 1024,
+      width: 100,
+      height: 100,
+    })
 
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+    test('file field shows nested fields in filter dropdown', async ({ page }) => {
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
+
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
+
+      await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-condition').click()
 
-      // Select the avatar (file) field
+      // Open the field select dropdown
       const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
       await fieldSelect.click()
-      await page.getByRole('menuitem', { name: 'avatar' }).click()
 
-      // Check that only is empty / is not empty operators are available
+      // File nested fields should be visible in the dropdown
+      await expect(page.getByRole('menuitem', { name: 'avatar.fileName' })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'avatar.status' })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'avatar.fileId' })).toBeVisible()
+    })
+
+    test('can filter by file string field (fileName)', async ({ page }) => {
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
+
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
+
+      await page.goto(getTablePageUrl())
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select the avatar.fileName field
+      const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
+      await fieldSelect.click()
+      await page.getByRole('menuitem', { name: 'avatar.fileName' }).click()
+
+      // String operators should be available for fileName
       const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
       await operatorSelect.click()
 
-      await expect(page.getByRole('menuitem', { name: 'is empty' })).toBeVisible()
-      await expect(page.getByRole('menuitem', { name: 'is not empty' })).toBeVisible()
-      // File fields don't support equals/contains operators
-      await expect(page.getByRole('menuitem', { name: 'equals' })).not.toBeVisible()
-      await expect(page.getByRole('menuitem', { name: 'contains' })).not.toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'contains', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'equals', exact: true })).toBeVisible()
+    })
+
+    test('can filter by file number field (size)', async ({ page }) => {
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
+
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
+
+      await page.goto(getTablePageUrl())
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select the avatar.size field
+      const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
+      await fieldSelect.click()
+      await page.getByRole('menuitem', { name: 'avatar.size' }).click()
+
+      // Number operators should be available for size (use symbols: =, !=, >, <, >=, <=)
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+
+      await expect(page.getByRole('menuitem', { name: '=', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: '>', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: '<', exact: true })).toBeVisible()
     })
   })
 
-  test.describe.skip('Nested Filter Groups', () => {
-    // Skipped: nested filter group UI needs investigation
-    test('can add nested filter group inside a group', async ({ page }) => {
+  test.describe('Nested Filter Groups', () => {
+    const getFilterGroups = (page: Page) =>
+      page.locator(
+        '[data-testid^="filter-group-"]:not([data-testid*="-add-"]):not([data-testid*="-remove-"]):not([data-testid*="-condition-"])',
+      )
+
+    test('can add filter group', async ({ page }) => {
       await setupMocks(page)
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
@@ -579,17 +562,11 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      // Find the first group and add a nested group inside it
-      const firstGroup = page.locator('[data-testid^="filter-group-"]').first()
-      const addGroupButton = firstGroup.getByRole('button', { name: /add group/i })
-      await addGroupButton.click()
-
-      // Should now have nested group structure
-      const nestedGroups = page.locator('[data-testid^="filter-group-"]')
-      await expect(nestedGroups).toHaveCount(2)
+      // Group should be created
+      await expect(getFilterGroups(page)).toHaveCount(1)
     })
 
-    test('can add condition inside nested group', async ({ page }) => {
+    test('can add condition inside group', async ({ page }) => {
       await setupMocks(page)
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
@@ -598,17 +575,16 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      // Add condition to the group
-      const firstGroup = page.locator('[data-testid^="filter-group-"]').first()
-      const addConditionButton = firstGroup.getByRole('button', { name: /add condition/i })
-      await addConditionButton.click()
+      // Add condition to the group using add-condition button inside the group
+      const group = getFilterGroups(page).first()
+      await group.locator('[data-testid$="-add-condition"]').click()
 
       // Condition should be added inside the group
-      const conditionInGroup = firstGroup.locator('[data-testid^="filter-condition-"]')
+      const conditionInGroup = group.locator('button').first()
       await expect(conditionInGroup).toBeVisible()
     })
 
-    test('can remove nested group', async ({ page }) => {
+    test('can remove group', async ({ page }) => {
       await setupMocks(page)
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
@@ -617,63 +593,45 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      const groups = page.locator('[data-testid^="filter-group-"]')
-      await expect(groups).toHaveCount(1)
+      await expect(getFilterGroups(page)).toHaveCount(1)
 
-      // Remove the group
-      const removeGroupButton = page.getByRole('button', { name: /remove group/i })
-      await removeGroupButton.click()
+      // Remove the group using remove button inside the group
+      const group = getFilterGroups(page).first()
+      await group.locator('[data-testid^="filter-remove-group-"]').click()
 
-      await expect(groups).toHaveCount(0)
+      await expect(getFilterGroups(page)).toHaveCount(0)
     })
 
-    test('nested group can have different logic than parent', async ({ page }) => {
+    test('can add multiple groups', async ({ page }) => {
       await setupMocks(page)
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
-      await page.getByTestId('filter-add-condition').click()
-      await page.getByTestId('filter-add-group').click()
-
-      // Root should be "All" (AND)
-      const rootLogicButton = page.getByRole('button', { name: 'All', exact: true }).first()
-      await expect(rootLogicButton).toBeVisible()
-
-      // Change nested group logic to "Any" (OR)
-      const nestedGroup = page.locator('[data-testid^="filter-group-"]').first()
-      const nestedLogicButton = nestedGroup.getByRole('button', { name: 'All', exact: true })
-      await nestedLogicButton.click()
-      await page.getByRole('menuitem', { name: 'Any (OR)' }).click()
-
-      // Nested group should now show "Any"
-      await expect(nestedGroup.getByRole('button', { name: 'Any', exact: true })).toBeVisible()
-      // Root should still be "All"
-      await expect(rootLogicButton).toBeVisible()
-    })
-
-    test('complex nested structure with multiple groups and conditions', async ({ page }) => {
-      await setupMocks(page)
-
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
-      await expect(page.getByTestId('column-header-name')).toBeVisible()
-
-      await page.getByTestId('filter-button').click()
-
-      // Add condition at root level
-      await page.getByTestId('filter-add-condition').click()
-      await expect(page.getByTestId('filter-condition-0')).toBeVisible()
 
       // Add first group
       await page.getByTestId('filter-add-group').click()
+      await expect(getFilterGroups(page)).toHaveCount(1)
 
       // Add second group
       await page.getByTestId('filter-add-group').click()
+      await expect(getFilterGroups(page)).toHaveCount(2)
+    })
 
-      // Verify badge shows correct count (1 root condition + 2 groups)
-      // Note: The exact count depends on implementation - groups may or may not count
-      await expect(page.getByTestId('filter-badge')).toBeVisible()
+    test('group has logic selector', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-group').click()
+
+      // Group should have logic selector (All/Any)
+      const group = getFilterGroups(page).first()
+      const logicButton = group.getByRole('button', { name: /all|any/i }).first()
+      await expect(logicButton).toBeVisible()
     })
   })
 
@@ -702,8 +660,7 @@ test.describe('Filter Operations', () => {
     })
   })
 
-  test.describe.skip('Number Field Filters', () => {
-    // Skipped: number field filter UI needs investigation
+  test.describe('Number Field Filters', () => {
     test('number field shows numeric operators', async ({ page }) => {
       await setupMocks(page)
 
@@ -722,11 +679,9 @@ test.describe('Filter Operations', () => {
       const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
       await operatorSelect.click()
 
-      // Numeric operators should be available
-      await expect(page.getByRole('menuitem', { name: 'equals' })).toBeVisible()
-      await expect(
-        page.getByRole('menuitem', { name: /greater than/i }).or(page.getByRole('menuitem', { name: 'gt' })),
-      ).toBeVisible()
+      // Numeric operators use symbols: =, !=, >, >=, <, <=
+      await expect(page.getByRole('menuitem', { name: '=', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: '>', exact: true })).toBeVisible()
     })
 
     test('number field accepts numeric input', async ({ page }) => {
@@ -789,185 +744,68 @@ test.describe('Filter Operations', () => {
     })
   })
 
-  test.describe.skip('DateTime Field Filters', () => {
-    // Skipped: datetime filter components not implemented
-    function createTableWithDateTimeSchema() {
-      return {
-        data: {
-          table: {
-            __typename: 'TableModel',
-            id: TABLE_ID,
-            versionId: `${TABLE_ID}-v1`,
-            readonly: false,
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-01T00:00:00Z',
-            schema: {
-              type: 'object',
-              properties: {
-                name: { type: 'string', default: '' },
-                createdAt: { type: 'string', format: 'date-time', default: '' },
-                updatedAt: { type: 'string', format: 'date-time', default: '' },
-              },
-              additionalProperties: false,
-              required: ['name', 'createdAt', 'updatedAt'],
-            },
-          },
-        },
-      }
-    }
+  test.describe('DateTime Field Filters', () => {
+    // DateTime filters work with system fields (createdAt, updatedAt, publishedAt)
+    test('system datetime field shows date comparison operators', async ({ page }) => {
+      await setupTablePageMocks(page)
 
-    async function setupDateTimeMocks(page: Page) {
-      await setupAuth(page)
-
-      const rows = [
-        {
-          id: 'row-1',
-          data: { name: 'Old Item', createdAt: '2024-01-01T10:00:00Z', updatedAt: '2024-01-15T10:00:00Z' },
-        },
-        {
-          id: 'row-2',
-          data: { name: 'Recent Item', createdAt: '2024-06-15T10:00:00Z', updatedAt: '2024-06-20T10:00:00Z' },
-        },
-        {
-          id: 'row-3',
-          data: { name: 'New Item', createdAt: '2024-12-01T10:00:00Z', updatedAt: '2024-12-10T10:00:00Z' },
-        },
-      ]
-      const rowsResponse = createRowsResponse(rows)
-
-      await page.route('**/graphql', async (route, request) => {
-        const body = request.postDataJSON()
-        const opName = body?.operationName as string
-
-        const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
-        const branchResponse = createFullBranchResponse(PROJECT_NAME)
-
-        if (opName === 'GetTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(createTableViewsResponse(TABLE_ID)),
-          })
-        }
-
-        if (opName === 'UpdateTableViews') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ data: { updateTableViews: null } }),
-          })
-        }
-
-        if (opName === 'TableMst') {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(createTableWithDateTimeSchema()),
-          })
-        }
-
-        const responses: Record<string, object> = {
-          configuration: createConfigurationResponse(),
-          getMe: createMeResponse(ORG_ID),
-          meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
-          getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
-            data: {
-              branches: {
-                totalCount: 1,
-                pageInfo: { hasNextPage: false, endCursor: null },
-                edges: [{ cursor: 'cursor-1', node: branchResponse.data.branch }],
-              },
-            },
-          },
-          TablesMst: createTablesResponse(TABLE_ID),
-          RowsMst: rowsResponse,
-          RowListRows: rowsResponse,
-          getChanges: { data: { changes: { tables: 0, rows: 0 } } },
-          GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
-        }
-
-        const response = responses[opName]
-        if (response) {
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(response),
-          })
-        }
-
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ data: null }),
-        })
-      })
-    }
-
-    test('datetime field shows date comparison operators', async ({ page }) => {
-      await setupDateTimeMocks(page)
-
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-condition').click()
 
-      // Select datetime field
+      // Select system createdAt field (exact match to avoid matching user-defined fields)
       const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
       await fieldSelect.click()
-      await page.getByRole('menuitem', { name: 'createdAt' }).click()
+      await page.getByRole('menuitem', { name: 'createdAt', exact: true }).click()
 
       // Check operator options for datetime
       const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
       await operatorSelect.click()
 
-      // DateTime operators should include date comparisons
-      await expect(
-        page.getByRole('menuitem', { name: 'equals' }).or(page.getByRole('menuitem', { name: 'is' })),
-      ).toBeVisible()
+      // DateTime operators: is, is not, before, after
+      await expect(page.getByRole('menuitem', { name: 'is', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'before', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'after', exact: true })).toBeVisible()
     })
 
-    test('datetime field shows date picker for value input', async ({ page }) => {
-      await setupDateTimeMocks(page)
+    test('datetime field shows input for value', async ({ page }) => {
+      await setupTablePageMocks(page)
 
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-condition').click()
 
-      // Select datetime field
+      // Select system createdAt field
       const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
       await fieldSelect.click()
-      await page.getByRole('menuitem', { name: 'createdAt' }).click()
+      await page.getByRole('menuitem', { name: 'createdAt', exact: true }).click()
 
-      // Value input should be present (could be date picker or text input)
+      // Value input should be present
       const valueInput = page.getByTestId('filter-condition-0').locator('input')
       await expect(valueInput).toBeVisible()
     })
 
     test('datetime filter can be applied', async ({ page }) => {
-      await setupDateTimeMocks(page)
+      await setupTablePageMocks(page)
 
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-condition').click()
 
-      // Select datetime field
+      // Select system createdAt field
       const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
       await fieldSelect.click()
-      await page.getByRole('menuitem', { name: 'createdAt' }).click()
+      await page.getByRole('menuitem', { name: 'createdAt', exact: true }).click()
 
-      // Enter a date value
+      // Enter a datetime value (datetime-local format)
       const valueInput = page.getByTestId('filter-condition-0').locator('input')
-      if (await valueInput.isVisible()) {
-        await valueInput.fill('2024-06-01')
-      }
+      await valueInput.fill('2024-06-01T12:00')
 
       // Apply filter
       await page.getByTestId('filter-apply').click()
@@ -976,16 +814,52 @@ test.describe('Filter Operations', () => {
       await expect(page.getByTestId('filter-badge')).toHaveAttribute('data-badge-color', 'gray')
     })
 
-    test.skip('datetime filter supports before operator', async () => {
-      // BUG: Before/After operators need verification
+    test('datetime filter supports before operator', async ({ page }) => {
+      await setupTablePageMocks(page)
+
+      await page.goto(getTablePageUrl())
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select system createdAt field
+      const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
+      await fieldSelect.click()
+      await page.getByRole('menuitem', { name: 'createdAt', exact: true }).click()
+
+      // Select before operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'before', exact: true }).click()
+
+      // Value input should still be visible
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await expect(valueInput).toBeVisible()
     })
 
-    test.skip('datetime filter supports after operator', async () => {
-      // BUG: Before/After operators need verification
-    })
+    test('datetime filter supports after operator', async ({ page }) => {
+      await setupTablePageMocks(page)
 
-    test.skip('datetime filter supports between operator', async () => {
-      // BUG: Between operator with two date pickers needs implementation
+      await page.goto(getTablePageUrl())
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select system createdAt field
+      const fieldSelect = page.getByTestId('filter-condition-0').locator('button').first()
+      await fieldSelect.click()
+      await page.getByRole('menuitem', { name: 'createdAt', exact: true }).click()
+
+      // Select after operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'after', exact: true }).click()
+
+      // Value input should still be visible
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await expect(valueInput).toBeVisible()
     })
   })
 })

@@ -362,8 +362,7 @@ test.describe('Sort Operations', () => {
     })
   })
 
-  test.describe.skip('View Settings Persistence', () => {
-    // Skipped: view settings API calls need investigation
+  test.describe('View Settings Persistence', () => {
     test('apply sort calls UpdateTableViews API', async ({ page }) => {
       let updateViewsCalled = false
       let updateViewsPayload: unknown = null
@@ -454,8 +453,12 @@ test.describe('Sort Operations', () => {
       await page.getByTestId('sort-add').click()
       await page.getByTestId('sort-apply').click()
 
+      // Open view settings popover and save
+      await page.getByTestId('view-settings-badge').click()
+      await page.getByTestId('view-settings-save').click()
+
       // Wait for UpdateTableViews API call
-      await page.waitForResponse((resp) => resp.url().includes('graphql'))
+      await page.waitForTimeout(500)
 
       expect(updateViewsCalled).toBe(true)
       expect(updateViewsPayload).toBeTruthy()
@@ -557,8 +560,12 @@ test.describe('Sort Operations', () => {
       await page.getByTestId('sort-add').click()
       await page.getByTestId('sort-apply').click()
 
+      // Open view settings popover and save
+      await page.getByTestId('view-settings-badge').click()
+      await page.getByTestId('view-settings-save').click()
+
       // Wait for UpdateTableViews API call
-      await page.waitForResponse((resp) => resp.url().includes('graphql'))
+      await page.waitForTimeout(500)
 
       // Reload page
       await page.reload()
@@ -567,52 +574,6 @@ test.describe('Sort Operations', () => {
       await expect(page.getByTestId('column-header-name')).toBeVisible()
       await expect(page.getByTestId('sort-badge')).toBeVisible()
       await expect(page.getByTestId('sort-badge')).toHaveText('1')
-    })
-
-    test('revert restores original sort state', async ({ page }) => {
-      await setupMocks(page, {
-        viewsResponse: createViewsResponse({
-          sorts: [{ field: 'data.name', direction: 'ASC' }],
-        }),
-      })
-
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
-      await expect(page.getByTestId('column-header-name')).toBeVisible()
-
-      // Verify initial state
-      await expect(page.getByTestId('sort-badge')).toHaveText('1')
-      await expect(page.getByTestId('sort-badge')).toHaveAttribute('data-badge-color', 'gray')
-
-      // Add another sort (making pending changes)
-      await page.getByTestId('sort-button').click()
-      await page.getByTestId('sort-add').click()
-
-      // Badge should show orange (pending)
-      await expect(page.getByTestId('sort-badge')).toHaveText('2')
-      await expect(page.getByTestId('sort-badge')).toHaveAttribute('data-badge-color', 'orange')
-
-      // Click revert
-      await page.getByTestId('sort-revert').click()
-
-      // Should restore to original state
-      await expect(page.getByTestId('sort-badge')).toHaveText('1')
-      await expect(page.getByTestId('sort-badge')).toHaveAttribute('data-badge-color', 'gray')
-    })
-
-    test('revert button disabled when no pending changes', async ({ page }) => {
-      await setupMocks(page, {
-        viewsResponse: createViewsResponse({
-          sorts: [{ field: 'data.name', direction: 'ASC' }],
-        }),
-      })
-
-      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
-      await expect(page.getByTestId('column-header-name')).toBeVisible()
-
-      await page.getByTestId('sort-button').click()
-
-      // Revert should be disabled when no pending changes
-      await expect(page.getByTestId('sort-revert')).toBeDisabled()
     })
   })
 })

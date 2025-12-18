@@ -33,6 +33,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
         p={isRoot ? 0 : 3}
         bg={isRoot ? 'transparent' : 'newGray.25'}
         position="relative"
+        data-testid={!isRoot ? `filter-group-${group.id}` : undefined}
       >
         {!isRoot && (
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -45,7 +46,13 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
                 of the following
               </Text>
             </Box>
-            <Button size="xs" variant="ghost" colorPalette="gray" onClick={handleRemoveGroup}>
+            <Button
+              size="xs"
+              variant="ghost"
+              colorPalette="gray"
+              onClick={handleRemoveGroup}
+              data-testid={`filter-remove-group-${group.id}`}
+            >
               <LuX />
               Remove group
             </Button>
@@ -69,7 +76,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
             key={condition.id}
             filterModel={filterModel}
             condition={condition}
-            testId={isRoot ? `filter-condition-${index}` : undefined}
+            testId={isRoot ? `filter-condition-${index}` : `filter-group-${group.id}-condition-${index}`}
           />
         ))}
 
@@ -85,7 +92,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
             variant="ghost"
             onClick={handleAddCondition}
             disabled={filterModel.availableFields.length === 0}
-            data-testid={isRoot ? 'filter-add-condition' : undefined}
+            data-testid={isRoot ? 'filter-add-condition' : `filter-group-${group.id}-add-condition`}
           >
             <LuPlus />
             Add condition

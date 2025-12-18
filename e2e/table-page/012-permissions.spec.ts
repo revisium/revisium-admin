@@ -46,9 +46,8 @@ test.describe('Permissions', () => {
     })
   })
 
-  test.describe.skip('Head Revision (Readonly)', () => {
-    // Skipped: head revision permissions needs URL/mock investigation
-    test('cells are not editable in head revision', async ({ page }) => {
+  test.describe('Head Revision (Readonly)', () => {
+    test('cells are readonly in head revision', async ({ page }) => {
       await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
 
       await page.goto(getTablePageUrl('head'))
@@ -57,7 +56,9 @@ test.describe('Permissions', () => {
       const cell = page.getByTestId('cell-row-1-name')
       await cell.dblclick()
 
-      await expect(page.locator('input:focus, textarea:focus')).not.toBeVisible()
+      // Textarea should have readonly attribute
+      const textarea = page.locator('textarea:focus')
+      await expect(textarea).toHaveAttribute('readonly', '')
     })
 
     test('new row button is hidden in head revision', async ({ page }) => {
@@ -84,18 +85,79 @@ test.describe('Permissions', () => {
       }
     })
 
-    test('add column button is hidden in head revision', async ({ page }) => {
+    test('column operations are available in head revision', async ({ page }) => {
       await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
 
       await page.goto(getTablePageUrl('head'))
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
-      await expect(page.getByRole('button', { name: /add column/i })).not.toBeVisible()
+      // Add column button should be visible (view settings are local)
+      await expect(page.getByRole('button', { name: /add column/i })).toBeVisible()
+    })
+
+    test('view changes show local badge in head revision', async ({ page }) => {
+      await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
+
+      await page.goto(getTablePageUrl('head'))
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Hide a column to trigger view changes
+      await page.getByTestId('column-header-name').click()
+      await page.getByRole('menuitem', { name: /hide column/i }).click()
+
+      // Should show "local" badge
+      await expect(page.getByTestId('view-settings-badge')).toBeVisible()
+      await expect(page.getByTestId('view-settings-badge')).toContainText('local')
+    })
+
+    test('local view changes popover shows correct message', async ({ page }) => {
+      await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
+
+      await page.goto(getTablePageUrl('head'))
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Hide a column to trigger view changes
+      await page.getByTestId('column-header-name').click()
+      await page.getByRole('menuitem', { name: /hide column/i }).click()
+
+      // Click on badge to open popover
+      await page.getByTestId('view-settings-badge').click()
+
+      // Should show local view changes message
+      await expect(page.getByText('Local view changes')).toBeVisible()
+      await expect(page.getByText(/can only be saved in draft/i)).toBeVisible()
+
+      // Should have revert button but no save button
+      await expect(page.getByTestId('view-settings-revert')).toBeVisible()
+      await expect(page.getByTestId('view-settings-save')).not.toBeVisible()
+    })
+
+    test.skip('revert button does not undo local view changes', async ({ page }) => {
+      // BUG: revert button in head revision doesn't actually revert local changes
+      await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
+
+      await page.goto(getTablePageUrl('head'))
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Hide a column to trigger view changes
+      await page.getByTestId('column-header-name').click()
+      await page.getByRole('menuitem', { name: /hide column/i }).click()
+
+      // Column should be hidden
+      await expect(page.getByTestId('column-header-name')).not.toBeVisible()
+
+      // Click on badge to open popover
+      await page.getByTestId('view-settings-badge').click()
+
+      // Click revert
+      await page.getByTestId('view-settings-revert').click()
+
+      // BUG: Column should be visible again after revert, but it's not
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
     })
   })
 
-  test.describe.skip('Selection Mode Permissions', () => {
-    // Skipped: selection mode permissions needs investigation
+  test.describe('Selection Mode Permissions', () => {
     test('selection checkboxes are visible in draft revision', async ({ page }) => {
       await setupTablePageMocks(page, { isHeadRevision: false })
 
@@ -106,7 +168,7 @@ test.describe('Permissions', () => {
       await page.getByTestId('row-list-menu-row-1').click()
       await page.getByTestId('select-row-row-1').click()
 
-      const checkbox = page.getByTestId('row-row-1').locator('[role="checkbox"]')
+      const checkbox = page.getByTestId('row-row-1').locator('[data-part="control"]')
       await expect(checkbox).toBeVisible()
     })
 
@@ -127,9 +189,8 @@ test.describe('Permissions', () => {
     })
   })
 
-  test.describe.skip('View Settings Permissions', () => {
-    // Skipped: view settings permissions needs investigation
-    test('filters can be added in any revision', async ({ page }) => {
+  test.describe('View Settings Permissions', () => {
+    test('filters can be added in draft revision', async ({ page }) => {
       await setupTablePageMocks(page)
 
       await page.goto(getTablePageUrl('draft'))
@@ -141,19 +202,19 @@ test.describe('Permissions', () => {
       await expect(page.getByTestId('filter-condition-0')).toBeVisible()
     })
 
-    test('sorting can be added in any revision', async ({ page }) => {
+    test('sorting can be added in draft revision', async ({ page }) => {
       await setupTablePageMocks(page)
 
       await page.goto(getTablePageUrl('draft'))
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
       await page.getByTestId('sort-button').click()
-      await page.getByTestId('sort-add-condition').click()
+      await page.getByTestId('sort-add').click()
 
       await expect(page.getByTestId('sort-condition-0')).toBeVisible()
     })
 
-    test('column visibility can be changed in any revision', async ({ page }) => {
+    test('column visibility can be changed in draft revision', async ({ page }) => {
       await setupTablePageMocks(page)
 
       await page.goto(getTablePageUrl('draft'))
@@ -167,8 +228,7 @@ test.describe('Permissions', () => {
     })
   })
 
-  test.describe.skip('Column Operations Permissions', () => {
-    // Skipped: column operations permissions needs investigation
+  test.describe('Column Operations Permissions', () => {
     test('schema modification is allowed in draft revision', async ({ page }) => {
       await setupTablePageMocks(page, { isHeadRevision: false })
 
@@ -179,7 +239,8 @@ test.describe('Permissions', () => {
       await expect(addColumnButton).toBeEnabled()
     })
 
-    test('column menu has rename option in draft revision', async ({ page }) => {
+    test.skip('column menu has rename option in draft revision', async ({ page }) => {
+      // Skip: column rename is done in schema editor, not in table view
       await setupTablePageMocks(page, { isHeadRevision: false })
 
       await page.goto(getTablePageUrl('draft'))
@@ -190,22 +251,6 @@ test.describe('Permissions', () => {
       await expect(
         page.getByRole('menuitem', { name: /rename/i }).or(page.getByRole('menuitem', { name: /edit/i })),
       ).toBeVisible()
-    })
-  })
-
-  test.describe.skip('Readonly Cells', () => {
-    // Skipped: readonly cells needs investigation
-    test('readonly cells show readonly indicator', async ({ page }) => {
-      await setupTablePageMocks(page, { rowsReadonly: true })
-
-      await page.goto(getTablePageUrl('head'))
-      await expect(page.getByTestId('column-header-name')).toBeVisible()
-
-      const cell = page.getByTestId('cell-row-1-name')
-      await expect(cell).toBeVisible()
-
-      await cell.dblclick()
-      await expect(page.locator('input:focus, textarea:focus')).not.toBeVisible()
     })
   })
 })

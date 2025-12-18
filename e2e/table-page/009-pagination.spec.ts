@@ -18,7 +18,7 @@ const TABLE_ID = 'users'
 
 function createPaginatedRowsResponse(
   rows: Array<{ id: string; data: Record<string, unknown> }>,
-  options: { hasNextPage: boolean; endCursor: string | null } = {
+  options: { hasNextPage: boolean; endCursor: string | null; totalCount?: number } = {
     hasNextPage: false,
     endCursor: null,
   },
@@ -26,13 +26,18 @@ function createPaginatedRowsResponse(
   return {
     data: {
       rows: {
-        totalCount: rows.length,
+        __typename: 'RowsConnection',
+        totalCount: options.totalCount ?? rows.length,
         pageInfo: {
+          __typename: 'PageInfo',
           hasNextPage: options.hasNextPage,
+          hasPreviousPage: false,
+          startCursor: rows.length > 0 ? 'cursor-1' : null,
           endCursor: options.endCursor,
         },
         edges: rows.map((row, index) => ({
-          cursor: `cursor-${index}`,
+          __typename: 'RowModelEdge',
+          cursor: `cursor-${index + 1}`,
           node: {
             __typename: 'RowModel',
             id: row.id,
@@ -41,6 +46,8 @@ function createPaginatedRowsResponse(
             data: row.data,
             createdAt: '2024-01-01T00:00:00Z',
             updatedAt: '2024-01-01T00:00:00Z',
+            publishedAt: null,
+            createdId: row.id,
           },
         })),
       },
@@ -101,6 +108,7 @@ async function setupMocks(
             createPaginatedRowsResponse(nextPageRows, {
               hasNextPage: false,
               endCursor: null,
+              totalCount,
             }),
           ),
         })
@@ -109,29 +117,13 @@ async function setupMocks(
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          data: {
-            rows: {
-              totalCount,
-              pageInfo: {
-                hasNextPage,
-                endCursor: hasNextPage ? 'cursor-next' : null,
-              },
-              edges: initialRows.map((row, index) => ({
-                cursor: `cursor-${index}`,
-                node: {
-                  __typename: 'RowModel',
-                  id: row.id,
-                  versionId: `${row.id}-v1`,
-                  readonly: false,
-                  data: row.data,
-                  createdAt: '2024-01-01T00:00:00Z',
-                  updatedAt: '2024-01-01T00:00:00Z',
-                },
-              })),
-            },
-          },
-        }),
+        body: JSON.stringify(
+          createPaginatedRowsResponse(initialRows, {
+            hasNextPage,
+            endCursor: hasNextPage ? 'cursor-next' : null,
+            totalCount,
+          }),
+        ),
       })
     }
 
@@ -175,8 +167,7 @@ async function setupMocks(
 }
 
 test.describe('Pagination', () => {
-  test.describe.skip('Row Count Display', () => {
-    // Skipped: row count display needs mock investigation
+  test.describe('Row Count Display', () => {
     test('displays total row count', async ({ page }) => {
       const rows = createSampleRows(25)
       await setupMocks(page, { initialRows: rows, totalCount: 25, hasNextPage: false })
@@ -198,9 +189,9 @@ test.describe('Pagination', () => {
     })
   })
 
-  test.describe.skip('Load More', () => {
-    // Skipped: load more button needs mock investigation
-    test('shows load more button when more rows available', async ({ page }) => {
+  test.describe('Load More', () => {
+    test.skip('shows load more button when more rows available', async ({ page }) => {
+      // Skip: UI uses infinite scroll, not explicit "load more" button
       const rows = createSampleRows(20)
       await setupMocks(page, { initialRows: rows, totalCount: 30, hasNextPage: true })
 
@@ -227,7 +218,8 @@ test.describe('Pagination', () => {
       await expect(page.getByText(/load more/i)).not.toBeVisible()
     })
 
-    test('loads more rows on button click', async ({ page }) => {
+    test.skip('loads more rows on button click', async ({ page }) => {
+      // Skip: UI uses infinite scroll, not explicit "load more" button
       const initialRows = createSampleRows(20)
       const nextPageRows = createSampleRows(10, 20) // rows 21-30
       await setupMocks(page, {
@@ -287,8 +279,7 @@ test.describe('Pagination', () => {
     })
   })
 
-  test.describe.skip('Loading States', () => {
-    // Skipped: loading states need mock investigation
+  test.describe('Loading States', () => {
     test('shows loading indicator while fetching rows', async ({ page }) => {
       await setupAuth(page)
 
@@ -370,15 +361,13 @@ test.describe('Pagination', () => {
     })
   })
 
-  test.describe.skip('Empty State with Pagination', () => {
-    // Skipped: empty state needs mock investigation
+  test.describe('Empty State with Pagination', () => {
     test('shows empty state when no rows exist', async ({ page }) => {
       await setupMocks(page, { initialRows: [], totalCount: 0, hasNextPage: false })
 
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
-      await expect(page.getByTestId('column-header-name')).toBeVisible()
-
-      await expect(page.getByText(/no rows/i).or(page.getByText('0 rows'))).toBeVisible()
+      // When empty, the table shows an empty state without column headers
+      await expect(page.getByText('No rows yet')).toBeVisible()
     })
   })
 })

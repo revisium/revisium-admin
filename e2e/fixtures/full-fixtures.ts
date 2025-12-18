@@ -283,8 +283,8 @@ export function createMeProjectsResponse(projectName: string, orgId: string = 't
   }
 }
 
-export function createTablesResponse(tableId: string) {
-  const table = createFullTableResponse(tableId).data.table
+export function createTablesResponse(tableId: string, schema?: object) {
+  const table = createFullTableResponse(tableId, schema).data.table
   return {
     data: {
       tables: {

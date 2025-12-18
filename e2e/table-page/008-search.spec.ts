@@ -55,7 +55,9 @@ async function setupMocks(
     // Handle search in RowListRows query
     if (opName === 'RowListRows' || opName === 'RowsMst') {
       const where = body?.variables?.data?.where
-      if (where?.data?.contains) {
+      // Search uses: { OR: [{ id: { contains } }, { data: { search } }] }
+      const searchTerm = where?.OR?.[0]?.id?.contains || where?.OR?.[1]?.data?.search
+      if (searchTerm) {
         return route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -234,8 +236,7 @@ test.describe('Search Functionality', () => {
     })
   })
 
-  test.describe.skip('Search Results', () => {
-    // Skipped: search results filtering needs backend mock investigation
+  test.describe('Search Results', () => {
     test('search filters displayed rows', async ({ page }) => {
       const rows = [
         { id: 'row-1', data: { name: 'Alice Smith', age: 25, active: true } },

@@ -237,7 +237,7 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
           },
         },
       },
-      TablesMst: createTablesResponse(tableId),
+      TablesMst: createTablesResponse(tableId, schema),
       RowsMst: rowsResponse,
       RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },

@@ -9,7 +9,7 @@ interface ListProps {
 
 export const List: FC<ListProps> = ({ ids, onSelect }) => {
   return (
-    <ScrollArea.Root height="100%" variant="hover">
+    <ScrollArea.Root height="100%" variant="hover" data-testid="fk-list">
       <ScrollArea.Viewport>
         <ScrollArea.Content>
           {ids.map((id) => (

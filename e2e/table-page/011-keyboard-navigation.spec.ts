@@ -133,8 +133,7 @@ test.describe('Keyboard Navigation', () => {
     })
   })
 
-  test.describe.skip('Enter Key', () => {
-    // Skipped: enter key navigation needs input selector investigation
+  test.describe('Enter Key', () => {
     test('Enter on focused cell enters edit mode', async ({ page }) => {
       const rows = createSampleRows(3)
       await setupTablePageMocks(page, { rows })
@@ -160,7 +159,7 @@ test.describe('Keyboard Navigation', () => {
       const cell1 = page.getByTestId('cell-row-1-name')
       await cell1.dblclick()
 
-      const input = cell1.locator('input, textarea')
+      const input = page.locator('input:focus, textarea:focus')
       await input.fill('New Value')
 
       await page.keyboard.press('Enter')
@@ -224,6 +223,7 @@ test.describe('Keyboard Navigation', () => {
 
   test.describe('Home/End Keys', () => {
     test.skip('Home moves to first cell in row', async ({ page }) => {
+      // Skip: Home key navigation not implemented
       const rows = createSampleRows(3)
       await setupTablePageMocks(page, { rows })
 
@@ -240,6 +240,7 @@ test.describe('Keyboard Navigation', () => {
     })
 
     test.skip('End moves to last cell in row', async ({ page }) => {
+      // Skip: End key navigation not implemented
       const rows = createSampleRows(3)
       await setupTablePageMocks(page, { rows })
 

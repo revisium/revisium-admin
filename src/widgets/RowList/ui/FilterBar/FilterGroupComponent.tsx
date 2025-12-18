@@ -11,10 +11,11 @@ interface FilterGroupComponentProps {
   filterModel: FilterModel
   group: FilterGroup
   isRoot?: boolean
+  groupIndex?: number
 }
 
 export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
-  ({ filterModel, group, isRoot = false }) => {
+  ({ filterModel, group, isRoot = false, groupIndex }) => {
     const handleLogicChange = (logic: 'and' | 'or') => {
       filterModel.setGroupLogic(group.id, logic)
     }
@@ -33,6 +34,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
         p={isRoot ? 0 : 3}
         bg={isRoot ? 'transparent' : 'newGray.25'}
         position="relative"
+        data-testid={!isRoot && groupIndex !== undefined ? `filter-group-${groupIndex}` : undefined}
       >
         {!isRoot && (
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -45,7 +47,13 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
                 of the following
               </Text>
             </Box>
-            <Button size="xs" variant="ghost" colorPalette="gray" onClick={handleRemoveGroup}>
+            <Button
+              size="xs"
+              variant="ghost"
+              colorPalette="gray"
+              onClick={handleRemoveGroup}
+              data-testid={groupIndex !== undefined ? `filter-remove-group-${groupIndex}` : undefined}
+            >
               <LuX />
               Remove group
             </Button>
@@ -73,9 +81,9 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
           />
         ))}
 
-        {group.groups.map((nestedGroup) => (
+        {group.groups.map((nestedGroup, index) => (
           <Box key={nestedGroup.id} mt={2}>
-            <FilterGroupComponent filterModel={filterModel} group={nestedGroup} />
+            <FilterGroupComponent filterModel={filterModel} group={nestedGroup} groupIndex={index} />
           </Box>
         ))}
 
@@ -85,7 +93,13 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
             variant="ghost"
             onClick={handleAddCondition}
             disabled={filterModel.availableFields.length === 0}
-            data-testid={isRoot ? 'filter-add-condition' : undefined}
+            data-testid={
+              isRoot
+                ? 'filter-add-condition'
+                : groupIndex !== undefined
+                  ? `filter-group-${groupIndex}-add-condition`
+                  : undefined
+            }
           >
             <LuPlus />
             Add condition

@@ -2,14 +2,16 @@ import { Box } from '@chakra-ui/react'
 import { FC } from 'react'
 
 interface ColumnResizerProps {
+  columnName: string
   isResizing: boolean
   onMouseDown: (e: React.MouseEvent) => void
 }
 
-export const ColumnResizer: FC<ColumnResizerProps> = ({ isResizing, onMouseDown }) => {
+export const ColumnResizer: FC<ColumnResizerProps> = ({ columnName, isResizing, onMouseDown }) => {
   return (
     <Box
-      role="group"
+      data-testid={`column-resize-handle-${columnName}`}
+      role="separator"
       position="absolute"
       right="-4px"
       top={0}

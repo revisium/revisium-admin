@@ -30,6 +30,7 @@ export const SearchInput: FC<SearchInputProps> = observer(({ model }) => {
         _placeholder={{ color: 'gray.400' }}
         placeholder="Search by ID or any field…"
         size="sm"
+        data-testid="fk-search-input"
       />
     </InputGroup>
   )

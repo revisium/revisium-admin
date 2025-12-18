@@ -45,19 +45,19 @@ export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
     }, [onOpenTableSearch])
 
     return (
-      <Flex flexDirection="column" height="290px" width="100%">
+      <Flex flexDirection="column" height="290px" width="100%" data-testid="fk-picker">
         <Header tableId={tableId} onClose={onClose} />
 
         {model.showInput && <SearchInput model={model} />}
 
         {model.showLoading && (
-          <Flex justify="center" align="center" height="100%" width="100%">
+          <Flex justify="center" align="center" height="100%" width="100%" data-testid="fk-loading">
             <Spinner size="md" color="gray.400" />
           </Flex>
         )}
 
         {model.showNotFound && (
-          <Flex justify="center" align="center" height="100%" width="100%">
+          <Flex justify="center" align="center" height="100%" width="100%" data-testid="fk-not-found">
             <Text fontSize="sm" color="gray.500">
               No results found
             </Text>
@@ -65,7 +65,7 @@ export const SearchForeignKey: FC<SearchForeignKeyProps> = observer(
         )}
 
         {model.showError && (
-          <Flex justify="center" align="center" height="100%" width="100%">
+          <Flex justify="center" align="center" height="100%" width="100%" data-testid="fk-error">
             <Text fontSize="sm" color="gray.500">
               Could not load data. Please retry later.
             </Text>

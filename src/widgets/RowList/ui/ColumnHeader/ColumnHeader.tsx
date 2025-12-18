@@ -244,7 +244,7 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
           </Menu.Positioner>
         </Portal>
       </Menu.Root>
-      <ColumnResizer isResizing={isResizing} onMouseDown={handleResizeMouseDown} />
+      <ColumnResizer columnName={column.name} isResizing={isResizing} onMouseDown={handleResizeMouseDown} />
       {filterModel && filterableField && (
         <AddFilterPopover
           field={filterableField}

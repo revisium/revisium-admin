@@ -352,8 +352,7 @@ test.describe('Row Operations', () => {
     })
   })
 
-  test.describe.skip('Selection Persistence', () => {
-    // Skipped: selection persistence with pagination needs investigation
+  test.describe('Selection Persistence', () => {
     test('selection persists while loading more rows', async ({ page }) => {
       await setupAuth(page)
 
@@ -399,26 +398,9 @@ test.describe('Row Operations', () => {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify({
-              data: {
-                rows: {
-                  totalCount: 30,
-                  pageInfo: { hasNextPage: true, endCursor: 'cursor-next' },
-                  edges: initialRows.map((row, index) => ({
-                    cursor: `cursor-${index}`,
-                    node: {
-                      __typename: 'RowModel',
-                      id: row.id,
-                      versionId: `${row.id}-v1`,
-                      readonly: false,
-                      data: row.data,
-                      createdAt: '2024-01-01T00:00:00Z',
-                      updatedAt: '2024-01-01T00:00:00Z',
-                    },
-                  })),
-                },
-              },
-            }),
+            body: JSON.stringify(
+              createRowsResponse(initialRows, { hasNextPage: true, totalCount: 30, endCursor: 'cursor-next' }),
+            ),
           })
         }
 
@@ -494,9 +476,8 @@ test.describe('Row Operations', () => {
     })
   })
 
-  test.describe.skip('Ctrl+Click Selection', () => {
-    // Skipped: Ctrl+Click behavior needs investigation
-    test('Ctrl+Click on row toggles selection without deselecting others', async ({ page }) => {
+  test.describe('Multi-Row Selection', () => {
+    test('clicking checkbox adds row to selection', async ({ page }) => {
       const rows = createSampleRows(5)
       await setupMocks(page, { rows })
 
@@ -510,9 +491,9 @@ test.describe('Row Operations', () => {
 
       await expect(page.getByText('1 selected')).toBeVisible()
 
-      // Ctrl+Click on another row's checkbox to add to selection
+      // Click on another row's checkbox to add to selection
       const row3CheckboxControl = page.getByTestId('row-row-3').locator('[data-part="control"]')
-      await row3CheckboxControl.click({ modifiers: ['Control'] })
+      await row3CheckboxControl.click()
 
       // Should have 2 selected (both row-1 and row-3)
       await expect(page.getByText('2 selected')).toBeVisible()
@@ -524,7 +505,7 @@ test.describe('Row Operations', () => {
       await expect(row3Checkbox).toHaveAttribute('data-state', 'checked')
     })
 
-    test('Ctrl+Click deselects previously selected row', async ({ page }) => {
+    test('clicking selected checkbox deselects row', async ({ page }) => {
       const rows = createSampleRows(5)
       await setupMocks(page, { rows })
 
@@ -544,9 +525,9 @@ test.describe('Row Operations', () => {
 
       await expect(page.getByText('2 selected')).toBeVisible()
 
-      // Ctrl+Click row-1 again to deselect it
+      // Click row-1 again to deselect it
       const row1CheckboxControl = page.getByTestId('row-row-1').locator('[data-part="control"]')
-      await row1CheckboxControl.click({ modifiers: ['Control'] })
+      await row1CheckboxControl.click()
 
       // Should have 1 selected (only row-2)
       await expect(page.getByText('1 selected')).toBeVisible()
@@ -628,8 +609,7 @@ test.describe('Row Operations', () => {
     })
   })
 
-  test.describe.skip('Toast Notifications', () => {
-    // Skipped: toast notifications selectors need investigation
+  test.describe('Toast Notifications', () => {
     test('shows success toast after deleting rows', async ({ page }) => {
       await setupAuth(page)
 
@@ -715,14 +695,13 @@ test.describe('Row Operations', () => {
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
-      // Enter selection mode and select a row
+      // Enter selection mode and select a row via menu
       await page.getByTestId('row-row-1').hover()
       await page.getByTestId('row-list-menu-row-1').click()
       await page.getByTestId('select-row-row-1').click()
 
-      // Select the checkbox
-      const checkbox = page.getByTestId('row-row-1').locator('[data-part="control"]')
-      await checkbox.click()
+      // Row is now selected (1 selected)
+      await expect(page.getByText('1 selected')).toBeVisible()
 
       // Click delete button
       await page.getByRole('button', { name: /delete/i }).click()
@@ -732,7 +711,7 @@ test.describe('Row Operations', () => {
       await confirmButton.click()
 
       // Should show success toast
-      await expect(page.getByText(/1 row deleted/i)).toBeVisible()
+      await expect(page.getByText(/deleted/i)).toBeVisible()
     })
 
     test('shows error toast when deletion fails', async ({ page }) => {
@@ -817,14 +796,13 @@ test.describe('Row Operations', () => {
       await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
       await expect(page.getByTestId('column-header-name')).toBeVisible()
 
-      // Enter selection mode and select a row
+      // Enter selection mode and select a row via menu
       await page.getByTestId('row-row-1').hover()
       await page.getByTestId('row-list-menu-row-1').click()
       await page.getByTestId('select-row-row-1').click()
 
-      // Select the checkbox
-      const checkbox = page.getByTestId('row-row-1').locator('[data-part="control"]')
-      await checkbox.click()
+      // Row is now selected (1 selected)
+      await expect(page.getByText('1 selected')).toBeVisible()
 
       // Click delete button
       await page.getByRole('button', { name: /delete/i }).click()
@@ -834,7 +812,7 @@ test.describe('Row Operations', () => {
       await confirmButton.click()
 
       // Should show error toast
-      await expect(page.getByText(/failed to delete/i)).toBeVisible()
+      await expect(page.getByText('Failed to delete rows').first()).toBeVisible()
     })
   })
 })

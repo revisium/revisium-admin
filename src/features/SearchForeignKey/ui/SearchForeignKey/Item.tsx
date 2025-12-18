@@ -21,6 +21,7 @@ export const Item: FC<ItemProps> = ({ id, onSelect }) => {
       fontSize="sm"
       _hover={{ bg: 'gray.100' }}
       onClick={handleClick}
+      data-testid={`fk-option-${id}`}
     >
       {id}
     </Box>

@@ -1,0 +1,19 @@
+diff --git a/node_modules/@zag-js/menu/dist/index.mjs b/node_modules/@zag-js/menu/dist/index.mjs
+index 408266b..cbdf6c6 100644
+--- a/node_modules/@zag-js/menu/dist/index.mjs
++++ b/node_modules/@zag-js/menu/dist/index.mjs
+@@ -1024,6 +1024,14 @@ var machine = createMachine({
+               event.preventDefault();
+               return;
+             }
++            // FIX: Ignore focus on child menu content elements (even if closed)
++            // This prevents race condition where closing submenu triggers focus
++            // that incorrectly dismisses parent menu
++            const isMenuContent = target?.dataset?.scope === "menu" && target?.dataset?.part === "content";
++            if (isMenuContent) {
++              event.preventDefault();
++              return;
++            }
+           },
+           onEscapeKeyDown(event) {
+             prop("onEscapeKeyDown")?.(event);

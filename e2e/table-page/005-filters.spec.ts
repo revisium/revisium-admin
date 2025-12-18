@@ -548,6 +548,11 @@ test.describe('Filter Operations', () => {
   })
 
   test.describe('Nested Filter Groups', () => {
+    const getFilterGroups = (page: Page) =>
+      page.locator(
+        '[data-testid^="filter-group-"]:not([data-testid*="-add-"]):not([data-testid*="-remove-"]):not([data-testid*="-condition-"])',
+      )
+
     test('can add filter group', async ({ page }) => {
       await setupMocks(page)
 
@@ -557,8 +562,8 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      // Group should be created with index 0
-      await expect(page.getByTestId('filter-group-0')).toBeVisible()
+      // Group should be created
+      await expect(getFilterGroups(page)).toHaveCount(1)
     })
 
     test('can add condition inside group', async ({ page }) => {
@@ -570,11 +575,11 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      // Add condition to the group using data-testid
-      await page.getByTestId('filter-group-0-add-condition').click()
+      // Add condition to the group using add-condition button inside the group
+      const group = getFilterGroups(page).first()
+      await group.locator('[data-testid$="-add-condition"]').click()
 
-      // Condition should be added inside the group (group has its own conditions)
-      const group = page.getByTestId('filter-group-0')
+      // Condition should be added inside the group
       const conditionInGroup = group.locator('button').first()
       await expect(conditionInGroup).toBeVisible()
     })
@@ -588,12 +593,13 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-button').click()
       await page.getByTestId('filter-add-group').click()
 
-      await expect(page.getByTestId('filter-group-0')).toBeVisible()
+      await expect(getFilterGroups(page)).toHaveCount(1)
 
-      // Remove the group using data-testid
-      await page.getByTestId('filter-remove-group-0').click()
+      // Remove the group using remove button inside the group
+      const group = getFilterGroups(page).first()
+      await group.locator('[data-testid^="filter-remove-group-"]').click()
 
-      await expect(page.getByTestId('filter-group-0')).not.toBeVisible()
+      await expect(getFilterGroups(page)).toHaveCount(0)
     })
 
     test('can add multiple groups', async ({ page }) => {
@@ -606,17 +612,11 @@ test.describe('Filter Operations', () => {
 
       // Add first group
       await page.getByTestId('filter-add-group').click()
-      await expect(page.getByTestId('filter-group-0')).toBeVisible()
+      await expect(getFilterGroups(page)).toHaveCount(1)
 
       // Add second group
       await page.getByTestId('filter-add-group').click()
-      await expect(page.getByTestId('filter-group-1')).toBeVisible()
-
-      // Both groups should be visible
-      const groups = page.locator(
-        '[data-testid^="filter-group-"]:not([data-testid*="-add-"]):not([data-testid*="-remove-"])',
-      )
-      await expect(groups).toHaveCount(2)
+      await expect(getFilterGroups(page)).toHaveCount(2)
     })
 
     test('group has logic selector', async ({ page }) => {
@@ -629,7 +629,7 @@ test.describe('Filter Operations', () => {
       await page.getByTestId('filter-add-group').click()
 
       // Group should have logic selector (All/Any)
-      const group = page.getByTestId('filter-group-0')
+      const group = getFilterGroups(page).first()
       const logicButton = group.getByRole('button', { name: /all|any/i }).first()
       await expect(logicButton).toBeVisible()
     })

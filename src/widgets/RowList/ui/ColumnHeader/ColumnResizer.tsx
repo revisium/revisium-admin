@@ -7,10 +7,12 @@ interface ColumnResizerProps {
   onMouseDown: (e: React.MouseEvent) => void
 }
 
+const sanitizeTestId = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, '-')
+
 export const ColumnResizer: FC<ColumnResizerProps> = ({ columnName, isResizing, onMouseDown }) => {
   return (
     <Box
-      data-testid={`column-resize-handle-${columnName}`}
+      data-testid={`column-resize-handle-${sanitizeTestId(columnName)}`}
       role="separator"
       position="absolute"
       right="-4px"

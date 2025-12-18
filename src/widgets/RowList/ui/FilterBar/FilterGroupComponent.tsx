@@ -34,7 +34,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
         p={isRoot ? 0 : 3}
         bg={isRoot ? 'transparent' : 'newGray.25'}
         position="relative"
-        data-testid={!isRoot && groupIndex !== undefined ? `filter-group-${groupIndex}` : undefined}
+        data-testid={!isRoot ? `filter-group-${groupIndex}` : undefined}
       >
         {!isRoot && (
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -52,7 +52,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
               variant="ghost"
               colorPalette="gray"
               onClick={handleRemoveGroup}
-              data-testid={groupIndex !== undefined ? `filter-remove-group-${groupIndex}` : undefined}
+              data-testid={`filter-remove-group-${groupIndex}`}
             >
               <LuX />
               Remove group
@@ -93,13 +93,7 @@ export const FilterGroupComponent: FC<FilterGroupComponentProps> = observer(
             variant="ghost"
             onClick={handleAddCondition}
             disabled={filterModel.availableFields.length === 0}
-            data-testid={
-              isRoot
-                ? 'filter-add-condition'
-                : groupIndex !== undefined
-                  ? `filter-group-${groupIndex}-add-condition`
-                  : undefined
-            }
+            data-testid={isRoot ? 'filter-add-condition' : `filter-group-${groupIndex}-add-condition`}
           >
             <LuPlus />
             Add condition

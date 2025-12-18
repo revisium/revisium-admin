@@ -453,39 +453,33 @@ test.describe('Filter Operations', () => {
   })
 
   test.describe('File Field Filters', () => {
+    const fileSchema = {
+      type: 'object',
+      properties: {
+        name: { type: 'string', default: '' },
+        avatar: { $ref: SystemSchemaIds.File },
+      },
+      additionalProperties: false,
+      required: ['name', 'avatar'],
+    }
+
+    const createFileData = (fileName: string) => ({
+      fileId: 'file-1',
+      status: 'uploaded',
+      fileName,
+      url: '',
+      hash: '',
+      extension: 'jpg',
+      mimeType: 'image/jpeg',
+      size: 1024,
+      width: 100,
+      height: 100,
+    })
+
     test('file field shows nested fields in filter dropdown', async ({ page }) => {
-      const schemaWithFile = {
-        type: 'object',
-        properties: {
-          name: { type: 'string', default: '' },
-          avatar: { $ref: SystemSchemaIds.File },
-        },
-        additionalProperties: false,
-        required: ['name', 'avatar'],
-      }
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
 
-      const rows = [
-        {
-          id: 'row-1',
-          data: {
-            name: 'User 1',
-            avatar: {
-              fileId: 'file-1',
-              status: 'uploaded',
-              fileName: 'photo.jpg',
-              url: '',
-              hash: '',
-              extension: 'jpg',
-              mimeType: 'image/jpeg',
-              size: 1024,
-              width: 100,
-              height: 100,
-            },
-          },
-        },
-      ]
-
-      await setupTablePageMocks(page, { rows, schema: schemaWithFile })
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
 
       await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
@@ -504,38 +498,9 @@ test.describe('Filter Operations', () => {
     })
 
     test('can filter by file string field (fileName)', async ({ page }) => {
-      const schemaWithFile = {
-        type: 'object',
-        properties: {
-          name: { type: 'string', default: '' },
-          avatar: { $ref: SystemSchemaIds.File },
-        },
-        additionalProperties: false,
-        required: ['name', 'avatar'],
-      }
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
 
-      const rows = [
-        {
-          id: 'row-1',
-          data: {
-            name: 'User 1',
-            avatar: {
-              fileId: 'file-1',
-              status: 'uploaded',
-              fileName: 'photo.jpg',
-              url: '',
-              hash: '',
-              extension: 'jpg',
-              mimeType: 'image/jpeg',
-              size: 1024,
-              width: 100,
-              height: 100,
-            },
-          },
-        },
-      ]
-
-      await setupTablePageMocks(page, { rows, schema: schemaWithFile })
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
 
       await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
@@ -557,38 +522,9 @@ test.describe('Filter Operations', () => {
     })
 
     test('can filter by file number field (size)', async ({ page }) => {
-      const schemaWithFile = {
-        type: 'object',
-        properties: {
-          name: { type: 'string', default: '' },
-          avatar: { $ref: SystemSchemaIds.File },
-        },
-        additionalProperties: false,
-        required: ['name', 'avatar'],
-      }
+      const rows = [{ id: 'row-1', data: { name: 'User 1', avatar: createFileData('photo.jpg') } }]
 
-      const rows = [
-        {
-          id: 'row-1',
-          data: {
-            name: 'User 1',
-            avatar: {
-              fileId: 'file-1',
-              status: 'uploaded',
-              fileName: 'photo.jpg',
-              url: '',
-              hash: '',
-              extension: 'jpg',
-              mimeType: 'image/jpeg',
-              size: 1024,
-              width: 100,
-              height: 100,
-            },
-          },
-        },
-      ]
-
-      await setupTablePageMocks(page, { rows, schema: schemaWithFile })
+      await setupTablePageMocks(page, { rows, schema: fileSchema })
 
       await page.goto(getTablePageUrl())
       await expect(page.getByTestId('column-header-name')).toBeVisible()
@@ -677,7 +613,9 @@ test.describe('Filter Operations', () => {
       await expect(page.getByTestId('filter-group-1')).toBeVisible()
 
       // Both groups should be visible
-      const groups = page.locator('[data-testid^="filter-group-"]:not([data-testid*="-add-"]):not([data-testid*="-remove-"])')
+      const groups = page.locator(
+        '[data-testid^="filter-group-"]:not([data-testid*="-add-"]):not([data-testid*="-remove-"])',
+      )
       await expect(groups).toHaveCount(2)
     })
 

@@ -132,8 +132,7 @@ test.describe('Permissions', () => {
       await expect(page.getByTestId('view-settings-save')).not.toBeVisible()
     })
 
-    test.skip('revert button does not undo local view changes', async ({ page }) => {
-      // BUG: revert button in head revision doesn't actually revert local changes
+    test('revert button undoes local view changes', async ({ page }) => {
       await setupTablePageMocks(page, { isHeadRevision: true, rowsReadonly: true })
 
       await page.goto(getTablePageUrl('head'))
@@ -152,7 +151,7 @@ test.describe('Permissions', () => {
       // Click revert
       await page.getByTestId('view-settings-revert').click()
 
-      // BUG: Column should be visible again after revert, but it's not
+      // Column should be visible again after revert
       await expect(page.getByTestId('column-header-name')).toBeVisible()
     })
   })

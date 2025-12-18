@@ -471,6 +471,14 @@ export class ColumnsModel {
 
   public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {
     if (!view || !view.columns) {
+      if (this._schemaStore) {
+        const defaultColumns = selectDefaultColumns(this._schemaStore, DEFAULT_VISIBLE_COLUMNS)
+        this._visibleColumnIds = defaultColumns.map((item) => item.nodeId)
+      } else {
+        this._visibleColumnIds = this._availableFields.map((f) => f.nodeId)
+      }
+      this._columnWidths.clear()
+      this._idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
       return
     }
 
@@ -495,6 +503,8 @@ export class ColumnsModel {
     const idCol = view.columns.find((col) => col.field === 'id')
     if (idCol?.width != null) {
       this._idColumnWidth = Math.max(MIN_COLUMN_WIDTH, idCol.width)
+    } else {
+      this._idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
     }
   }
 

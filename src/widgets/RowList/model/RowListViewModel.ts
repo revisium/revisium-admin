@@ -262,14 +262,14 @@ export class RowListViewModel implements IViewModel {
   private restoreViewFromSaved(): void {
     const viewsData = this._viewsData
     if (!viewsData) {
+      this.columnsModel.restoreFromView(undefined)
+      this.sortModel.restoreFromView(undefined)
       return
     }
 
     const defaultView = viewsData.views.find((v) => v.id === viewsData.defaultViewId)
-    if (defaultView) {
-      this.columnsModel.restoreFromView(defaultView)
-      this.sortModel.restoreFromView(defaultView)
-    }
+    this.columnsModel.restoreFromView(defaultView)
+    this.sortModel.restoreFromView(defaultView)
   }
 
   private markViewsAsChanged(): void {

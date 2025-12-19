@@ -14,6 +14,8 @@ import {
   FilterOperator,
   getDefaultOperator,
   operatorRequiresValue,
+  SearchLanguage,
+  SearchType,
 } from './filterTypes'
 
 export class FilterModel {
@@ -223,6 +225,8 @@ export class FilterModel {
     field: FilterableField,
     operator: FilterOperator,
     value: string | number | boolean | null,
+    searchLanguage?: SearchLanguage,
+    searchType?: SearchType,
   ): boolean {
     if (operatorRequiresValue(operator, field.fieldType) && (value === '' || value === null)) {
       return false
@@ -236,6 +240,8 @@ export class FilterModel {
       this.updateCondition(lastCondition.id, {
         operator,
         value: operatorRequiresValue(operator, field.fieldType) ? value : null,
+        searchLanguage,
+        searchType,
       })
     }
 

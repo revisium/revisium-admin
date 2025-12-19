@@ -8,10 +8,13 @@ import {
   FilterCondition,
   FilterOperator,
   operatorRequiresValue,
+  SearchLanguage,
+  SearchType,
 } from 'src/widgets/RowList/model/filterTypes'
 import { FilterFieldSelect } from './FilterFieldSelect'
 import { FilterOperatorSelect } from './FilterOperatorSelect'
 import { FilterValueInput } from './FilterValueInput'
+import { SearchLanguageSelect, SearchTypeSelect } from './SearchOptionsSelect'
 
 interface FilterConditionRowProps {
   filterModel: FilterModel
@@ -22,6 +25,7 @@ interface FilterConditionRowProps {
 export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filterModel, condition, testId }) => {
   const selectedField = filterModel.allFields.find((f) => f.name === condition.field)
   const showValueInput = operatorRequiresValue(condition.operator, condition.fieldType)
+  const isSearchOperator = condition.operator === FilterOperator.Search
   const error = filterModel.getErrorForCondition(condition.id)
 
   const handleFieldSelect = (field: FilterableField) => {
@@ -42,11 +46,19 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
     filterModel.updateCondition(condition.id, { value })
   }
 
+  const handleSearchLanguageChange = (searchLanguage: SearchLanguage) => {
+    filterModel.updateCondition(condition.id, { searchLanguage })
+  }
+
+  const handleSearchTypeChange = (searchType: SearchType) => {
+    filterModel.updateCondition(condition.id, { searchType })
+  }
+
   const handleRemove = () => filterModel.removeCondition(condition.id)
 
   return (
     <Box data-testid={testId}>
-      <Box display="flex" alignItems="center" gap={2} py={1}>
+      <Box display="flex" alignItems="center" gap={2} py={1} flexWrap="wrap">
         <FilterFieldSelect
           selectedField={selectedField}
           dataFields={filterModel.availableFields}
@@ -67,6 +79,13 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
             error={!!error}
             onChange={handleValueChange}
           />
+        )}
+
+        {isSearchOperator && (
+          <>
+            <SearchLanguageSelect value={condition.searchLanguage || 'simple'} onChange={handleSearchLanguageChange} />
+            <SearchTypeSelect value={condition.searchType || SearchType.Plain} onChange={handleSearchTypeChange} />
+          </>
         )}
 
         <IconButton

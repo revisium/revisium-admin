@@ -5,6 +5,7 @@ import { LuArrowUpDown, LuPlus } from 'react-icons/lu'
 import { Tooltip } from 'src/shared/ui'
 import { SortDirection } from 'src/widgets/RowList/config/sortTypes'
 import { SortModel } from 'src/widgets/RowList/model/SortModel'
+import { CopyJsonPopover } from '../CopyJsonPopover'
 import { SortConditionRow } from './SortConditionRow'
 
 interface SortPopoverProps {
@@ -151,7 +152,14 @@ export const SortPopover: FC<SortPopoverProps> = observer(({ sortModel, anchorRe
                     </Badge>
                   )}
                 </Box>
-                <Box display="flex" gap={2}>
+                <Box display="flex" gap={2} alignItems="center">
+                  {sortModel.currentSortsJson && (
+                    <CopyJsonPopover
+                      data={sortModel.currentSortsJson}
+                      tooltipContent="Copy sort JSON"
+                      testId="sort-copy-json"
+                    />
+                  )}
                   {sortModel.hasSorts && (
                     <Button
                       size="xs"

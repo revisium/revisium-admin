@@ -744,6 +744,99 @@ test.describe('Filter Operations', () => {
     })
   })
 
+  test.describe('Copy JSON', () => {
+    test('copy json button not visible when no filters added', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+
+      await expect(page.getByTestId('filter-copy-json')).not.toBeVisible()
+    })
+
+    test('copy json button visible immediately after adding filter (before apply)', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      const filterCondition = page.getByTestId('filter-condition-0')
+      const valueInput = filterCondition.locator('input')
+      await valueInput.fill('test')
+
+      await expect(page.getByTestId('filter-copy-json')).toBeVisible()
+    })
+
+    test('clicking copy json button opens json popover', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      const filterCondition = page.getByTestId('filter-condition-0')
+      const valueInput = filterCondition.locator('input')
+      await valueInput.fill('test')
+
+      await page.getByTestId('filter-copy-json').click()
+
+      await expect(page.getByTestId('filter-copy-json-copy')).toBeVisible()
+    })
+
+    test('can copy filter json to clipboard before apply', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      const filterCondition = page.getByTestId('filter-condition-0')
+      const valueInput = filterCondition.locator('input')
+      await valueInput.fill('test')
+
+      await page.getByTestId('filter-copy-json').click()
+      await page.getByTestId('filter-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(parsedJson).toHaveProperty('data')
+      expect(parsedJson.data).toHaveProperty('path')
+      expect(parsedJson.data).toHaveProperty('string_contains', 'test')
+    })
+
+    test('copy json button hidden after removing all filters', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      const filterCondition = page.getByTestId('filter-condition-0')
+      const valueInput = filterCondition.locator('input')
+      await valueInput.fill('test')
+
+      await expect(page.getByTestId('filter-copy-json')).toBeVisible()
+
+      const removeButton = filterCondition.getByRole('button', { name: /remove/i })
+      await removeButton.click()
+
+      await expect(page.getByTestId('filter-copy-json')).not.toBeVisible()
+    })
+  })
+
   test.describe('DateTime Field Filters', () => {
     // DateTime filters work with system fields (createdAt, updatedAt, publishedAt)
     test('system datetime field shows date comparison operators', async ({ page }) => {

@@ -320,6 +320,10 @@ export class FilterModel {
     return buildGraphQLWhere(this._appliedGroup)
   }
 
+  public get currentFiltersJson(): object | undefined {
+    return buildGraphQLWhere(this._rootGroup)
+  }
+
   private countFilters(group: FilterGroup): number {
     let count = group.conditions.length
 

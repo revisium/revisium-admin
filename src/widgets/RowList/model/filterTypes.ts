@@ -16,6 +16,7 @@ export enum FilterOperator {
   EndsWith = 'ends_with',
   IsEmpty = 'is_empty',
   IsNotEmpty = 'is_not_empty',
+  Search = 'search',
 
   Gt = 'gt',
   Gte = 'gte',
@@ -25,6 +26,30 @@ export enum FilterOperator {
   IsTrue = 'is_true',
   IsFalse = 'is_false',
 }
+
+export enum SearchType {
+  Plain = 'plain',
+  Phrase = 'phrase',
+}
+
+export const SEARCH_LANGUAGES = [
+  { value: 'simple', label: 'Simple (no stemming)' },
+  { value: 'russian', label: 'Russian' },
+  { value: 'english', label: 'English' },
+  { value: 'german', label: 'German' },
+  { value: 'french', label: 'French' },
+  { value: 'spanish', label: 'Spanish' },
+  { value: 'italian', label: 'Italian' },
+  { value: 'portuguese', label: 'Portuguese' },
+  { value: 'dutch', label: 'Dutch' },
+  { value: 'swedish', label: 'Swedish' },
+  { value: 'norwegian', label: 'Norwegian' },
+  { value: 'danish', label: 'Danish' },
+  { value: 'finnish', label: 'Finnish' },
+  { value: 'turkish', label: 'Turkish' },
+] as const
+
+export type SearchLanguage = (typeof SEARCH_LANGUAGES)[number]['value']
 
 export interface OperatorInfo {
   operator: FilterOperator
@@ -40,6 +65,7 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
     { operator: FilterOperator.NotContains, label: 'not contains', requiresValue: true },
     { operator: FilterOperator.StartsWith, label: 'starts with', requiresValue: true },
     { operator: FilterOperator.EndsWith, label: 'ends with', requiresValue: true },
+    { operator: FilterOperator.Search, label: 'search', requiresValue: true },
     { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
     { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
   ],
@@ -86,6 +112,8 @@ export interface FilterCondition {
   value: string | number | boolean | null
   isSystemField?: boolean
   systemFieldId?: SystemFieldId
+  searchLanguage?: SearchLanguage
+  searchType?: SearchType
 }
 
 export interface FilterGroup {
@@ -165,6 +193,8 @@ export function createEmptyCondition(field: FilterableField): FilterCondition {
     value: field.fieldType === FilterFieldType.Boolean ? true : '',
     isSystemField: field.isSystemField,
     systemFieldId: field.systemFieldId,
+    searchLanguage: 'simple',
+    searchType: SearchType.Plain,
   }
 }
 

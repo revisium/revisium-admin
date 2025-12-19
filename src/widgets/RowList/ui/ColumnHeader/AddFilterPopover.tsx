@@ -8,9 +8,12 @@ import {
   FilterOperator,
   getDefaultOperator,
   operatorRequiresValue,
+  SearchLanguage,
+  SearchType,
 } from 'src/widgets/RowList/model/filterTypes'
 import { FilterOperatorSelect } from '../FilterBar/FilterOperatorSelect'
 import { FilterValueInput } from '../FilterBar/FilterValueInput'
+import { SearchLanguageSelect, SearchTypeSelect } from '../FilterBar/SearchOptionsSelect'
 
 interface AddFilterPopoverProps {
   field: FilterableField
@@ -24,9 +27,12 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
   ({ field, filterModel, isOpen, onClose, anchorRef }) => {
     const [operator, setOperator] = useState<FilterOperator>(() => getDefaultOperator(field.fieldType))
     const [value, setValue] = useState<string | number | boolean>('')
+    const [searchLanguage, setSearchLanguage] = useState<SearchLanguage>('simple')
+    const [searchType, setSearchType] = useState<SearchType>(SearchType.Plain)
     const [error, setError] = useState(false)
 
     const showValueInput = operatorRequiresValue(operator, field.fieldType)
+    const isSearchOperator = operator === FilterOperator.Search
 
     const handleOperatorSelect = useCallback((op: FilterOperator) => {
       setOperator(op)
@@ -38,9 +44,19 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
       setError(false)
     }, [])
 
+    const handleSearchLanguageChange = useCallback((lang: SearchLanguage) => {
+      setSearchLanguage(lang)
+    }, [])
+
+    const handleSearchTypeChange = useCallback((type: SearchType) => {
+      setSearchType(type)
+    }, [])
+
     const resetState = useCallback(() => {
       setOperator(getDefaultOperator(field.fieldType))
       setValue('')
+      setSearchLanguage('simple')
+      setSearchType(SearchType.Plain)
       setError(false)
     }, [field.fieldType])
 
@@ -50,14 +66,20 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
     }, [resetState, onClose])
 
     const handleAdd = useCallback(() => {
-      const success = filterModel.addQuickFilter(field, operator, value)
+      const success = filterModel.addQuickFilter(
+        field,
+        operator,
+        value,
+        isSearchOperator ? searchLanguage : undefined,
+        isSearchOperator ? searchType : undefined,
+      )
       if (!success) {
         setError(true)
         return
       }
       resetState()
       onClose()
-    }, [filterModel, field, operator, value, resetState, onClose])
+    }, [filterModel, field, operator, value, isSearchOperator, searchLanguage, searchType, resetState, onClose])
 
     const getAnchorRect = useCallback(() => {
       return anchorRef.current?.getBoundingClientRect() ?? null
@@ -89,7 +111,7 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
                 </Text>
               </Box>
 
-              <Box display="flex" alignItems="center" gap={2} mb={3}>
+              <Box display="flex" alignItems="center" gap={2} mb={3} flexWrap="wrap">
                 <FilterOperatorSelect
                   selectedOperator={operator}
                   fieldType={field.fieldType}
@@ -103,6 +125,13 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
                     error={error}
                     onChange={handleValueChange}
                   />
+                )}
+
+                {isSearchOperator && (
+                  <>
+                    <SearchLanguageSelect value={searchLanguage} onChange={handleSearchLanguageChange} />
+                    <SearchTypeSelect value={searchType} onChange={handleSearchTypeChange} />
+                  </>
                 )}
               </Box>
 

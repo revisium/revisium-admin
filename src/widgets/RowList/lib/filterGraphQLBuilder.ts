@@ -1,4 +1,11 @@
-import { FilterCondition, FilterFieldType, FilterGroup, FilterOperator, SystemFieldId } from '../model/filterTypes'
+import {
+  FilterCondition,
+  FilterFieldType,
+  FilterGroup,
+  FilterOperator,
+  SearchType,
+  SystemFieldId,
+} from '../model/filterTypes'
 
 export function buildGraphQLWhere(group: FilterGroup): object | undefined {
   return groupToGraphQL(group)
@@ -41,7 +48,7 @@ function groupToGraphQL(group: FilterGroup): object | undefined {
 }
 
 function conditionToGraphQL(condition: FilterCondition): object | undefined {
-  const { fieldPath, fieldType, operator, value, isSystemField, systemFieldId } = condition
+  const { fieldPath, fieldType, operator, value, isSystemField, systemFieldId, searchLanguage, searchType } = condition
 
   if (isSystemField && systemFieldId) {
     return buildSystemFieldFilter(systemFieldId, fieldType, operator, value)
@@ -69,6 +76,13 @@ function conditionToGraphQL(condition: FilterCondition): object | undefined {
 
     case FilterOperator.EndsWith:
       return buildDataFilter(fieldPath, { string_ends_with: String(value) })
+
+    case FilterOperator.Search:
+      return buildDataFilter(fieldPath, {
+        search: String(value),
+        searchLanguage: searchLanguage || 'simple',
+        searchType: searchType || SearchType.Plain,
+      })
 
     case FilterOperator.IsEmpty:
       return buildDataFilter(fieldPath, { equals: '' })

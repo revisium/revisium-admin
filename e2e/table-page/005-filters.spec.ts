@@ -837,6 +837,244 @@ test.describe('Filter Operations', () => {
     })
   })
 
+  test.describe('Search Filter', () => {
+    test('string field supports search operator', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select operator dropdown
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+
+      await expect(page.getByRole('menuitem', { name: 'search', exact: true })).toBeVisible()
+    })
+
+    test('search operator shows language and type selectors', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Language and type selectors should be visible
+      await expect(page.getByRole('button', { name: /Simple|Russian|English/i })).toBeVisible()
+      await expect(page.getByRole('button', { name: /Words|Exact phrase/i })).toBeVisible()
+    })
+
+    test('can change search language', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Open language dropdown and select Russian
+      await page.getByRole('button', { name: /Simple/i }).click()
+      await page.getByRole('menuitem', { name: 'Russian' }).click()
+
+      // Russian should now be selected
+      await expect(page.getByRole('button', { name: /Russian/i })).toBeVisible()
+    })
+
+    test('can change search type', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Open type dropdown and select phrase
+      await page.getByRole('button', { name: /Words/i }).click()
+      await page.getByRole('menuitem', { name: 'Exact phrase' }).click()
+
+      // Phrase should now be selected
+      await expect(page.getByRole('button', { name: /Exact phrase/i })).toBeVisible()
+    })
+
+    test('search filter can be applied', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Enter search value
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await valueInput.fill('test search')
+
+      // Apply filter
+      await page.getByTestId('filter-apply').click()
+
+      // Filter badge should indicate applied filter
+      await expect(page.getByTestId('filter-badge')).toHaveAttribute('data-badge-color', 'gray')
+    })
+
+    test('search filter generates correct JSON', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Select Russian language
+      await page.getByRole('button', { name: /Simple/i }).click()
+      await page.getByRole('menuitem', { name: 'Russian' }).click()
+
+      // Enter search value
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await valueInput.fill('форель')
+
+      // Copy JSON
+      await page.getByTestId('filter-copy-json').click()
+      await page.getByTestId('filter-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(parsedJson).toHaveProperty('data')
+      expect(parsedJson.data).toHaveProperty('path')
+      expect(parsedJson.data).toHaveProperty('search', 'форель')
+      expect(parsedJson.data).toHaveProperty('searchLanguage', 'russian')
+      expect(parsedJson.data).toHaveProperty('searchType', 'plain')
+    })
+
+    test('search filter with phrase type generates correct JSON', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Select phrase type
+      await page.getByRole('button', { name: /Words/i }).click()
+      await page.getByRole('menuitem', { name: 'Exact phrase' }).click()
+
+      // Enter search value
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await valueInput.fill('hello world')
+
+      // Copy JSON
+      await page.getByTestId('filter-copy-json').click()
+      await page.getByTestId('filter-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(parsedJson.data).toHaveProperty('search', 'hello world')
+      expect(parsedJson.data).toHaveProperty('searchType', 'phrase')
+    })
+
+    test('changing from search to other operator hides language/type selectors', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Language and type selectors should be visible
+      await expect(page.getByRole('button', { name: /Simple|Russian|English/i })).toBeVisible()
+
+      // Change to contains operator
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'contains', exact: true }).click()
+
+      // Language selector should not be visible
+      await expect(page.getByRole('button', { name: /Simple \(no stemming\)/i })).not.toBeVisible()
+    })
+
+    test('can add search filter from column header with language and type options', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open column header menu
+      await page.getByTestId('column-header-name').click()
+      await page.getByRole('menuitem', { name: 'Add filter' }).click()
+
+      // Select search operator
+      const dialog = page.locator('[role="dialog"]')
+      const operatorButton = dialog.locator('button').filter({ hasText: 'contains' })
+      await operatorButton.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Language and type selectors should be visible
+      await expect(dialog.getByRole('button', { name: /Simple/i })).toBeVisible()
+      await expect(dialog.getByRole('button', { name: /Words/i })).toBeVisible()
+
+      // Select Russian language
+      await dialog.getByRole('button', { name: /Simple/i }).click()
+      await page.getByRole('menuitem', { name: 'Russian' }).click()
+
+      // Enter search value
+      const filterValue = dialog.locator('input')
+      await filterValue.fill('форель')
+
+      // Add filter
+      await page.getByRole('button', { name: 'Add', exact: true }).click()
+
+      // Filter should be applied
+      await expect(page.getByTestId('filter-badge')).toBeVisible()
+      await expect(page.getByTestId('filter-badge')).toHaveText('1')
+    })
+  })
+
   test.describe('DateTime Field Filters', () => {
     // DateTime filters work with system fields (createdAt, updatedAt, publishedAt)
     test('system datetime field shows date comparison operators', async ({ page }) => {

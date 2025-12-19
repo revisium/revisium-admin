@@ -83,7 +83,10 @@ export const FilterConditionRow: FC<FilterConditionRowProps> = observer(({ filte
 
         {isSearchOperator && (
           <>
-            <SearchLanguageSelect value={condition.searchLanguage || 'simple'} onChange={handleSearchLanguageChange} />
+            <SearchLanguageSelect
+              value={condition.searchLanguage || SearchLanguage.SIMPLE}
+              onChange={handleSearchLanguageChange}
+            />
             <SearchTypeSelect value={condition.searchType || SearchType.Plain} onChange={handleSearchTypeChange} />
           </>
         )}

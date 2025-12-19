@@ -32,24 +32,18 @@ export enum SearchType {
   Phrase = 'phrase',
 }
 
-export const SEARCH_LANGUAGES = [
-  { value: 'simple', label: 'Simple (no stemming)' },
-  { value: 'russian', label: 'Russian' },
-  { value: 'english', label: 'English' },
-  { value: 'german', label: 'German' },
-  { value: 'french', label: 'French' },
-  { value: 'spanish', label: 'Spanish' },
-  { value: 'italian', label: 'Italian' },
-  { value: 'portuguese', label: 'Portuguese' },
-  { value: 'dutch', label: 'Dutch' },
-  { value: 'swedish', label: 'Swedish' },
-  { value: 'norwegian', label: 'Norwegian' },
-  { value: 'danish', label: 'Danish' },
-  { value: 'finnish', label: 'Finnish' },
-  { value: 'turkish', label: 'Turkish' },
-] as const
+import { SearchLanguage } from 'src/__generated__/globalTypes'
 
-export type SearchLanguage = (typeof SEARCH_LANGUAGES)[number]['value']
+export { SearchLanguage }
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+export const SEARCH_LANGUAGES: readonly { value: SearchLanguage; label: string }[] = Object.values(SearchLanguage).map(
+  (value) => ({
+    value,
+    label: value === SearchLanguage.SIMPLE ? 'Simple (no stemming)' : capitalize(value),
+  }),
+)
 
 export interface OperatorInfo {
   operator: FilterOperator
@@ -193,7 +187,7 @@ export function createEmptyCondition(field: FilterableField): FilterCondition {
     value: field.fieldType === FilterFieldType.Boolean ? true : '',
     isSystemField: field.isSystemField,
     systemFieldId: field.systemFieldId,
-    searchLanguage: 'simple',
+    searchLanguage: SearchLanguage.SIMPLE,
     searchType: SearchType.Plain,
   }
 }

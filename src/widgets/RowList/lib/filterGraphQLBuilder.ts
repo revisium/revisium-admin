@@ -3,6 +3,7 @@ import {
   FilterFieldType,
   FilterGroup,
   FilterOperator,
+  SearchLanguage,
   SearchType,
   SystemFieldId,
 } from '../model/filterTypes'
@@ -80,7 +81,7 @@ function conditionToGraphQL(condition: FilterCondition): object | undefined {
     case FilterOperator.Search:
       return buildDataFilter(fieldPath, {
         search: String(value),
-        searchLanguage: searchLanguage || 'simple',
+        searchLanguage: searchLanguage || SearchLanguage.SIMPLE,
         searchType: searchType || SearchType.Plain,
       })
 

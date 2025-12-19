@@ -27,7 +27,7 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
   ({ field, filterModel, isOpen, onClose, anchorRef }) => {
     const [operator, setOperator] = useState<FilterOperator>(() => getDefaultOperator(field.fieldType))
     const [value, setValue] = useState<string | number | boolean>('')
-    const [searchLanguage, setSearchLanguage] = useState<SearchLanguage>('simple')
+    const [searchLanguage, setSearchLanguage] = useState<SearchLanguage>(SearchLanguage.SIMPLE)
     const [searchType, setSearchType] = useState<SearchType>(SearchType.Plain)
     const [error, setError] = useState(false)
 
@@ -55,7 +55,7 @@ export const AddFilterPopover: FC<AddFilterPopoverProps> = observer(
     const resetState = useCallback(() => {
       setOperator(getDefaultOperator(field.fieldType))
       setValue('')
-      setSearchLanguage('simple')
+      setSearchLanguage(SearchLanguage.SIMPLE)
       setSearchType(SearchType.Plain)
       setError(false)
     }, [field.fieldType])

@@ -233,29 +233,19 @@ export class SortModel {
   }
 
   public toGraphQLOrderBy(): OrderBy[] | undefined {
-    if (this._appliedSorts.length === 0) {
-      return undefined
-    }
-
-    return this._appliedSorts.map((sort) => {
-      if (sort.isSystemField && sort.systemFieldId) {
-        return this.buildSystemFieldOrderBy(sort)
-      }
-      return {
-        field: OrderByField.Data,
-        path: this.buildSortPath(sort),
-        direction: sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc,
-        type: this.mapFieldTypeToOrderDataType(sort.fieldType),
-      }
-    })
+    return this.mapSortsToOrderBy(this._appliedSorts)
   }
 
   public get currentSortsJson(): OrderBy[] | undefined {
-    if (this._sorts.length === 0) {
+    return this.mapSortsToOrderBy(this._sorts)
+  }
+
+  private mapSortsToOrderBy(sorts: SortConfig[]): OrderBy[] | undefined {
+    if (sorts.length === 0) {
       return undefined
     }
 
-    return this._sorts.map((sort) => {
+    return sorts.map((sort) => {
       if (sort.isSystemField && sort.systemFieldId) {
         return this.buildSystemFieldOrderBy(sort)
       }

@@ -4,6 +4,7 @@ import { FC, useCallback, useRef } from 'react'
 import { LuFilter } from 'react-icons/lu'
 import { Tooltip } from 'src/shared/ui'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
+import { CopyJsonPopover } from '../CopyJsonPopover'
 import { FilterGroupComponent } from './FilterGroupComponent'
 
 interface FilterPopoverProps {
@@ -122,7 +123,14 @@ export const FilterPopover: FC<FilterPopoverProps> = observer(({ filterModel, an
                     </Badge>
                   )}
                 </Box>
-                <Box display="flex" gap={2}>
+                <Box display="flex" gap={2} alignItems="center">
+                  {filterModel.currentFiltersJson && (
+                    <CopyJsonPopover
+                      data={filterModel.currentFiltersJson}
+                      tooltipContent="Copy filter JSON"
+                      testId="filter-copy-json"
+                    />
+                  )}
                   {filterModel.hasFilters && (
                     <Button
                       size="xs"

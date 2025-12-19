@@ -250,6 +250,24 @@ export class SortModel {
     })
   }
 
+  public get currentSortsJson(): OrderBy[] | undefined {
+    if (this._sorts.length === 0) {
+      return undefined
+    }
+
+    return this._sorts.map((sort) => {
+      if (sort.isSystemField && sort.systemFieldId) {
+        return this.buildSystemFieldOrderBy(sort)
+      }
+      return {
+        field: OrderByField.Data,
+        path: this.buildSortPath(sort),
+        direction: sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc,
+        type: this.mapFieldTypeToOrderDataType(sort.fieldType),
+      }
+    })
+  }
+
   private buildSystemFieldOrderBy(sort: SortConfig): OrderBy {
     const direction = sort.direction === 'asc' ? SortOrder.Asc : SortOrder.Desc
 

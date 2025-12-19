@@ -362,6 +362,84 @@ test.describe('Sort Operations', () => {
     })
   })
 
+  test.describe('Copy JSON', () => {
+    test('copy json button not visible when no sorts added', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('sort-button').click()
+
+      await expect(page.getByTestId('sort-copy-json')).not.toBeVisible()
+    })
+
+    test('copy json button visible immediately after adding sort (before apply)', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('sort-button').click()
+      await page.getByTestId('sort-add').click()
+
+      await expect(page.getByTestId('sort-copy-json')).toBeVisible()
+    })
+
+    test('clicking copy json button opens json popover', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('sort-button').click()
+      await page.getByTestId('sort-add').click()
+
+      await page.getByTestId('sort-copy-json').click()
+
+      await expect(page.getByTestId('sort-copy-json-copy')).toBeVisible()
+    })
+
+    test('can copy sort json to clipboard before apply', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('sort-button').click()
+      await page.getByTestId('sort-add').click()
+
+      await page.getByTestId('sort-copy-json').click()
+      await page.getByTestId('sort-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(Array.isArray(parsedJson)).toBe(true)
+      expect(parsedJson.length).toBe(1)
+      expect(parsedJson[0]).toHaveProperty('field')
+      expect(parsedJson[0]).toHaveProperty('direction')
+    })
+
+    test('copy json button hidden after clearing sorts', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      await page.getByTestId('sort-button').click()
+      await page.getByTestId('sort-add').click()
+
+      await expect(page.getByTestId('sort-copy-json')).toBeVisible()
+
+      const removeButton = page.getByTestId('sort-condition-0').getByRole('button', { name: /remove/i })
+      await removeButton.click()
+
+      await expect(page.getByTestId('sort-copy-json')).not.toBeVisible()
+    })
+  })
+
   test.describe('View Settings Persistence', () => {
     test('apply sort calls UpdateTableViews API', async ({ page }) => {
       let updateViewsCalled = false

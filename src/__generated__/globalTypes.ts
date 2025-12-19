@@ -397,7 +397,8 @@ export type JsonFilter = {
   path?: InputMaybe<Array<Scalars['String']['input']>>
   search?: InputMaybe<Scalars['String']['input']>
   searchIn?: InputMaybe<SearchIn>
-  searchLanguage?: InputMaybe<Scalars['String']['input']>
+  /** Default: simple */
+  searchLanguage?: InputMaybe<SearchLanguage>
   searchType?: InputMaybe<SearchType>
   string_contains?: InputMaybe<Scalars['String']['input']>
   string_ends_with?: InputMaybe<Scalars['String']['input']>
@@ -1122,6 +1123,39 @@ export enum SearchIn {
   NUMBERS = 'numbers',
   STRINGS = 'strings',
   VALUES = 'values',
+}
+
+/** Language for full-text search. Default: simple */
+export enum SearchLanguage {
+  ARABIC = 'arabic',
+  ARMENIAN = 'armenian',
+  BASQUE = 'basque',
+  CATALAN = 'catalan',
+  DANISH = 'danish',
+  DUTCH = 'dutch',
+  ENGLISH = 'english',
+  FINNISH = 'finnish',
+  FRENCH = 'french',
+  GERMAN = 'german',
+  GREEK = 'greek',
+  HINDI = 'hindi',
+  HUNGARIAN = 'hungarian',
+  INDONESIAN = 'indonesian',
+  IRISH = 'irish',
+  ITALIAN = 'italian',
+  LITHUANIAN = 'lithuanian',
+  NEPALI = 'nepali',
+  NORWEGIAN = 'norwegian',
+  PORTUGUESE = 'portuguese',
+  ROMANIAN = 'romanian',
+  RUSSIAN = 'russian',
+  SERBIAN = 'serbian',
+  SIMPLE = 'simple',
+  SPANISH = 'spanish',
+  SWEDISH = 'swedish',
+  TAMIL = 'tamil',
+  TURKISH = 'turkish',
+  YIDDISH = 'yiddish',
 }
 
 export type SearchMatch = {

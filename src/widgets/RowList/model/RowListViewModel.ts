@@ -140,6 +140,7 @@ export class RowListViewModel implements IViewModel {
       case 'filters':
         return 'Try adjusting your filters'
       case 'search':
+      default:
         return 'Try a different search term'
     }
   }

@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
@@ -174,7 +175,7 @@ export function operatorRequiresValue(operator: FilterOperator, fieldType: Filte
 }
 
 export function generateFilterId(): string {
-  return `filter_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+  return nanoid()
 }
 
 export function createEmptyCondition(field: FilterableField): FilterCondition {

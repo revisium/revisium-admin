@@ -97,15 +97,22 @@ export class ColumnsModel {
       return cached
     }
 
+    const schemaTitle = field.schemaStore?.title
+    const schemaDeprecated = field.schemaStore?.deprecated
+    const schemaDescription = field.schemaStore?.description
+
     const column: ColumnType = {
       id: field.nodeId,
       name: field.name,
-      title: field.name,
+      title: schemaTitle || field.name,
+      path: field.name,
       fieldType: field.fieldType,
       isSystemField: field.isSystemField,
       systemFieldId: field.systemFieldId,
       isSystemColumn: field.isSystemColumn,
       isFileObject: field.isFileObject,
+      isDeprecated: schemaDeprecated,
+      deprecatedReason: schemaDeprecated ? schemaDescription : undefined,
     }
     this._columnCache.set(field.nodeId, column)
     return column

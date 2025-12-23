@@ -19,6 +19,8 @@ export const SelectRowListItem: React.FC<SelectRowListItemProps> = observer(
       onSelect?.(row.id)
     }, [onSelect, row.id])
 
+    const idColumnWidth = columnsModel.idColumnWidth
+
     return (
       <Box
         height="40px"
@@ -31,8 +33,17 @@ export const SelectRowListItem: React.FC<SelectRowListItemProps> = observer(
         className={styles.Row}
         data-testid={`row-${row.id}`}
       >
-        <Box as="td" position="sticky" left={0} backgroundColor="white" width="200px" minWidth="200px" maxWidth="200px">
-          <Flex alignItems="center">
+        <Box as="td" width="0px" minWidth="0px" maxWidth="0px" overflow="hidden" />
+        <Box
+          as="td"
+          position="sticky"
+          left={0}
+          backgroundColor="white"
+          width={`${idColumnWidth}px`}
+          minWidth={`${idColumnWidth}px`}
+          maxWidth={`${idColumnWidth}px`}
+        >
+          <Flex alignItems="center" pl="8px">
             <Text
               textDecoration="underline"
               cursor="pointer"

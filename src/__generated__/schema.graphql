@@ -918,6 +918,8 @@ input SearchRowsInput {
 enum SearchType {
   phrase
   plain
+  prefix
+  tsquery
 }
 
 input SearchUsersInput {

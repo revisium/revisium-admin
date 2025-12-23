@@ -354,4 +354,147 @@ test.describe('Search Functionality', () => {
       await expect(page.getByTestId('filter-badge')).toBeVisible()
     })
   })
+
+  test.describe('Search Type Options (via Filter)', () => {
+    test('search filter shows all search type options including prefix and tsquery', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open filter sidebar
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Open search type dropdown (defaults to "plain — Words...")
+      await page.getByRole('button', { name: /plain — Words/i }).click()
+
+      // Should show all search type options including prefix and tsquery
+      await expect(page.getByRole('menuitem', { name: /plain — Words/i })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: /phrase — Exact phrase/i })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: /prefix — Partial words/i })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: /tsquery — Raw/i })).toBeVisible()
+    })
+
+    test('can select prefix search type in filter', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open filter sidebar
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Open search type dropdown and select prefix
+      await page.getByRole('button', { name: /plain — Words/i }).click()
+      await page.getByRole('menuitem', { name: /prefix — Partial words/i }).click()
+
+      // Should show prefix as selected
+      await expect(page.getByRole('button', { name: /prefix — Partial words/i })).toBeVisible()
+    })
+
+    test('can select tsquery search type in filter', async ({ page }) => {
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open filter sidebar
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Open search type dropdown and select tsquery
+      await page.getByRole('button', { name: /plain — Words/i }).click()
+      await page.getByRole('menuitem', { name: /tsquery — Raw/i }).click()
+
+      // Should show tsquery as selected
+      await expect(page.getByRole('button', { name: /tsquery — Raw/i })).toBeVisible()
+    })
+
+    test('prefix search type generates correct JSON', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open filter sidebar
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Select prefix type
+      await page.getByRole('button', { name: /plain — Words/i }).click()
+      await page.getByRole('menuitem', { name: /prefix — Partial words/i }).click()
+
+      // Enter search value
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await valueInput.fill('крев')
+
+      // Copy JSON
+      await page.getByTestId('filter-copy-json').click()
+      await page.getByTestId('filter-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(parsedJson.data).toHaveProperty('search', 'крев')
+      expect(parsedJson.data).toHaveProperty('searchType', 'prefix')
+    })
+
+    test('tsquery search type generates correct JSON', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await setupMocks(page)
+
+      await page.goto(`/app/${ORG_ID}/${PROJECT_NAME}/master/draft/${TABLE_ID}`)
+      await expect(page.getByTestId('column-header-name')).toBeVisible()
+
+      // Open filter sidebar
+      await page.getByTestId('filter-button').click()
+      await page.getByTestId('filter-add-condition').click()
+
+      // Select search operator
+      const operatorSelect = page.getByTestId('filter-condition-0').locator('button').nth(1)
+      await operatorSelect.click()
+      await page.getByRole('menuitem', { name: 'search', exact: true }).click()
+
+      // Select tsquery type
+      await page.getByRole('button', { name: /plain — Words/i }).click()
+      await page.getByRole('menuitem', { name: /tsquery — Raw/i }).click()
+
+      // Enter search value (tsquery syntax)
+      const valueInput = page.getByTestId('filter-condition-0').locator('input')
+      await valueInput.fill('foo:* & bar')
+
+      // Copy JSON
+      await page.getByTestId('filter-copy-json').click()
+      await page.getByTestId('filter-copy-json-copy').click()
+
+      const clipboardText = await page.evaluate(() => navigator.clipboard.readText())
+      const parsedJson = JSON.parse(clipboardText)
+
+      expect(parsedJson.data).toHaveProperty('search', 'foo:* & bar')
+      expect(parsedJson.data).toHaveProperty('searchType', 'tsquery')
+    })
+  })
 })

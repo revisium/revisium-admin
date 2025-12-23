@@ -1,11 +1,12 @@
 import { Box, Flex, Menu, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useRef, useState } from 'react'
-import { LuArrowLeftToLine, LuArrowRightToLine, LuChevronLeft, LuChevronRight, LuFilter } from 'react-icons/lu'
+import { LuArrowLeftToLine, LuArrowRightToLine, LuChevronLeft, LuChevronRight, LuCopy, LuFilter } from 'react-icons/lu'
 import { PiEyeSlash, PiListBullets } from 'react-icons/pi'
-import { useTruncatedTooltip } from 'src/shared/hooks/useTruncatedTooltip'
-import { Tooltip } from 'src/shared/ui/Tooltip/tooltip'
+import { copyToClipboard } from 'src/shared/lib/helpers'
+import { toaster, Tooltip } from 'src/shared/ui'
 import { useColumnResize } from 'src/widgets/RowList/hooks/useColumnResize'
+import { buildColumnTooltip } from 'src/widgets/RowList/lib/buildColumnTooltip'
 import { getFieldTypeIcon } from 'src/widgets/RowList/lib/getFieldTypeIcon'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { FilterModel } from 'src/widgets/RowList/model/FilterModel'
@@ -25,16 +26,9 @@ interface ColumnHeaderProps {
 }
 
 export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsModel, sortModel, filterModel }) => {
-  const {
-    ref: textRef,
-    isOpen: tooltipOpen,
-    onMouseEnter,
-    onMouseLeave,
-    onClose,
-  } = useTruncatedTooltip<HTMLParagraphElement>()
-
   const headerRef = useRef<HTMLTableCellElement>(null)
   const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const width = columnsModel.getColumnWidth(column.id)
   const { isResizing, handleMouseDown: handleResizeMouseDown } = useColumnResize(column.id, columnsModel)
@@ -99,6 +93,16 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
     setIsFilterPopoverOpen(false)
   }, [])
 
+  const handleCopyPath = useCallback(async () => {
+    await copyToClipboard(column.path)
+    toaster.info({
+      duration: 1500,
+      description: 'Path copied to clipboard',
+    })
+  }, [column.path])
+
+  const tooltipContent = buildColumnTooltip(column)
+
   return (
     <Box
       ref={headerRef}
@@ -111,31 +115,41 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
       position="relative"
       data-testid={`column-header-${column.name}`}
     >
-      <Menu.Root positioning={{ placement: 'bottom-end' }} lazyMount unmountOnExit>
-        <Menu.Trigger asChild>
-          <Flex
-            alignItems="center"
-            height="30px"
-            borderBottomWidth="1px"
-            borderColor="gray.100"
-            pl="16px"
-            pr="8px"
-            gap="4px"
-            cursor="pointer"
-            transition="background 0.15s"
-            _hover={{ bg: 'gray.50' }}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            onClick={onClose}
-          >
-            {column.fieldType && (
-              <Box as="span" fontSize="xs" fontWeight="medium" color="gray.300" fontFamily="mono" flexShrink={0} mr={1}>
-                {getFieldTypeIcon(column.fieldType)}
-              </Box>
-            )}
-            <Tooltip content={column.title} open={tooltipOpen} positioning={{ placement: 'top' }}>
+      <Menu.Root
+        positioning={{ placement: 'bottom-end' }}
+        lazyMount
+        unmountOnExit
+        open={isMenuOpen}
+        onOpenChange={(details) => setIsMenuOpen(details.open)}
+      >
+        <Tooltip content={tooltipContent} positioning={{ placement: 'top' }} openDelay={300} disabled={isMenuOpen}>
+          <Menu.Trigger asChild>
+            <Flex
+              alignItems="center"
+              height="30px"
+              borderBottomWidth="1px"
+              borderColor="gray.100"
+              pl="16px"
+              pr="8px"
+              gap="4px"
+              cursor="pointer"
+              transition="background 0.15s"
+              _hover={{ bg: 'gray.50' }}
+            >
+              {column.fieldType && (
+                <Box
+                  as="span"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  color="gray.300"
+                  fontFamily="mono"
+                  flexShrink={0}
+                  mr={1}
+                >
+                  {getFieldTypeIcon(column.fieldType)}
+                </Box>
+              )}
               <Text
-                ref={textRef}
                 flex={1}
                 minWidth={0}
                 whiteSpace="nowrap"
@@ -143,13 +157,14 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
                 overflow="hidden"
                 color="gray.400"
                 fontSize="sm"
+                textDecoration={column.isDeprecated ? 'line-through' : undefined}
               >
                 {column.title}
               </Text>
-            </Tooltip>
-            {sortModel && !column.isFileObject && <SortIndicator columnId={column.id} sortModel={sortModel} />}
-          </Flex>
-        </Menu.Trigger>
+              {sortModel && !column.isFileObject && <SortIndicator columnId={column.id} sortModel={sortModel} />}
+            </Flex>
+          </Menu.Trigger>
+        </Tooltip>
         <Portal>
           <Menu.Positioner>
             <Menu.Content minW="180px">
@@ -239,6 +254,11 @@ export const ColumnHeader: FC<ColumnHeaderProps> = observer(({ column, columnsMo
               <Menu.Item value="hide-all" disabled={!canHideAll} onClick={columnsModel.hideAll}>
                 <PiListBullets />
                 <Text>Hide all columns</Text>
+              </Menu.Item>
+              <Menu.Separator />
+              <Menu.Item value="copy-path" onClick={handleCopyPath}>
+                <LuCopy />
+                <Text>Copy path</Text>
               </Menu.Item>
             </Menu.Content>
           </Menu.Positioner>

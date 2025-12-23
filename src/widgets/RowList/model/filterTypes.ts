@@ -1,12 +1,13 @@
 import { nanoid } from 'nanoid'
+import { SearchLanguage } from 'src/__generated__/globalTypes'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
-import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
+import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store'
+import { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 
 export { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 export { getSystemFieldBySchemaRef, SYSTEM_FIELDS_CONFIG } from '../config/systemFields'
-
-import { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
+export { SearchLanguage }
 
 export enum FilterOperator {
   Equals = 'equals',
@@ -31,11 +32,9 @@ export enum FilterOperator {
 export enum SearchType {
   Plain = 'plain',
   Phrase = 'phrase',
+  Prefix = 'prefix',
+  Tsquery = 'tsquery',
 }
-
-import { SearchLanguage } from 'src/__generated__/globalTypes'
-
-export { SearchLanguage }
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
@@ -71,8 +70,6 @@ export const OPERATORS_BY_TYPE: Record<FilterFieldType, OperatorInfo[]> = {
     { operator: FilterOperator.Gte, label: '>=', requiresValue: true },
     { operator: FilterOperator.Lt, label: '<', requiresValue: true },
     { operator: FilterOperator.Lte, label: '<=', requiresValue: true },
-    { operator: FilterOperator.IsEmpty, label: 'is empty', requiresValue: false },
-    { operator: FilterOperator.IsNotEmpty, label: 'is not empty', requiresValue: false },
   ],
   [FilterFieldType.Boolean]: [
     { operator: FilterOperator.IsTrue, label: 'is true', requiresValue: false },

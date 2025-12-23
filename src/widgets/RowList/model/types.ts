@@ -5,11 +5,14 @@ export type ColumnType = {
   id: string
   name: string
   title: string
+  path: string
   fieldType: FilterFieldType | null
   isSystemField?: boolean
   systemFieldId?: SystemFieldId
   isSystemColumn?: boolean
   isFileObject?: boolean
+  isDeprecated?: boolean
+  deprecatedReason?: string
 }
 
 export interface AvailableField {

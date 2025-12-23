@@ -1195,6 +1195,8 @@ export type SearchRowsInput = {
 export enum SearchType {
   PHRASE = 'phrase',
   PLAIN = 'plain',
+  PREFIX = 'prefix',
+  TSQUERY = 'tsquery',
 }
 
 export type SearchUsersInput = {

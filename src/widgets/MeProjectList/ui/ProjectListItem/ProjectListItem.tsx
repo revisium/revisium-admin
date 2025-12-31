@@ -10,7 +10,7 @@ interface ProjectListItemProps {
 
 export const ProjectListItem: FC<ProjectListItemProps> = observer(({ model }) => {
   return (
-    <Box height="2.5rem" key={model.id} width="100%">
+    <Box height="2.5rem" width="100%">
       <Flex
         _hover={{ backgroundColor: 'gray.50' }}
         alignItems="center"

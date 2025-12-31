@@ -116,10 +116,6 @@ export abstract class PaginatedListDataSource<TItem, TResponse, TFilters = void>
       return true
     }
 
-    if (!isAborted(result)) {
-      console.error('Failed to fetch next page:', result.error)
-    }
-
     return false
   }
 

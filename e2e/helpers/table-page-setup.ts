@@ -20,7 +20,7 @@ export const TEST_CONFIG = {
 export type GraphQLOperationName =
   | 'configuration'
   | 'getMe'
-  | 'meProjectsMst'
+  | 'meProjectsList'
   | 'ProjectMst'
   | 'getProject'
   | 'BranchMst'
@@ -224,7 +224,7 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
     const responses: Record<string, object> = {
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(orgId),
-      meProjectsMst: createMeProjectsResponse(projectName, orgId),
+      meProjectsList: createMeProjectsResponse(projectName, orgId),
       ProjectMst: projectResponse,
       getProject: projectResponse,
       BranchMst: branchResponse,

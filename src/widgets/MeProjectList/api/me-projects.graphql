@@ -1,0 +1,24 @@
+fragment MeProjectListItem on ProjectModel {
+  id
+  name
+  organizationId
+  rootBranch {
+    name
+    touched
+  }
+}
+
+query meProjectsList($data: GetMeProjectsInput!) {
+  meProjects(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      cursor
+      node {
+        ...MeProjectListItem
+      }
+    }
+  }
+}

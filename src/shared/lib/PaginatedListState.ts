@@ -1,15 +1,15 @@
 import { makeAutoObservable } from 'mobx'
 
-export enum ListState {
-  loading = 'loading',
-  empty = 'empty',
-  list = 'list',
-  notFound = 'notFound',
-  error = 'error',
+export enum PaginationState {
+  Loading = 'loading',
+  Empty = 'empty',
+  List = 'list',
+  NotFound = 'notFound',
+  Error = 'error',
 }
 
-export class AsyncListState<T> {
-  private _state = ListState.loading
+export class PaginatedListState<T> {
+  private _state = PaginationState.Loading
   private _items: T[] = []
   private _hasNextPage = false
   private _endCursor: string | null = null
@@ -20,7 +20,7 @@ export class AsyncListState<T> {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public get state(): ListState {
+  public get state(): PaginationState {
     return this._state
   }
 
@@ -45,32 +45,32 @@ export class AsyncListState<T> {
   }
 
   public get showLoading(): boolean {
-    return this._state === ListState.loading && this._isInitialLoad
+    return this._state === PaginationState.Loading && this._isInitialLoad
   }
 
   public get showEmpty(): boolean {
-    return this._state === ListState.empty
+    return this._state === PaginationState.Empty
   }
 
   public get showNotFound(): boolean {
-    return this._state === ListState.notFound
+    return this._state === PaginationState.NotFound
   }
 
   public get showList(): boolean {
-    return this._state === ListState.list
+    return this._state === PaginationState.List
   }
 
   public get showError(): boolean {
-    return this._state === ListState.error
+    return this._state === PaginationState.Error
   }
 
   public setLoading(): void {
-    this._state = ListState.loading
+    this._state = PaginationState.Loading
   }
 
   public setError(): void {
     this._isInitialLoad = false
-    this._state = ListState.error
+    this._state = PaginationState.Error
   }
 
   public setItems(
@@ -89,11 +89,11 @@ export class AsyncListState<T> {
     this._totalCount = options.totalCount
 
     if (items.length > 0) {
-      this._state = ListState.list
+      this._state = PaginationState.List
     } else if (options.isSearching) {
-      this._state = ListState.notFound
+      this._state = PaginationState.NotFound
     } else {
-      this._state = ListState.empty
+      this._state = PaginationState.Empty
     }
   }
 
@@ -118,7 +118,7 @@ export class AsyncListState<T> {
 
   public updateStateAfterRemove(isSearching: boolean): void {
     if (this._items.length === 0) {
-      this._state = isSearching ? ListState.notFound : ListState.empty
+      this._state = isSearching ? PaginationState.NotFound : PaginationState.Empty
     }
   }
 
@@ -127,7 +127,7 @@ export class AsyncListState<T> {
     this._hasNextPage = false
     this._endCursor = null
     this._isInitialLoad = false
-    this._state = ListState.loading
+    this._state = PaginationState.Loading
   }
 
   public resetToLoading(): void {
@@ -136,6 +136,6 @@ export class AsyncListState<T> {
     this._endCursor = null
     this._totalCount = 0
     this._isInitialLoad = true
-    this._state = ListState.loading
+    this._state = PaginationState.Loading
   }
 }

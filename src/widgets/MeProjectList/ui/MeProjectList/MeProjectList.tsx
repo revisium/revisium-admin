@@ -44,6 +44,11 @@ export const MeProjectList: FC<MeProjectListProps> = observer(({ onCreateProject
         endReached={model.hasNextPage ? model.tryToFetchNextPage : undefined}
         itemContent={(index) => {
           const item = model.items[index]
+
+          if (!item) {
+            return null
+          }
+
           return <ProjectListItem key={item.id} model={item} />
         }}
       />

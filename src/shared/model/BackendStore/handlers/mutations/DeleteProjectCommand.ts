@@ -12,7 +12,6 @@ export class DeleteProjectCommand {
     const result = await this.deleteProjectRequest()
 
     await this.updateProjectsConnection()
-    await this.updateMeProjectsConnection()
 
     return result
   }
@@ -29,12 +28,5 @@ export class DeleteProjectCommand {
     const organization = this.rootStore.cache.organization.get(this.organizationId)
     const projectEdge = organization?.projectsConnection.edges.find((edge) => edge.node.name === this.projectName)
     organization?.projectsConnection.removeEdge(projectEdge?.cursor)
-  }
-
-  private async updateMeProjectsConnection() {
-    const projectEdge = this.rootStore.cache.meProjectsConnection.edges.find(
-      (edge) => edge.node.name === this.projectName,
-    )
-    this.rootStore.cache.meProjectsConnection.removeEdge(projectEdge?.cursor)
   }
 }

@@ -84,7 +84,7 @@ async function setupMocks(
     const responses: Record<string, object> = {
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
-      meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
+      meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
       ProjectMst: projectResponse,
       getProject: projectResponse,
       BranchMst: branchResponse,
@@ -518,7 +518,7 @@ test.describe('Column Operations', () => {
         const responses: Record<string, object> = {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
-          meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
+          meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
           ProjectMst: projectResponse,
           getProject: projectResponse,
           BranchMst: branchResponse,
@@ -772,7 +772,7 @@ test.describe('Column Operations', () => {
         const responses: Record<string, object> = {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
-          meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
+          meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
           ProjectMst: projectResponse,
           getProject: projectResponse,
           BranchMst: branchResponse,

@@ -1,30 +1,28 @@
 import { Box, Flex } from '@chakra-ui/react'
-import { FC, useCallback } from 'react'
-import { useToggle } from 'react-use'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 import { CreateProjectButton } from 'src/features/CreateProjectButton'
 import { CreateProjectCard } from 'src/features/CreateProjectCard'
+import { MainPageViewModel } from 'src/pages/MainPage/model/MainPageViewModel.ts'
+import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
 import { MeProjectList } from 'src/widgets/MeProjectList'
 
-export const MainPage: FC = () => {
-  const [isCreatingProject, toggleTable] = useToggle(false)
-
-  const handleAdd = useCallback(() => {
-    toggleTable()
-  }, [toggleTable])
+export const MainPage: FC = observer(() => {
+  const model = useViewModel(MainPageViewModel)
 
   return (
     <Page title={<Box height="40px" />}>
       <Flex flex={1} flexDirection="column" gap="0.5rem" paddingBottom="1rem">
-        {isCreatingProject ? (
-          <CreateProjectCard onAdd={handleAdd} onCancel={toggleTable} />
+        {model.isCreatingProject ? (
+          <CreateProjectCard onComplete={model.toggleCreatingProject} />
         ) : (
           <>
-            <CreateProjectButton onClick={toggleTable} />
-            <MeProjectList onCreateProject={toggleTable} />
+            {model.canCreateProject && <CreateProjectButton onClick={model.toggleCreatingProject} />}
+            <MeProjectList onCreateProject={model.canCreateProject ? model.toggleCreatingProject : undefined} />
           </>
         )}
       </Flex>
     </Page>
   )
-}
+})

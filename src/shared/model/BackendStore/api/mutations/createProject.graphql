@@ -1,5 +1,0 @@
-mutation CreateProjectMst($data: CreateProjectInput!) {
-  createProject(data: $data) {
-    ...ProjectMst
-  }
-}

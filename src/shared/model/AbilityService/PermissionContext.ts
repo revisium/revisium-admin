@@ -40,6 +40,22 @@ export class PermissionContext {
 
   public setUserRole(role: RoleData | null): void {
     this._userRole = role
+    this.updateAbilityFromUserRole()
+  }
+
+  private updateAbilityFromUserRole(): void {
+    if (!this._userRole?.permissions) {
+      return
+    }
+
+    const permissions: PermissionRule[] = this._userRole.permissions.map((p) => ({
+      id: p.id,
+      action: p.action,
+      subject: p.subject,
+      condition: p.condition as Record<string, unknown> | null,
+    }))
+
+    this.abilityService.updateAbility(permissions)
   }
 
   public setProject(project: ProjectPermissionData): void {
@@ -72,6 +88,10 @@ export class PermissionContext {
 
   public get canDeleteProject(): boolean {
     return this.can('delete', 'Project')
+  }
+
+  public get canCreateProject(): boolean {
+    return this.can('create', 'Project')
   }
 
   public get canCreateBranch(): boolean {

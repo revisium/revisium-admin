@@ -1,55 +1,49 @@
 import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useCallback, useState } from 'react'
-
-import { useCreateProjectStore } from 'src/features/CreateProjectCard/hooks/useCreateProjectModel.ts'
+import React, { useCallback } from 'react'
+import { CreateProjectViewModel } from 'src/features/CreateProjectCard/model/CreateProjectViewModel.ts'
 import { ProjectSettingsButton } from 'src/features/CreateProjectCard/ui/ProjectSettingsButton/ProjectSettingsButton.tsx'
+import { useViewModel } from 'src/shared/lib'
 import { ApproveButton, CardInput, CloseButton } from 'src/shared/ui'
 
 interface CreateProjectCardProps {
-  onAdd?: () => void
-  onCancel?: () => void
+  onComplete?: () => void
 }
 
-export const CreateProjectCard: React.FC<CreateProjectCardProps> = observer(({ onCancel, onAdd }) => {
-  const store = useCreateProjectStore()
-  const [isLoading, setIsLoading] = useState(false)
+export const CreateProjectCard: React.FC<CreateProjectCardProps> = observer(({ onComplete }) => {
+  const model = useViewModel(CreateProjectViewModel)
 
-  const handleAdd = useCallback(async () => {
-    setIsLoading(true)
-    await store.create()
-    setIsLoading(false)
-    onAdd?.()
-  }, [onAdd, store])
+  const handleCreate = useCallback(async () => {
+    const success = await model.create()
+    if (success) {
+      onComplete?.()
+    }
+  }, [model, onComplete])
 
   const handleChangeName: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
-      store.setProjectName(event.currentTarget.value)
+      model.setProjectName(event.currentTarget.value)
     },
-    [store],
+    [model],
   )
 
   const handleChangeBranchName: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
-      store.setBranchName(event.currentTarget.value)
+      model.setBranchName(event.currentTarget.value)
     },
-    [store],
+    [model],
   )
 
   const handleChangeFromRevisionId: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
-      store.setFromRevisionId(event.currentTarget.value)
+      model.setFromRevisionId(event.currentTarget.value)
     },
-    [store],
+    [model],
   )
-
-  const handleSettingsButton = useCallback(() => {
-    store.setShowingSettings(!store.showingSettings)
-  }, [store])
 
   return (
     <Flex alignSelf="flex-start" gap="0.5rem">
-      <CloseButton onClick={onCancel} />
+      <CloseButton onClick={onComplete} />
 
       <Flex flexDirection="column" gap="0.5rem">
         <CardInput
@@ -57,41 +51,41 @@ export const CreateProjectCard: React.FC<CreateProjectCardProps> = observer(({ o
           autoFocus
           height="40px"
           placeholder="project name"
-          value={store.projectName}
+          value={model.projectName}
           onChange={handleChangeName}
-          onEnter={handleAdd}
+          onEnter={handleCreate}
         />
 
-        {store.projectName && store.showingSettings && (
+        {model.projectName && model.showingSettings && (
           <>
             <CardInput
               dataTestId="create-project-branch-name-input"
               height="40px"
               placeholder="branch name"
-              value={store.branchName}
+              value={model.branchName}
               onChange={handleChangeBranchName}
-              onEnter={handleAdd}
+              onEnter={handleCreate}
             />
 
             <CardInput
               dataTestId="create-project-from-revision-id-input"
               height="40px"
               placeholder="from revisionId"
-              value={store.fromRevisionId}
+              value={model.fromRevisionId}
               onChange={handleChangeFromRevisionId}
-              onEnter={handleAdd}
+              onEnter={handleCreate}
             />
           </>
         )}
       </Flex>
 
-      {store.projectName && (
+      {model.projectName && (
         <>
-          <ApproveButton dataTestId="create-project-approve-button" loading={isLoading} onClick={handleAdd} />
+          <ApproveButton dataTestId="create-project-approve-button" loading={model.isLoading} onClick={handleCreate} />
           <ProjectSettingsButton
             dataTestId="create-project-settings-button"
-            color={store.showingSettings ? 'gray.400' : 'gray.200'}
-            onClick={handleSettingsButton}
+            color={model.showingSettings ? 'gray.400' : 'gray.200'}
+            onClick={model.toggleSettings}
           />
         </>
       )}

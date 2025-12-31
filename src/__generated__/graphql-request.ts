@@ -1512,6 +1512,12 @@ export type GetProjectQuery = {
   }
 }
 
+export type CreateProjectMutationVariables = Exact<{
+  data: CreateProjectInput
+}>
+
+export type CreateProjectMutation = { createProject: { id: string; name: string; organizationId: string } }
+
 export type CreateEndpointMutationVariables = Exact<{
   data: CreateEndpointInput
 }>
@@ -3782,6 +3788,15 @@ export const GetProjectDocument = gql`
     }
   }
 `
+export const CreateProjectDocument = gql`
+  mutation createProject($data: CreateProjectInput!) {
+    createProject(data: $data) {
+      id
+      name
+      organizationId
+    }
+  }
+`
 export const CreateEndpointDocument = gql`
   mutation createEndpoint($data: CreateEndpointInput!) {
     createEndpoint(data: $data) {
@@ -4668,6 +4683,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'getProject',
         'query',
+        variables,
+      )
+    },
+    createProject(
+      variables: CreateProjectMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateProjectMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateProjectMutation>(CreateProjectDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createProject',
+        'mutation',
         variables,
       )
     },

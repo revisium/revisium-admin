@@ -31,7 +31,7 @@ async function setupMocks(page: Page, rowsResponse: object) {
     const responses: Record<string, object> = {
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
-      meProjectsMst: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
+      meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
       ProjectMst: projectResponse,
       getProject: projectResponse,
       BranchMst: branchResponse,

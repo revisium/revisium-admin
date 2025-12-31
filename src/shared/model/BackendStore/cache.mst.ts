@@ -23,10 +23,6 @@ import {
   TableModel,
 } from 'src/shared/model/BackendStore/model'
 import {
-  createModelConnection,
-  IConnection,
-} from 'src/shared/model/BackendStore/model-connection/createModelConnection.ts'
-import {
   IOrganizationModel,
   IOrganizationModelReferences,
   OrganizationModel,
@@ -40,15 +36,9 @@ type RowForeignKeysByVariables = { revisionId: string; tableId: string; rowId: s
 
 const getVariablesKey = <T extends Record<string, unknown>>(variables: T) => JSON.stringify(variables)
 
-export const MeProjectsConnection = createModelConnection(
-  'MeProjectsConnection',
-  types.late(() => ProjectModel),
-)
-
 export const CacheModel = types
   .model({
     id: types.identifier,
-    meProjectsConnection: types.optional(MeProjectsConnection, {}),
     organization: types.map(types.late(() => OrganizationModel)),
     project: types.map(types.late(() => ProjectModel)),
     projectByVariables: types.map(types.reference(types.late(() => ProjectModel))),
@@ -237,7 +227,6 @@ export const CacheModel = types
 
 export type ICacheModel = Readonly<
   {
-    meProjectsConnection: IConnection<IProjectModel>
     organization: Map<string, IOrganizationModel>
     project: Map<string, IProjectModel>
     projectByVariables: Map<string, IProjectModel>

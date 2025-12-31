@@ -2074,81 +2074,6 @@ export type CreateEndpointMstMutation = {
   createEndpoint: { id: string; type: EndpointType; createdAt: string; revisionId: string }
 }
 
-export type CreateProjectMstMutationVariables = Exact<{
-  data: CreateProjectInput
-}>
-
-export type CreateProjectMstMutation = {
-  createProject: {
-    id: string
-    organizationId: string
-    createdAt: string
-    name: string
-    isPublic: boolean
-    rootBranch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-    userProject?: {
-      id: string
-      role: {
-        id: string
-        name: string
-        permissions: Array<{
-          id: string
-          action: string
-          subject: string
-          condition?: { [key: string]: any } | string | number | boolean | null | null
-        }>
-      }
-    } | null
-    organization: {
-      id: string
-      userOrganization?: {
-        id: string
-        role: {
-          id: string
-          name: string
-          permissions: Array<{
-            id: string
-            action: string
-            subject: string
-            condition?: { [key: string]: any } | string | number | boolean | null | null
-          }>
-        }
-      } | null
-    }
-  }
-}
-
 export type CreateRevisionMstMutationVariables = Exact<{
   data: CreateRevisionInput
 }>
@@ -2611,88 +2536,6 @@ export type GetRowCountForeignKeysToQueryVariables = Exact<{
 }>
 
 export type GetRowCountForeignKeysToQuery = { getRowCountForeignKeysTo: number }
-
-export type MeProjectsMstQueryVariables = Exact<{
-  data: GetMeProjectsInput
-}>
-
-export type MeProjectsMstQuery = {
-  meProjects: {
-    totalCount: number
-    pageInfo: { startCursor?: string | null; endCursor?: string | null; hasPreviousPage: boolean; hasNextPage: boolean }
-    edges: Array<{
-      cursor: string
-      node: {
-        id: string
-        organizationId: string
-        createdAt: string
-        name: string
-        isPublic: boolean
-        rootBranch: {
-          id: string
-          createdAt: string
-          name: string
-          touched: boolean
-          projectId: string
-          parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-          start: {
-            id: string
-            createdAt: string
-            comment: string
-            child?: { id: string } | null
-            childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-          head: {
-            id: string
-            createdAt: string
-            comment: string
-            parent?: { id: string } | null
-            child?: { id: string } | null
-            childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-          draft: {
-            id: string
-            createdAt: string
-            comment: string
-            parent?: { id: string } | null
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-        }
-        userProject?: {
-          id: string
-          role: {
-            id: string
-            name: string
-            permissions: Array<{
-              id: string
-              action: string
-              subject: string
-              condition?: { [key: string]: any } | string | number | boolean | null | null
-            }>
-          }
-        } | null
-        organization: {
-          id: string
-          userOrganization?: {
-            id: string
-            role: {
-              id: string
-              name: string
-              permissions: Array<{
-                id: string
-                action: string
-                subject: string
-                condition?: { [key: string]: any } | string | number | boolean | null | null
-              }>
-            }
-          } | null
-        }
-      }
-    }>
-  }
-}
 
 export type ProjectMstQueryVariables = Exact<{
   data: GetProjectInput
@@ -4107,14 +3950,6 @@ export const CreateEndpointMstDocument = gql`
   }
   ${EndpointMstFragmentDoc}
 `
-export const CreateProjectMstDocument = gql`
-  mutation CreateProjectMst($data: CreateProjectInput!) {
-    createProject(data: $data) {
-      ...ProjectMst
-    }
-  }
-  ${ProjectMstFragmentDoc}
-`
 export const CreateRevisionMstDocument = gql`
   mutation CreateRevisionMst($data: CreateRevisionInput!) {
     createRevision(data: $data) {
@@ -4283,24 +4118,6 @@ export const GetRowCountForeignKeysToDocument = gql`
   query GetRowCountForeignKeysTo($data: GetRowCountForeignKeysByInput!) {
     getRowCountForeignKeysTo(data: $data)
   }
-`
-export const MeProjectsMstDocument = gql`
-  query meProjectsMst($data: GetMeProjectsInput!) {
-    meProjects(data: $data) {
-      totalCount
-      pageInfo {
-        ...PageInfoMst
-      }
-      edges {
-        cursor
-        node {
-          ...ProjectMst
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${ProjectMstFragmentDoc}
 `
 export const ProjectMstDocument = gql`
   query ProjectMst($data: GetProjectInput!) {
@@ -5043,21 +4860,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    CreateProjectMst(
-      variables: CreateProjectMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateProjectMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateProjectMstMutation>(CreateProjectMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateProjectMst',
-        'mutation',
-        variables,
-      )
-    },
     CreateRevisionMst(
       variables: CreateRevisionMstMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -5276,21 +5078,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'GetRowCountForeignKeysTo',
-        'query',
-        variables,
-      )
-    },
-    meProjectsMst(
-      variables: MeProjectsMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<MeProjectsMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<MeProjectsMstQuery>(MeProjectsMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'meProjectsMst',
         'query',
         variables,
       )

@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { TableVirtuosoHandle } from 'react-virtuoso'
 import { SearchIn, SearchType, SortOrder, TableViewsDataFragment, ViewInput } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
@@ -42,6 +43,7 @@ export class RowListViewModel implements IViewModel {
   private _savedViewsSnapshot: string | null = null
   private _hasPendingViewChanges = false
   private _isSavingViews = false
+  private _virtuosoRef: TableVirtuosoHandle | null = null
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
   private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRowMst)
@@ -198,6 +200,10 @@ export class RowListViewModel implements IViewModel {
 
   public get allRowIds(): string[] {
     return this.items.map((item) => item.id)
+  }
+
+  public setVirtuosoRef(ref: TableVirtuosoHandle | null): void {
+    this._virtuosoRef = ref
   }
 
   private get revisionId(): string {
@@ -427,6 +433,7 @@ export class RowListViewModel implements IViewModel {
     this.sortModel.dispose()
     this.inlineEdit.dispose()
     this.getRowsRequest.abort()
+    this._virtuosoRef = null
   }
 
   public setSearchQuery(query: string): void {
@@ -564,6 +571,7 @@ export class RowListViewModel implements IViewModel {
 
   private async reload(): Promise<void> {
     this._isRefetching = true
+    this.scrollToTop()
     try {
       await this.loadInitial()
     } finally {
@@ -571,6 +579,10 @@ export class RowListViewModel implements IViewModel {
         this._isRefetching = false
       })
     }
+  }
+
+  private scrollToTop(): void {
+    this._virtuosoRef?.scrollToIndex({ index: 0, behavior: 'auto' })
   }
 
   private async loadInitial(): Promise<void> {

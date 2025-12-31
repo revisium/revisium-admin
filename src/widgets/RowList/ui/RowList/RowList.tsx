@@ -1,7 +1,7 @@
 import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo } from 'react'
-import { TableVirtuoso } from 'react-virtuoso'
+import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
 import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 import { HeaderContent } from './HeaderContent'
 import { RowListContext } from './RowListContext'
@@ -30,6 +30,13 @@ export const RowList: React.FC<RowListProps> = observer(
   ({ model, revisionId, tableId, isRevisionReadonly = false, onSelect, onCopy, onCreate }) => {
     const isRowPickerMode = Boolean(onSelect)
     const { items, columnsModel, inlineEdit, showHeader } = model
+
+    const virtuosoRef = useCallback(
+      (ref: TableVirtuosoHandle | null) => {
+        model.setVirtuosoRef(ref)
+      },
+      [model],
+    )
 
     useInlineEditKeyboard({
       inlineEditModel: inlineEdit,
@@ -124,6 +131,7 @@ export const RowList: React.FC<RowListProps> = observer(
     return (
       <RowListContext.Provider value={contextValue}>
         <TableVirtuoso
+          ref={virtuosoRef}
           style={{
             height: '100%',
           }}

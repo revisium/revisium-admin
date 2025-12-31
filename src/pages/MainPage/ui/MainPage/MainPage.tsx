@@ -15,13 +15,13 @@ export const MainPage: FC = () => {
 
   return (
     <Page title={<Box height="40px" />}>
-      <Flex flexDirection="column" gap="0.5rem" paddingBottom="1rem">
+      <Flex flex={1} flexDirection="column" gap="0.5rem" paddingBottom="1rem">
         {isCreatingProject ? (
           <CreateProjectCard onAdd={handleAdd} onCancel={toggleTable} />
         ) : (
           <>
             <CreateProjectButton onClick={toggleTable} />
-            <MeProjectList />
+            <MeProjectList onCreateProject={toggleTable} />
           </>
         )}
       </Flex>

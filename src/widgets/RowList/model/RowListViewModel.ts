@@ -4,7 +4,7 @@ import { JsonSchema } from 'src/entities/Schema'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
 import { IViewModel } from 'src/shared/config/types'
 import { container, isAborted } from 'src/shared/lib'
-import { AsyncListState } from 'src/shared/lib/AsyncListState'
+import { PaginatedListState } from 'src/shared/lib/PaginatedListState'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { SearchController } from 'src/shared/lib/SearchController'
 import { PermissionContext } from 'src/shared/model/AbilityService'
@@ -28,7 +28,7 @@ export class RowListViewModel implements IViewModel {
   public readonly columnsModel = new ColumnsModel()
   public readonly filterModel = new FilterModel()
   public readonly sortModel = new SortModel()
-  public readonly listState = new AsyncListState<RowItemViewModel>()
+  public readonly listState = new PaginatedListState<RowItemViewModel>()
   public readonly selection = new SelectionViewModel()
   public readonly inlineEdit = new InlineEditModel()
   public readonly viewSettingsBadge: ViewSettingsBadgeModel

@@ -1145,6 +1145,8 @@ export type SearchRowsInput = {
 export enum SearchType {
   Phrase = 'phrase',
   Plain = 'plain',
+  Prefix = 'prefix',
+  Tsquery = 'tsquery',
 }
 
 export type SearchUsersInput = {
@@ -3117,6 +3119,28 @@ export type FindRevisionsQuery = {
   }
 }
 
+export type MeProjectListItemFragment = {
+  id: string
+  name: string
+  organizationId: string
+  rootBranch: { name: string; touched: boolean }
+}
+
+export type MeProjectsListQueryVariables = Exact<{
+  data: GetMeProjectsInput
+}>
+
+export type MeProjectsListQuery = {
+  meProjects: {
+    totalCount: number
+    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      cursor: string
+      node: { id: string; name: string; organizationId: string; rootBranch: { name: string; touched: boolean } }
+    }>
+  }
+}
+
 export type RowChangeRowFieldsFragment = { id: string }
 
 export type RowChangeTableFieldsFragment = { id: string }
@@ -3637,6 +3661,17 @@ export const FindRevisionFragmentDoc = gql`
     endpoints {
       id
       type
+    }
+  }
+`
+export const MeProjectListItemFragmentDoc = gql`
+  fragment MeProjectListItem on ProjectModel {
+    id
+    name
+    organizationId
+    rootBranch {
+      name
+      touched
     }
   }
 `
@@ -4443,6 +4478,24 @@ export const FindRevisionsDocument = gql`
     }
   }
   ${FindRevisionFragmentDoc}
+`
+export const MeProjectsListDocument = gql`
+  query meProjectsList($data: GetMeProjectsInput!) {
+    meProjects(data: $data) {
+      totalCount
+      pageInfo {
+        ...PageInfo
+      }
+      edges {
+        cursor
+        node {
+          ...MeProjectListItem
+        }
+      }
+    }
+  }
+  ${PageInfoFragmentDoc}
+  ${MeProjectListItemFragmentDoc}
 `
 export const GetRowChangesDocument = gql`
   query GetRowChanges($revisionId: String!, $first: Int!, $after: String, $filters: RowChangesFiltersInput) {
@@ -5367,6 +5420,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'findRevisions',
+        'query',
+        variables,
+      )
+    },
+    meProjectsList(
+      variables: MeProjectsListQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<MeProjectsListQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<MeProjectsListQuery>(MeProjectsListDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'meProjectsList',
         'query',
         variables,
       )

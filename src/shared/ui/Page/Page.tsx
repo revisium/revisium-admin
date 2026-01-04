@@ -1,13 +1,12 @@
 import { Box, Flex } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
 import React from 'react'
-import { LOGOUT_ROUTE } from 'src/shared/config/routes.ts'
 
 interface PageProps {
   sidebar?: React.ReactElement
   title?: React.ReactElement
   actions?: React.ReactElement
   hideSidebar?: boolean
+  footer?: React.ReactElement
 }
 
 export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
@@ -16,6 +15,7 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
   title,
   actions,
   children,
+  footer,
 }) => {
   return (
     <Flex minHeight="100vh">
@@ -34,11 +34,11 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
           position="sticky"
         >
           {sidebar}
-          <Box alignSelf="center" mt="1rem">
-            <Link to={`/${LOGOUT_ROUTE}`} style={{ color: '#A0AEC0', textDecoration: 'none' }}>
-              Logout
-            </Link>
-          </Box>
+          {footer && (
+            <Box alignSelf="center" mt="1rem">
+              {footer}
+            </Box>
+          )}
         </Flex>
       )}
 

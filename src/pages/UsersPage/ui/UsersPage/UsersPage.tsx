@@ -4,6 +4,7 @@ import { PiPlusLight, PiUsersLight } from 'react-icons/pi'
 import { UsersPageViewModel } from 'src/pages/UsersPage/model/UsersPageViewModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
+import { AccountButton } from 'src/widgets/AccountButton'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 import { AddUserModal } from '../AddUserModal'
 import { UserCard } from '../UserCard'
@@ -13,7 +14,7 @@ export const UsersPage = observer(() => {
 
   if (model.showInitialLoading) {
     return (
-      <Page sidebar={<ProjectSidebar />}>
+      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
         <Flex justify="center" align="center" height="200px">
           <Spinner />
         </Flex>
@@ -23,7 +24,7 @@ export const UsersPage = observer(() => {
 
   if (model.showError) {
     return (
-      <Page sidebar={<ProjectSidebar />}>
+      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
         <Flex justify="center" align="center" height="200px">
           <Text color="red.500">Error loading users</Text>
         </Flex>
@@ -33,7 +34,7 @@ export const UsersPage = observer(() => {
 
   if (model.showNoUsers) {
     return (
-      <Page sidebar={<ProjectSidebar />}>
+      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
         <Box mb="4rem">
           <Flex justify="center" align="center" height="200px" flexDirection="column" gap={4}>
             <Box textAlign="center">
@@ -59,7 +60,7 @@ export const UsersPage = observer(() => {
   }
 
   return (
-    <Page sidebar={<ProjectSidebar />}>
+    <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
       <Box mb="4rem">
         <Flex justify="space-between" align="center" marginBottom="0.5rem">
           <Text fontSize="20px" fontWeight="600" color="newGray.500">

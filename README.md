@@ -1,3 +1,5 @@
+<div align="center">
+
 # @revisium/admin
 
 Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform for hierarchical structures.
@@ -12,6 +14,8 @@ Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated da
 
 Part of the [Revisium](https://github.com/revisium/revisium) ecosystem.
 Available on [npm](https://www.npmjs.com/package/@revisium/admin) | [Docker Hub](https://hub.docker.com/r/revisium/revisium-admin).
+
+</div>
 
 ## Overview
 
@@ -31,10 +35,10 @@ Administration interface for managing Revisium projects, schemas, and data.
 
 ## Related Packages
 
-| Package | Description |
-|---------|-------------|
-| [@revisium/core](https://github.com/revisium/revisium-core) | Backend API — required data source |
-| [@revisium/endpoint](https://github.com/revisium/revisium-endpoint) | Dynamic GraphQL/REST API generator |
+| Package                                                                | Description                                                   |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [@revisium/core](https://github.com/revisium/revisium-core)            | Backend API — required data source                            |
+| [@revisium/endpoint](https://github.com/revisium/revisium-endpoint)    | Dynamic GraphQL/REST API generator                            |
 | [@revisium/schema-toolkit](https://github.com/revisium/schema-toolkit) | JSON Schema utilities, validation, and transformation helpers |
 
 ## License

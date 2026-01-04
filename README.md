@@ -1,9 +1,42 @@
 # @revisium/admin
 
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform for hierarchical structures.
 
-**Status: Experimental and Not Production-Ready**
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@revisium/admin?color=red)](https://www.npmjs.com/package/@revisium/admin)
+[![Docker](https://img.shields.io/docker/v/revisium/revisium-admin?label=docker&sort=semver)](https://hub.docker.com/r/revisium/revisium-admin)
 
-Revisium is a tool (UI/API) inspired by JSON (JSON Schema) and Git, designed to provide a flexible and low-level headless CMS solution. **This project originated from a closed-source repository** where it was developed over the course of a year and a half as a proof of concept. I am now making it open source to foster community involvement, transparency, and collaborative improvement.
+> Referential integrity with foreign keys at any depth.
+> Git-like versioning: branches, revisions, drafts.
+> Schema evolution: migrations with data transformations.
 
-[Revisium](https://github.com/revisium/revisium)
+Part of the [Revisium](https://github.com/revisium/revisium) ecosystem.
+Available on [npm](https://www.npmjs.com/package/@revisium/admin) | [Docker Hub](https://hub.docker.com/r/revisium/revisium-admin).
+
+## Overview
+
+Administration interface for managing Revisium projects, schemas, and data.
+
+## Features
+
+- **Projects** — create, configure, manage multiple projects
+- **Branches** — create, switch, compare branches
+- **Revisions** — navigate history, commit changes, revert
+- **Tables** — visual schema editor with JSON Schema support
+- **Rows** — Excel-like editing with custom columns, filtering, and sorting
+- **Migrations** — view and apply schema migrations
+- **Endpoints** — create and manage GraphQL/REST API endpoints
+- **Diff viewer** — compare changes between revisions
+- **Users & Roles** — manage users and permissions
+
+## Related Packages
+
+| Package | Description |
+|---------|-------------|
+| [@revisium/core](https://github.com/revisium/revisium-core) | Backend API — required data source |
+| [@revisium/endpoint](https://github.com/revisium/revisium-endpoint) | Dynamic GraphQL/REST API generator |
+| [@revisium/schema-toolkit](https://github.com/revisium/schema-toolkit) | JSON Schema utilities, validation, and transformation helpers |
+
+## License
+
+Apache 2.0 — See [Revisium](https://github.com/revisium/revisium) for full license.

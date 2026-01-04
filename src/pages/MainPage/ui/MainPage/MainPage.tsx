@@ -19,8 +19,8 @@ export const MainPage: FC = observer(() => {
           <CreateProjectCard onComplete={model.toggleCreatingProject} />
         ) : (
           <>
-            {model.canCreateProject && <CreateProjectButton onClick={model.toggleCreatingProject} />}
-            <MeProjectList onCreateProject={model.canCreateProject ? model.toggleCreatingProject : undefined} />
+            <CreateProjectButton onClick={model.toggleCreatingProject} />
+            <MeProjectList onCreateProject={model.toggleCreatingProject} />
           </>
         )}
       </Flex>

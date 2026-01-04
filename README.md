@@ -1,3 +1,5 @@
+<div align="center">
+
 # @revisium/admin
 
 Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform for hierarchical structures.
@@ -12,6 +14,8 @@ Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated da
 
 Part of the [Revisium](https://github.com/revisium/revisium) ecosystem.
 Available on [npm](https://www.npmjs.com/package/@revisium/admin) | [Docker Hub](https://hub.docker.com/r/revisium/revisium-admin).
+
+</div>
 
 ## Overview
 

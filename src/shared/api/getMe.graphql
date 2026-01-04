@@ -1,7 +1,8 @@
-fragment User on UserModel {
+fragment User on MeModel {
   id
   username
   email
+  hasPassword
   organizationId
   role {
     id

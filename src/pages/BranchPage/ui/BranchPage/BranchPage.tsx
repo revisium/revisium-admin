@@ -5,6 +5,7 @@ import { Outlet } from 'react-router-dom'
 import { ReadonlyBanner } from 'src/pages/BranchPage/ui/ReadonlyBanner/ReadonlyBanner.tsx'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { Page } from 'src/shared/ui'
+import { AccountButton } from 'src/widgets/AccountButton'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
@@ -18,7 +19,11 @@ export const BranchPage: React.FC<BranchPageProps> = observer(({ showTitle = tru
   const showReadonlyBanner = !projectPageModel.isDraftRevision
 
   return (
-    <Page sidebar={<ProjectSidebar />} title={showTitle ? <BranchPageTitleWidget /> : undefined}>
+    <Page
+      sidebar={<ProjectSidebar />}
+      title={showTitle ? <BranchPageTitleWidget /> : undefined}
+      footer={<AccountButton />}
+    >
       <Flex flex={1} flexDirection="column" gap="1rem" position="relative">
         {/*<RevisionEndpointWidget />*/}
 

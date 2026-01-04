@@ -18,13 +18,14 @@ import React from 'react'
 import { ProjectSettingsPageModel } from 'src/pages/ProjectSettingsPage/model/ProjectSettingsPageModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
+import { AccountButton } from 'src/widgets/AccountButton'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
 export const ProjectSettingsPage: React.FC = observer(() => {
   const store = useViewModel(ProjectSettingsPageModel)
 
   return (
-    <Page sidebar={<ProjectSidebar />}>
+    <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
       <Box maxWidth="600px" width="100%">
         <VStack align="stretch" gap="2rem">
           <Heading size="lg">Project Settings</Heading>

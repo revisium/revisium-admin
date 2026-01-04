@@ -142,6 +142,25 @@ export type CreateRowResultModel = {
   table: TableModel
 }
 
+export type CreateRowsInput = {
+  isRestore?: InputMaybe<Scalars['Boolean']['input']>
+  revisionId: Scalars['String']['input']
+  rows: Array<CreateRowsRowInput>
+  tableId: Scalars['String']['input']
+}
+
+export type CreateRowsResultModel = {
+  __typename: 'CreateRowsResultModel'
+  previousVersionTableId: Scalars['String']['output']
+  rows: Array<RowModel>
+  table: TableModel
+}
+
+export type CreateRowsRowInput = {
+  data: Scalars['JSON']['input']
+  rowId: Scalars['String']['input']
+}
+
 export type CreateTableInput = {
   revisionId: Scalars['String']['input']
   schema: Scalars['JSON']['input']
@@ -440,6 +459,16 @@ export type LoginModel = {
   accessToken: Scalars['String']['output']
 }
 
+export type MeModel = {
+  __typename: 'MeModel'
+  email?: Maybe<Scalars['String']['output']>
+  hasPassword: Scalars['Boolean']['output']
+  id: Scalars['String']['output']
+  organizationId?: Maybe<Scalars['String']['output']>
+  role?: Maybe<RoleModel>
+  username?: Maybe<Scalars['String']['output']>
+}
+
 export enum MigrationType {
   INIT = 'INIT',
   REMOVE = 'REMOVE',
@@ -467,6 +496,7 @@ export type Mutation = {
   createProject: ProjectModel
   createRevision: RevisionModel
   createRow: CreateRowResultModel
+  createRows: CreateRowsResultModel
   createTable: CreateTableResultModel
   createUser: Scalars['Boolean']['output']
   deleteEndpoint: Scalars['Boolean']['output']
@@ -475,6 +505,7 @@ export type Mutation = {
   loginGithub: LoginModel
   loginGoogle: LoginModel
   patchRow: PatchRowResultModel
+  patchRows: PatchRowsResultModel
   removeRow: RemoveRowResultModel
   removeRows: RemoveRowsResultModel
   removeTable: RemoveTableResultModel
@@ -482,12 +513,14 @@ export type Mutation = {
   removeUserFromProject: Scalars['Boolean']['output']
   renameRow: RenameRowResultModel
   renameTable: RenameTableResultModel
+  resetPassword: Scalars['Boolean']['output']
   revertChanges: BranchModel
   setUsername: Scalars['Boolean']['output']
   signUp: Scalars['Boolean']['output']
   updatePassword: Scalars['Boolean']['output']
   updateProject: Scalars['Boolean']['output']
   updateRow: UpdateRowResultModel
+  updateRows: UpdateRowsResultModel
   updateTable: UpdateTableResultModel
   updateTableViews: TableViewsDataModel
   updateUserProjectRole: Scalars['Boolean']['output']
@@ -525,6 +558,10 @@ export type MutationCreateRowArgs = {
   data: CreateRowInput
 }
 
+export type MutationCreateRowsArgs = {
+  data: CreateRowsInput
+}
+
 export type MutationCreateTableArgs = {
   data: CreateTableInput
 }
@@ -557,6 +594,10 @@ export type MutationPatchRowArgs = {
   data: PatchRowInput
 }
 
+export type MutationPatchRowsArgs = {
+  data: PatchRowsInput
+}
+
 export type MutationRemoveRowArgs = {
   data: RemoveRowInput
 }
@@ -585,6 +626,10 @@ export type MutationRenameTableArgs = {
   data: RenameTableInput
 }
 
+export type MutationResetPasswordArgs = {
+  data: ResetPasswordInput
+}
+
 export type MutationRevertChangesArgs = {
   data: RevertChangesInput
 }
@@ -607,6 +652,10 @@ export type MutationUpdateProjectArgs = {
 
 export type MutationUpdateRowArgs = {
   data: UpdateRowInput
+}
+
+export type MutationUpdateRowsArgs = {
+  data: UpdateRowsInput
 }
 
 export type MutationUpdateTableArgs = {
@@ -699,6 +748,24 @@ export type PatchRowResultModel = {
   table: TableModel
 }
 
+export type PatchRowsInput = {
+  revisionId: Scalars['String']['input']
+  rows: Array<PatchRowsRowInput>
+  tableId: Scalars['String']['input']
+}
+
+export type PatchRowsResultModel = {
+  __typename: 'PatchRowsResultModel'
+  previousVersionTableId: Scalars['String']['output']
+  rows: Array<RowModel>
+  table: TableModel
+}
+
+export type PatchRowsRowInput = {
+  patches: Array<PatchRow>
+  rowId: Scalars['String']['input']
+}
+
 export type PermissionModel = {
   __typename: 'PermissionModel'
   action: Scalars['String']['output']
@@ -749,7 +816,7 @@ export type Query = {
   configuration: ConfigurationModel
   /** @deprecated use RowModel.rowForeignKeysBy.totalCount */
   getRowCountForeignKeysTo: Scalars['Int']['output']
-  me: UserModel
+  me: MeModel
   meProjects: ProjectsConnection
   project: ProjectModel
   projectEndpoints: EndpointsConnection
@@ -934,6 +1001,11 @@ export type RenameTableResultModel = {
   __typename: 'RenameTableResultModel'
   previousVersionTableId: Scalars['String']['output']
   table: TableModel
+}
+
+export type ResetPasswordInput = {
+  newPassword: Scalars['String']['input']
+  userId: Scalars['String']['input']
 }
 
 export type RevertChangesInput = {
@@ -1351,6 +1423,24 @@ export type UpdateRowResultModel = {
   previousVersionTableId: Scalars['String']['output']
   row: RowModel
   table: TableModel
+}
+
+export type UpdateRowsInput = {
+  revisionId: Scalars['String']['input']
+  rows: Array<UpdateRowsRowInput>
+  tableId: Scalars['String']['input']
+}
+
+export type UpdateRowsResultModel = {
+  __typename: 'UpdateRowsResultModel'
+  previousVersionTableId: Scalars['String']['output']
+  rows: Array<RowModel>
+  table: TableModel
+}
+
+export type UpdateRowsRowInput = {
+  data: Scalars['JSON']['input']
+  rowId: Scalars['String']['input']
 }
 
 export type UpdateTableInput = {

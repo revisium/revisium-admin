@@ -35,10 +35,10 @@ Administration interface for managing Revisium projects, schemas, and data.
 
 ## Related Packages
 
-| Package | Description |
-|---------|-------------|
-| [@revisium/core](https://github.com/revisium/revisium-core) | Backend API — required data source |
-| [@revisium/endpoint](https://github.com/revisium/revisium-endpoint) | Dynamic GraphQL/REST API generator |
+| Package                                                                | Description                                                   |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [@revisium/core](https://github.com/revisium/revisium-core)            | Backend API — required data source                            |
+| [@revisium/endpoint](https://github.com/revisium/revisium-endpoint)    | Dynamic GraphQL/REST API generator                            |
 | [@revisium/schema-toolkit](https://github.com/revisium/schema-toolkit) | JSON Schema utilities, validation, and transformation helpers |
 
 ## License

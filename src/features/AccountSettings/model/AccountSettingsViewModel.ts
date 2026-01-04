@@ -15,7 +15,6 @@ export class AccountSettingsViewModel implements IViewModel {
   public newPassword = ''
   public confirmPassword = ''
 
-
   constructor(
     private readonly dataSource: AccountSettingsDataSource,
     private readonly authService: AuthService,

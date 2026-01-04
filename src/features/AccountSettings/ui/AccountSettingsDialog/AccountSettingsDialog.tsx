@@ -142,11 +142,7 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
                     )}
 
                     <Flex justifyContent="flex-end">
-                      <Button
-                        onClick={handleSavePassword}
-                        disabled={!model.canSavePassword}
-                        loading={model.isLoading}
-                      >
+                      <Button onClick={handleSavePassword} disabled={!model.canSavePassword} loading={model.isLoading}>
                         {model.hasPassword ? 'Update Password' : 'Set Password'}
                       </Button>
                     </Flex>

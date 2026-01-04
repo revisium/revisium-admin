@@ -1,12 +1,8 @@
 import { makeAutoObservable } from 'mobx'
+import { UpdatePasswordInput } from 'src/__generated__/globalTypes.ts'
 import { container } from 'src/shared/lib/DIContainer.ts'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
-
-export interface UpdatePasswordInput {
-  oldPassword: string
-  newPassword: string
-}
 
 export class AccountSettingsDataSource {
   private readonly updatePasswordRequest = ObservableRequest.of(client.updatePassword)

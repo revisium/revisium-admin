@@ -1,0 +1,5 @@
+query AdminDashboardStats($first: Int!) {
+  searchUsers(data: { first: $first }) {
+    totalCount
+  }
+}

@@ -19,7 +19,7 @@ enum State {
 export class UsersPageViewModel implements IViewModel {
   private state = State.loading
 
-  private readonly getUsersRequest = ObservableRequest.of(client.GetUsersProject, {
+  private readonly getUsersRequest = ObservableRequest.of(client.getUsersProject, {
     skipResetting: true,
   })
 

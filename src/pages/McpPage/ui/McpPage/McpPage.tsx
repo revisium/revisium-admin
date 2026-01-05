@@ -5,7 +5,6 @@ import { PiCopyLight } from 'react-icons/pi'
 import { McpPageViewModel } from 'src/pages/McpPage/model/McpPageViewModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page, toaster } from 'src/shared/ui'
-import { AccountButton } from 'src/widgets/AccountButton'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
 const FEATURES = [
@@ -56,7 +55,7 @@ export const McpPage = observer(() => {
   const cliAddCommand = `claude mcp add --transport http ${model.serverName} ${model.mcpUrl}`
 
   return (
-    <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+    <Page sidebar={<ProjectSidebar />}>
       <Box mb="4rem">
         <Text fontSize="20px" fontWeight="600" color="newGray.500" marginBottom="0.5rem">
           MCP Server

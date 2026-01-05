@@ -1,0 +1,31 @@
+fragment AdminUserItem on UserModel {
+  id
+  email
+  username
+  role {
+    id
+    name
+  }
+}
+
+query adminUsers($search: String, $first: Int!, $after: String) {
+  adminUsers(data: { search: $search, first: $first, after: $after }) {
+    edges {
+      node {
+        ...AdminUserItem
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query adminUser($userId: String!) {
+  adminUser(data: { userId: $userId }) {
+    ...AdminUserItem
+  }
+}

@@ -33,7 +33,7 @@ export class AddUserModalViewModel {
 
   private debounceTimeout: number | null = null
 
-  private readonly searchRequest = ObservableRequest.of(client.SearchUsers)
+  private readonly searchRequest = ObservableRequest.of(client.searchUsers)
 
   constructor(
     private readonly context: ProjectContext,
@@ -185,7 +185,7 @@ export class AddUserModalViewModel {
     this._isAdding = true
 
     try {
-      const result = await client.AddUserToProject({
+      const result = await client.addUserToProject({
         organizationId: this.context.project.organization.id,
         projectName: this.context.project.name,
         userId: this._selectedUserId,
@@ -215,7 +215,7 @@ export class AddUserModalViewModel {
     this._isCreating = true
 
     try {
-      const createResult = await client.CreateUser({
+      const createResult = await client.createUser({
         username: this._newUsername.trim(),
         password: this._newPassword,
         email: this._newEmail.trim() || undefined,
@@ -226,7 +226,7 @@ export class AddUserModalViewModel {
         throw new Error('Failed to create user')
       }
 
-      const searchResult = await client.SearchUsers({
+      const searchResult = await client.searchUsers({
         search: this._newUsername.trim(),
         first: 1,
       })
@@ -237,7 +237,7 @@ export class AddUserModalViewModel {
         throw new Error('Could not find newly created user')
       }
 
-      const addResult = await client.AddUserToProject({
+      const addResult = await client.addUserToProject({
         organizationId: this.context.project.organization.id,
         projectName: this.context.project.name,
         userId: newUser.node.id,

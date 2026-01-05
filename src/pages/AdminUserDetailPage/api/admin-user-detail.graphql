@@ -1,0 +1,19 @@
+fragment AdminUserDetail on UserModel {
+  id
+  email
+  username
+  role {
+    id
+    name
+  }
+}
+
+query adminGetUser($userId: String!) {
+  adminUser(data: { userId: $userId }) {
+    ...AdminUserDetail
+  }
+}
+
+mutation adminResetPassword($userId: String!, $newPassword: String!) {
+  resetPassword(data: { userId: $userId, newPassword: $newPassword })
+}

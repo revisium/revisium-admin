@@ -8,13 +8,14 @@ import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/mode
 
 interface EditRowDataCardProps {
   store: RowDataCardStore
+  tableId: string
   isEdit: boolean
   onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
   onUploadFile: (fileId: string, file: File) => Promise<void>
 }
 
 export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
-  ({ store, isEdit, onSelectForeignKey, onUploadFile }) => {
+  ({ store, tableId, isEdit, onSelectForeignKey, onUploadFile }) => {
     useEffectOnce(() => {
       if (store.scrollPosition) {
         window.scrollTo(0, store.scrollPosition)
@@ -39,7 +40,7 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
           mode: isEdit ? RowEditorMode.Updating : RowEditorMode.Reading,
         }}
       >
-        <RowDataCard store={store} rootName="<id>" isEdit={isEdit} />
+        <RowDataCard store={store} tableId={tableId} isEdit={isEdit} />
       </RowEditorActions.Provider>
     )
   },

@@ -1,37 +1,46 @@
-import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
+import { RowPageDataQuery } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
 import { JsonObjectStore } from 'src/entities/Schema/model/json-object.store.ts'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/createEmptyJsonValueStore.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
-import { ITableModel } from 'src/shared/model/BackendStore'
-import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
-import { rootStore } from 'src/shared/model/RootStore.ts'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
+import { container } from 'src/shared/lib'
 import { isValidSchema } from 'src/shared/schema/isValidSchema.ts'
+import { ForeignKeyTableDataSource } from 'src/widgets/RowStackWidget/model/ForeignKeyTableDataSource.ts'
 import { RowStackModel, RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
+import { createTableAdapter } from 'src/widgets/RowStackWidget/model/tableAdapter.ts'
+import { MinimalTableData } from 'src/widgets/RowStackWidget/model/types.ts'
+
+export interface RowStackWidgetRowData {
+  row: NonNullable<RowPageDataQuery['row']>
+  table: NonNullable<RowPageDataQuery['table']>
+  foreignKeysCount: number
+}
 
 export class RowStackWidgetModel {
   public stack: [RowStackModel] & RowStackModel[]
 
-  private disposers: IReactionDisposer[] = []
-
   constructor(
-    private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly projectContext: ProjectContext,
+    private readonly rowData: RowStackWidgetRowData | null,
     startWithUpdating?: boolean,
   ) {
+    const table = this.getTable()
+
     this.stack = [
-      new RowStackModel(this.rootStore, this.projectPageModel, null, {
+      new RowStackModel(this.projectContext, table, {
         type: RowStackModelStateType.List,
         isSelectingForeignKey: false,
       }),
     ]
 
-    if (startWithUpdating) {
+    if (startWithUpdating && this.rowData) {
       this.stack = [
-        new RowStackModel(this.rootStore, this.projectPageModel, null, {
+        new RowStackModel(this.projectContext, table, {
           type: RowStackModelStateType.UpdatingRow,
           isSelectingForeignKey: false,
           store: this.createStore(),
@@ -40,6 +49,23 @@ export class RowStackWidgetModel {
     }
 
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  private getTable(): MinimalTableData {
+    if (this.rowData) {
+      return createTableAdapter(this.rowData.table)
+    }
+
+    const contextTable = this.projectContext.table
+    if (!contextTable) {
+      throw new Error('RowStackWidgetModel: table is not provided')
+    }
+
+    return {
+      id: contextTable.id,
+      schema: contextTable.schema,
+      readonly: contextTable.readonly,
+    }
   }
 
   public async selectForeignKey(item: RowStackModel, node: JsonStringValueStore, isCreating?: boolean): Promise<void> {
@@ -52,7 +78,7 @@ export class RowStackWidgetModel {
     item.toConnectingForeignKeyRow(node, isCreating)
 
     runInAction(() => {
-      const selectingForeignKey = new RowStackModel(this.rootStore, this.projectPageModel, customTable, {
+      const selectingForeignKey = new RowStackModel(this.projectContext, customTable, {
         type: RowStackModelStateType.List,
         isSelectingForeignKey: true,
       })
@@ -103,53 +129,38 @@ export class RowStackWidgetModel {
   }
 
   public init() {
-    this.disposers.push(
-      reaction(
-        () => this.projectPageModel.row,
-        () => {
-          this.updateStore()
-        },
-      ),
-    )
+    // No reaction needed - data comes from props
   }
 
   public dispose() {
-    this.disposers.length = 0
+    this.stack.forEach((item) => item.dispose())
   }
 
-  private async getFetchedTableWithRows(tableId: string): Promise<ITableModel> {
-    const tableVariables = {
-      revisionId: this.projectPageModel.revisionOrThrow.id,
-      tableId: tableId,
-    }
+  private async getFetchedTableWithRows(tableId: string): Promise<MinimalTableData> {
+    const foreignKeyDataSource = container.get(ForeignKeyTableDataSource)
+    const result = await foreignKeyDataSource.loadTableWithRows(this.projectContext.revision.id, tableId)
 
-    const table =
-      this.rootStore.cache.getTableByVariables(tableVariables) ||
-      (await rootStore.queryTable({
-        data: tableVariables,
-      }))
-
-    if (!table) {
+    if (!result) {
       throw new Error(`Not found table ${tableId}`)
     }
 
-    if (!table.rowsConnection.countLoaded) {
-      await rootStore.queryRows({ revisionId: this.projectPageModel.revisionOrThrow.id, tableId: table.id, first: 50 })
-    }
-
-    return table
+    return createTableAdapter(result.table)
   }
 
-  private createStore() {
-    const schema = this.projectPageModel.tableOrThrow.schema as JsonObjectSchema
+  private createStore(): RowDataCardStore {
+    if (!this.rowData) {
+      throw new Error('Cannot create store without rowData')
+    }
+
+    const schema = this.rowData.table.schema as JsonObjectSchema
 
     const schemaStore = isValidSchema(schema) ? createJsonSchemaStore(schema) : new JsonObjectStore()
     return new RowDataCardStore(
       schemaStore,
       createEmptyJsonValueStore(schemaStore),
-      this.projectPageModel.rowOrThrow.id,
-      this.projectPageModel.rowOrThrow,
-      this.projectPageModel,
+      this.rowData.row.id,
+      { data: this.rowData.row.data as JsonValue },
+      this.rowData.foreignKeysCount,
     )
   }
 }

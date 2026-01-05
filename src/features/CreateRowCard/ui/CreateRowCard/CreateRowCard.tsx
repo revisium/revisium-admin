@@ -8,10 +8,11 @@ import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/mode
 
 interface CreateRowCardProps {
   store: RowDataCardStore
+  tableId: string
   onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
 }
 
-export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, onSelectForeignKey }) => {
+export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, tableId, onSelectForeignKey }) => {
   useEffectOnce(() => {
     if (store.scrollPosition) {
       window.scrollTo(0, store.scrollPosition)
@@ -35,7 +36,7 @@ export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, on
         mode: RowEditorMode.Creating,
       }}
     >
-      <RowDataCard store={store} rootName="<id>" isEdit />
+      <RowDataCard store={store} tableId={tableId} isEdit />
     </RowEditorActions.Provider>
   )
 })

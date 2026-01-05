@@ -1,0 +1,38 @@
+fragment ForeignKeyTableItem on TableModel {
+  id
+  versionId
+  createdId
+  createdAt
+  updatedAt
+  readonly
+  count
+  schema
+}
+
+fragment ForeignKeyRowItem on RowModel {
+  id
+  versionId
+  createdId
+  createdAt
+  updatedAt
+  readonly
+  data
+}
+
+query foreignKeyTableWithRows($tableData: GetTableInput!, $rowsData: GetRowsInput!) {
+  table(data: $tableData) {
+    ...ForeignKeyTableItem
+  }
+  rows(data: $rowsData) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...ForeignKeyRowItem
+      }
+    }
+  }
+}

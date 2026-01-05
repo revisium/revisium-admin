@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { CellViewModel } from './CellViewModel'
 import { SystemFieldId } from './filterTypes'
@@ -65,6 +66,10 @@ export class RowItemViewModel {
 
   public get readonly(): boolean {
     return this.params.item.readonly
+  }
+
+  public get data(): JsonValue {
+    return this.params.item.data as JsonValue
   }
 
   public get cellsMap(): Map<string, JsonValueStore> {

@@ -8,9 +8,11 @@ import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/creat
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
-import { IRowModel } from 'src/shared/model/BackendStore'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 import { RootValueNode } from 'src/widgets/TreeDataCard'
+
+export interface OriginRowData {
+  data: JsonValue
+}
 
 export class RowDataCardStore {
   public readonly name = new JsonStringValueStore(new JsonStringStore())
@@ -29,13 +31,13 @@ export class RowDataCardStore {
     public readonly schemaStore: JsonSchemaStore,
     root: JsonValueStore,
     name: string,
-    public readonly originRow: IRowModel | null = null,
-    private readonly projectPageModel?: ProjectPageModel,
+    originRowData: OriginRowData | null = null,
+    private readonly foreignKeysCount: number = 0,
   ) {
     this.root = root
     this.name.baseValue = name
     this.name.value = name
-    this.originData = this.originRow?.data ?? null
+    this.originData = originRowData?.data ?? null
 
     if (this.originData) {
       this.root.updateBaseValue(this.originData)
@@ -69,7 +71,7 @@ export class RowDataCardStore {
   }
 
   public get areThereForeignKeysBy(): boolean {
-    return Boolean(this.projectPageModel?.rowRefsBy?.countForeignKeysBy)
+    return this.foreignKeysCount > 0
   }
 
   public setOverNode(value: JsonValueStore | null): void {
@@ -96,8 +98,9 @@ export class RowDataCardStore {
     }
   }
 
-  public syncReadOnlyStores() {
-    if (this.originRow?.data) {
+  public syncReadOnlyStores(freshData?: JsonValue) {
+    const dataToSync = freshData ?? this.originData
+    if (dataToSync) {
       const readOnlyStores = new Map<string, JsonValueStore>()
 
       traverseValue(this.root, (value) => {
@@ -107,7 +110,7 @@ export class RowDataCardStore {
       })
 
       const nextData = createEmptyJsonValueStore(this.schemaStore)
-      nextData.updateBaseValue(this.originRow.data)
+      nextData.updateBaseValue(dataToSync)
 
       traverseValue(nextData, (value) => {
         if (value.readOnly) {

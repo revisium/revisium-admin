@@ -1,0 +1,30 @@
+fragment RowPageItem on RowModel {
+  id
+  versionId
+  createdId
+  createdAt
+  updatedAt
+  readonly
+  data
+}
+
+query rowPageData(
+  $rowData: GetRowInput!
+  $tableData: GetTableInput!
+  $foreignKeysData: GetRowCountForeignKeysByInput!
+) {
+  row(data: $rowData) {
+    ...RowPageItem
+  }
+  table(data: $tableData) {
+    id
+    versionId
+    createdId
+    createdAt
+    updatedAt
+    readonly
+    count
+    schema
+  }
+  getRowCountForeignKeysTo(data: $foreignKeysData)
+}

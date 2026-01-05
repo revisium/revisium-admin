@@ -60,7 +60,7 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
                         <Text fontSize="sm" fontWeight="500" color="gray.600">
                           Username
                         </Text>
-                        <Input value={model.username} disabled />
+                        <Input value={model.username} readOnly />
                       </Flex>
                     )}
 
@@ -69,7 +69,7 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
                         <Text fontSize="sm" fontWeight="500" color="gray.600">
                           Email
                         </Text>
-                        <Input value={model.email} disabled />
+                        <Input value={model.email} readOnly />
                       </Flex>
                     )}
 

@@ -1,0 +1,58 @@
+fragment RowMutationItem on RowModel {
+  id
+  versionId
+  createdId
+  createdAt
+  updatedAt
+  readonly
+  data
+}
+
+fragment TableMutationItem on TableModel {
+  id
+  versionId
+  createdId
+  createdAt
+  updatedAt
+  readonly
+  count
+  schema
+}
+
+mutation createRowForStack($data: CreateRowInput!) {
+  createRow(data: $data) {
+    table {
+      ...TableMutationItem
+    }
+    previousVersionTableId
+    row {
+      ...RowMutationItem
+    }
+  }
+}
+
+mutation updateRowForStack($data: UpdateRowInput!) {
+  updateRow(data: $data) {
+    table {
+      ...TableMutationItem
+    }
+    previousVersionTableId
+    row {
+      ...RowMutationItem
+    }
+    previousVersionRowId
+  }
+}
+
+mutation renameRowForStack($data: RenameRowInput!) {
+  renameRow(data: $data) {
+    table {
+      ...TableMutationItem
+    }
+    previousVersionTableId
+    row {
+      ...RowMutationItem
+    }
+    previousVersionRowId
+  }
+}

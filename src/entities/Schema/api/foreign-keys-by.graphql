@@ -1,0 +1,37 @@
+query ForeignKeysBy($tableData: GetTableInput!, $foreignKeyTablesData: GetTableForeignKeysInput!) {
+  table(data: $tableData) {
+    id
+    foreignKeysBy(data: $foreignKeyTablesData) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+}
+
+query ForeignKeysByRows($rowData: GetRowInput!, $foreignKeyRowsData: GetRowForeignKeysInput!) {
+  row(data: $rowData) {
+    id
+    rowForeignKeysBy(data: $foreignKeyRowsData) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+          versionId
+          data
+        }
+      }
+    }
+  }
+}

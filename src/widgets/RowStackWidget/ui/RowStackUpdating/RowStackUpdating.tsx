@@ -60,9 +60,10 @@ export const RowStackUpdating: React.FC = observer(() => {
       const result = await item.updateRow(store)
 
       if (result) {
+        const newRowId = store.name.value
         store.save()
         store.syncReadOnlyStores()
-        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
+        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: newRowId }))
       }
     } catch {
       toaster.error({ title: 'Update failed' })
@@ -94,15 +95,15 @@ export const RowStackUpdating: React.FC = observer(() => {
       toaster.loading({ id: toastId, title: 'Uploading...' })
 
       try {
-        const result = await item.uploadFile(store, fileId, file)
+        const freshData = await item.uploadFile(store, fileId, file)
 
-        if (result) {
+        if (freshData) {
           toaster.update(toastId, {
             type: 'info',
             title: 'Successfully uploaded!',
             duration: 1500,
           })
-          store.syncReadOnlyStores()
+          store.syncReadOnlyStores(freshData)
           navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
         } else {
           toaster.update(toastId, {
@@ -184,6 +185,7 @@ export const RowStackUpdating: React.FC = observer(() => {
         <EditRowDataCard
           isEdit={canUpdateRow}
           store={store}
+          tableId={item.table.id}
           onSelectForeignKey={handleSelectForeignKey}
           onUploadFile={handleUploadFile}
         />

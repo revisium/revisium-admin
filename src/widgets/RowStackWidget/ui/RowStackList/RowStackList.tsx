@@ -79,7 +79,7 @@ export const RowStackList: React.FC = observer(() => {
           tableId={tableId}
           isRevisionReadonly={!item.isEditableRevision}
           onSelect={isSelectMode ? handleSelectRow : undefined}
-          onCopy={item.toCloneRow}
+          onCopy={item.toCloneRowFromData}
           onCreate={model.canCreateRow ? item.toCreatingRow : undefined}
         />
       </Box>

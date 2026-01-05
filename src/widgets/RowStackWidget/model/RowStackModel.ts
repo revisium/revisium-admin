@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema, schemaRefsMapper } from 'src/entities/Schema'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore.ts'
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
@@ -9,13 +10,8 @@ import { createEmptyJsonValueStore } from 'src/entities/Schema/model/value/creat
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { container } from 'src/shared/lib'
-import { IRowModel, ITableModel } from 'src/shared/model/BackendStore'
-import { CreateRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRowCommand.ts'
-import { UpdateRowCommand } from 'src/shared/model/BackendStore/handlers/mutations/UpdateRowCommand.ts'
-import { UploadFileCommand } from 'src/shared/model/BackendStore/handlers/mutations/UploadFileCommand.ts'
-import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
-import { FileService } from 'src/shared/model/FileService.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
+import { MinimalTableData } from 'src/widgets/RowStackWidget/model/types.ts'
 
 export enum RowStackModelStateType {
   List = 'List',
@@ -53,20 +49,29 @@ export type RowStackModelState =
   | RowStackModelStateConnectingForeignKeyTable
   | RowStackModelStateUpdatingTable
 
+export interface CreatedRowResult {
+  id: string
+}
+
 export class RowStackModel {
   public readonly id = nanoid()
 
+  private readonly mutationDataSource: RowMutationDataSource
+
   constructor(
-    private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
-    private readonly customTable: ITableModel | null,
+    private readonly projectContext: ProjectContext,
+    private readonly customTable: MinimalTableData | null,
     public state: RowStackModelState,
   ) {
+    this.mutationDataSource = container.get(RowMutationDataSource)
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
-  public get table(): ITableModel {
-    return this.customTable || this.projectPageModel.tableOrThrow
+  public get table(): MinimalTableData {
+    if (!this.customTable) {
+      throw new Error('RowStackModel: table is not provided')
+    }
+    return this.customTable
   }
 
   public get schema(): JsonObjectSchema {
@@ -74,11 +79,11 @@ export class RowStackModel {
   }
 
   public get isEditableRevision() {
-    return this.projectPageModel.isEditableRevision
+    return this.projectContext.isDraftRevision
   }
 
   public get revisionId(): string {
-    return this.projectPageModel.revisionOrThrow.id
+    return this.projectContext.revision.id
   }
 
   public get currentForeignKeyPath() {
@@ -89,40 +94,97 @@ export class RowStackModel {
   }
 
   private get branch() {
-    return this.projectPageModel.branchOrThrow
+    return this.projectContext.branch
   }
 
-  public async createRow(rowId: string, data: JsonValue): Promise<IRowModel | null> {
+  public async createRow(rowId: string, data: JsonValue): Promise<CreatedRowResult | null> {
     try {
-      const command = new CreateRowCommand(this.rootStore, this.projectPageModel, this.branch, this.table)
-      return await command.execute(rowId, data)
+      const result = await this.mutationDataSource.createRow({
+        revisionId: this.branch.draft.id,
+        tableId: this.table.id,
+        rowId,
+        data,
+      })
+
+      if (result) {
+        if (!this.branch.touched) {
+          this.branch.updateTouched(true)
+        }
+        return { id: result.row.id }
+      }
+
+      return null
     } catch (e) {
       console.error(e)
-
       return null
     }
   }
 
   public async updateRow(store: RowDataCardStore): Promise<boolean> {
     try {
-      const command = new UpdateRowCommand(this.rootStore, this.projectPageModel, store)
-      return await command.execute()
+      const originalRowId = store.name.baseValue
+      const currentRowId = store.name.value
+      const data = store.root.getPlainValue()
+
+      const needRename = originalRowId !== currentRowId
+
+      if (needRename) {
+        const renameResult = await this.mutationDataSource.renameRow({
+          revisionId: this.branch.draft.id,
+          tableId: this.table.id,
+          rowId: originalRowId,
+          nextRowId: currentRowId,
+        })
+
+        if (!renameResult) {
+          return false
+        }
+      }
+
+      if (store.root.touched) {
+        const updateResult = await this.mutationDataSource.updateRow({
+          revisionId: this.branch.draft.id,
+          tableId: this.table.id,
+          rowId: currentRowId,
+          data,
+        })
+
+        if (!updateResult) {
+          return false
+        }
+      }
+
+      if (!this.branch.touched) {
+        this.branch.updateTouched(true)
+      }
+      return true
     } catch (e) {
       console.error(e)
-
       return false
     }
   }
 
-  public async uploadFile(store: RowDataCardStore, fileId: string, file: File): Promise<boolean> {
+  public async uploadFile(store: RowDataCardStore, fileId: string, file: File): Promise<JsonValue | null> {
     try {
-      const fileService = container.get(FileService)
-      const command = new UploadFileCommand(this.rootStore, this.projectPageModel, fileService, store)
-      return await command.execute(fileId, file)
+      const result = await this.mutationDataSource.uploadFile({
+        revisionId: this.branch.draft.id,
+        tableId: this.table.id,
+        rowId: store.name.getPlainValue(),
+        fileId,
+        file,
+      })
+
+      if (result) {
+        if (!this.branch.touched) {
+          this.branch.updateTouched(true)
+        }
+        return result.row.data as JsonValue
+      }
+
+      return null
     } catch (e) {
       console.error(e)
-
-      return false
+      return null
     }
   }
 
@@ -151,26 +213,13 @@ export class RowStackModel {
     }
   }
 
-  public toCloneRow(copyRowVersionId: string) {
-    const row = this.rootStore.cache.getRow(copyRowVersionId)
-
-    if (!row) {
-      throw new Error(`Not found row.versionId ${copyRowVersionId}`)
-    }
-
+  public toCloneRowFromData(rowData: JsonValue) {
     const rowId = `${this.table.id.toLowerCase()}-${nanoid(9).toLowerCase()}`
 
     const schemaStore = createJsonSchemaStore(this.schema)
-    const store = new RowDataCardStore(
-      schemaStore,
-      createEmptyJsonValueStore(schemaStore),
-      rowId,
-      null,
-      this.projectPageModel,
-    )
-    store.root.updateBaseValue(row.data)
+    const store = new RowDataCardStore(schemaStore, createEmptyJsonValueStore(schemaStore), rowId, null, 0)
+    store.root.updateBaseValue(rowData)
 
-    // reset ref nodes
     traverseValue(store.root, (item) => {
       if (item.$ref) {
         const refSchema = schemaRefsMapper[item.$ref]
@@ -221,7 +270,9 @@ export class RowStackModel {
 
   public init() {}
 
-  public dispose() {}
+  public dispose() {
+    this.mutationDataSource.dispose()
+  }
 
   public updateStore(store: RowDataCardStore) {
     if (this.state.type === RowStackModelStateType.UpdatingRow) {

@@ -122,7 +122,7 @@ export const RowStackCreating: React.FC = observer(() => {
         switcher={switcher}
       />
       <Flex flexDirection="column" paddingTop="60px">
-        <CreateRowCard store={store} onSelectForeignKey={handleSelectForeignKey} />
+        <CreateRowCard store={store} tableId={item.table.id} onSelectForeignKey={handleSelectForeignKey} />
       </Flex>
     </Flex>
   )

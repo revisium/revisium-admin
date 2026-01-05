@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { RowStackWidgetModel } from 'src/widgets/RowStackWidget/model/RowStackWidgetModel.ts'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
-import { rootStore } from 'src/shared/model/RootStore.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container } from 'src/shared/lib'
+import { RowStackWidgetModel, RowStackWidgetRowData } from 'src/widgets/RowStackWidget/model/RowStackWidgetModel.ts'
 
-export const useRowStackWidgetModel = (startWithUpdating?: boolean) => {
-  const projectPageModel = useProjectPageModel()
+export const useRowStackWidgetModel = (rowData: RowStackWidgetRowData | null, startWithUpdating?: boolean) => {
+  const projectContext = container.get(ProjectContext)
 
   const [store] = useState(() => {
-    return new RowStackWidgetModel(rootStore, projectPageModel, startWithUpdating)
+    return new RowStackWidgetModel(projectContext, rowData, startWithUpdating)
   })
 
   useEffect(() => {

@@ -12,11 +12,11 @@ import { TreeDataCardWidget } from 'src/widgets/TreeDataCard'
 
 interface RowDataCardProps {
   store: RowDataCardStore
+  tableId: string
   isEdit: boolean
-  rootName?: string
 }
 
-export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit }) => {
+export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, tableId, isEdit }) => {
   return (
     <Flex
       alignItems="flex-start"
@@ -25,7 +25,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit
       className={styles.Root}
       flex={1}
       minHeight="100vh"
-      date-testid="row-data-card"
+      data-testid="row-data-card"
     >
       {store.viewMode === ViewerSwitcherMode.Tree && (
         <>
@@ -43,8 +43,8 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, isEdit
           onChange={store.updateValue}
         />
       )}
-      {store.viewMode === ViewerSwitcherMode.RefBy && store.originRow && (
-        <ForeignKeysByDataCard row={store.originRow} />
+      {store.viewMode === ViewerSwitcherMode.RefBy && (
+        <ForeignKeysByDataCard tableId={tableId} rowId={store.name.baseValue} />
       )}
     </Flex>
   )

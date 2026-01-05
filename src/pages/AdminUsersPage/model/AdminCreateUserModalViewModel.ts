@@ -1,6 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { UserSystemRole } from 'src/__generated__/graphql-request'
-import { container } from 'src/shared/lib'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { AdminCreateUserDataSource } from './AdminCreateUserDataSource'
 
@@ -108,13 +107,3 @@ export class AdminCreateUserModalViewModel {
     this._selectedRole = UserSystemRole.SystemUser
   }
 }
-
-container.register(
-  AdminCreateUserModalViewModel,
-  () => {
-    const dataSource = container.get(AdminCreateUserDataSource)
-    const permissionContext = container.get(PermissionContext)
-    return new AdminCreateUserModalViewModel(dataSource, permissionContext, () => {})
-  },
-  { scope: 'request' },
-)

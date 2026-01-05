@@ -63,6 +63,7 @@ export class AdminUserDetailViewModel implements IViewModel {
 
   public setUserId(userId: string): void {
     this._userId = userId
+    void this.loadUser()
   }
 
   public setNewPassword(password: string): void {

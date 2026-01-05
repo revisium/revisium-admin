@@ -4,7 +4,6 @@ import { PiPlugLight, PiPlusLight } from 'react-icons/pi'
 import { EndpointsPageViewModel } from 'src/pages/EndpointsPage/model/EndpointsPageViewModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
-import { AccountButton } from 'src/widgets/AccountButton'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 import { BranchFilterPopover } from '../BranchFilterPopover/BranchFilterPopover'
 import { TypeFilterPopover } from '../TypeFilterPopover/TypeFilterPopover'
@@ -17,7 +16,7 @@ export const EndpointsPage = observer(() => {
 
   if (model.showInitialLoading) {
     return (
-      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+      <Page sidebar={<ProjectSidebar />}>
         <Flex justify="center" align="center" height="200px">
           <Spinner />
         </Flex>
@@ -27,7 +26,7 @@ export const EndpointsPage = observer(() => {
 
   if (model.showError) {
     return (
-      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+      <Page sidebar={<ProjectSidebar />}>
         <Flex justify="center" align="center" height="200px">
           <Text color="red.500">Error loading endpoints</Text>
         </Flex>
@@ -37,7 +36,7 @@ export const EndpointsPage = observer(() => {
 
   if (model.showNoEndpoints) {
     return (
-      <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+      <Page sidebar={<ProjectSidebar />}>
         <Box mb="4rem">
           <Flex justify="center" align="center" height="200px" flexDirection="column" gap={4}>
             <Box textAlign="center">
@@ -65,7 +64,7 @@ export const EndpointsPage = observer(() => {
   }
 
   return (
-    <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+    <Page sidebar={<ProjectSidebar />}>
       <Box mb="4rem">
         <Flex justify="space-between" align="center" marginBottom="0.5rem">
           <Text fontSize="20px" fontWeight="600" color="newGray.500">

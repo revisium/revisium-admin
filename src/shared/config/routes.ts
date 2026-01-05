@@ -30,6 +30,11 @@ export const ROW_ROUTE = ':rowId'
 export const DRAFT_TAG = 'draft'
 export const HEAD_TAG = 'head'
 
+export const ADMIN_ROUTE = 'admin'
+export const ADMIN_USERS_ROUTE = 'users'
+export const ADMIN_USER_DETAIL_ROUTE = ':userId'
+export const ADMIN_ORGANIZATIONS_ROUTE = 'organizations'
+
 export enum RouteIds {
   Organization = 'organization',
   Project = 'project',
@@ -46,4 +51,9 @@ export enum RouteIds {
   ProjectUsers = 'projectUsers',
   ProjectApiKeys = 'projectApiKeys',
   ProjectMcp = 'projectMcp',
+
+  Admin = 'admin',
+  AdminUsers = 'adminUsers',
+  AdminUserDetail = 'adminUserDetail',
+  AdminOrganizations = 'adminOrganizations',
 }

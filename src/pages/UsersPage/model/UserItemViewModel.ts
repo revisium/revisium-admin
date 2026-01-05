@@ -71,7 +71,7 @@ export class UserItemViewModel {
     this._isUpdating = true
 
     try {
-      const result = await client.UpdateUserProjectRole({
+      const result = await client.updateUserProjectRole({
         organizationId: this.context.project.organization.id,
         projectName: this.context.project.name,
         userId: this.userId,
@@ -100,7 +100,7 @@ export class UserItemViewModel {
     this._isRemoving = true
 
     try {
-      const result = await client.RemoveUserFromProject({
+      const result = await client.removeUserFromProject({
         organizationId: this.context.project.organization.id,
         projectName: this.context.project.name,
         userId: this.userId,

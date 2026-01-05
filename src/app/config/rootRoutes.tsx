@@ -1,5 +1,6 @@
 import { Outlet, RouteObject } from 'react-router-dom'
 import { branchLoader } from 'src/app/lib/branchLoader.ts'
+import { checkAdmin } from 'src/app/lib/checkAdmin.ts'
 import { checkAuth } from 'src/app/lib/checkAuth.ts'
 import { checkGuest } from 'src/app/lib/checkGuest.ts'
 import { checkSignUp } from 'src/app/lib/checkSignUp.ts'
@@ -10,6 +11,11 @@ import { projectLoader } from 'src/app/lib/projectLoader.ts'
 import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
 import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
 import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
+import { AdminDashboardPage } from 'src/pages/AdminDashboardPage'
+import { AdminLayout } from 'src/pages/AdminLayout'
+import { AdminOrganizationsPage } from 'src/pages/AdminOrganizationsPage'
+import { AdminUserDetailPage } from 'src/pages/AdminUserDetailPage'
+import { AdminUsersPage } from 'src/pages/AdminUsersPage'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
 import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
@@ -35,6 +41,10 @@ import { SignUpPage } from 'src/pages/SignUpPage'
 import { TablePage } from 'src/pages/TablePage'
 import { UsernamePage } from 'src/pages/UsernamePage'
 import {
+  ADMIN_ORGANIZATIONS_ROUTE,
+  ADMIN_ROUTE,
+  ADMIN_USER_DETAIL_ROUTE,
+  ADMIN_USERS_ROUTE,
   BRANCH_ROUTE,
   SIGN_UP_CONFIRM_ROUTE,
   LOGIN_ROUTE,
@@ -248,6 +258,38 @@ export const ROOT_ROUTES: RouteObject[] = [
       {
         path: APP_ROUTE,
         children: [organizationRouteObject],
+      },
+      {
+        path: ADMIN_ROUTE,
+        element: <AdminLayout />,
+        loader: composeLoaders(checkAuth, checkAdmin),
+        id: RouteIds.Admin,
+        children: [
+          {
+            index: true,
+            element: <AdminDashboardPage />,
+          },
+          {
+            path: ADMIN_USERS_ROUTE,
+            id: RouteIds.AdminUsers,
+            children: [
+              {
+                index: true,
+                element: <AdminUsersPage />,
+              },
+              {
+                path: ADMIN_USER_DETAIL_ROUTE,
+                element: <AdminUserDetailPage />,
+                id: RouteIds.AdminUserDetail,
+              },
+            ],
+          },
+          {
+            path: ADMIN_ORGANIZATIONS_ROUTE,
+            element: <AdminOrganizationsPage />,
+            id: RouteIds.AdminOrganizations,
+          },
+        ],
       },
     ],
   },

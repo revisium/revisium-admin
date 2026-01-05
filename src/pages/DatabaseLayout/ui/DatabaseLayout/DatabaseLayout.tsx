@@ -5,7 +5,6 @@ import { Outlet } from 'react-router-dom'
 import { ReadonlyBanner } from 'src/pages/BranchPage/ui/ReadonlyBanner/ReadonlyBanner.tsx'
 import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
 import { Page } from 'src/shared/ui'
-import { AccountButton } from 'src/widgets/AccountButton'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
 
 export const DatabaseLayout: React.FC = observer(() => {
@@ -14,7 +13,7 @@ export const DatabaseLayout: React.FC = observer(() => {
   const showReadonlyBanner = !projectPageModel.isDraftRevision
 
   return (
-    <Page sidebar={<ProjectSidebar />} footer={<AccountButton />}>
+    <Page sidebar={<ProjectSidebar />}>
       <Flex flex={1} flexDirection="column" position="relative" marginTop="-12px">
         <Outlet />
         {showReadonlyBanner && <ReadonlyBanner />}

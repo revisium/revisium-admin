@@ -40,6 +40,10 @@ export type AddedRowChangeModel = {
   table: RowChangeTableModel
 }
 
+export type AdminUserInput = {
+  userId: Scalars['String']['input']
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -464,6 +468,7 @@ export type MeModel = {
   email?: Maybe<Scalars['String']['output']>
   hasPassword: Scalars['Boolean']['output']
   id: Scalars['String']['output']
+  organization?: Maybe<OrganizationModel>
   organizationId?: Maybe<Scalars['String']['output']>
   role?: Maybe<RoleModel>
   username?: Maybe<Scalars['String']['output']>
@@ -811,6 +816,8 @@ export type ProjectsConnection = {
 
 export type Query = {
   __typename: 'Query'
+  adminUser?: Maybe<UserModel>
+  adminUsers: UsersConnection
   branch: BranchModel
   branches: BranchesConnection
   configuration: ConfigurationModel
@@ -827,13 +834,21 @@ export type Query = {
   rowChanges: RowChangesConnection
   rows: RowsConnection
   searchRows: SearchResultsConnection
-  searchUsers: UsersConnection
+  searchUsers: SearchUsersConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
   tableViews: TableViewsDataModel
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
   usersProject: UsersProjectConnection
+}
+
+export type QueryAdminUserArgs = {
+  data: AdminUserInput
+}
+
+export type QueryAdminUsersArgs = {
+  data: SearchUsersInput
 }
 
 export type QueryBranchArgs = {
@@ -1271,6 +1286,26 @@ export enum SearchType {
   TSQUERY = 'tsquery',
 }
 
+export type SearchUserModel = {
+  __typename: 'SearchUserModel'
+  email?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  username?: Maybe<Scalars['String']['output']>
+}
+
+export type SearchUserModelEdge = {
+  __typename: 'SearchUserModelEdge'
+  cursor: Scalars['String']['output']
+  node: SearchUserModel
+}
+
+export type SearchUsersConnection = {
+  __typename: 'SearchUsersConnection'
+  edges: Array<SearchUserModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
 export type SearchUsersInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
@@ -1473,7 +1508,8 @@ export type UserModel = {
   email?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   organizationId?: Maybe<Scalars['String']['output']>
-  role?: Maybe<RoleModel>
+  role: RoleModel
+  roleId: Scalars['String']['output']
   username?: Maybe<Scalars['String']['output']>
 }
 

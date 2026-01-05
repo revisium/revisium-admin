@@ -43,6 +43,10 @@ export type AddedRowChangeModel = {
   table: RowChangeTableModel
 }
 
+export type AdminUserInput = {
+  userId: Scalars['String']['input']
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -449,6 +453,7 @@ export type MeModel = {
   email?: Maybe<Scalars['String']['output']>
   hasPassword: Scalars['Boolean']['output']
   id: Scalars['String']['output']
+  organization?: Maybe<OrganizationModel>
   organizationId?: Maybe<Scalars['String']['output']>
   role?: Maybe<RoleModel>
   username?: Maybe<Scalars['String']['output']>
@@ -783,6 +788,8 @@ export type ProjectsConnection = {
 }
 
 export type Query = {
+  adminUser?: Maybe<UserModel>
+  adminUsers: UsersConnection
   branch: BranchModel
   branches: BranchesConnection
   configuration: ConfigurationModel
@@ -799,13 +806,21 @@ export type Query = {
   rowChanges: RowChangesConnection
   rows: RowsConnection
   searchRows: SearchResultsConnection
-  searchUsers: UsersConnection
+  searchUsers: SearchUsersConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
   tableViews: TableViewsDataModel
   tables: TablesConnection
   usersOrganization: UsersOrganizationConnection
   usersProject: UsersProjectConnection
+}
+
+export type QueryAdminUserArgs = {
+  data: AdminUserInput
+}
+
+export type QueryAdminUsersArgs = {
+  data: SearchUsersInput
 }
 
 export type QueryBranchArgs = {
@@ -1218,6 +1233,23 @@ export enum SearchType {
   Tsquery = 'tsquery',
 }
 
+export type SearchUserModel = {
+  email?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  username?: Maybe<Scalars['String']['output']>
+}
+
+export type SearchUserModelEdge = {
+  cursor: Scalars['String']['output']
+  node: SearchUserModel
+}
+
+export type SearchUsersConnection = {
+  edges: Array<SearchUserModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
 export type SearchUsersInput = {
   after?: InputMaybe<Scalars['String']['input']>
   first: Scalars['Int']['input']
@@ -1409,7 +1441,8 @@ export type UserModel = {
   email?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   organizationId?: Maybe<Scalars['String']['output']>
-  role?: Maybe<RoleModel>
+  role: RoleModel
+  roleId: Scalars['String']['output']
   username?: Maybe<Scalars['String']['output']>
 }
 
@@ -1632,6 +1665,66 @@ export type FindForeignKeyQuery = {
     pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
     edges: Array<{ cursor: string; node: { id: string } }>
   }
+}
+
+export type AdminDashboardStatsQueryVariables = Exact<{
+  first: Scalars['Int']['input']
+}>
+
+export type AdminDashboardStatsQuery = { searchUsers: { totalCount: number } }
+
+export type AdminUserDetailFragment = {
+  id: string
+  email?: string | null
+  username?: string | null
+  role: { id: string; name: string }
+}
+
+export type AdminGetUserQueryVariables = Exact<{
+  userId: Scalars['String']['input']
+}>
+
+export type AdminGetUserQuery = {
+  adminUser?: { id: string; email?: string | null; username?: string | null; role: { id: string; name: string } } | null
+}
+
+export type AdminResetPasswordMutationVariables = Exact<{
+  userId: Scalars['String']['input']
+  newPassword: Scalars['String']['input']
+}>
+
+export type AdminResetPasswordMutation = { resetPassword: boolean }
+
+export type AdminUserItemFragment = {
+  id: string
+  email?: string | null
+  username?: string | null
+  role: { id: string; name: string }
+}
+
+export type AdminUsersQueryVariables = Exact<{
+  search?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  after?: InputMaybe<Scalars['String']['input']>
+}>
+
+export type AdminUsersQuery = {
+  adminUsers: {
+    totalCount: number
+    edges: Array<{
+      cursor: string
+      node: { id: string; email?: string | null; username?: string | null; role: { id: string; name: string } }
+    }>
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+  }
+}
+
+export type AdminUserQueryVariables = Exact<{
+  userId: Scalars['String']['input']
+}>
+
+export type AdminUserQuery = {
+  adminUser?: { id: string; email?: string | null; username?: string | null; role: { id: string; name: string } } | null
 }
 
 export type GetRevisionChangesQueryVariables = Exact<{
@@ -3326,6 +3419,28 @@ export const PageInfoFragmentDoc = gql`
     endCursor
   }
 `
+export const AdminUserDetailFragmentDoc = gql`
+  fragment AdminUserDetail on UserModel {
+    id
+    email
+    username
+    role {
+      id
+      name
+    }
+  }
+`
+export const AdminUserItemFragmentDoc = gql`
+  fragment AdminUserItem on UserModel {
+    id
+    email
+    username
+    role {
+      id
+      name
+    }
+  }
+`
 export const EndpointFragmentDoc = gql`
   fragment Endpoint on EndpointModel {
     id
@@ -3771,6 +3886,52 @@ export const FindForeignKeyDocument = gql`
   }
   ${PageInfoFragmentDoc}
 `
+export const AdminDashboardStatsDocument = gql`
+  query AdminDashboardStats($first: Int!) {
+    searchUsers(data: { first: $first }) {
+      totalCount
+    }
+  }
+`
+export const AdminGetUserDocument = gql`
+  query adminGetUser($userId: String!) {
+    adminUser(data: { userId: $userId }) {
+      ...AdminUserDetail
+    }
+  }
+  ${AdminUserDetailFragmentDoc}
+`
+export const AdminResetPasswordDocument = gql`
+  mutation adminResetPassword($userId: String!, $newPassword: String!) {
+    resetPassword(data: { userId: $userId, newPassword: $newPassword })
+  }
+`
+export const AdminUsersDocument = gql`
+  query adminUsers($search: String, $first: Int!, $after: String) {
+    adminUsers(data: { search: $search, first: $first, after: $after }) {
+      edges {
+        node {
+          ...AdminUserItem
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      totalCount
+    }
+  }
+  ${AdminUserItemFragmentDoc}
+`
+export const AdminUserDocument = gql`
+  query adminUser($userId: String!) {
+    adminUser(data: { userId: $userId }) {
+      ...AdminUserItem
+    }
+  }
+  ${AdminUserItemFragmentDoc}
+`
 export const GetRevisionChangesDocument = gql`
   query GetRevisionChanges($revisionId: String!, $compareWithRevisionId: String, $includeSystem: Boolean) {
     revisionChanges(
@@ -3936,7 +4097,7 @@ export const SetUsernameDocument = gql`
   }
 `
 export const GetUsersProjectDocument = gql`
-  query GetUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
+  query getUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
     usersProject(data: { organizationId: $organizationId, projectName: $projectName, first: $first, after: $after }) {
       edges {
         node {
@@ -3956,7 +4117,7 @@ export const GetUsersProjectDocument = gql`
   ${UserProjectItemFragmentDoc}
 `
 export const SearchUsersDocument = gql`
-  query SearchUsers($search: String, $first: Int!, $after: String) {
+  query searchUsers($search: String, $first: Int!, $after: String) {
     searchUsers(data: { search: $search, first: $first, after: $after }) {
       edges {
         node {
@@ -3975,7 +4136,7 @@ export const SearchUsersDocument = gql`
   }
 `
 export const AddUserToProjectDocument = gql`
-  mutation AddUserToProject(
+  mutation addUserToProject(
     $organizationId: String!
     $projectName: String!
     $userId: String!
@@ -3987,12 +4148,12 @@ export const AddUserToProjectDocument = gql`
   }
 `
 export const RemoveUserFromProjectDocument = gql`
-  mutation RemoveUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
+  mutation removeUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
     removeUserFromProject(data: { organizationId: $organizationId, projectName: $projectName, userId: $userId })
   }
 `
 export const UpdateUserProjectRoleDocument = gql`
-  mutation UpdateUserProjectRole(
+  mutation updateUserProjectRole(
     $organizationId: String!
     $projectName: String!
     $userId: String!
@@ -4004,7 +4165,7 @@ export const UpdateUserProjectRoleDocument = gql`
   }
 `
 export const CreateUserDocument = gql`
-  mutation CreateUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
+  mutation createUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
     createUser(data: { username: $username, password: $password, email: $email, roleId: $roleId })
   }
 `
@@ -4678,6 +4839,78 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
+    AdminDashboardStats(
+      variables: AdminDashboardStatsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminDashboardStatsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminDashboardStatsQuery>(AdminDashboardStatsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'AdminDashboardStats',
+        'query',
+        variables,
+      )
+    },
+    adminGetUser(
+      variables: AdminGetUserQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminGetUserQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminGetUserQuery>(AdminGetUserDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'adminGetUser',
+        'query',
+        variables,
+      )
+    },
+    adminResetPassword(
+      variables: AdminResetPasswordMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminResetPasswordMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminResetPasswordMutation>(AdminResetPasswordDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'adminResetPassword',
+        'mutation',
+        variables,
+      )
+    },
+    adminUsers(
+      variables: AdminUsersQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminUsersQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminUsersQuery>(AdminUsersDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'adminUsers',
+        'query',
+        variables,
+      )
+    },
+    adminUser(
+      variables: AdminUserQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminUserQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminUserQuery>(AdminUserDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
+        'adminUser',
+        'query',
+        variables,
+      )
+    },
     GetRevisionChanges(
       variables: GetRevisionChangesQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -4831,7 +5064,7 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    GetUsersProject(
+    getUsersProject(
       variables: GetUsersProjectQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<GetUsersProjectQuery> {
@@ -4841,12 +5074,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'GetUsersProject',
+        'getUsersProject',
         'query',
         variables,
       )
     },
-    SearchUsers(
+    searchUsers(
       variables: SearchUsersQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<SearchUsersQuery> {
@@ -4856,12 +5089,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'SearchUsers',
+        'searchUsers',
         'query',
         variables,
       )
     },
-    AddUserToProject(
+    addUserToProject(
       variables: AddUserToProjectMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<AddUserToProjectMutation> {
@@ -4871,12 +5104,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'AddUserToProject',
+        'addUserToProject',
         'mutation',
         variables,
       )
     },
-    RemoveUserFromProject(
+    removeUserFromProject(
       variables: RemoveUserFromProjectMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<RemoveUserFromProjectMutation> {
@@ -4886,12 +5119,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'RemoveUserFromProject',
+        'removeUserFromProject',
         'mutation',
         variables,
       )
     },
-    UpdateUserProjectRole(
+    updateUserProjectRole(
       variables: UpdateUserProjectRoleMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<UpdateUserProjectRoleMutation> {
@@ -4901,12 +5134,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'UpdateUserProjectRole',
+        'updateUserProjectRole',
         'mutation',
         variables,
       )
     },
-    CreateUser(
+    createUser(
       variables: CreateUserMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<CreateUserMutation> {
@@ -4916,7 +5149,7 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'CreateUser',
+        'createUser',
         'mutation',
         variables,
       )

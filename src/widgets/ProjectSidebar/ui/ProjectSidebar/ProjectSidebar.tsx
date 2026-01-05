@@ -1,4 +1,4 @@
-import { Box, Flex, Separator, VStack } from '@chakra-ui/react'
+import { Box, Flex, Separator, Spacer, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useEffect } from 'react'
 import {
@@ -23,6 +23,7 @@ import { ProjectHeader } from 'src/widgets/ProjectSidebar/ui/ProjectButton/Proje
 import { BranchWidget } from 'src/widgets/SidebarBranchWidget'
 import { useViewModel } from 'src/shared/lib'
 import { SearchModal, SearchModalModel } from 'src/widgets/SearchModal'
+import { AccountButton } from 'src/widgets/AccountButton'
 
 export const ProjectSidebar: FC = observer(() => {
   const model = useViewModel(ProjectSidebarViewModel)
@@ -48,7 +49,7 @@ export const ProjectSidebar: FC = observer(() => {
   }, [isProjectLevelActive, model])
 
   return (
-    <VStack alignItems="flex-start" gap={0} width="100%">
+    <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
       <ProjectHeader name={model.projectName} organizationName={model.organizationId} />
 
       <Box width="100%" paddingY="16px">
@@ -135,6 +136,12 @@ export const ProjectSidebar: FC = observer(() => {
           {/*    isActive={isProjectApiKeysActive}*/}
           {/*  />*/}
         </CollapsibleGroupButton>
+      </Flex>
+
+      <Spacer />
+
+      <Flex flexDirection="column" width="100%" gap={1}>
+        <AccountButton />
       </Flex>
 
       <SearchModal model={searchModel} />

@@ -11,7 +11,7 @@ fragment UserProjectItem on UsersProjectModel {
   }
 }
 
-query GetUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
+query getUsersProject($organizationId: String!, $projectName: String!, $first: Int!, $after: String) {
   usersProject(data: { organizationId: $organizationId, projectName: $projectName, first: $first, after: $after }) {
     edges {
       node {
@@ -29,7 +29,7 @@ query GetUsersProject($organizationId: String!, $projectName: String!, $first: I
   }
 }
 
-query SearchUsers($search: String, $first: Int!, $after: String) {
+query searchUsers($search: String, $first: Int!, $after: String) {
   searchUsers(data: { search: $search, first: $first, after: $after }) {
     edges {
       node {
@@ -47,7 +47,7 @@ query SearchUsers($search: String, $first: Int!, $after: String) {
   }
 }
 
-mutation AddUserToProject(
+mutation addUserToProject(
   $organizationId: String!
   $projectName: String!
   $userId: String!
@@ -58,11 +58,11 @@ mutation AddUserToProject(
   )
 }
 
-mutation RemoveUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
+mutation removeUserFromProject($organizationId: String!, $projectName: String!, $userId: String!) {
   removeUserFromProject(data: { organizationId: $organizationId, projectName: $projectName, userId: $userId })
 }
 
-mutation UpdateUserProjectRole(
+mutation updateUserProjectRole(
   $organizationId: String!
   $projectName: String!
   $userId: String!
@@ -73,6 +73,6 @@ mutation UpdateUserProjectRole(
   )
 }
 
-mutation CreateUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
+mutation createUser($username: String!, $password: String!, $email: String, $roleId: UserSystemRole!) {
   createUser(data: { username: $username, password: $password, email: $email, roleId: $roleId })
 }

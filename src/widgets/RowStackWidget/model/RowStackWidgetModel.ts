@@ -138,13 +138,18 @@ export class RowStackWidgetModel {
 
   private async getFetchedTableWithRows(tableId: string): Promise<MinimalTableData> {
     const foreignKeyDataSource = container.get(ForeignKeyTableDataSource)
-    const result = await foreignKeyDataSource.loadTableWithRows(this.projectContext.revision.id, tableId)
 
-    if (!result) {
-      throw new Error(`Not found table ${tableId}`)
+    try {
+      const result = await foreignKeyDataSource.loadTableWithRows(this.projectContext.revision.id, tableId)
+
+      if (!result) {
+        throw new Error(`Not found table ${tableId}`)
+      }
+
+      return createTableAdapter(result.table)
+    } finally {
+      foreignKeyDataSource.dispose()
     }
-
-    return createTableAdapter(result.table)
   }
 
   private createStore(): RowDataCardStore {

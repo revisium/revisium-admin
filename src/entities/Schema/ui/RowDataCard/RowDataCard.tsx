@@ -25,7 +25,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, tableI
       className={styles.Root}
       flex={1}
       minHeight="100vh"
-      date-testid="row-data-card"
+      data-testid="row-data-card"
     >
       {store.viewMode === ViewerSwitcherMode.Tree && (
         <>

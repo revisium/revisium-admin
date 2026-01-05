@@ -1,4 +1,4 @@
-import { Flex, Spinner } from '@chakra-ui/react'
+import { Flex, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { useRowId } from 'src/entities/Project/hooks/useRowId.ts'
@@ -13,6 +13,14 @@ export const RowPage: React.FC = observer(() => {
   const rowId = useRowId()
 
   const model = useViewModel(RowPageViewModel, tableId, rowId)
+
+  if (model.error) {
+    return (
+      <Flex flex={1} justifyContent="center" alignItems="center">
+        <Text color="red.500">{model.error}</Text>
+      </Flex>
+    )
+  }
 
   if (model.isLoading || !model.hasData) {
     return (

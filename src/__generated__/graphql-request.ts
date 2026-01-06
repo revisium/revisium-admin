@@ -1607,13 +1607,6 @@ export type GetBranchForLoaderQuery = {
   }
 }
 
-export type PageInfoFragment = {
-  startCursor?: string | null
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-  endCursor?: string | null
-}
-
 export type GetProjectQueryVariables = Exact<{
   data: GetProjectInput
 }>
@@ -1896,7 +1889,7 @@ export type FindForeignKeyQueryVariables = Exact<{
 export type FindForeignKeyQuery = {
   rows: {
     totalCount: number
-    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
     edges: Array<{ cursor: string; node: { id: string } }>
   }
 }
@@ -2309,6 +2302,13 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = { createUser: boolean }
 
+export type PageInfoFragment = {
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  startCursor?: string | null
+  endCursor?: string | null
+}
+
 export type ConfigurationQueryVariables = Exact<{ [key: string]: never }>
 
 export type ConfigurationQuery = {
@@ -2375,7 +2375,7 @@ export type FindBranchesQueryVariables = Exact<{
 export type FindBranchesQuery = {
   branches: {
     totalCount: number
-    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
     edges: Array<{
       cursor: string
       node: {
@@ -2444,7 +2444,7 @@ export type MeProjectsListQueryVariables = Exact<{
 export type MeProjectsListQuery = {
   meProjects: {
     totalCount: number
-    pageInfo: { startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean; endCursor?: string | null }
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
     edges: Array<{
       cursor: string
       node: { id: string; name: string; organizationId: string; rootBranch: { name: string; touched: boolean } }
@@ -2909,14 +2909,6 @@ export const BranchLoaderFragmentFragmentDoc = gql`
     }
   }
 `
-export const PageInfoFragmentDoc = gql`
-  fragment PageInfo on PageInfo {
-    startCursor
-    hasNextPage
-    hasPreviousPage
-    endCursor
-  }
-`
 export const BranchFragmentFragmentDoc = gql`
   fragment BranchFragment on BranchModel {
     id
@@ -3069,6 +3061,14 @@ export const UserProjectItemFragmentDoc = gql`
       id
       name
     }
+  }
+`
+export const PageInfoFragmentDoc = gql`
+  fragment PageInfo on PageInfo {
+    hasNextPage
+    hasPreviousPage
+    startCursor
+    endCursor
   }
 `
 export const UserFragmentDoc = gql`

@@ -37,7 +37,6 @@
     "version:patch": "npm version patch --no-git-tag-version"
   },
   "dependencies": {
-    "@apollo/client": "3.14.0",
     "@apollo/sandbox": "2.7.3",
     "@atlaskit/drag-and-drop": "0.15.1",
     "@casl/ability": "6.7.3",
@@ -74,7 +73,6 @@
     "@graphql-codegen/typescript": "4.0.6",
     "@graphql-codegen/typescript-graphql-request": "6.2.0",
     "@graphql-codegen/typescript-operations": "4.2.0",
-    "@graphql-codegen/typescript-react-apollo": "4.3.0",
     "@playwright/test": "1.57.0",
     "@types/diff": "7.0.2",
     "@types/jest": "29.5.12",

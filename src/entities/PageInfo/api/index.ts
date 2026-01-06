@@ -1,1 +1,1 @@
-export type { PageInfoFragment } from './fragments/__generated__/fragments.generated.ts'
+export type { PageInfoFragment } from 'src/__generated__/graphql-request.ts'

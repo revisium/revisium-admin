@@ -1,6 +1,6 @@
 fragment PageInfo on PageInfo {
-  startCursor
   hasNextPage
   hasPreviousPage
+  startCursor
   endCursor
 }

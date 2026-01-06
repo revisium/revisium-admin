@@ -1,4 +1,5 @@
 export { StackItem } from './model/StackItem.ts'
+export type { ItemResolver } from './model/StackItem.ts'
 export { StackManager } from './model/StackManager.ts'
 export { createStackRequest } from './model/StackRequest.ts'
 export { createStackContext } from './model/createStackContext.ts'

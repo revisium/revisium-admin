@@ -61,7 +61,7 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
 
   public override init(): void {
     this.load()
-    this.unsubscribeRefresh = this.refreshService.subscribe(() => this.load)
+    this.unsubscribeRefresh = this.refreshService.subscribe(() => this.load())
     this.disposeRevisionReaction = reaction(
       () => this.projectContext.revision.id,
       () => this.load(),

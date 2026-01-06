@@ -2,7 +2,6 @@ import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { CreateTableButton } from 'src/features/CreateTableButton'
-import { toaster } from 'src/shared/ui'
 import { SchemaEditor, StringForeignKeyNodeStore, SchemaEditorMode } from 'src/widgets/SchemaEditor'
 import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
 import { useTableStackModel } from 'src/pages/RevisionPage/model/TableStackModelContext.ts'
@@ -37,8 +36,6 @@ export const TableStack: React.FC = observer(() => {
         } else {
           item.toUpdatingTableFromCreatingTable()
         }
-      } else {
-        toaster.error({ title: 'Failed to create table' })
       }
     }
   }, [item, root])
@@ -49,8 +46,6 @@ export const TableStack: React.FC = observer(() => {
       const result = await item.updateTable(store)
       if (result) {
         store.submitChanges()
-      } else {
-        toaster.error({ title: 'Failed to update table' })
       }
     }
   }, [item])

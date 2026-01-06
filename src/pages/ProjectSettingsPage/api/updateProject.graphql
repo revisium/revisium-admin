@@ -1,3 +1,7 @@
 mutation updateProject($data: UpdateProjectInput!) {
   updateProject(data: $data)
 }
+
+mutation deleteProjectForSettings($data: DeleteProjectInput!) {
+  deleteProject(data: $data)
+}

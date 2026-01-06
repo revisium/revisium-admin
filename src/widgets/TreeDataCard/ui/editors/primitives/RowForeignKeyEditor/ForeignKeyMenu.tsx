@@ -1,8 +1,9 @@
 import { FC, ReactNode, useState, useCallback } from 'react'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { useRowEditorActions } from 'src/features/CreateRowCard/model/RowEditorActions.ts'
 import { SearchForeignKey } from 'src/features/SearchForeignKey'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
+import { container } from 'src/shared/lib'
 import { FocusPopover } from 'src/widgets/TreeDataCard/ui/components/FocusPopover.tsx'
 
 interface ForeignKeyMenuProps {
@@ -13,7 +14,7 @@ interface ForeignKeyMenuProps {
 }
 
 export const ForeignKeyMenu: FC<ForeignKeyMenuProps> = ({ store, children, onChange, disabled }) => {
-  const projectPageModel = useProjectPageModel()
+  const projectContext = container.get(ProjectContext)
   const { onSelectForeignKey } = useRowEditorActions()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -29,7 +30,7 @@ export const ForeignKeyMenu: FC<ForeignKeyMenuProps> = ({ store, children, onCha
   return (
     <FocusPopover isOpen={isOpen} setIsOpen={setIsOpen} trigger={children} disabled={disabled}>
       <SearchForeignKey
-        revisionId={projectPageModel.revisionOrThrow.id}
+        revisionId={projectContext.revision.id}
         tableId={store.foreignKey ?? ''}
         onChange={handleSelect}
         onCreateAndConnect={async () => {

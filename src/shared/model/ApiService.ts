@@ -17,7 +17,7 @@ export class ApiService {
 
     this.graphQLClient = new GraphQLClient(url, {
       responseMiddleware: (response) => {
-        const error = response['response']?.errors[0].message
+        const error = response['response']?.errors?.[0]?.message
 
         if (error) {
           toaster.info({

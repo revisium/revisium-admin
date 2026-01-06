@@ -1,65 +1,66 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { IViewModel } from 'src/shared/config/types.ts'
 import { TABLE_ROUTE } from 'src/shared/config/routes.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { container } from 'src/shared/lib'
 
-type BreadCrumb = {
+export type BreadCrumb = {
   href: string
   title: string
   isCurrentPage: boolean
   dataTestId?: string
 }
 
-export class BranchPageTitleWidgetModel {
-  constructor(
-    private readonly projectPageModel: ProjectPageModel,
-    private readonly linkMaker: LinkMaker,
-  ) {
+export class BranchPageTitleWidgetModel implements IViewModel {
+  private _tableId: string | undefined = undefined
+  private _rowId: string | undefined = undefined
+
+  constructor(private readonly linkMaker: LinkMaker) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get breadcrumbs(): BreadCrumb[] {
-    const breadcrumbs: BreadCrumb[] = []
+    const result: BreadCrumb[] = []
 
-    const tableId = this.projectPageModel.routeTableId
-
-    if (!tableId) {
-      return breadcrumbs
+    if (!this._tableId) {
+      return result
     }
 
-    breadcrumbs.push({
+    result.push({
       title: 'Database',
       href: this.linkMaker.currentBaseLink,
       isCurrentPage: false,
-      dataTestId: `breadcrumb-branch-tables`,
+      dataTestId: 'breadcrumb-branch-tables',
     })
 
-    if (tableId) {
-      breadcrumbs.push({
-        title: tableId,
-        href: generatePath(`${this.linkMaker.currentBaseLink}/${TABLE_ROUTE}`, {
-          tableId,
-        }),
-        isCurrentPage: false,
-        dataTestId: `breadcrumb-table-${tableId}`,
-      })
-    }
+    result.push({
+      title: this._tableId,
+      href: generatePath(`${this.linkMaker.currentBaseLink}/${TABLE_ROUTE}`, {
+        tableId: this._tableId,
+      }),
+      isCurrentPage: !this._rowId,
+      dataTestId: `breadcrumb-table-${this._tableId}`,
+    })
 
-    const rowId = this.projectPageModel.routeRowId
-
-    if (!rowId) {
-      const last = breadcrumbs.slice().pop()
-
-      if (last) {
-        last.isCurrentPage = true
-      }
-    }
-
-    return breadcrumbs
+    return result
   }
 
-  public init() {}
+  public init(tableId: string | undefined, rowId: string | undefined): void {
+    this._tableId = tableId
+    this._rowId = rowId
+  }
 
-  public dispose() {}
+  public dispose(): void {}
 }
+
+container.register(
+  BranchPageTitleWidgetModel,
+  () => {
+    const projectContext = container.get(ProjectContext)
+    const linkMaker = new LinkMaker(projectContext)
+    return new BranchPageTitleWidgetModel(linkMaker)
+  },
+  { scope: 'request' },
+)

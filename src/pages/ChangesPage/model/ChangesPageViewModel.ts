@@ -6,9 +6,7 @@ import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { GetRevisionChangesQuery } from 'src/__generated__/graphql-request'
-import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
-import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
-import { rootStore } from 'src/shared/model/RootStore.ts'
+import { BranchMutationDataSource } from 'src/widgets/SidebarBranchWidget/model/BranchMutationDataSource.ts'
 
 enum State {
   loading = 'loading',
@@ -28,6 +26,7 @@ export class ChangesPageViewModel implements IViewModel {
   constructor(
     private readonly context: ProjectContext,
     private readonly permissionContext: PermissionContext,
+    private readonly branchMutationDataSource: BranchMutationDataSource,
   ) {
     makeAutoObservable(this)
   }
@@ -92,8 +91,16 @@ export class ChangesPageViewModel implements IViewModel {
 
   public async handleRevertChanges(): Promise<void> {
     try {
-      const command = new RevertChangesCommand(this.context)
-      await command.execute()
+      const result = await this.branchMutationDataSource.revertChanges({
+        organizationId: this.context.organization.id,
+        projectName: this.context.project.name,
+        branchName: this.context.branch.name,
+      })
+
+      if (result) {
+        this.context.branch.updateTouched(false)
+        globalThis.location.reload()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -101,8 +108,16 @@ export class ChangesPageViewModel implements IViewModel {
 
   public async handleCommitChanges(comment: string): Promise<void> {
     try {
-      const command = new CreateRevisionCommand(rootStore, this.context, comment)
-      await command.execute()
+      const result = await this.branchMutationDataSource.createRevision({
+        organizationId: this.context.organization.id,
+        projectName: this.context.project.name,
+        branchName: this.context.branch.name,
+        comment,
+      })
+
+      if (result) {
+        globalThis.location.reload()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -122,6 +137,7 @@ export class ChangesPageViewModel implements IViewModel {
   public dispose(): void {
     this.revisionReaction?.()
     this.revisionReaction = null
+    this.branchMutationDataSource.dispose()
   }
 
   private reset(): void {
@@ -165,7 +181,8 @@ container.register(
   () => {
     const context = container.get(ProjectContext)
     const permissionContext = container.get(PermissionContext)
-    return new ChangesPageViewModel(context, permissionContext)
+    const branchMutationDataSource = container.get(BranchMutationDataSource)
+    return new ChangesPageViewModel(context, permissionContext, branchMutationDataSource)
   },
   { scope: 'request' },
 )

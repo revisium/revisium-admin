@@ -130,7 +130,6 @@ async function setupMocks(
       tableListData: createTablesResponse(TABLE_ID),
       getTableForLoader: createFullTableResponse(TABLE_ID),
       RowListRows: rowsResponse,
-      RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
     }

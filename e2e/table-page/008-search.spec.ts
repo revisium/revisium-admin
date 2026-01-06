@@ -53,7 +53,7 @@ async function setupMocks(
     }
 
     // Handle search in RowListRows query
-    if (opName === 'RowListRows' || opName === 'RowListRows') {
+    if (opName === 'RowListRows') {
       const where = body?.variables?.data?.where
       // Search uses: { OR: [{ id: { contains } }, { data: { search } }] }
       const searchTerm = where?.OR?.[0]?.id?.contains || where?.OR?.[1]?.data?.search

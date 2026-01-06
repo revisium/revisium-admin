@@ -115,7 +115,6 @@ async function setupMocks(
       tableListData: createTablesResponse(TABLE_ID),
       getTableForLoader: options.tableResponse || createFullTableResponse(TABLE_ID),
       RowListRows: rowsResponse,
-      RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
     }
@@ -383,7 +382,7 @@ test.describe('Row Operations', () => {
           })
         }
 
-        if (opName === 'RowListRows' || opName === 'RowListRows') {
+        if (opName === 'RowListRows') {
           const after = body?.variables?.data?.after
 
           if (after && pagesLoaded === 0) {

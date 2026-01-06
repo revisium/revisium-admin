@@ -96,7 +96,7 @@ async function setupMocks(
       })
     }
 
-    if (opName === 'RowListRows' || opName === 'RowListRows') {
+    if (opName === 'RowListRows') {
       const after = body?.variables?.data?.after
 
       if (after && loadedPages === 0) {
@@ -298,7 +298,7 @@ test.describe('Pagination', () => {
           })
         }
 
-        if (opName === 'RowListRows' || opName === 'RowListRows') {
+        if (opName === 'RowListRows') {
           // Delay the response to observe loading state
           await new Promise<void>((resolve) => {
             setTimeout(resolve, 100)

@@ -128,7 +128,11 @@
     },
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.ts"
+      "\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.ts",
+      "^src/shared/lib/DIContainer\\.ts$": "<rootDir>/__mocks__/DIContainerMock.ts",
+      "^src/shared/lib$": "<rootDir>/__mocks__/sharedLibMock.ts",
+      "^src/shared/model$": "<rootDir>/__mocks__/sharedModelMock.ts",
+      "^src/shared/model/EnvironmentService\\.ts$": "<rootDir>/__mocks__/EnvironmentServiceMock.ts"
     },
     "setupFilesAfterEnv": [
       "<rootDir>/setup-jest.ts"

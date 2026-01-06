@@ -1,0 +1,17 @@
+mutation revertChangesForSidebar($data: RevertChangesInput!) {
+  revertChanges(data: $data) {
+    id
+  }
+}
+
+mutation createRevisionForSidebar($data: CreateRevisionInput!) {
+  createRevision(data: $data) {
+    id
+  }
+}
+
+mutation createBranchByRevisionIdForSidebar($data: CreateBranchByRevisionIdInput!) {
+  createBranchByRevisionId(data: $data) {
+    id
+  }
+}

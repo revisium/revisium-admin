@@ -1903,6 +1903,12 @@ export type UpdateProjectMutationVariables = Exact<{
 
 export type UpdateProjectMutation = { updateProject: boolean }
 
+export type DeleteProjectForSettingsMutationVariables = Exact<{
+  data: DeleteProjectInput
+}>
+
+export type DeleteProjectForSettingsMutation = { deleteProject: boolean }
+
 export type FetchTableForStackQueryVariables = Exact<{
   data: GetTableInput
 }>
@@ -3720,6 +3726,24 @@ export type SearchRowsQuery = {
   }
 }
 
+export type RevertChangesForSidebarMutationVariables = Exact<{
+  data: RevertChangesInput
+}>
+
+export type RevertChangesForSidebarMutation = { revertChanges: { id: string } }
+
+export type CreateRevisionForSidebarMutationVariables = Exact<{
+  data: CreateRevisionInput
+}>
+
+export type CreateRevisionForSidebarMutation = { createRevision: { id: string } }
+
+export type CreateBranchByRevisionIdForSidebarMutationVariables = Exact<{
+  data: CreateBranchByRevisionIdInput
+}>
+
+export type CreateBranchByRevisionIdForSidebarMutation = { createBranchByRevisionId: { id: string } }
+
 export type RemoveTableForListMutationVariables = Exact<{
   data: RemoveTableInput
 }>
@@ -4529,6 +4553,11 @@ export const UpdateProjectDocument = gql`
     updateProject(data: $data)
   }
 `
+export const DeleteProjectForSettingsDocument = gql`
+  mutation deleteProjectForSettings($data: DeleteProjectInput!) {
+    deleteProject(data: $data)
+  }
+`
 export const FetchTableForStackDocument = gql`
   query fetchTableForStack($data: GetTableInput!) {
     table(data: $data) {
@@ -5311,6 +5340,27 @@ export const SearchRowsDocument = gql`
   }
   ${SearchResultFragmentDoc}
 `
+export const RevertChangesForSidebarDocument = gql`
+  mutation revertChangesForSidebar($data: RevertChangesInput!) {
+    revertChanges(data: $data) {
+      id
+    }
+  }
+`
+export const CreateRevisionForSidebarDocument = gql`
+  mutation createRevisionForSidebar($data: CreateRevisionInput!) {
+    createRevision(data: $data) {
+      id
+    }
+  }
+`
+export const CreateBranchByRevisionIdForSidebarDocument = gql`
+  mutation createBranchByRevisionIdForSidebar($data: CreateBranchByRevisionIdInput!) {
+    createBranchByRevisionId(data: $data) {
+      id
+    }
+  }
+`
 export const RemoveTableForListDocument = gql`
   mutation removeTableForList($data: RemoveTableInput!) {
     removeTable(data: $data) {
@@ -5666,6 +5716,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'updateProject',
+        'mutation',
+        variables,
+      )
+    },
+    deleteProjectForSettings(
+      variables: DeleteProjectForSettingsMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<DeleteProjectForSettingsMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<DeleteProjectForSettingsMutation>(DeleteProjectForSettingsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'deleteProjectForSettings',
         'mutation',
         variables,
       )
@@ -6486,6 +6551,52 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'searchRows',
         'query',
+        variables,
+      )
+    },
+    revertChangesForSidebar(
+      variables: RevertChangesForSidebarMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RevertChangesForSidebarMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RevertChangesForSidebarMutation>(RevertChangesForSidebarDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'revertChangesForSidebar',
+        'mutation',
+        variables,
+      )
+    },
+    createRevisionForSidebar(
+      variables: CreateRevisionForSidebarMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateRevisionForSidebarMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateRevisionForSidebarMutation>(CreateRevisionForSidebarDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createRevisionForSidebar',
+        'mutation',
+        variables,
+      )
+    },
+    createBranchByRevisionIdForSidebar(
+      variables: CreateBranchByRevisionIdForSidebarMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateBranchByRevisionIdForSidebarMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateBranchByRevisionIdForSidebarMutation>(
+            CreateBranchByRevisionIdForSidebarDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders },
+          ),
+        'createBranchByRevisionIdForSidebar',
+        'mutation',
         variables,
       )
     },

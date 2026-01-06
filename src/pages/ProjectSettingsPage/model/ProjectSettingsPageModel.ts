@@ -1,11 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { container } from 'src/shared/lib'
-import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
+import { container, ObservableRequest } from 'src/shared/lib'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
-import { DeleteProjectCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteProjectCommand.ts'
-import { rootStore } from 'src/shared/model/RootStore.ts'
 import { RouterService } from 'src/shared/model/RouterService.ts'
 import { toaster } from 'src/shared/ui'
 
@@ -14,6 +11,7 @@ export class ProjectSettingsPageModel {
   public deleteConfirmationText = ''
 
   private updateRequest = ObservableRequest.of(client.updateProject)
+  private deleteRequest = ObservableRequest.of(client.deleteProjectForSettings)
 
   constructor(
     private readonly context: ProjectContext,
@@ -81,20 +79,28 @@ export class ProjectSettingsPageModel {
     }
 
     try {
-      const command = new DeleteProjectCommand(rootStore, this.context.organization.id, this.context.project.name)
-      await command.execute()
+      const result = await this.deleteRequest.fetch({
+        data: {
+          organizationId: this.context.organization.id,
+          projectName: this.context.project.name,
+        },
+      })
+
+      if (result.isRight) {
+        this.closeDeleteDialog()
+        await this.routerService.navigate('/')
+      }
     } catch (e) {
       console.error(e)
     }
-
-    this.closeDeleteDialog()
-
-    await this.routerService.navigate('/')
   }
 
   public init() {}
 
-  public dispose() {}
+  public dispose() {
+    this.updateRequest.abort()
+    this.deleteRequest.abort()
+  }
 }
 
 container.register(

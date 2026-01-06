@@ -4,16 +4,14 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { CHANGES_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
 import { PermissionContext } from 'src/shared/model/AbilityService'
-import { CreateBranchByRevisionIdCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateBranchByRevisionIdCommand.ts'
-import { CreateRevisionCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateRevisionCommand.ts'
-import { RevertChangesCommand } from 'src/shared/model/BackendStore/handlers/mutations/RevertChangesCommand.ts'
-import { rootStore } from 'src/shared/model/RootStore.ts'
+import { BranchMutationDataSource } from 'src/widgets/SidebarBranchWidget/model/BranchMutationDataSource.ts'
 
 export class SidebarBranchWidgetModel {
   constructor(
     private readonly linkMaker: LinkMaker,
     private readonly context: ProjectContext,
     private readonly permissionContext: PermissionContext,
+    private readonly mutationDataSource: BranchMutationDataSource,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -62,12 +60,22 @@ export class SidebarBranchWidgetModel {
 
   public init() {}
 
-  public dispose() {}
+  public dispose() {
+    this.mutationDataSource.dispose()
+  }
 
   public async handleRevertChanges() {
     try {
-      const command = new RevertChangesCommand(this.context)
-      await command.execute()
+      const result = await this.mutationDataSource.revertChanges({
+        organizationId: this.context.organization.id,
+        projectName: this.context.project.name,
+        branchName: this.context.branch.name,
+      })
+
+      if (result) {
+        this.context.branch.updateTouched(false)
+        globalThis.location.reload()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -75,8 +83,16 @@ export class SidebarBranchWidgetModel {
 
   public async handleCommitChanges(comment: string) {
     try {
-      const command = new CreateRevisionCommand(rootStore, this.context, comment)
-      await command.execute()
+      const result = await this.mutationDataSource.createRevision({
+        organizationId: this.context.organization.id,
+        projectName: this.context.project.name,
+        branchName: this.context.branch.name,
+        comment,
+      })
+
+      if (result) {
+        globalThis.location.reload()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -84,8 +100,14 @@ export class SidebarBranchWidgetModel {
 
   public async handleCreateBranch(name: string) {
     try {
-      const command = new CreateBranchByRevisionIdCommand(rootStore, this.context, name)
-      await command.execute()
+      const result = await this.mutationDataSource.createBranch({
+        revisionId: this.context.revision.id,
+        branchName: name,
+      })
+
+      if (result) {
+        globalThis.location.reload()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -95,10 +117,11 @@ export class SidebarBranchWidgetModel {
 container.register(
   SidebarBranchWidgetModel,
   () => {
-    const context: ProjectContext = container.get(ProjectContext)
+    const context = container.get(ProjectContext)
     const permissionContext = container.get(PermissionContext)
+    const mutationDataSource = container.get(BranchMutationDataSource)
 
-    return new SidebarBranchWidgetModel(new LinkMaker(context), context, permissionContext)
+    return new SidebarBranchWidgetModel(new LinkMaker(context), context, permissionContext, mutationDataSource)
   },
   { scope: 'request' },
 )

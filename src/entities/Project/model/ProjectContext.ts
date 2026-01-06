@@ -61,18 +61,28 @@ export class ProjectContext {
 
   public setProject(project: ProjectLoaderData | null): void {
     this._project = project
+    this._branch = null
+    this._revision = null
+    this._table = null
+    this._row = null
   }
 
   public setBranch(branch: BranchLoaderData | null): void {
     this._branch = branch
+    this._revision = null
+    this._table = null
+    this._row = null
   }
 
   public setRevision(revision: RevisionLoaderData | null): void {
     this._revision = revision
+    this._table = null
+    this._row = null
   }
 
   public setTable(table: TableLoaderData | null): void {
     this._table = table
+    this._row = null
   }
 
   public setRow(row: RowLoaderData | null): void {

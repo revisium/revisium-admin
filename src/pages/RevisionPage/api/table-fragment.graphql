@@ -1,0 +1,7 @@
+fragment TableStackFragment on TableModel {
+  id
+  versionId
+  readonly
+  count
+  schema
+}

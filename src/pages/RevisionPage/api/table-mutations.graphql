@@ -1,0 +1,25 @@
+mutation createTableForStack($data: CreateTableInput!) {
+  createTable(data: $data) {
+    table {
+      ...TableStackFragment
+    }
+  }
+}
+
+mutation updateTableForStack($data: UpdateTableInput!) {
+  updateTable(data: $data) {
+    table {
+      ...TableStackFragment
+    }
+    previousVersionTableId
+  }
+}
+
+mutation renameTableForStack($data: RenameTableInput!) {
+  renameTable(data: $data) {
+    table {
+      ...TableStackFragment
+    }
+    previousVersionTableId
+  }
+}

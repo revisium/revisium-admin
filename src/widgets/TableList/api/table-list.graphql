@@ -1,0 +1,21 @@
+fragment TableListItem on TableModel {
+  id
+  versionId
+  readonly
+  count
+}
+
+query tableListData($data: GetTablesInput!) {
+  tables(data: $data) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...TableListItem
+      }
+    }
+  }
+}

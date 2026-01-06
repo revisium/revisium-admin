@@ -1,0 +1,5 @@
+query fetchTableForStack($data: GetTableInput!) {
+  table(data: $data) {
+    ...TableStackFragment
+  }
+}

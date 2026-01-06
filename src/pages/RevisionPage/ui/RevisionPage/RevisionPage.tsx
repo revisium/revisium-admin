@@ -1,14 +1,14 @@
 import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-
-import { useRevisionPageModel } from 'src/pages/RevisionPage/hooks/useRevisionPageModel.ts'
+import { useViewModel } from 'src/shared/lib/hooks/useViewModel.ts'
+import { RevisionPageModel } from 'src/pages/RevisionPage/model/RevisionPageModel.ts'
 import { TableStackModelContext } from 'src/pages/RevisionPage/model/TableStackModelContext.ts'
 import { TableStack } from 'src/pages/RevisionPage/ui/TableStack/TableStack.tsx'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 
 export const RevisionPage: React.FC = observer(() => {
-  const store = useRevisionPageModel()
+  const store = useViewModel(RevisionPageModel)
 
   return (
     <Flex flexDirection="column" gap="0.5rem" flex={1}>

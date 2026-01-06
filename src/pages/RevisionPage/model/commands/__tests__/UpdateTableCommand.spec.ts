@@ -218,6 +218,26 @@ describe('UpdateTableCommand', () => {
 
       expect(mocks.projectContext.updateTouched).not.toHaveBeenCalled()
     })
+
+    it('should not update touched when no changes occur', async () => {
+      const { deps, mocks } = createMockDeps({ touched: false })
+      const store = createMockStore({ tableId: 'users', draftTableId: 'users', patches: [] })
+      const command = new UpdateTableCommand(deps)
+
+      await command.execute(store as never)
+
+      expect(mocks.projectContext.updateTouched).not.toHaveBeenCalled()
+    })
+
+    it('should update touched when only rename occurs', async () => {
+      const { deps, mocks } = createMockDeps({ touched: false })
+      const store = createMockStore({ tableId: 'users', draftTableId: 'customers', patches: [] })
+      const command = new UpdateTableCommand(deps)
+
+      await command.execute(store as never)
+
+      expect(mocks.projectContext.updateTouched).toHaveBeenCalledWith(true)
+    })
   })
 
   describe('error handling', () => {

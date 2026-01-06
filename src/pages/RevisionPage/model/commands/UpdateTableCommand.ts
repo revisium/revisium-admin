@@ -18,7 +18,8 @@ export class UpdateTableCommand {
 
     try {
       const needRename = store.tableId !== store.draftTableId
-      let wasCreatedNewVersionTable = false
+      let wasRenamed = false
+      let wasUpdated = false
 
       if (needRename) {
         const renameResult = await mutationDataSource.renameTable({
@@ -31,7 +32,7 @@ export class UpdateTableCommand {
           return false
         }
 
-        wasCreatedNewVersionTable = true
+        wasRenamed = true
       }
 
       const patches = store.getPatches()
@@ -47,14 +48,14 @@ export class UpdateTableCommand {
           return false
         }
 
-        wasCreatedNewVersionTable = true
+        wasUpdated = true
       }
 
-      if (!branch.touched) {
+      if ((wasRenamed || wasUpdated) && !branch.touched) {
         projectContext.updateTouched(true)
       }
 
-      if (wasCreatedNewVersionTable) {
+      if (wasRenamed || wasUpdated) {
         tableListRefreshService.refresh()
       }
 

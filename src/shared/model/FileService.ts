@@ -1,4 +1,4 @@
-import { UpdateRowMstMutation } from 'src/__generated__/graphql-request.ts'
+import { UpdateRowForStackMutation } from 'src/__generated__/graphql-request.ts'
 import { container } from 'src/shared/lib'
 import { AuthService } from 'src/shared/model/AuthService.ts'
 import { EnvironmentService } from 'src/shared/model/EnvironmentService.ts'
@@ -21,7 +21,7 @@ export class FileService {
     rowId: string
     fileId: string
     file: File
-  }): Promise<UpdateRowMstMutation['updateRow']> {
+  }): Promise<UpdateRowForStackMutation['updateRow']> {
     const url = `${this.environmentService.get('REACT_APP_SWAGGER_SERVER_URL')}/revision/${revisionId}/tables/${tableId}/rows/${rowId}/upload/${fileId}`
     const response = await this.upload(url, file)
 

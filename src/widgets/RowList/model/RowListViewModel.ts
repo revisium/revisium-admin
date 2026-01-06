@@ -46,7 +46,7 @@ export class RowListViewModel implements IViewModel {
   private _virtuosoRef: TableVirtuosoHandle | null = null
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
-  private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRowMst)
+  private readonly deleteRowRequest = ObservableRequest.of(client.RemoveRow)
   private readonly removeRowsRequest = ObservableRequest.of(client.RemoveRows)
   private readonly getViewsRequest = ObservableRequest.of(client.GetTableViews)
   private readonly updateViewsRequest = ObservableRequest.of(client.UpdateTableViews)

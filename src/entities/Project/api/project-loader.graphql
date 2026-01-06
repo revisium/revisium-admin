@@ -1,0 +1,59 @@
+fragment BranchFragment on BranchModel {
+  id
+  createdAt
+  name
+  touched
+  projectId
+  head {
+    id
+  }
+  draft {
+    id
+  }
+}
+
+fragment ProjectLoaderFragment on ProjectModel {
+  id
+  organizationId
+  createdAt
+  name
+  isPublic
+  rootBranch {
+    ...BranchFragment
+  }
+  userProject {
+    id
+    role {
+      id
+      name
+      permissions {
+        id
+        action
+        subject
+        condition
+      }
+    }
+  }
+  organization {
+    id
+    userOrganization {
+      id
+      role {
+        id
+        name
+        permissions {
+          id
+          action
+          subject
+          condition
+        }
+      }
+    }
+  }
+}
+
+query getProjectForLoader($data: GetProjectInput!) {
+  project(data: $data) {
+    ...ProjectLoaderFragment
+  }
+}

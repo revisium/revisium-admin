@@ -1,34 +1,21 @@
 import { LoaderFunction } from 'react-router-dom'
 import { getBranchVariables } from 'src/app/lib/utils.ts'
+import { BranchDataSource } from 'src/entities/Branch'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { COUNT_REVISIONS_TO_BE_LOADED } from 'src/shared/config/countRevisionsToBeLoaded.ts'
 import { container } from 'src/shared/lib'
-import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export const branchLoader: LoaderFunction = async ({ params }) => {
   const branchVariables = getBranchVariables(params)
+  const branchDataSource = container.get(BranchDataSource)
+  const context = container.get(ProjectContext)
 
-  const branch =
-    rootStore.cache.getBranchByVariables(branchVariables) || (await rootStore.backend.queryBranch(branchVariables))
+  const branch = await branchDataSource.getBranch(
+    branchVariables.organizationId,
+    branchVariables.projectName,
+    branchVariables.branchName,
+  )
 
-  const context: ProjectContext = container.get(ProjectContext)
   context.setBranch(branch)
-
-  const childrenDetails = branch.start.getChildrenDetails(COUNT_REVISIONS_TO_BE_LOADED)
-  if (!childrenDetails.isAllLoaded) {
-    await rootStore.queryRevisions({
-      branch: branchVariables,
-      revisions: { first: COUNT_REVISIONS_TO_BE_LOADED, after: branch.start.id },
-    })
-  }
-
-  const parentDetails = branch.head.getParentsDetails(COUNT_REVISIONS_TO_BE_LOADED)
-  if (!parentDetails.isAllLoaded) {
-    await rootStore.queryRevisions({
-      branch: branchVariables,
-      revisions: { first: COUNT_REVISIONS_TO_BE_LOADED, before: branch.head.id },
-    })
-  }
 
   return branch
 }

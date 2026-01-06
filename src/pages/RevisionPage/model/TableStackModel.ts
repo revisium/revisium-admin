@@ -202,7 +202,7 @@ export class TableStackModel {
 
       if (result) {
         if (!this.branch.touched) {
-          this.branch.updateTouched(true)
+          this.projectContext.updateTouched(true)
         }
         this.refreshTableList()
         return true
@@ -251,7 +251,7 @@ export class TableStackModel {
       }
 
       if (!this.branch.touched) {
-        this.branch.updateTouched(true)
+        this.projectContext.updateTouched(true)
       }
 
       if (wasCreatedNewVersionTable) {

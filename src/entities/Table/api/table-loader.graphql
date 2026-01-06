@@ -1,0 +1,16 @@
+fragment TableLoaderFragment on TableModel {
+  createdId
+  id
+  versionId
+  createdAt
+  updatedAt
+  readonly
+  count
+  schema
+}
+
+query getTableForLoader($data: GetTableInput!) {
+  table(data: $data) {
+    ...TableLoaderFragment
+  }
+}

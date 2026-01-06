@@ -108,7 +108,7 @@ export class RowStackModel {
 
       if (result) {
         if (!this.branch.touched) {
-          this.branch.updateTouched(true)
+          this.projectContext.updateTouched(true)
         }
         return { id: result.row.id }
       }
@@ -155,7 +155,7 @@ export class RowStackModel {
       }
 
       if (!this.branch.touched) {
-        this.branch.updateTouched(true)
+        this.projectContext.updateTouched(true)
       }
       return true
     } catch (e) {
@@ -176,7 +176,7 @@ export class RowStackModel {
 
       if (result) {
         if (!this.branch.touched) {
-          this.branch.updateTouched(true)
+          this.projectContext.updateTouched(true)
         }
         return result.row.data as JsonValue
       }

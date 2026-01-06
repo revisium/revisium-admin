@@ -1,9 +1,0 @@
-fragment RowMst on RowModel {
-  createdId
-  id
-  versionId
-  createdAt
-  updatedAt
-  readonly
-  data
-}

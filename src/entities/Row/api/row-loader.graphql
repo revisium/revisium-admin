@@ -1,0 +1,22 @@
+fragment RowLoaderFragment on RowModel {
+  createdId
+  id
+  versionId
+  createdAt
+  updatedAt
+  readonly
+  data
+}
+
+query getRowForLoader($data: GetRowInput!) {
+  row(data: $data) {
+    ...RowLoaderFragment
+  }
+}
+
+query getRowCountForeignKeysToForLoader($data: GetRowInput!) {
+  row(data: $data) {
+    id
+    countForeignKeysTo
+  }
+}

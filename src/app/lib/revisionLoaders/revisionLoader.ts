@@ -1,59 +1,32 @@
 import { LoaderFunction } from 'react-router-dom'
-import { getBranchVariables, waitForBranch } from 'src/app/lib/utils.ts'
+import { waitForBranch } from 'src/app/lib/utils.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { COUNT_REVISIONS_TO_BE_LOADED } from 'src/shared/config/countRevisionsToBeLoaded.ts'
+import { RevisionDataSource, RevisionLoaderData } from 'src/entities/Revision'
 import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
-import { IRevisionModel } from 'src/shared/model/BackendStore'
-import { rootStore } from 'src/shared/model/RootStore.ts'
 
 export const revisionLoader: LoaderFunction = async ({ params }) => {
   const { revisionIdOrTag } = params
-  const branchVariables = getBranchVariables(params)
 
   if (!revisionIdOrTag) {
     throw new Error('Not found revisionIdOrTag in route params')
   }
 
   const branch = await waitForBranch(params)
+  const revisionDataSource = container.get(RevisionDataSource)
+  const context = container.get(ProjectContext)
 
-  let revision: IRevisionModel
+  let revision: RevisionLoaderData
 
   if (revisionIdOrTag === HEAD_TAG) {
     revision = branch.head
   } else if (revisionIdOrTag === DRAFT_TAG) {
     revision = branch.draft
   } else {
-    revision =
-      rootStore.cache.getRevision(revisionIdOrTag) ||
-      (await rootStore.backend.queryRevision({ revisionId: revisionIdOrTag }))
+    revision = await revisionDataSource.getRevision(revisionIdOrTag)
   }
 
-  const context: ProjectContext = container.get(ProjectContext)
   context.setRevision(revision)
-
-  const childrenDetails = revision.getChildrenDetails(COUNT_REVISIONS_TO_BE_LOADED)
-  if (!childrenDetails.isAllLoaded) {
-    await rootStore.queryRevisions({
-      branch: branchVariables,
-      revisions: { first: COUNT_REVISIONS_TO_BE_LOADED, after: revision.id },
-    })
-  }
-
-  const parentDetails = revision.getParentsDetails(COUNT_REVISIONS_TO_BE_LOADED)
-  if (!parentDetails.isAllLoaded) {
-    await rootStore.queryRevisions({
-      branch: branchVariables,
-      revisions: { first: COUNT_REVISIONS_TO_BE_LOADED, before: revision.id },
-    })
-  }
-
-  if (revision.tablesConnection.countLoaded === 0) {
-    await rootStore.queryTables({
-      revisionId: revision.id,
-      first: 50,
-    })
-  }
 
   return revision
 }

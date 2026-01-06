@@ -1,19 +1,23 @@
 import { reaction } from 'mobx'
 import { Params } from 'react-router-dom'
-import { IBranchModel, IProjectModel, IRevisionModel, ITableModel } from 'src/shared/model/BackendStore'
-import { rootStore } from 'src/shared/model/RootStore.ts'
+import { BranchLoaderData } from 'src/entities/Branch'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container } from 'src/shared/lib'
 
-export const waitForProject = async (params: Params): Promise<IProjectModel> =>
-  waitForEntity(() => rootStore.cache.getProjectByVariables(getProjectVariables(params)))
-
-export const waitForBranch = async (params: Params): Promise<IBranchModel> =>
-  waitForEntity(() => rootStore.cache.getBranchByVariables(getBranchVariables(params)))
-
-export const waitForSpecificRevision = async (params: Params): Promise<IRevisionModel> =>
-  waitForEntity(() => rootStore.cache.getRevision(getSpecificRevisionVariables(params).revisionId))
-
-export const waitForTable = async (params: Params, revisionId: string): Promise<ITableModel> =>
-  waitForEntity(() => rootStore.cache.getTableByVariables(getTableVariables(params, revisionId)))
+export const waitForBranch = async (_params: Params): Promise<BranchLoaderData> => {
+  const context = container.get(ProjectContext)
+  return waitForEntity(() => {
+    const branch = context['_branch']
+    if (branch) {
+      return branch
+    }
+    const project = context['_project']
+    if (project) {
+      return project.rootBranch
+    }
+    return undefined
+  })
+}
 
 export const getOrganizationVariables = (params: Params) => {
   const { organizationId } = params

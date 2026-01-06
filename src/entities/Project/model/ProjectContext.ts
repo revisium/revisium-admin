@@ -1,18 +1,22 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { GetProjectQuery } from 'src/__generated__/graphql-request.ts'
+import { BranchLoaderData } from 'src/entities/Branch'
+import { RevisionLoaderData } from 'src/entities/Revision'
+import { RowLoaderData } from 'src/entities/Row'
+import { TableLoaderData } from 'src/entities/Table'
 import { container, invariant } from 'src/shared/lib'
 import { ApiService } from 'src/shared/model/ApiService.ts'
-import { IBranchModel, IProjectModel, IRevisionModel, IRowModel, ITableModel } from 'src/shared/model/BackendStore'
 import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectLoaderData } from '../api/ProjectDataSource.ts'
 
 export type ProjectData = GetProjectQuery['project']
 
 export class ProjectContext {
-  private _project: IProjectModel | null = null
-  private _branch: IBranchModel | null = null
-  private _revision: IRevisionModel | null = null
-  private _table: ITableModel | null = null
-  private _row: IRowModel | null = null
+  private _project: ProjectLoaderData | null = null
+  private _branch: BranchLoaderData | null = null
+  private _revision: RevisionLoaderData | null = null
+  private _table: TableLoaderData | null = null
+  private _row: RowLoaderData | null = null
 
   constructor(
     private readonly apiService: ApiService,
@@ -55,24 +59,42 @@ export class ProjectContext {
     return this._row
   }
 
-  public setProject(project: IProjectModel | null): void {
+  public setProject(project: ProjectLoaderData | null): void {
     this._project = project
   }
 
-  public setBranch(branch: IBranchModel | null): void {
+  public setBranch(branch: BranchLoaderData | null): void {
     this._branch = branch
   }
 
-  public setRevision(revision: IRevisionModel | null): void {
+  public setRevision(revision: RevisionLoaderData | null): void {
     this._revision = revision
   }
 
-  public setTable(table: ITableModel | null): void {
+  public setTable(table: TableLoaderData | null): void {
     this._table = table
   }
 
-  public setRow(row: IRowModel | null): void {
+  public setRow(row: RowLoaderData | null): void {
     this._row = row
+  }
+
+  public updateTouched(touched: boolean): void {
+    if (this._branch) {
+      this._branch = { ...this._branch, touched }
+    }
+    if (this._project) {
+      this._project = {
+        ...this._project,
+        rootBranch: { ...this._project.rootBranch, touched },
+      }
+    }
+  }
+
+  public updateProject(data: Partial<Pick<ProjectLoaderData, 'name' | 'isPublic'>>): void {
+    if (this._project) {
+      this._project = { ...this._project, ...data }
+    }
   }
 
   public async loadProjectPermissions(organizationId: string, projectName: string): Promise<void> {

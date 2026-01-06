@@ -1,7 +1,0 @@
-mutation DeleteTableMst($data: RemoveTableInput!) {
-  removeTable(data: $data) {
-    branch {
-      ...BranchMst
-    }
-  }
-}

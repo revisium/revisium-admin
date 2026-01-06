@@ -1,0 +1,5 @@
+query getRevisionForLoader($data: GetRevisionInput!) {
+  revision(data: $data) {
+    id
+  }
+}

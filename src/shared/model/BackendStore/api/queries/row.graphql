@@ -1,5 +1,0 @@
-query RowMst($data: GetRowInput!) {
-  row(data: $data) {
-    ...RowMst
-  }
-}

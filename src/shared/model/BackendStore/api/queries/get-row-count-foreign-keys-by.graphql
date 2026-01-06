@@ -1,3 +1,0 @@
-query GetRowCountForeignKeysTo($data: GetRowCountForeignKeysByInput!) {
-  getRowCountForeignKeysTo(data: $data)
-}

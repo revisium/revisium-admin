@@ -1,5 +1,0 @@
-mutation CreateEndpointMst($data: CreateEndpointInput!) {
-  createEndpoint(data: $data) {
-    ...EndpointMst
-  }
-}

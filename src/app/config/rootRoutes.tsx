@@ -6,7 +6,6 @@ import { checkGuest } from 'src/app/lib/checkGuest.ts'
 import { checkSignUp } from 'src/app/lib/checkSignUp.ts'
 import { composeLoaders } from 'src/app/lib/composeLoaders.ts'
 import { mainPageLoader } from 'src/app/lib/mainPageLoader.ts'
-import { organizationLoader } from 'src/app/lib/organizationLoader.ts'
 import { projectLoader } from 'src/app/lib/projectLoader.ts'
 import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
 import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
@@ -126,7 +125,7 @@ const createTableRouteObject = (): RouteObject => ({
 const organizationRouteObject = {
   path: ORGANIZATION_ROUTE,
   element: <Outlet />,
-  loader: composeLoaders(checkAuth, organizationLoader),
+  loader: checkAuth,
   id: RouteIds.Organization,
   children: [
     {

@@ -73,7 +73,7 @@ export class SidebarBranchWidgetModel {
       })
 
       if (result) {
-        this.context.branch.updateTouched(false)
+        this.context.updateTouched(false)
         globalThis.location.reload()
       }
     } catch (e) {

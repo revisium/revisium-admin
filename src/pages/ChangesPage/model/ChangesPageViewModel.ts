@@ -98,7 +98,7 @@ export class ChangesPageViewModel implements IViewModel {
       })
 
       if (result) {
-        this.context.branch.updateTouched(false)
+        this.context.updateTouched(false)
         globalThis.location.reload()
       }
     } catch (e) {

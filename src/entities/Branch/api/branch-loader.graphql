@@ -1,0 +1,19 @@
+fragment BranchLoaderFragment on BranchModel {
+  id
+  createdAt
+  name
+  touched
+  projectId
+  head {
+    id
+  }
+  draft {
+    id
+  }
+}
+
+query getBranchForLoader($data: GetBranchInput!) {
+  branch(data: $data) {
+    ...BranchLoaderFragment
+  }
+}

@@ -1,8 +1,0 @@
-query RevisionMst($data: GetRevisionInput!) {
-  revision(data: $data) {
-    ...RevisionMst
-    branch {
-      id
-    }
-  }
-}

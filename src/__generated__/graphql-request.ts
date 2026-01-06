@@ -1581,6 +1581,32 @@ export type WhereInput = {
   versionId?: InputMaybe<StringFilter>
 }
 
+export type BranchLoaderFragmentFragment = {
+  id: string
+  createdAt: string
+  name: string
+  touched: boolean
+  projectId: string
+  head: { id: string }
+  draft: { id: string }
+}
+
+export type GetBranchForLoaderQueryVariables = Exact<{
+  data: GetBranchInput
+}>
+
+export type GetBranchForLoaderQuery = {
+  branch: {
+    id: string
+    createdAt: string
+    name: string
+    touched: boolean
+    projectId: string
+    head: { id: string }
+    draft: { id: string }
+  }
+}
+
 export type PageInfoFragment = {
   startCursor?: string | null
   hasNextPage: boolean
@@ -1631,6 +1657,152 @@ export type GetProjectQuery = {
   }
 }
 
+export type BranchFragmentFragment = {
+  id: string
+  createdAt: string
+  name: string
+  touched: boolean
+  projectId: string
+  head: { id: string }
+  draft: { id: string }
+}
+
+export type ProjectLoaderFragmentFragment = {
+  id: string
+  organizationId: string
+  createdAt: string
+  name: string
+  isPublic: boolean
+  rootBranch: {
+    id: string
+    createdAt: string
+    name: string
+    touched: boolean
+    projectId: string
+    head: { id: string }
+    draft: { id: string }
+  }
+  userProject?: {
+    id: string
+    role: {
+      id: string
+      name: string
+      permissions: Array<{
+        id: string
+        action: string
+        subject: string
+        condition?: { [key: string]: any } | string | number | boolean | null | null
+      }>
+    }
+  } | null
+  organization: {
+    id: string
+    userOrganization?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
+  }
+}
+
+export type GetProjectForLoaderQueryVariables = Exact<{
+  data: GetProjectInput
+}>
+
+export type GetProjectForLoaderQuery = {
+  project: {
+    id: string
+    organizationId: string
+    createdAt: string
+    name: string
+    isPublic: boolean
+    rootBranch: {
+      id: string
+      createdAt: string
+      name: string
+      touched: boolean
+      projectId: string
+      head: { id: string }
+      draft: { id: string }
+    }
+    userProject?: {
+      id: string
+      role: {
+        id: string
+        name: string
+        permissions: Array<{
+          id: string
+          action: string
+          subject: string
+          condition?: { [key: string]: any } | string | number | boolean | null | null
+        }>
+      }
+    } | null
+    organization: {
+      id: string
+      userOrganization?: {
+        id: string
+        role: {
+          id: string
+          name: string
+          permissions: Array<{
+            id: string
+            action: string
+            subject: string
+            condition?: { [key: string]: any } | string | number | boolean | null | null
+          }>
+        }
+      } | null
+    }
+  }
+}
+
+export type GetRevisionForLoaderQueryVariables = Exact<{
+  data: GetRevisionInput
+}>
+
+export type GetRevisionForLoaderQuery = { revision: { id: string } }
+
+export type RowLoaderFragmentFragment = {
+  createdId: string
+  id: string
+  versionId: string
+  createdAt: string
+  updatedAt: string
+  readonly: boolean
+  data: { [key: string]: any } | string | number | boolean | null
+}
+
+export type GetRowForLoaderQueryVariables = Exact<{
+  data: GetRowInput
+}>
+
+export type GetRowForLoaderQuery = {
+  row?: {
+    createdId: string
+    id: string
+    versionId: string
+    createdAt: string
+    updatedAt: string
+    readonly: boolean
+    data: { [key: string]: any } | string | number | boolean | null
+  } | null
+}
+
+export type GetRowCountForeignKeysToForLoaderQueryVariables = Exact<{
+  data: GetRowInput
+}>
+
+export type GetRowCountForeignKeysToForLoaderQuery = { row?: { id: string; countForeignKeysTo: number } | null }
+
 export type ForeignKeysByQueryVariables = Exact<{
   tableData: GetTableInput
   foreignKeyTablesData: GetTableForeignKeysInput
@@ -1662,6 +1834,34 @@ export type ForeignKeysByRowsQuery = {
         node: { id: string; versionId: string; data: { [key: string]: any } | string | number | boolean | null }
       }>
     }
+  } | null
+}
+
+export type TableLoaderFragmentFragment = {
+  createdId: string
+  id: string
+  versionId: string
+  createdAt: string
+  updatedAt: string
+  readonly: boolean
+  count: number
+  schema: { [key: string]: any } | string | number | boolean | null
+}
+
+export type GetTableForLoaderQueryVariables = Exact<{
+  data: GetTableInput
+}>
+
+export type GetTableForLoaderQuery = {
+  table?: {
+    createdId: string
+    id: string
+    versionId: string
+    createdAt: string
+    updatedAt: string
+    readonly: boolean
+    count: number
+    schema: { [key: string]: any } | string | number | boolean | null
   } | null
 }
 
@@ -2160,1082 +2360,6 @@ export type GetMeQuery = {
   }
 }
 
-export type BranchMstFragment = {
-  id: string
-  createdAt: string
-  name: string
-  touched: boolean
-  projectId: string
-  parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-  start: {
-    id: string
-    createdAt: string
-    comment: string
-    child?: { id: string } | null
-    childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  }
-  head: {
-    id: string
-    createdAt: string
-    comment: string
-    parent?: { id: string } | null
-    child?: { id: string } | null
-    childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  }
-  draft: {
-    id: string
-    createdAt: string
-    comment: string
-    parent?: { id: string } | null
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  }
-}
-
-export type EndpointMstFragment = { id: string; type: EndpointType; createdAt: string; revisionId: string }
-
-export type PageInfoMstFragment = {
-  startCursor?: string | null
-  endCursor?: string | null
-  hasPreviousPage: boolean
-  hasNextPage: boolean
-}
-
-export type PermissionMstFragment = {
-  id: string
-  action: string
-  subject: string
-  condition?: { [key: string]: any } | string | number | boolean | null | null
-}
-
-export type RoleMstFragment = {
-  id: string
-  name: string
-  permissions: Array<{
-    id: string
-    action: string
-    subject: string
-    condition?: { [key: string]: any } | string | number | boolean | null | null
-  }>
-}
-
-export type UserProjectMstFragment = {
-  id: string
-  role: {
-    id: string
-    name: string
-    permissions: Array<{
-      id: string
-      action: string
-      subject: string
-      condition?: { [key: string]: any } | string | number | boolean | null | null
-    }>
-  }
-}
-
-export type UserOrganizationMstFragment = {
-  id: string
-  role: {
-    id: string
-    name: string
-    permissions: Array<{
-      id: string
-      action: string
-      subject: string
-      condition?: { [key: string]: any } | string | number | boolean | null | null
-    }>
-  }
-}
-
-export type ProjectMstFragment = {
-  id: string
-  organizationId: string
-  createdAt: string
-  name: string
-  isPublic: boolean
-  rootBranch: {
-    id: string
-    createdAt: string
-    name: string
-    touched: boolean
-    projectId: string
-    parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-    start: {
-      id: string
-      createdAt: string
-      comment: string
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    head: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    draft: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-  }
-  userProject?: {
-    id: string
-    role: {
-      id: string
-      name: string
-      permissions: Array<{
-        id: string
-        action: string
-        subject: string
-        condition?: { [key: string]: any } | string | number | boolean | null | null
-      }>
-    }
-  } | null
-  organization: {
-    id: string
-    userOrganization?: {
-      id: string
-      role: {
-        id: string
-        name: string
-        permissions: Array<{
-          id: string
-          action: string
-          subject: string
-          condition?: { [key: string]: any } | string | number | boolean | null | null
-        }>
-      }
-    } | null
-  }
-}
-
-export type RevisionMstFragment = {
-  id: string
-  createdAt: string
-  comment: string
-  parent?: { id: string } | null
-  child?: { id: string } | null
-  childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-}
-
-export type RevisionStartMstFragment = {
-  id: string
-  createdAt: string
-  comment: string
-  child?: { id: string } | null
-  childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-}
-
-export type RevisionDraftMstFragment = {
-  id: string
-  createdAt: string
-  comment: string
-  parent?: { id: string } | null
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-}
-
-export type RowMstFragment = {
-  createdId: string
-  id: string
-  versionId: string
-  createdAt: string
-  updatedAt: string
-  readonly: boolean
-  data: { [key: string]: any } | string | number | boolean | null
-}
-
-export type TableMstFragment = {
-  createdId: string
-  id: string
-  versionId: string
-  createdAt: string
-  updatedAt: string
-  readonly: boolean
-  count: number
-  schema: { [key: string]: any } | string | number | boolean | null
-}
-
-export type CreateBranchByRevisionIdMstMutationVariables = Exact<{
-  data: CreateBranchByRevisionIdInput
-}>
-
-export type CreateBranchByRevisionIdMstMutation = {
-  createBranchByRevisionId: {
-    id: string
-    createdAt: string
-    name: string
-    touched: boolean
-    projectId: string
-    parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-    start: {
-      id: string
-      createdAt: string
-      comment: string
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    head: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    draft: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-  }
-}
-
-export type CreateEndpointMstMutationVariables = Exact<{
-  data: CreateEndpointInput
-}>
-
-export type CreateEndpointMstMutation = {
-  createEndpoint: { id: string; type: EndpointType; createdAt: string; revisionId: string }
-}
-
-export type CreateRevisionMstMutationVariables = Exact<{
-  data: CreateRevisionInput
-}>
-
-export type CreateRevisionMstMutation = {
-  createRevision: {
-    id: string
-    createdAt: string
-    comment: string
-    branch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-    parent?: { id: string } | null
-    child?: { id: string } | null
-    childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  }
-}
-
-export type CreateRowMstMutationVariables = Exact<{
-  data: CreateRowInput
-}>
-
-export type CreateRowMstMutation = {
-  createRow: {
-    previousVersionTableId: string
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-    row: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      data: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type CreateTableMstMutationVariables = Exact<{
-  data: CreateTableInput
-}>
-
-export type CreateTableMstMutation = {
-  createTable: {
-    branch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type DeleteEndpointMstMutationVariables = Exact<{
-  data: DeleteEndpointInput
-}>
-
-export type DeleteEndpointMstMutation = { deleteEndpoint: boolean }
-
-export type DeleteProjectMstMutationVariables = Exact<{
-  data: DeleteProjectInput
-}>
-
-export type DeleteProjectMstMutation = { deleteProject: boolean }
-
-export type DeleteRowMstMutationVariables = Exact<{
-  data: RemoveRowInput
-}>
-
-export type DeleteRowMstMutation = {
-  removeRow: {
-    previousVersionTableId?: string | null
-    branch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-    table?: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    } | null
-  }
-}
-
-export type DeleteTableMstMutationVariables = Exact<{
-  data: RemoveTableInput
-}>
-
-export type DeleteTableMstMutation = {
-  removeTable: {
-    branch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-  }
-}
-
-export type RenameRowMstMutationVariables = Exact<{
-  data: RenameRowInput
-}>
-
-export type RenameRowMstMutation = {
-  renameRow: {
-    previousVersionTableId: string
-    previousVersionRowId: string
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-    row: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      data: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type RenameTableMstMutationVariables = Exact<{
-  data: RenameTableInput
-}>
-
-export type RenameTableMstMutation = {
-  renameTable: {
-    previousVersionTableId: string
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type RevertChangesMstMutationVariables = Exact<{
-  data: RevertChangesInput
-}>
-
-export type RevertChangesMstMutation = {
-  revertChanges: {
-    id: string
-    createdAt: string
-    name: string
-    touched: boolean
-    projectId: string
-    parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-    start: {
-      id: string
-      createdAt: string
-      comment: string
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    head: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    draft: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-  }
-}
-
-export type UpdateRowMstMutationVariables = Exact<{
-  data: UpdateRowInput
-}>
-
-export type UpdateRowMstMutation = {
-  updateRow: {
-    previousVersionTableId: string
-    previousVersionRowId: string
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-    row: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      data: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type UpdateTableMstMutationVariables = Exact<{
-  data: UpdateTableInput
-}>
-
-export type UpdateTableMstMutation = {
-  updateTable: {
-    previousVersionTableId: string
-    table: {
-      createdId: string
-      id: string
-      versionId: string
-      createdAt: string
-      updatedAt: string
-      readonly: boolean
-      count: number
-      schema: { [key: string]: any } | string | number | boolean | null
-    }
-  }
-}
-
-export type BranchMstQueryVariables = Exact<{
-  data: GetBranchInput
-}>
-
-export type BranchMstQuery = {
-  branch: {
-    id: string
-    createdAt: string
-    name: string
-    touched: boolean
-    projectId: string
-    parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-    start: {
-      id: string
-      createdAt: string
-      comment: string
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    head: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      child?: { id: string } | null
-      childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-    draft: {
-      id: string
-      createdAt: string
-      comment: string
-      parent?: { id: string } | null
-      endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-    }
-  }
-}
-
-export type BranchesMstQueryVariables = Exact<{
-  data: GetBranchesInput
-}>
-
-export type BranchesMstQuery = {
-  branches: {
-    totalCount: number
-    pageInfo: { startCursor?: string | null; endCursor?: string | null; hasPreviousPage: boolean; hasNextPage: boolean }
-    edges: Array<{
-      cursor: string
-      node: {
-        id: string
-        createdAt: string
-        name: string
-        touched: boolean
-        projectId: string
-        parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-        start: {
-          id: string
-          createdAt: string
-          comment: string
-          child?: { id: string } | null
-          childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-        }
-        head: {
-          id: string
-          createdAt: string
-          comment: string
-          parent?: { id: string } | null
-          child?: { id: string } | null
-          childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-        }
-        draft: {
-          id: string
-          createdAt: string
-          comment: string
-          parent?: { id: string } | null
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-        }
-      }
-    }>
-  }
-}
-
-export type GetRowCountForeignKeysToQueryVariables = Exact<{
-  data: GetRowCountForeignKeysByInput
-}>
-
-export type GetRowCountForeignKeysToQuery = { getRowCountForeignKeysTo: number }
-
-export type ProjectMstQueryVariables = Exact<{
-  data: GetProjectInput
-}>
-
-export type ProjectMstQuery = {
-  project: {
-    id: string
-    organizationId: string
-    createdAt: string
-    name: string
-    isPublic: boolean
-    rootBranch: {
-      id: string
-      createdAt: string
-      name: string
-      touched: boolean
-      projectId: string
-      parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-      start: {
-        id: string
-        createdAt: string
-        comment: string
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      head: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        child?: { id: string } | null
-        childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-      draft: {
-        id: string
-        createdAt: string
-        comment: string
-        parent?: { id: string } | null
-        endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-      }
-    }
-    userProject?: {
-      id: string
-      role: {
-        id: string
-        name: string
-        permissions: Array<{
-          id: string
-          action: string
-          subject: string
-          condition?: { [key: string]: any } | string | number | boolean | null | null
-        }>
-      }
-    } | null
-    organization: {
-      id: string
-      userOrganization?: {
-        id: string
-        role: {
-          id: string
-          name: string
-          permissions: Array<{
-            id: string
-            action: string
-            subject: string
-            condition?: { [key: string]: any } | string | number | boolean | null | null
-          }>
-        }
-      } | null
-    }
-  }
-}
-
-export type ProjectsMstQueryVariables = Exact<{
-  data: GetProjectsInput
-}>
-
-export type ProjectsMstQuery = {
-  projects: {
-    totalCount: number
-    pageInfo: { startCursor?: string | null; endCursor?: string | null; hasPreviousPage: boolean; hasNextPage: boolean }
-    edges: Array<{
-      cursor: string
-      node: {
-        id: string
-        organizationId: string
-        createdAt: string
-        name: string
-        isPublic: boolean
-        rootBranch: {
-          id: string
-          createdAt: string
-          name: string
-          touched: boolean
-          projectId: string
-          parent?: { branch: { id: string; name: string }; revision: { id: string } } | null
-          start: {
-            id: string
-            createdAt: string
-            comment: string
-            child?: { id: string } | null
-            childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-          head: {
-            id: string
-            createdAt: string
-            comment: string
-            parent?: { id: string } | null
-            child?: { id: string } | null
-            childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-          draft: {
-            id: string
-            createdAt: string
-            comment: string
-            parent?: { id: string } | null
-            endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          }
-        }
-        userProject?: {
-          id: string
-          role: {
-            id: string
-            name: string
-            permissions: Array<{
-              id: string
-              action: string
-              subject: string
-              condition?: { [key: string]: any } | string | number | boolean | null | null
-            }>
-          }
-        } | null
-        organization: {
-          id: string
-          userOrganization?: {
-            id: string
-            role: {
-              id: string
-              name: string
-              permissions: Array<{
-                id: string
-                action: string
-                subject: string
-                condition?: { [key: string]: any } | string | number | boolean | null | null
-              }>
-            }
-          } | null
-        }
-      }
-    }>
-  }
-}
-
-export type RevisionMstQueryVariables = Exact<{
-  data: GetRevisionInput
-}>
-
-export type RevisionMstQuery = {
-  revision: {
-    id: string
-    createdAt: string
-    comment: string
-    branch: { id: string }
-    parent?: { id: string } | null
-    child?: { id: string } | null
-    childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-    endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  }
-}
-
-export type BranchRevisionMstFragment = {
-  id: string
-  createdAt: string
-  comment: string
-  endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-  parent?: { id: string } | null
-  child?: { id: string } | null
-  childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-}
-
-export type RevisionsMstQueryVariables = Exact<{
-  branch: GetBranchInput
-  revisions: GetBranchRevisionsInput
-}>
-
-export type RevisionsMstQuery = {
-  branch: {
-    id: string
-    revisions: {
-      totalCount: number
-      pageInfo: {
-        startCursor?: string | null
-        endCursor?: string | null
-        hasPreviousPage: boolean
-        hasNextPage: boolean
-      }
-      edges: Array<{
-        cursor: string
-        node: {
-          id: string
-          createdAt: string
-          comment: string
-          endpoints: Array<{ id: string; type: EndpointType; createdAt: string; revisionId: string }>
-          parent?: { id: string } | null
-          child?: { id: string } | null
-          childBranches: Array<{ branch: { id: string; name: string }; revision: { id: string } }>
-        }
-      }>
-    }
-  }
-}
-
-export type RowForeignKeysByQueryVariables = Exact<{
-  data: GetRowInput
-  foreignKeyData: GetRowForeignKeysInput
-}>
-
-export type RowForeignKeysByQuery = {
-  row?: {
-    versionId: string
-    rowForeignKeysBy: {
-      totalCount: number
-      pageInfo: {
-        startCursor?: string | null
-        endCursor?: string | null
-        hasPreviousPage: boolean
-        hasNextPage: boolean
-      }
-      edges: Array<{
-        cursor: string
-        node: {
-          createdId: string
-          id: string
-          versionId: string
-          createdAt: string
-          updatedAt: string
-          readonly: boolean
-          data: { [key: string]: any } | string | number | boolean | null
-        }
-      }>
-    }
-  } | null
-}
-
-export type RowMstQueryVariables = Exact<{
-  data: GetRowInput
-}>
-
-export type RowMstQuery = {
-  row?: {
-    createdId: string
-    id: string
-    versionId: string
-    createdAt: string
-    updatedAt: string
-    readonly: boolean
-    data: { [key: string]: any } | string | number | boolean | null
-  } | null
-}
-
-export type RowsMstQueryVariables = Exact<{
-  data: GetRowsInput
-}>
-
-export type RowsMstQuery = {
-  rows: {
-    totalCount: number
-    pageInfo: { startCursor?: string | null; endCursor?: string | null; hasPreviousPage: boolean; hasNextPage: boolean }
-    edges: Array<{
-      cursor: string
-      node: {
-        createdId: string
-        id: string
-        versionId: string
-        createdAt: string
-        updatedAt: string
-        readonly: boolean
-        data: { [key: string]: any } | string | number | boolean | null
-      }
-    }>
-  }
-}
-
-export type TableForeignKeysByQueryVariables = Exact<{
-  data: GetTableInput
-  foreignKeyData: GetTableForeignKeysInput
-}>
-
-export type TableForeignKeysByQuery = {
-  table?: {
-    versionId: string
-    foreignKeysBy: {
-      totalCount: number
-      pageInfo: {
-        startCursor?: string | null
-        endCursor?: string | null
-        hasPreviousPage: boolean
-        hasNextPage: boolean
-      }
-      edges: Array<{
-        cursor: string
-        node: {
-          createdId: string
-          id: string
-          versionId: string
-          createdAt: string
-          updatedAt: string
-          readonly: boolean
-          count: number
-          schema: { [key: string]: any } | string | number | boolean | null
-        }
-      }>
-    }
-  } | null
-}
-
-export type TableMstQueryVariables = Exact<{
-  data: GetTableInput
-}>
-
-export type TableMstQuery = {
-  table?: {
-    createdId: string
-    id: string
-    versionId: string
-    createdAt: string
-    updatedAt: string
-    readonly: boolean
-    count: number
-    schema: { [key: string]: any } | string | number | boolean | null
-  } | null
-}
-
-export type TablesMstQueryVariables = Exact<{
-  data: GetTablesInput
-}>
-
-export type TablesMstQuery = {
-  tables: {
-    totalCount: number
-    pageInfo: { startCursor?: string | null; endCursor?: string | null; hasPreviousPage: boolean; hasNextPage: boolean }
-    edges: Array<{
-      cursor: string
-      node: {
-        createdId: string
-        id: string
-        versionId: string
-        createdAt: string
-        updatedAt: string
-        readonly: boolean
-        count: number
-        schema: { [key: string]: any } | string | number | boolean | null
-      }
-    }>
-  }
-}
-
 export type FindBranchFragment = {
   id: string
   name: string
@@ -3447,6 +2571,12 @@ export type RowListRowsQuery = {
     }>
   }
 }
+
+export type RemoveRowMutationVariables = Exact<{
+  data: RemoveRowInput
+}>
+
+export type RemoveRowMutation = { removeRow: { branch: { id: string } } }
 
 export type RemoveRowsMutationVariables = Exact<{
   data: RemoveRowsInput
@@ -3764,12 +2894,107 @@ export type TableListDataQuery = {
   }
 }
 
+export const BranchLoaderFragmentFragmentDoc = gql`
+  fragment BranchLoaderFragment on BranchModel {
+    id
+    createdAt
+    name
+    touched
+    projectId
+    head {
+      id
+    }
+    draft {
+      id
+    }
+  }
+`
 export const PageInfoFragmentDoc = gql`
   fragment PageInfo on PageInfo {
     startCursor
     hasNextPage
     hasPreviousPage
     endCursor
+  }
+`
+export const BranchFragmentFragmentDoc = gql`
+  fragment BranchFragment on BranchModel {
+    id
+    createdAt
+    name
+    touched
+    projectId
+    head {
+      id
+    }
+    draft {
+      id
+    }
+  }
+`
+export const ProjectLoaderFragmentFragmentDoc = gql`
+  fragment ProjectLoaderFragment on ProjectModel {
+    id
+    organizationId
+    createdAt
+    name
+    isPublic
+    rootBranch {
+      ...BranchFragment
+    }
+    userProject {
+      id
+      role {
+        id
+        name
+        permissions {
+          id
+          action
+          subject
+          condition
+        }
+      }
+    }
+    organization {
+      id
+      userOrganization {
+        id
+        role {
+          id
+          name
+          permissions {
+            id
+            action
+            subject
+            condition
+          }
+        }
+      }
+    }
+  }
+  ${BranchFragmentFragmentDoc}
+`
+export const RowLoaderFragmentFragmentDoc = gql`
+  fragment RowLoaderFragment on RowModel {
+    createdId
+    id
+    versionId
+    createdAt
+    updatedAt
+    readonly
+    data
+  }
+`
+export const TableLoaderFragmentFragmentDoc = gql`
+  fragment TableLoaderFragment on TableModel {
+    createdId
+    id
+    versionId
+    createdAt
+    updatedAt
+    readonly
+    count
+    schema
   }
 `
 export const AdminUserDetailFragmentDoc = gql`
@@ -3864,208 +3089,6 @@ export const UserFragmentDoc = gql`
       }
     }
   }
-`
-export const PageInfoMstFragmentDoc = gql`
-  fragment PageInfoMst on PageInfo {
-    startCursor
-    endCursor
-    hasPreviousPage
-    hasNextPage
-  }
-`
-export const EndpointMstFragmentDoc = gql`
-  fragment EndpointMst on EndpointModel {
-    id
-    type
-    createdAt
-    revisionId
-  }
-`
-export const RevisionStartMstFragmentDoc = gql`
-  fragment RevisionStartMst on RevisionModel {
-    id
-    createdAt
-    comment
-    child {
-      id
-    }
-    childBranches {
-      branch {
-        id
-        name
-      }
-      revision {
-        id
-      }
-    }
-    endpoints {
-      ...EndpointMst
-    }
-  }
-  ${EndpointMstFragmentDoc}
-`
-export const RevisionMstFragmentDoc = gql`
-  fragment RevisionMst on RevisionModel {
-    id
-    createdAt
-    comment
-    parent {
-      id
-    }
-    child {
-      id
-    }
-    childBranches {
-      branch {
-        id
-        name
-      }
-      revision {
-        id
-      }
-    }
-    endpoints {
-      ...EndpointMst
-    }
-  }
-  ${EndpointMstFragmentDoc}
-`
-export const RevisionDraftMstFragmentDoc = gql`
-  fragment RevisionDraftMst on RevisionModel {
-    id
-    createdAt
-    comment
-    parent {
-      id
-    }
-    endpoints {
-      ...EndpointMst
-    }
-  }
-  ${EndpointMstFragmentDoc}
-`
-export const BranchMstFragmentDoc = gql`
-  fragment BranchMst on BranchModel {
-    id
-    createdAt
-    name
-    touched
-    projectId
-    parent {
-      branch {
-        id
-        name
-      }
-      revision {
-        id
-      }
-    }
-    start {
-      ...RevisionStartMst
-    }
-    head {
-      ...RevisionMst
-    }
-    draft {
-      ...RevisionDraftMst
-    }
-  }
-  ${RevisionStartMstFragmentDoc}
-  ${RevisionMstFragmentDoc}
-  ${RevisionDraftMstFragmentDoc}
-`
-export const PermissionMstFragmentDoc = gql`
-  fragment PermissionMst on PermissionModel {
-    id
-    action
-    subject
-    condition
-  }
-`
-export const RoleMstFragmentDoc = gql`
-  fragment RoleMst on RoleModel {
-    id
-    name
-    permissions {
-      ...PermissionMst
-    }
-  }
-  ${PermissionMstFragmentDoc}
-`
-export const UserProjectMstFragmentDoc = gql`
-  fragment UserProjectMst on UsersProjectModel {
-    id
-    role {
-      ...RoleMst
-    }
-  }
-  ${RoleMstFragmentDoc}
-`
-export const UserOrganizationMstFragmentDoc = gql`
-  fragment UserOrganizationMst on UsersOrganizationModel {
-    id
-    role {
-      ...RoleMst
-    }
-  }
-  ${RoleMstFragmentDoc}
-`
-export const ProjectMstFragmentDoc = gql`
-  fragment ProjectMst on ProjectModel {
-    id
-    organizationId
-    createdAt
-    name
-    isPublic
-    rootBranch {
-      ...BranchMst
-    }
-    userProject {
-      ...UserProjectMst
-    }
-    organization {
-      id
-      userOrganization {
-        ...UserOrganizationMst
-      }
-    }
-  }
-  ${BranchMstFragmentDoc}
-  ${UserProjectMstFragmentDoc}
-  ${UserOrganizationMstFragmentDoc}
-`
-export const RowMstFragmentDoc = gql`
-  fragment RowMst on RowModel {
-    createdId
-    id
-    versionId
-    createdAt
-    updatedAt
-    readonly
-    data
-  }
-`
-export const TableMstFragmentDoc = gql`
-  fragment TableMst on TableModel {
-    createdId
-    id
-    versionId
-    createdAt
-    updatedAt
-    readonly
-    count
-    schema
-  }
-`
-export const BranchRevisionMstFragmentDoc = gql`
-  fragment BranchRevisionMst on RevisionModel {
-    ...RevisionMst
-    endpoints {
-      ...EndpointMst
-    }
-  }
-  ${RevisionMstFragmentDoc}
-  ${EndpointMstFragmentDoc}
 `
 export const FindBranchFragmentDoc = gql`
   fragment FindBranch on BranchModel {
@@ -4228,6 +3251,14 @@ export const TableListItemFragmentDoc = gql`
     count
   }
 `
+export const GetBranchForLoaderDocument = gql`
+  query getBranchForLoader($data: GetBranchInput!) {
+    branch(data: $data) {
+      ...BranchLoaderFragment
+    }
+  }
+  ${BranchLoaderFragmentFragmentDoc}
+`
 export const GetProjectDocument = gql`
   query getProject($data: GetProjectInput!) {
     project(data: $data) {
@@ -4265,6 +3296,37 @@ export const GetProjectDocument = gql`
           }
         }
       }
+    }
+  }
+`
+export const GetProjectForLoaderDocument = gql`
+  query getProjectForLoader($data: GetProjectInput!) {
+    project(data: $data) {
+      ...ProjectLoaderFragment
+    }
+  }
+  ${ProjectLoaderFragmentFragmentDoc}
+`
+export const GetRevisionForLoaderDocument = gql`
+  query getRevisionForLoader($data: GetRevisionInput!) {
+    revision(data: $data) {
+      id
+    }
+  }
+`
+export const GetRowForLoaderDocument = gql`
+  query getRowForLoader($data: GetRowInput!) {
+    row(data: $data) {
+      ...RowLoaderFragment
+    }
+  }
+  ${RowLoaderFragmentFragmentDoc}
+`
+export const GetRowCountForeignKeysToForLoaderDocument = gql`
+  query getRowCountForeignKeysToForLoader($data: GetRowInput!) {
+    row(data: $data) {
+      id
+      countForeignKeysTo
     }
   }
 `
@@ -4307,6 +3369,14 @@ export const ForeignKeysByRowsDocument = gql`
       }
     }
   }
+`
+export const GetTableForLoaderDocument = gql`
+  query getTableForLoader($data: GetTableInput!) {
+    table(data: $data) {
+      ...TableLoaderFragment
+    }
+  }
+  ${TableLoaderFragmentFragmentDoc}
 `
 export const UpdatePasswordDocument = gql`
   mutation updatePassword($data: UpdatePasswordInput!) {
@@ -4730,343 +3800,6 @@ export const GetMeDocument = gql`
   }
   ${UserFragmentDoc}
 `
-export const CreateBranchByRevisionIdMstDocument = gql`
-  mutation CreateBranchByRevisionIdMst($data: CreateBranchByRevisionIdInput!) {
-    createBranchByRevisionId(data: $data) {
-      ...BranchMst
-    }
-  }
-  ${BranchMstFragmentDoc}
-`
-export const CreateEndpointMstDocument = gql`
-  mutation CreateEndpointMst($data: CreateEndpointInput!) {
-    createEndpoint(data: $data) {
-      ...EndpointMst
-    }
-  }
-  ${EndpointMstFragmentDoc}
-`
-export const CreateRevisionMstDocument = gql`
-  mutation CreateRevisionMst($data: CreateRevisionInput!) {
-    createRevision(data: $data) {
-      ...RevisionMst
-      branch {
-        ...BranchMst
-      }
-    }
-  }
-  ${RevisionMstFragmentDoc}
-  ${BranchMstFragmentDoc}
-`
-export const CreateRowMstDocument = gql`
-  mutation CreateRowMst($data: CreateRowInput!) {
-    createRow(data: $data) {
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-      row {
-        ...RowMst
-      }
-    }
-  }
-  ${TableMstFragmentDoc}
-  ${RowMstFragmentDoc}
-`
-export const CreateTableMstDocument = gql`
-  mutation CreateTableMst($data: CreateTableInput!) {
-    createTable(data: $data) {
-      branch {
-        ...BranchMst
-      }
-      table {
-        ...TableMst
-      }
-    }
-  }
-  ${BranchMstFragmentDoc}
-  ${TableMstFragmentDoc}
-`
-export const DeleteEndpointMstDocument = gql`
-  mutation DeleteEndpointMst($data: DeleteEndpointInput!) {
-    deleteEndpoint(data: $data)
-  }
-`
-export const DeleteProjectMstDocument = gql`
-  mutation DeleteProjectMst($data: DeleteProjectInput!) {
-    deleteProject(data: $data)
-  }
-`
-export const DeleteRowMstDocument = gql`
-  mutation DeleteRowMst($data: RemoveRowInput!) {
-    removeRow(data: $data) {
-      branch {
-        ...BranchMst
-      }
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-    }
-  }
-  ${BranchMstFragmentDoc}
-  ${TableMstFragmentDoc}
-`
-export const DeleteTableMstDocument = gql`
-  mutation DeleteTableMst($data: RemoveTableInput!) {
-    removeTable(data: $data) {
-      branch {
-        ...BranchMst
-      }
-    }
-  }
-  ${BranchMstFragmentDoc}
-`
-export const RenameRowMstDocument = gql`
-  mutation RenameRowMst($data: RenameRowInput!) {
-    renameRow(data: $data) {
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-      row {
-        ...RowMst
-      }
-      previousVersionRowId
-    }
-  }
-  ${TableMstFragmentDoc}
-  ${RowMstFragmentDoc}
-`
-export const RenameTableMstDocument = gql`
-  mutation RenameTableMst($data: RenameTableInput!) {
-    renameTable(data: $data) {
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-    }
-  }
-  ${TableMstFragmentDoc}
-`
-export const RevertChangesMstDocument = gql`
-  mutation RevertChangesMst($data: RevertChangesInput!) {
-    revertChanges(data: $data) {
-      ...BranchMst
-    }
-  }
-  ${BranchMstFragmentDoc}
-`
-export const UpdateRowMstDocument = gql`
-  mutation UpdateRowMst($data: UpdateRowInput!) {
-    updateRow(data: $data) {
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-      row {
-        ...RowMst
-      }
-      previousVersionRowId
-    }
-  }
-  ${TableMstFragmentDoc}
-  ${RowMstFragmentDoc}
-`
-export const UpdateTableMstDocument = gql`
-  mutation UpdateTableMst($data: UpdateTableInput!) {
-    updateTable(data: $data) {
-      table {
-        ...TableMst
-      }
-      previousVersionTableId
-    }
-  }
-  ${TableMstFragmentDoc}
-`
-export const BranchMstDocument = gql`
-  query BranchMst($data: GetBranchInput!) {
-    branch(data: $data) {
-      ...BranchMst
-    }
-  }
-  ${BranchMstFragmentDoc}
-`
-export const BranchesMstDocument = gql`
-  query BranchesMst($data: GetBranchesInput!) {
-    branches(data: $data) {
-      totalCount
-      pageInfo {
-        ...PageInfoMst
-      }
-      edges {
-        cursor
-        node {
-          ...BranchMst
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${BranchMstFragmentDoc}
-`
-export const GetRowCountForeignKeysToDocument = gql`
-  query GetRowCountForeignKeysTo($data: GetRowCountForeignKeysByInput!) {
-    getRowCountForeignKeysTo(data: $data)
-  }
-`
-export const ProjectMstDocument = gql`
-  query ProjectMst($data: GetProjectInput!) {
-    project(data: $data) {
-      ...ProjectMst
-    }
-  }
-  ${ProjectMstFragmentDoc}
-`
-export const ProjectsMstDocument = gql`
-  query ProjectsMst($data: GetProjectsInput!) {
-    projects(data: $data) {
-      totalCount
-      pageInfo {
-        ...PageInfoMst
-      }
-      edges {
-        cursor
-        node {
-          ...ProjectMst
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${ProjectMstFragmentDoc}
-`
-export const RevisionMstDocument = gql`
-  query RevisionMst($data: GetRevisionInput!) {
-    revision(data: $data) {
-      ...RevisionMst
-      branch {
-        id
-      }
-    }
-  }
-  ${RevisionMstFragmentDoc}
-`
-export const RevisionsMstDocument = gql`
-  query RevisionsMst($branch: GetBranchInput!, $revisions: GetBranchRevisionsInput!) {
-    branch(data: $branch) {
-      id
-      revisions(data: $revisions) {
-        totalCount
-        pageInfo {
-          ...PageInfoMst
-        }
-        edges {
-          cursor
-          node {
-            ...BranchRevisionMst
-          }
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${BranchRevisionMstFragmentDoc}
-`
-export const RowForeignKeysByDocument = gql`
-  query RowForeignKeysBy($data: GetRowInput!, $foreignKeyData: GetRowForeignKeysInput!) {
-    row(data: $data) {
-      versionId
-      rowForeignKeysBy(data: $foreignKeyData) {
-        totalCount
-        pageInfo {
-          ...PageInfoMst
-        }
-        edges {
-          cursor
-          node {
-            ...RowMst
-          }
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${RowMstFragmentDoc}
-`
-export const RowMstDocument = gql`
-  query RowMst($data: GetRowInput!) {
-    row(data: $data) {
-      ...RowMst
-    }
-  }
-  ${RowMstFragmentDoc}
-`
-export const RowsMstDocument = gql`
-  query RowsMst($data: GetRowsInput!) {
-    rows(data: $data) {
-      totalCount
-      pageInfo {
-        ...PageInfoMst
-      }
-      edges {
-        cursor
-        node {
-          ...RowMst
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${RowMstFragmentDoc}
-`
-export const TableForeignKeysByDocument = gql`
-  query TableForeignKeysBy($data: GetTableInput!, $foreignKeyData: GetTableForeignKeysInput!) {
-    table(data: $data) {
-      versionId
-      foreignKeysBy(data: $foreignKeyData) {
-        totalCount
-        pageInfo {
-          ...PageInfoMst
-        }
-        edges {
-          cursor
-          node {
-            ...TableMst
-          }
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${TableMstFragmentDoc}
-`
-export const TableMstDocument = gql`
-  query TableMst($data: GetTableInput!) {
-    table(data: $data) {
-      ...TableMst
-    }
-  }
-  ${TableMstFragmentDoc}
-`
-export const TablesMstDocument = gql`
-  query TablesMst($data: GetTablesInput!) {
-    tables(data: $data) {
-      totalCount
-      pageInfo {
-        ...PageInfoMst
-      }
-      edges {
-        cursor
-        node {
-          ...TableMst
-        }
-      }
-    }
-  }
-  ${PageInfoMstFragmentDoc}
-  ${TableMstFragmentDoc}
-`
 export const FindBranchesDocument = gql`
   query findBranches($data: GetBranchesInput!) {
     branches(data: $data) {
@@ -5219,6 +3952,15 @@ export const RowListRowsDocument = gql`
     }
   }
   ${RowListItemFragmentDoc}
+`
+export const RemoveRowDocument = gql`
+  mutation RemoveRow($data: RemoveRowInput!) {
+    removeRow(data: $data) {
+      branch {
+        id
+      }
+    }
+  }
 `
 export const RemoveRowsDocument = gql`
   mutation RemoveRows($data: RemoveRowsInput!) {
@@ -5399,6 +4141,21 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    getBranchForLoader(
+      variables: GetBranchForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetBranchForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetBranchForLoaderQuery>(GetBranchForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getBranchForLoader',
+        'query',
+        variables,
+      )
+    },
     getProject(
       variables: GetProjectQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -5410,6 +4167,66 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'getProject',
+        'query',
+        variables,
+      )
+    },
+    getProjectForLoader(
+      variables: GetProjectForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetProjectForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetProjectForLoaderQuery>(GetProjectForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getProjectForLoader',
+        'query',
+        variables,
+      )
+    },
+    getRevisionForLoader(
+      variables: GetRevisionForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetRevisionForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetRevisionForLoaderQuery>(GetRevisionForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getRevisionForLoader',
+        'query',
+        variables,
+      )
+    },
+    getRowForLoader(
+      variables: GetRowForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetRowForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetRowForLoaderQuery>(GetRowForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getRowForLoader',
+        'query',
+        variables,
+      )
+    },
+    getRowCountForeignKeysToForLoader(
+      variables: GetRowCountForeignKeysToForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetRowCountForeignKeysToForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetRowCountForeignKeysToForLoaderQuery>(GetRowCountForeignKeysToForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getRowCountForeignKeysToForLoader',
         'query',
         variables,
       )
@@ -5440,6 +4257,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'ForeignKeysByRows',
+        'query',
+        variables,
+      )
+    },
+    getTableForLoader(
+      variables: GetTableForLoaderQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetTableForLoaderQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetTableForLoaderQuery>(GetTableForLoaderDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getTableForLoader',
         'query',
         variables,
       )
@@ -5948,387 +4780,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    CreateBranchByRevisionIdMst(
-      variables: CreateBranchByRevisionIdMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateBranchByRevisionIdMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateBranchByRevisionIdMstMutation>(CreateBranchByRevisionIdMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateBranchByRevisionIdMst',
-        'mutation',
-        variables,
-      )
-    },
-    CreateEndpointMst(
-      variables: CreateEndpointMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateEndpointMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateEndpointMstMutation>(CreateEndpointMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateEndpointMst',
-        'mutation',
-        variables,
-      )
-    },
-    CreateRevisionMst(
-      variables: CreateRevisionMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateRevisionMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateRevisionMstMutation>(CreateRevisionMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateRevisionMst',
-        'mutation',
-        variables,
-      )
-    },
-    CreateRowMst(
-      variables: CreateRowMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateRowMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateRowMstMutation>(CreateRowMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateRowMst',
-        'mutation',
-        variables,
-      )
-    },
-    CreateTableMst(
-      variables: CreateTableMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateTableMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateTableMstMutation>(CreateTableMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'CreateTableMst',
-        'mutation',
-        variables,
-      )
-    },
-    DeleteEndpointMst(
-      variables: DeleteEndpointMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<DeleteEndpointMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<DeleteEndpointMstMutation>(DeleteEndpointMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'DeleteEndpointMst',
-        'mutation',
-        variables,
-      )
-    },
-    DeleteProjectMst(
-      variables: DeleteProjectMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<DeleteProjectMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<DeleteProjectMstMutation>(DeleteProjectMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'DeleteProjectMst',
-        'mutation',
-        variables,
-      )
-    },
-    DeleteRowMst(
-      variables: DeleteRowMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<DeleteRowMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<DeleteRowMstMutation>(DeleteRowMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'DeleteRowMst',
-        'mutation',
-        variables,
-      )
-    },
-    DeleteTableMst(
-      variables: DeleteTableMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<DeleteTableMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<DeleteTableMstMutation>(DeleteTableMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'DeleteTableMst',
-        'mutation',
-        variables,
-      )
-    },
-    RenameRowMst(
-      variables: RenameRowMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RenameRowMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RenameRowMstMutation>(RenameRowMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RenameRowMst',
-        'mutation',
-        variables,
-      )
-    },
-    RenameTableMst(
-      variables: RenameTableMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RenameTableMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RenameTableMstMutation>(RenameTableMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RenameTableMst',
-        'mutation',
-        variables,
-      )
-    },
-    RevertChangesMst(
-      variables: RevertChangesMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RevertChangesMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RevertChangesMstMutation>(RevertChangesMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RevertChangesMst',
-        'mutation',
-        variables,
-      )
-    },
-    UpdateRowMst(
-      variables: UpdateRowMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<UpdateRowMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<UpdateRowMstMutation>(UpdateRowMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'UpdateRowMst',
-        'mutation',
-        variables,
-      )
-    },
-    UpdateTableMst(
-      variables: UpdateTableMstMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<UpdateTableMstMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<UpdateTableMstMutation>(UpdateTableMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'UpdateTableMst',
-        'mutation',
-        variables,
-      )
-    },
-    BranchMst(
-      variables: BranchMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<BranchMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<BranchMstQuery>(BranchMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
-        'BranchMst',
-        'query',
-        variables,
-      )
-    },
-    BranchesMst(
-      variables: BranchesMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<BranchesMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<BranchesMstQuery>(BranchesMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'BranchesMst',
-        'query',
-        variables,
-      )
-    },
-    GetRowCountForeignKeysTo(
-      variables: GetRowCountForeignKeysToQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<GetRowCountForeignKeysToQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<GetRowCountForeignKeysToQuery>(GetRowCountForeignKeysToDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'GetRowCountForeignKeysTo',
-        'query',
-        variables,
-      )
-    },
-    ProjectMst(
-      variables: ProjectMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<ProjectMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<ProjectMstQuery>(ProjectMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'ProjectMst',
-        'query',
-        variables,
-      )
-    },
-    ProjectsMst(
-      variables: ProjectsMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<ProjectsMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<ProjectsMstQuery>(ProjectsMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'ProjectsMst',
-        'query',
-        variables,
-      )
-    },
-    RevisionMst(
-      variables: RevisionMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RevisionMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RevisionMstQuery>(RevisionMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RevisionMst',
-        'query',
-        variables,
-      )
-    },
-    RevisionsMst(
-      variables: RevisionsMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RevisionsMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RevisionsMstQuery>(RevisionsMstDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RevisionsMst',
-        'query',
-        variables,
-      )
-    },
-    RowForeignKeysBy(
-      variables: RowForeignKeysByQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RowForeignKeysByQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RowForeignKeysByQuery>(RowForeignKeysByDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'RowForeignKeysBy',
-        'query',
-        variables,
-      )
-    },
-    RowMst(variables: RowMstQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RowMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RowMstQuery>(RowMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
-        'RowMst',
-        'query',
-        variables,
-      )
-    },
-    RowsMst(variables: RowsMstQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RowsMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RowsMstQuery>(RowsMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
-        'RowsMst',
-        'query',
-        variables,
-      )
-    },
-    TableForeignKeysBy(
-      variables: TableForeignKeysByQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<TableForeignKeysByQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<TableForeignKeysByQuery>(TableForeignKeysByDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'TableForeignKeysBy',
-        'query',
-        variables,
-      )
-    },
-    TableMst(variables: TableMstQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<TableMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<TableMstQuery>(TableMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
-        'TableMst',
-        'query',
-        variables,
-      )
-    },
-    TablesMst(
-      variables: TablesMstQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<TablesMstQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<TablesMstQuery>(TablesMstDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
-        'TablesMst',
-        'query',
-        variables,
-      )
-    },
     findBranches(
       variables: FindBranchesQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -6416,6 +4867,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'RowListRows',
         'query',
+        variables,
+      )
+    },
+    RemoveRow(
+      variables: RemoveRowMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RemoveRowMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RemoveRowMutation>(RemoveRowDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'RemoveRow',
+        'mutation',
         variables,
       )
     },

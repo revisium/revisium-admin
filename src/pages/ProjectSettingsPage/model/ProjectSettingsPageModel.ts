@@ -47,7 +47,7 @@ export class ProjectSettingsPageModel {
     })
 
     if (result.isRight) {
-      this.context.project.update({ isPublic: value })
+      this.context.updateProject({ isPublic: value })
       toaster.info({
         duration: 1500,
         description: value ? 'Project is now public' : 'Project is now private',

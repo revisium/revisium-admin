@@ -1,17 +1,20 @@
 import { makeAutoObservable } from 'mobx'
+import { ProjectContext } from 'src/entities/Project'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { AuthService } from 'src/shared/model'
-import { resetRootStore } from 'src/shared/model/RootStore.ts'
 
 export class LogoutViewModel implements IViewModel {
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly projectContext: ProjectContext,
+  ) {
     makeAutoObservable(this)
   }
 
   public logout() {
     this.authService.logout()
-    resetRootStore() // TODO (DI)
+    this.projectContext.clear()
   }
 
   dispose(): void {}
@@ -23,8 +26,9 @@ container.register(
   LogoutViewModel,
   () => {
     const authService = container.get(AuthService)
+    const projectContext = container.get(ProjectContext)
 
-    return new LogoutViewModel(authService)
+    return new LogoutViewModel(authService, projectContext)
   },
   { scope: 'request' },
 )

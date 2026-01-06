@@ -25,8 +25,3 @@ if (container) {
 
 const fullVersion = `ver: ${getEnv('PACKAGE_VERSION')} - ${getEnv('GIT_BRANCH_NAME')}:${getEnv('GIT_COMMIT_HASH')}`
 console.info(fullVersion)
-
-if (import.meta.env.DEV && import.meta.env.REACT_APP_REACTOTRON === 'true') {
-  window.global ||= window
-  import('src/shared/lib/reactotron.ts')
-}

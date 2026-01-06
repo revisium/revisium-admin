@@ -88,7 +88,7 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
 
     if (result) {
       if (!this.projectContext.branch.touched) {
-        this.projectContext.branch.updateTouched(true)
+        this.projectContext.updateTouched(true)
       }
       this.load()
     }

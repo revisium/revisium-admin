@@ -43,7 +43,7 @@ test.describe('Empty States', () => {
       await setupTablePageMocks(page, {
         rows,
         onOperation: async (opName, variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows' || opName === 'RowListRows') {
             const data = (variables.data as Record<string, unknown>) || {}
             const where = data.where as
               | { OR?: Array<{ id?: { contains?: string }; data?: { search?: string } }> }
@@ -84,7 +84,7 @@ test.describe('Empty States', () => {
       await setupTablePageMocks(page, {
         rows,
         onOperation: async (opName, variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows' || opName === 'RowListRows') {
             const data = (variables.data as Record<string, unknown>) || {}
             const where = data.where as Record<string, unknown> | undefined
             if (where?.data) {

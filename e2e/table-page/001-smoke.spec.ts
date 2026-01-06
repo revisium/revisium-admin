@@ -32,10 +32,10 @@ async function setupMocks(page: Page, rowsResponse: object) {
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
       meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -44,10 +44,10 @@ async function setupMocks(page: Page, rowsResponse: object) {
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID),
-      TableMst: createFullTableResponse(TABLE_ID),
+      tableListData: createTablesResponse(TABLE_ID),
+      getTableForLoader: createFullTableResponse(TABLE_ID),
       GetTableViews: createTableViewsResponse(TABLE_ID),
-      RowsMst: rowsResponse,
+      RowListRows: rowsResponse,
       RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -132,9 +132,9 @@ test.describe('TablePage - Smoke Tests', () => {
       const responses: Record<string, object> = {
         configuration: createConfigurationResponse(),
         getMe: createMeResponse(ORG_ID),
-        ProjectMst: createFullProjectResponse(PROJECT_NAME, ORG_ID),
-        BranchMst: createFullBranchResponse(PROJECT_NAME),
-        TableMst: createFullTableResponse(TABLE_ID),
+        getProjectForLoader: createFullProjectResponse(PROJECT_NAME, ORG_ID),
+        getBranchForLoader: createFullBranchResponse(PROJECT_NAME),
+        getTableForLoader: createFullTableResponse(TABLE_ID),
         GetTableViews: createTableViewsResponse(TABLE_ID),
       }
 

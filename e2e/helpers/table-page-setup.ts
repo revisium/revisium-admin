@@ -21,13 +21,12 @@ export type GraphQLOperationName =
   | 'configuration'
   | 'getMe'
   | 'meProjectsList'
-  | 'ProjectMst'
+  | 'getProjectForLoader'
   | 'getProject'
-  | 'BranchMst'
-  | 'BranchesMst'
-  | 'TablesMst'
-  | 'TableMst'
-  | 'RowsMst'
+  | 'getBranchForLoader'
+  | 'findBranches'
+  | 'tableListData'
+  | 'getTableForLoader'
   | 'RowListRows'
   | 'GetTableViews'
   | 'UpdateTableViews'
@@ -199,7 +198,7 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
       })
     }
 
-    if (opName === 'TableMst') {
+    if (opName === 'getTableForLoader') {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -225,10 +224,10 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(orgId),
       meProjectsList: createMeProjectsResponse(projectName, orgId),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -237,8 +236,7 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
           },
         },
       },
-      TablesMst: createTablesResponse(tableId, schema),
-      RowsMst: rowsResponse,
+      tableListData: createTablesResponse(tableId, schema),
       RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },

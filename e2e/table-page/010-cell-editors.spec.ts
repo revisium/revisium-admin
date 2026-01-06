@@ -78,7 +78,7 @@ async function setupMocks(
       })
     }
 
-    if (opName === 'TableMst') {
+    if (opName === 'getTableForLoader') {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -111,10 +111,10 @@ async function setupMocks(
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
       meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -123,8 +123,8 @@ async function setupMocks(
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID, schema),
-      RowsMst: createRowsResponse(rows),
+      tableListData: createTablesResponse(TABLE_ID, schema),
+      RowListRows: createRowsResponse(rows),
       RowListRows: createRowsResponse(rows),
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -603,7 +603,7 @@ test.describe('Cell Editors', () => {
           })
         }
 
-        if (opName === 'TableMst') {
+        if (opName === 'getTableForLoader') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -678,10 +678,10 @@ test.describe('Cell Editors', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -690,8 +690,8 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID, schema),
-          RowsMst: createRowsResponse(rows),
+          tableListData: createTablesResponse(TABLE_ID, schema),
+          RowListRows: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -973,7 +973,7 @@ test.describe('Cell Editors', () => {
           })
         }
 
-        if (opName === 'TableMst') {
+        if (opName === 'getTableForLoader') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -985,10 +985,10 @@ test.describe('Cell Editors', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -997,8 +997,8 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID, schema),
-          RowsMst: createRowsResponse(rows),
+          tableListData: createTablesResponse(TABLE_ID, schema),
+          RowListRows: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -1082,7 +1082,7 @@ test.describe('Cell Editors', () => {
           })
         }
 
-        if (opName === 'TableMst') {
+        if (opName === 'getTableForLoader') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -1094,10 +1094,10 @@ test.describe('Cell Editors', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -1106,8 +1106,8 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID, schema),
-          RowsMst: createRowsResponse(rows),
+          tableListData: createTablesResponse(TABLE_ID, schema),
+          RowListRows: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -1191,7 +1191,7 @@ test.describe('Cell Editors', () => {
           })
         }
 
-        if (opName === 'TableMst') {
+        if (opName === 'getTableForLoader') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -1203,10 +1203,10 @@ test.describe('Cell Editors', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -1215,8 +1215,8 @@ test.describe('Cell Editors', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID, schema),
-          RowsMst: createRowsResponse(rows),
+          tableListData: createTablesResponse(TABLE_ID, schema),
+          RowListRows: createRowsResponse(rows),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },

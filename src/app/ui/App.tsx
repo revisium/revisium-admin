@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { AppViewModel } from 'src/app/model/AppViewModel.ts'
-import { GqlProvider } from 'src/entities/Gql'
 import { system } from 'src/theme'
 
 import { useViewModel } from 'src/shared/lib'
@@ -24,11 +23,9 @@ export const App: FC = observer(() => {
   }
 
   return (
-    <GqlProvider>
-      <ChakraProvider value={system}>
-        <RouterProvider router={model.router} />
-        <ToasterProvider />
-      </ChakraProvider>
-    </GqlProvider>
+    <ChakraProvider value={system}>
+      <RouterProvider router={model.router} />
+      <ToasterProvider />
+    </ChakraProvider>
   )
 })

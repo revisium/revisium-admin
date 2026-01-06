@@ -1,4 +1,3 @@
-export * from './apolloClient'
 export * from './useInputAutofocus'
 export * from './useFileUpload'
 export * from './hooks'

@@ -1,15 +1,8 @@
-import { apolloClient } from 'src/shared/lib'
-import { LoginDocument, LoginMutation, LoginMutationVariables } from './__generated__/login.generated.ts'
+import { LoginMutation } from 'src/__generated__/graphql-request.ts'
+import { client } from 'src/shared/model/ApiService.ts'
 
-export const loginRequest = async (variables: LoginMutationVariables): Promise<LoginMutation> => {
-  const result = await apolloClient.mutate<LoginMutation, LoginMutationVariables>({
-    mutation: LoginDocument,
-    variables,
-  })
-
-  if (!result.data) {
-    throw result.errors
-  }
-
-  return result.data
+export const loginRequest = async (variables: {
+  data: { emailOrUsername: string; password: string }
+}): Promise<LoginMutation> => {
+  return client.login(variables)
 }

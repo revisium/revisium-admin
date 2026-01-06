@@ -1,20 +1,17 @@
 import { makeAutoObservable } from 'mobx'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container } from 'src/shared/lib'
 import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor'
 import {
   TableStackModel,
   TableStackModelState,
   TableStackModelStateType,
 } from 'src/pages/RevisionPage/model/TableStackModel.ts'
-import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
 
 export class RevisionPageModel {
   public stack: [TableStackModel] & TableStackModel[]
 
-  constructor(
-    private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
-  ) {
+  constructor(private readonly projectContext: ProjectContext) {
     makeAutoObservable(this, {}, { autoBind: true })
 
     this.stack = [this.createFirstStackItem()]
@@ -22,13 +19,15 @@ export class RevisionPageModel {
 
   public init() {}
 
-  public dispose() {}
+  public dispose() {
+    this.stack.forEach((item) => item.dispose())
+  }
 
   public selectForeignKey(item: TableStackModel, node: StringForeignKeyNodeStore) {
     item.toConnectingForeignKeyTable(node)
 
     this.stack.push(
-      new TableStackModel(this.rootStore, this.projectPageModel, {
+      new TableStackModel(this.projectContext, {
         type: TableStackModelStateType.List,
         isSelectingForeignKey: true,
       }),
@@ -50,14 +49,16 @@ export class RevisionPageModel {
       }
     }
 
-    this.stack.splice(foundIndex)
+    const removed = this.stack.splice(foundIndex)
+    removed.forEach((removedItem) => removedItem.dispose())
   }
 
   public cancelSelectingForeignKey(item: TableStackModel) {
     const foundIndex = this.stack.findIndex((iterItem) => iterItem === item)
 
     if (foundIndex !== -1) {
-      this.stack.splice(foundIndex + 1)
+      const removed = this.stack.splice(foundIndex + 1)
+      removed.forEach((removedItem) => removedItem.dispose())
     }
 
     if (item.state.type === TableStackModelStateType.ConnectingForeignKeyTable) {
@@ -75,6 +76,15 @@ export class RevisionPageModel {
       isSelectingForeignKey: false,
     }
 
-    return new TableStackModel(this.rootStore, this.projectPageModel, state)
+    return new TableStackModel(this.projectContext, state)
   }
 }
+
+container.register(
+  RevisionPageModel,
+  () => {
+    const projectContext = container.get(ProjectContext)
+    return new RevisionPageModel(projectContext)
+  },
+  { scope: 'request' },
+)

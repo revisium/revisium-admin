@@ -1,31 +1,46 @@
-import { makeAutoObservable } from 'mobx'
+import { action, computed, makeObservable, reaction } from 'mobx'
+import { TableListItemFragment } from 'src/__generated__/graphql-request.ts'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { container, PaginatedListViewModel } from 'src/shared/lib'
 import { PermissionContext } from 'src/shared/model/AbilityService'
-import { DeleteTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/DeleteTableCommand.ts'
-import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
-import { TableListItemType } from 'src/widgets/TableList/config/types.ts'
+import { TableListDataSource } from 'src/widgets/TableList/model/TableListDataSource.ts'
+import { TableListItemViewModel } from 'src/widgets/TableList/model/TableListItemViewModel.ts'
+import { TableRemoveDataSource } from 'src/widgets/TableList/model/TableRemoveDataSource.ts'
+import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 
-export class TableListModel {
+export class TableListModel extends PaginatedListViewModel<TableListItemFragment, TableListItemViewModel> {
+  private unsubscribeRefresh: (() => void) | null = null
+  private disposeRevisionReaction: (() => void) | null = null
+
   constructor(
-    private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
+    dataSource: TableListDataSource,
+    private readonly removeDataSource: TableRemoveDataSource,
+    private readonly projectContext: ProjectContext,
     private readonly permissionContext: PermissionContext,
+    private readonly refreshService: TableListRefreshService,
   ) {
-    makeAutoObservable(this, {}, { autoBind: true })
+    super(dataSource)
 
-    this.init()
+    makeObservable(this, {
+      isEditableRevision: computed,
+      canCreateTable: computed,
+      canUpdateTable: computed,
+      canDeleteTable: computed,
+      showMenu: computed,
+      removeTable: action,
+    })
   }
 
-  public get totalCount() {
-    return this.items.length
+  protected getItemKey(item: TableListItemFragment): string {
+    return item.versionId
   }
 
-  public get hasNextPage() {
-    return this.revision.tablesConnection.availableNextPage
+  protected createItemViewModel(item: TableListItemFragment): TableListItemViewModel {
+    return new TableListItemViewModel(item)
   }
 
-  public get isEditableRevision() {
-    return this.projectPageModel.isEditableRevision
+  public get isEditableRevision(): boolean {
+    return this.projectContext.isDraftRevision
   }
 
   public get canCreateTable(): boolean {
@@ -44,42 +59,53 @@ export class TableListModel {
     return this.canUpdateTable || this.canCreateTable || this.canDeleteTable
   }
 
-  public get items(): TableListItemType[] {
-    return this.revision.tablesConnection.edges.map(({ node }) => ({
-      id: node.id,
-      versionId: node.versionId,
-      readonly: node.readonly,
-      title: node.id,
-      count: node.count,
-      link: '',
-    }))
+  public override init(): void {
+    this.load()
+    this.unsubscribeRefresh = this.refreshService.subscribe(() => this.load)
+    this.disposeRevisionReaction = reaction(
+      () => this.projectContext.revision.id,
+      () => this.load(),
+    )
   }
 
-  public dispose() {}
+  private load(): void {
+    this.dataSource.reset()
+    void (this.dataSource as TableListDataSource).load({ revisionId: this.projectContext.revision.id })
+  }
 
-  public tryToFetchNextPage() {
-    if (this.hasNextPage) {
-      void this.rootStore.queryTables({
-        revisionId: this.revision.id,
-        first: 50,
-        after: this.revision.tablesConnection.endCursor || undefined,
-      })
+  public override dispose(): void {
+    this.unsubscribeRefresh?.()
+    this.disposeRevisionReaction?.()
+    super.dispose()
+    this.removeDataSource.dispose()
+  }
+
+  public async removeTable(tableId: string): Promise<boolean> {
+    const result = await this.removeDataSource.remove({
+      revisionId: this.projectContext.branch.draft.id,
+      tableId,
+    })
+
+    if (result) {
+      if (!this.projectContext.branch.touched) {
+        this.projectContext.branch.updateTouched(true)
+      }
+      this.load()
     }
-  }
 
-  public async deleteTable(tableId: string) {
-    try {
-      const command = new DeleteTableCommand(this.projectPageModel, tableId)
-      return await command.execute()
-    } catch (e) {
-      console.log(e)
-      return false
-    }
-  }
-
-  public init() {}
-
-  private get revision() {
-    return this.projectPageModel.revisionOrThrow
+    return result
   }
 }
+
+container.register(
+  TableListModel,
+  () => {
+    const dataSource = container.get(TableListDataSource)
+    const removeDataSource = container.get(TableRemoveDataSource)
+    const projectContext = container.get(ProjectContext)
+    const permissionContext = container.get(PermissionContext)
+    const refreshService = container.get(TableListRefreshService)
+    return new TableListModel(dataSource, removeDataSource, projectContext, permissionContext, refreshService)
+  },
+  { scope: 'request' },
+)

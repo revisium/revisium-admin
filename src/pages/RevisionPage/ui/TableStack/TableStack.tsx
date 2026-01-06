@@ -2,9 +2,7 @@ import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { CreateTableButton } from 'src/features/CreateTableButton'
-import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
-import { useProjectPageModel } from 'src/shared/model/ProjectPageModel/hooks/useProjectPageModel.ts'
+import { toaster } from 'src/shared/ui'
 import { SchemaEditor, StringForeignKeyNodeStore, SchemaEditorMode } from 'src/widgets/SchemaEditor'
 import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
 import { useTableStackModel } from 'src/pages/RevisionPage/model/TableStackModelContext.ts'
@@ -13,11 +11,7 @@ import { ShortSchemaEditor } from 'src/pages/RevisionPage/ui/ShoreSchemaEditor/S
 import { TableList } from 'src/widgets/TableList'
 
 export const TableStack: React.FC = observer(() => {
-  const projectPageModel = useProjectPageModel()
-  const permissionContext = container.get(PermissionContext)
   const { root, item } = useTableStackModel()
-
-  const canCreateTable = projectPageModel.isEditableRevision && permissionContext.canCreateTable
 
   const handleSelectForeignKey = useCallback(
     (node: StringForeignKeyNodeStore) => {
@@ -43,6 +37,8 @@ export const TableStack: React.FC = observer(() => {
         } else {
           item.toUpdatingTableFromCreatingTable()
         }
+      } else {
+        toaster.error({ title: 'Failed to create table' })
       }
     }
   }, [item, root])
@@ -53,6 +49,8 @@ export const TableStack: React.FC = observer(() => {
       const result = await item.updateTable(store)
       if (result) {
         store.submitChanges()
+      } else {
+        toaster.error({ title: 'Failed to update table' })
       }
     }
   }, [item])
@@ -83,7 +81,7 @@ export const TableStack: React.FC = observer(() => {
     return (
       <>
         {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-        {canCreateTable && <CreateTableButton onClick={item.toCreatingTable} />}
+        {item.canCreateTable && <CreateTableButton onClick={item.toCreatingTable} />}
 
         <Box paddingTop="0.5rem" paddingBottom="1rem">
           <TableList

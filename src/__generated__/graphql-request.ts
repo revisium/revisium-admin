@@ -1903,6 +1903,78 @@ export type UpdateProjectMutationVariables = Exact<{
 
 export type UpdateProjectMutation = { updateProject: boolean }
 
+export type FetchTableForStackQueryVariables = Exact<{
+  data: GetTableInput
+}>
+
+export type FetchTableForStackQuery = {
+  table?: {
+    id: string
+    versionId: string
+    readonly: boolean
+    count: number
+    schema: { [key: string]: any } | string | number | boolean | null
+  } | null
+}
+
+export type TableStackFragmentFragment = {
+  id: string
+  versionId: string
+  readonly: boolean
+  count: number
+  schema: { [key: string]: any } | string | number | boolean | null
+}
+
+export type CreateTableForStackMutationVariables = Exact<{
+  data: CreateTableInput
+}>
+
+export type CreateTableForStackMutation = {
+  createTable: {
+    table: {
+      id: string
+      versionId: string
+      readonly: boolean
+      count: number
+      schema: { [key: string]: any } | string | number | boolean | null
+    }
+  }
+}
+
+export type UpdateTableForStackMutationVariables = Exact<{
+  data: UpdateTableInput
+}>
+
+export type UpdateTableForStackMutation = {
+  updateTable: {
+    previousVersionTableId: string
+    table: {
+      id: string
+      versionId: string
+      readonly: boolean
+      count: number
+      schema: { [key: string]: any } | string | number | boolean | null
+    }
+  }
+}
+
+export type RenameTableForStackMutationVariables = Exact<{
+  data: RenameTableInput
+}>
+
+export type RenameTableForStackMutation = {
+  renameTable: {
+    previousVersionTableId: string
+    table: {
+      id: string
+      versionId: string
+      readonly: boolean
+      count: number
+      schema: { [key: string]: any } | string | number | boolean | null
+    }
+  }
+}
+
 export type RowPageItemFragment = {
   id: string
   versionId: string
@@ -3648,6 +3720,26 @@ export type SearchRowsQuery = {
   }
 }
 
+export type RemoveTableForListMutationVariables = Exact<{
+  data: RemoveTableInput
+}>
+
+export type RemoveTableForListMutation = { removeTable: { branch: { id: string } } }
+
+export type TableListItemFragment = { id: string; versionId: string; readonly: boolean; count: number }
+
+export type TableListDataQueryVariables = Exact<{
+  data: GetTablesInput
+}>
+
+export type TableListDataQuery = {
+  tables: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{ node: { id: string; versionId: string; readonly: boolean; count: number } }>
+  }
+}
+
 export const PageInfoFragmentDoc = gql`
   fragment PageInfo on PageInfo {
     startCursor
@@ -3694,6 +3786,15 @@ export const EndpointFragmentDoc = gql`
         name
       }
     }
+  }
+`
+export const TableStackFragmentFragmentDoc = gql`
+  fragment TableStackFragment on TableModel {
+    id
+    versionId
+    readonly
+    count
+    schema
   }
 `
 export const RowPageItemFragmentDoc = gql`
@@ -4095,6 +4196,14 @@ export const SearchResultFragmentDoc = gql`
     }
   }
 `
+export const TableListItemFragmentDoc = gql`
+  fragment TableListItem on TableModel {
+    id
+    versionId
+    readonly
+    count
+  }
+`
 export const GetProjectDocument = gql`
   query getProject($data: GetProjectInput!) {
     project(data: $data) {
@@ -4419,6 +4528,46 @@ export const UpdateProjectDocument = gql`
   mutation updateProject($data: UpdateProjectInput!) {
     updateProject(data: $data)
   }
+`
+export const FetchTableForStackDocument = gql`
+  query fetchTableForStack($data: GetTableInput!) {
+    table(data: $data) {
+      ...TableStackFragment
+    }
+  }
+  ${TableStackFragmentFragmentDoc}
+`
+export const CreateTableForStackDocument = gql`
+  mutation createTableForStack($data: CreateTableInput!) {
+    createTable(data: $data) {
+      table {
+        ...TableStackFragment
+      }
+    }
+  }
+  ${TableStackFragmentFragmentDoc}
+`
+export const UpdateTableForStackDocument = gql`
+  mutation updateTableForStack($data: UpdateTableInput!) {
+    updateTable(data: $data) {
+      table {
+        ...TableStackFragment
+      }
+      previousVersionTableId
+    }
+  }
+  ${TableStackFragmentFragmentDoc}
+`
+export const RenameTableForStackDocument = gql`
+  mutation renameTableForStack($data: RenameTableInput!) {
+    renameTable(data: $data) {
+      table {
+        ...TableStackFragment
+      }
+      previousVersionTableId
+    }
+  }
+  ${TableStackFragmentFragmentDoc}
 `
 export const RowPageDataDocument = gql`
   query rowPageData(
@@ -5162,6 +5311,32 @@ export const SearchRowsDocument = gql`
   }
   ${SearchResultFragmentDoc}
 `
+export const RemoveTableForListDocument = gql`
+  mutation removeTableForList($data: RemoveTableInput!) {
+    removeTable(data: $data) {
+      branch {
+        id
+      }
+    }
+  }
+`
+export const TableListDataDocument = gql`
+  query tableListData($data: GetTablesInput!) {
+    tables(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...TableListItem
+        }
+      }
+    }
+  }
+  ${TableListItemFragmentDoc}
+`
 
 export type SdkFunctionWrapper = <T>(
   action: (requestHeaders?: Record<string, string>) => Promise<T>,
@@ -5491,6 +5666,66 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'updateProject',
+        'mutation',
+        variables,
+      )
+    },
+    fetchTableForStack(
+      variables: FetchTableForStackQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<FetchTableForStackQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FetchTableForStackQuery>(FetchTableForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'fetchTableForStack',
+        'query',
+        variables,
+      )
+    },
+    createTableForStack(
+      variables: CreateTableForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateTableForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateTableForStackMutation>(CreateTableForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createTableForStack',
+        'mutation',
+        variables,
+      )
+    },
+    updateTableForStack(
+      variables: UpdateTableForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateTableForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateTableForStackMutation>(UpdateTableForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'updateTableForStack',
+        'mutation',
+        variables,
+      )
+    },
+    renameTableForStack(
+      variables: RenameTableForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RenameTableForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RenameTableForStackMutation>(RenameTableForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'renameTableForStack',
         'mutation',
         variables,
       )
@@ -6250,6 +6485,36 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'searchRows',
+        'query',
+        variables,
+      )
+    },
+    removeTableForList(
+      variables: RemoveTableForListMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RemoveTableForListMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RemoveTableForListMutation>(RemoveTableForListDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'removeTableForList',
+        'mutation',
+        variables,
+      )
+    },
+    tableListData(
+      variables: TableListDataQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<TableListDataQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<TableListDataQuery>(TableListDataDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'tableListData',
         'query',
         variables,
       )

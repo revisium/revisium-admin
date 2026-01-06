@@ -1,16 +1,18 @@
 import { makeAutoObservable } from 'mobx'
 import { nanoid } from 'nanoid'
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonSchema } from 'src/entities/Schema'
+import { container } from 'src/shared/lib'
 import {
   RootNodeStore,
   StringForeignKeyNodeStore,
   createSchemaNode,
   getJsonDraftPathByNode,
 } from 'src/widgets/SchemaEditor'
-import { CreateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/CreateTableCommand.ts'
-import { UpdateTableCommand } from 'src/shared/model/BackendStore/handlers/mutations/UpdateTableCommand.ts'
-import { IRootStore } from 'src/shared/model/BackendStore/types.ts'
-import { ProjectPageModel } from 'src/shared/model/ProjectPageModel/ProjectPageModel.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
+import { TableFetchDataSource, TableFetchResult } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
+import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
+import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 
 export enum TableStackModelStateType {
   List = 'List',
@@ -50,11 +52,17 @@ export type TableStackModelState =
 export class TableStackModel {
   public readonly id = nanoid()
 
+  private readonly mutationDataSource: TableMutationDataSource
+  private readonly tableListRefreshService: TableListRefreshService
+  private readonly permissionContext: PermissionContext
+
   constructor(
-    private readonly rootStore: IRootStore,
-    private readonly projectPageModel: ProjectPageModel,
+    private readonly projectContext: ProjectContext,
     public state: TableStackModelState,
   ) {
+    this.mutationDataSource = container.get(TableMutationDataSource)
+    this.tableListRefreshService = container.get(TableListRefreshService)
+    this.permissionContext = container.get(PermissionContext)
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -68,14 +76,20 @@ export class TableStackModel {
     return ''
   }
 
-  public get title() {
-    if (this.revision.id === this.branch.draft.id) {
-      return `Branch - ${this.branch.name}[draft]`
-    } else if (this.revision.id === this.branch.head.id) {
-      return `Branch - ${this.branch.name}`
-    }
+  public get isEditableRevision() {
+    return this.projectContext.isDraftRevision
+  }
 
-    return `Branch - ${this.branch.name}[rev:${this.revision.id.slice(0, 6)}]`
+  public get canCreateTable(): boolean {
+    return this.isEditableRevision && this.permissionContext.canCreateTable
+  }
+
+  public get revisionId(): string {
+    return this.projectContext.revision.id
+  }
+
+  private get branch() {
+    return this.projectContext.branch
   }
 
   public toList() {
@@ -113,11 +127,11 @@ export class TableStackModel {
     }
   }
 
-  public toCloningTable(copyTableVersionId: string) {
-    const table = this.rootStore.cache.getTable(copyTableVersionId)
+  public async toCloningTable(tableId: string): Promise<void> {
+    const table = await this.fetchTable(tableId)
 
     if (!table) {
-      throw new Error(`Not found table.versionId ${copyTableVersionId}`)
+      throw new Error(`Not found table ${tableId}`)
     }
 
     const root = createSchemaNode(table.schema as JsonSchema, { collapse: true })
@@ -158,11 +172,11 @@ export class TableStackModel {
     }
   }
 
-  public toUpdatingTable(tableVersionId: string) {
-    const table = this.rootStore.cache.getTable(tableVersionId)
+  public async toUpdatingTable(tableId: string): Promise<void> {
+    const table = await this.fetchTable(tableId)
 
     if (!table) {
-      throw new Error(`Not found table.versionId ${tableVersionId}`)
+      throw new Error(`Not found table ${tableId}`)
     }
 
     const root = createSchemaNode(table.schema as JsonSchema, { collapse: true })
@@ -178,41 +192,99 @@ export class TableStackModel {
     }
   }
 
-  private get branch() {
-    return this.projectPageModel.branchOrThrow
-  }
-
-  private get revision() {
-    return this.projectPageModel.revisionOrThrow
-  }
-
-  public init() {}
-
-  public dispose() {}
-
-  public async createTable(tableId: string, schema: JsonSchema) {
+  public async createTable(tableId: string, schema: JsonSchema): Promise<boolean> {
     try {
-      const command = new CreateTableCommand(this.rootStore, this.branch, tableId, schema)
-      await command.execute()
+      const result = await this.mutationDataSource.createTable({
+        revisionId: this.branch.draft.id,
+        tableId,
+        schema,
+      })
 
-      return true
+      if (result) {
+        if (!this.branch.touched) {
+          this.branch.updateTouched(true)
+        }
+        this.refreshTableList()
+        return true
+      }
+
+      return false
     } catch (e) {
-      console.log(e)
-
+      console.error(e)
       return false
     }
   }
 
-  public async updateTable(store: RootNodeStore) {
+  public async updateTable(store: RootNodeStore): Promise<boolean> {
     try {
-      const command = new UpdateTableCommand(this.rootStore, this.branch, store)
-      await command.execute()
+      const needRename = store.tableId !== store.draftTableId
+      let wasCreatedNewVersionTable = false
+
+      if (needRename) {
+        const renameResult = await this.mutationDataSource.renameTable({
+          revisionId: this.branch.draft.id,
+          tableId: store.tableId,
+          nextTableId: store.draftTableId,
+        })
+
+        if (!renameResult) {
+          return false
+        }
+
+        wasCreatedNewVersionTable = true
+      }
+
+      const patches = store.getPatches()
+
+      if (patches.length) {
+        const updateResult = await this.mutationDataSource.updateTable({
+          revisionId: this.branch.draft.id,
+          tableId: store.draftTableId,
+          patches,
+        })
+
+        if (!updateResult) {
+          return false
+        }
+
+        wasCreatedNewVersionTable = true
+      }
+
+      if (!this.branch.touched) {
+        this.branch.updateTouched(true)
+      }
+
+      if (wasCreatedNewVersionTable) {
+        this.refreshTableList()
+      }
 
       return true
     } catch (e) {
       console.error(e)
-
       return false
     }
+  }
+
+  public init() {}
+
+  public dispose() {
+    this.mutationDataSource.dispose()
+  }
+
+  private async fetchTable(tableId: string): Promise<TableFetchResult | null> {
+    const fetchDataSource = container.get(TableFetchDataSource)
+
+    try {
+      return await fetchDataSource.fetch({
+        revisionId: this.revisionId,
+        tableId,
+      })
+    } finally {
+      fetchDataSource.dispose()
+    }
+  }
+
+  private refreshTableList(): void {
+    this.tableListRefreshService.refresh()
   }
 }

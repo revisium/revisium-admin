@@ -96,7 +96,7 @@ async function setupMocks(
       })
     }
 
-    if (opName === 'RowListRows' || opName === 'RowsMst') {
+    if (opName === 'RowListRows') {
       const after = body?.variables?.data?.after
 
       if (after && loadedPages === 0) {
@@ -131,10 +131,10 @@ async function setupMocks(
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
       meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -143,8 +143,8 @@ async function setupMocks(
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID),
-      TableMst: createFullTableResponse(TABLE_ID),
+      tableListData: createTablesResponse(TABLE_ID),
+      getTableForLoader: createFullTableResponse(TABLE_ID),
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
     }
@@ -298,7 +298,7 @@ test.describe('Pagination', () => {
           })
         }
 
-        if (opName === 'RowListRows' || opName === 'RowsMst') {
+        if (opName === 'RowListRows') {
           // Delay the response to observe loading state
           await new Promise<void>((resolve) => {
             setTimeout(resolve, 100)
@@ -320,10 +320,10 @@ test.describe('Pagination', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -332,8 +332,8 @@ test.describe('Pagination', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
-          TableMst: createFullTableResponse(TABLE_ID),
+          tableListData: createTablesResponse(TABLE_ID),
+          getTableForLoader: createFullTableResponse(TABLE_ID),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
         }

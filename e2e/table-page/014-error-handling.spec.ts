@@ -7,7 +7,7 @@ test.describe('Error Handling', () => {
     test('shows error or empty state when API request fails', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows') {
             await route.abort('failed')
             return true
           }
@@ -29,7 +29,7 @@ test.describe('Error Handling', () => {
     test('handles 500 server error gracefully', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows') {
             await route.fulfill({
               status: 500,
               contentType: 'application/json',
@@ -44,7 +44,8 @@ test.describe('Error Handling', () => {
       await page.goto(getTablePageUrl())
 
       // Page should handle error gracefully - shows toast with error message
-      await expect(page.getByText('Internal server error')).toBeVisible()
+      // Use .first() because multiple requests may trigger multiple toasts
+      await expect(page.getByText('Internal server error').first()).toBeVisible()
     })
   })
 
@@ -52,7 +53,7 @@ test.describe('Error Handling', () => {
     test('handles GraphQL error in response', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows') {
             await route.fulfill({
               status: 200,
               contentType: 'application/json',
@@ -70,7 +71,8 @@ test.describe('Error Handling', () => {
       await page.goto(getTablePageUrl())
 
       // Should display error toast
-      await expect(page.getByText('Permission denied')).toBeVisible()
+      // Use .first() because multiple requests may trigger multiple toasts
+      await expect(page.getByText('Permission denied').first()).toBeVisible()
     })
   })
 
@@ -152,7 +154,7 @@ test.describe('Error Handling', () => {
     test.skip('shows timeout message for slow requests', async ({ page }) => {
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows') {
             await new Promise((resolve) => setTimeout(resolve, 30000))
             await route.fulfill({
               status: 200,
@@ -184,7 +186,7 @@ test.describe('Error Handling', () => {
 
       await setupTablePageMocks(page, {
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RowListRows' || opName === 'RowsMst') {
+          if (opName === 'RowListRows') {
             requestCount++
             if (requestCount === 1) {
               await route.fulfill({

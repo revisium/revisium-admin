@@ -85,10 +85,10 @@ async function setupMocks(
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
       meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -97,9 +97,8 @@ async function setupMocks(
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID),
-      TableMst: createFullTableResponse(TABLE_ID),
-      RowsMst: rowsResponse,
+      tableListData: createTablesResponse(TABLE_ID),
+      getTableForLoader: createFullTableResponse(TABLE_ID),
       RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -519,10 +518,10 @@ test.describe('Column Operations', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -531,9 +530,8 @@ test.describe('Column Operations', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
-          TableMst: createFullTableResponse(TABLE_ID),
-          RowsMst: rowsResponse,
+          tableListData: createTablesResponse(TABLE_ID),
+          getTableForLoader: createFullTableResponse(TABLE_ID),
           RowListRows: rowsResponse,
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
@@ -773,10 +771,10 @@ test.describe('Column Operations', () => {
           configuration: createConfigurationResponse(),
           getMe: createMeResponse(ORG_ID),
           meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-          ProjectMst: projectResponse,
+          getProjectForLoader: projectResponse,
           getProject: projectResponse,
-          BranchMst: branchResponse,
-          BranchesMst: {
+          getBranchForLoader: branchResponse,
+          findBranches: {
             data: {
               branches: {
                 totalCount: 1,
@@ -785,9 +783,8 @@ test.describe('Column Operations', () => {
               },
             },
           },
-          TablesMst: createTablesResponse(TABLE_ID),
-          TableMst: createFullTableResponse(TABLE_ID),
-          RowsMst: createRowsResponse(rows),
+          tableListData: createTablesResponse(TABLE_ID),
+          getTableForLoader: createFullTableResponse(TABLE_ID),
           RowListRows: createRowsResponse(rows),
           getChanges: { data: { changes: { tables: 0, rows: 0 } } },
           GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },

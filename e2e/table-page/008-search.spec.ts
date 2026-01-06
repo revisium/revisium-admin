@@ -53,7 +53,7 @@ async function setupMocks(
     }
 
     // Handle search in RowListRows query
-    if (opName === 'RowListRows' || opName === 'RowsMst') {
+    if (opName === 'RowListRows') {
       const where = body?.variables?.data?.where
       // Search uses: { OR: [{ id: { contains } }, { data: { search } }] }
       const searchTerm = where?.OR?.[0]?.id?.contains || where?.OR?.[1]?.data?.search
@@ -75,10 +75,10 @@ async function setupMocks(
       configuration: createConfigurationResponse(),
       getMe: createMeResponse(ORG_ID),
       meProjectsList: createMeProjectsResponse(PROJECT_NAME, ORG_ID),
-      ProjectMst: projectResponse,
+      getProjectForLoader: projectResponse,
       getProject: projectResponse,
-      BranchMst: branchResponse,
-      BranchesMst: {
+      getBranchForLoader: branchResponse,
+      findBranches: {
         data: {
           branches: {
             totalCount: 1,
@@ -87,8 +87,8 @@ async function setupMocks(
           },
         },
       },
-      TablesMst: createTablesResponse(TABLE_ID),
-      TableMst: createFullTableResponse(TABLE_ID),
+      tableListData: createTablesResponse(TABLE_ID),
+      getTableForLoader: createFullTableResponse(TABLE_ID),
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },
     }

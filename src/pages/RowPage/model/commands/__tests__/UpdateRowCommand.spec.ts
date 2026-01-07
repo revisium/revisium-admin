@@ -1,8 +1,10 @@
 import { UpdateRowCommand, UpdateRowCommandDeps } from '../UpdateRowCommand.ts'
 
-const createMockDeps = (overrides: Partial<{
-  touched: boolean
-}>  = {}): UpdateRowCommandDeps => {
+const createMockDeps = (
+  overrides: Partial<{
+    touched: boolean
+  }> = {},
+): UpdateRowCommandDeps => {
   const { touched = false } = overrides
 
   return {
@@ -25,17 +27,15 @@ const createMockDeps = (overrides: Partial<{
   }
 }
 
-const createMockStore = (overrides: Partial<{
-  currentRowId: string
-  originalRowId: string
-  rootTouched: boolean
-  data: unknown
-}> = {}) => {
-  const {
-    currentRowId = 'test-row',
-    rootTouched = false,
-    data = { name: 'Test' },
-  } = overrides
+const createMockStore = (
+  overrides: Partial<{
+    currentRowId: string
+    originalRowId: string
+    rootTouched: boolean
+    data: unknown
+  }> = {},
+) => {
+  const { currentRowId = 'test-row', rootTouched = false, data = { name: 'Test' } } = overrides
 
   return {
     name: {

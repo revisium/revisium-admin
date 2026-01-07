@@ -1,8 +1,10 @@
 import { CreateRowCommand, CreateRowCommandDeps } from '../CreateRowCommand.ts'
 
-const createMockDeps = (overrides: Partial<{
-  touched: boolean
-}> = {}): CreateRowCommandDeps => {
+const createMockDeps = (
+  overrides: Partial<{
+    touched: boolean
+  }> = {},
+): CreateRowCommandDeps => {
   const { touched = false } = overrides
 
   return {

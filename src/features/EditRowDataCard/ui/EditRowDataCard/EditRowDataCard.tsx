@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useEffectOnce } from 'react-use'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
@@ -10,12 +10,13 @@ interface EditRowDataCardProps {
   store: RowDataCardStore
   tableId: string
   isEdit: boolean
-  onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => void
+  onCreateAndConnectForeignKey: (node: JsonStringValueStore) => void
   onUploadFile: (fileId: string, file: File) => Promise<void>
 }
 
 export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
-  ({ store, tableId, isEdit, onSelectForeignKey, onUploadFile }) => {
+  ({ store, tableId, isEdit, onSelectForeignKey, onCreateAndConnectForeignKey, onUploadFile }) => {
     useEffectOnce(() => {
       if (store.scrollPosition) {
         window.scrollTo(0, store.scrollPosition)
@@ -23,19 +24,12 @@ export const EditRowDataCard: React.FC<EditRowDataCardProps> = observer(
       }
     })
 
-    const handleSelectForeignKey = useCallback(
-      async (node: JsonStringValueStore, isCreating?: boolean) => {
-        store.setScrollPosition(window.scrollY)
-        await onSelectForeignKey(node, isCreating)
-      },
-      [onSelectForeignKey, store],
-    )
-
     return (
       <RowEditorActions.Provider
         value={{
           onUploadFile,
-          onSelectForeignKey: handleSelectForeignKey,
+          onSelectForeignKey,
+          onCreateAndConnectForeignKey,
           onOverNode: store.setOverNode,
           mode: isEdit ? RowEditorMode.Updating : RowEditorMode.Reading,
         }}

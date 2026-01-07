@@ -1,8 +1,10 @@
 import { action, computed, makeObservable } from 'mobx'
+import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
+import { SelectForeignKeyRowPayload } from '../../config/types.ts'
 import { RowStackItemBase, RowStackItemBaseDeps } from './RowStackItemBase.ts'
 
 export interface RowEditorItemBaseDeps extends RowStackItemBaseDeps {
@@ -21,8 +23,12 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
 
     makeObservable(this, {
       isConnectingForeignKey: computed,
+      pendingForeignKeyPath: computed,
       toList: action.bound,
+      handleSelectForeignKey: action.bound,
+      handleCreateAndConnectForeignKey: action.bound,
       startForeignKeySelection: action.bound,
+      startForeignKeyCreation: action.bound,
       cancelForeignKeySelection: action.bound,
       setRowName: action.bound,
     })
@@ -30,6 +36,15 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
 
   public get isConnectingForeignKey(): boolean {
     return this.hasPendingRequest
+  }
+
+  public get pendingForeignKeyPath(): string {
+    const request = this.pendingRequest
+    if (!request) {
+      return ''
+    }
+    const payload = request.payload as SelectForeignKeyRowPayload
+    return createJsonValuePathByStore(payload.foreignKeyNode)
   }
 
   public setRowName(value: string): void {
@@ -44,8 +59,26 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
     this.resolve({ type: 'toList' })
   }
 
+  public handleSelectForeignKey(foreignKeyNode: JsonStringValueStore): void {
+    const foreignTableId = foreignKeyNode.foreignKey
+    if (foreignTableId) {
+      this.startForeignKeySelection(foreignKeyNode, foreignTableId)
+    }
+  }
+
+  public handleCreateAndConnectForeignKey(foreignKeyNode: JsonStringValueStore): void {
+    const foreignTableId = foreignKeyNode.foreignKey
+    if (foreignTableId) {
+      this.startForeignKeyCreation(foreignKeyNode, foreignTableId)
+    }
+  }
+
   public startForeignKeySelection(foreignKeyNode: JsonStringValueStore, foreignTableId: string): void {
     this.resolve({ type: 'startForeignKeySelection', foreignKeyNode, foreignTableId })
+  }
+
+  public startForeignKeyCreation(foreignKeyNode: JsonStringValueStore, foreignTableId: string): void {
+    this.resolve({ type: 'startForeignKeyCreation', foreignKeyNode, foreignTableId })
   }
 
   public cancelForeignKeySelection(): void {

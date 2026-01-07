@@ -1,45 +1,39 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
+import { observer } from 'mobx-react-lite'
 import React, { useMemo } from 'react'
-import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
+import { RowStackItemType } from 'src/pages/RowPage/config/types.ts'
+import { RowCreatingItem, RowUpdatingItem } from 'src/pages/RowPage/model/items'
 
-interface ShortRowEditorProps {
-  previousType: RowStackModelStateType
-  tableId: string
-  rowId: string
-  foreignKeyPath: string
-  onCancel: () => void
+interface Props {
+  item: RowCreatingItem | RowUpdatingItem
 }
 
-export const ShortRowEditor: React.FC<ShortRowEditorProps> = ({
-  previousType,
-  tableId,
-  rowId,
-  foreignKeyPath,
-  onCancel,
-}) => {
+export const ShortRowEditor: React.FC<Props> = observer(({ item }) => {
   const prefix = useMemo(() => {
-    if (previousType === RowStackModelStateType.UpdatingRow) {
+    if (item.type === RowStackItemType.Updating) {
       return 'updating'
-    } else if (previousType === RowStackModelStateType.CreatingRow) {
+    } else if (item.type === RowStackItemType.Creating) {
       return 'creating'
     }
 
     return ''
-  }, [previousType])
+  }, [item.type])
+
+  const rowId = item.type === RowStackItemType.Creating ? item.rowId : (item as RowUpdatingItem).currentRowId
 
   return (
     <>
       <Box width="100%" borderStyle="solid" borderLeftWidth={2} borderColor="gray.200" pl="1rem" mb="1rem">
         <Flex gap="4px" alignItems="center" height="30px" mt="2px" mb="2px" color="gray.400" fontWeight="300">
-          <Text textDecoration="underline" cursor="pointer" onClick={onCancel}>
+          <Text textDecoration="underline" cursor="pointer" onClick={item.cancelForeignKeySelection}>
             Back
           </Text>
           <Text>
-            - {prefix} "{tableId} - {rowId}":
+            - {prefix} "{item.tableId} - {rowId}":
           </Text>
-          <Text>{foreignKeyPath}</Text>
+          <Text>{item.pendingForeignKeyPath}</Text>
         </Flex>
       </Box>
     </>
   )
-}
+})

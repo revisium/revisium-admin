@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { PiCheckSquare, PiCopy, PiTrash } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
-import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { useFileUpload } from 'src/shared/lib'
 import { DotsThreeButton } from 'src/shared/ui'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
@@ -18,7 +17,7 @@ interface RowListItemProps {
   columnsModel: ColumnsModel
   revisionId: string
   tableId: string
-  onCopy?: (rowData: JsonValue) => void
+  onCopy?: (rowId: string) => void
   selection?: SelectionViewModel
   showSelectionColumn?: boolean
 }
@@ -28,8 +27,8 @@ export const RowListItem: React.FC<RowListItemProps> = observer(
     const { open: menuOpen, setOpen } = useDisclosure()
 
     const handleCopyRow = useCallback(() => {
-      onCopy?.(row.data)
-    }, [onCopy, row.data])
+      onCopy?.(row.id)
+    }, [onCopy, row.id])
 
     const handleDeleteRow = useCallback(() => {
       selection?.requestSingleDelete(row.id)

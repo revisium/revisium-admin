@@ -1,7 +1,13 @@
 import { RowStackItemBaseDeps } from '../items/RowStackItemBase.ts'
 import { RowCreatingItemDeps } from '../items/RowCreatingItem.ts'
 import { RowUpdatingItemDeps } from '../items/RowUpdatingItem.ts'
-import { RowStackManagerDeps } from '../RowStackManager.ts'
+import { RowData, RowStackManagerDeps } from '../RowStackManager.ts'
+
+export interface MockRow {
+  id: string
+  data: unknown
+  foreignKeysCount: number
+}
 
 export interface MockDepsOverrides {
   isDraftRevision?: boolean
@@ -10,6 +16,8 @@ export interface MockDepsOverrides {
   branchDraftId?: string
   touched?: boolean
   tableId?: string
+  rowData?: RowData
+  row?: MockRow | null
 }
 
 const defaultSchema = {
@@ -29,6 +37,7 @@ const createBaseMockDeps = (overrides: MockDepsOverrides = {}): RowStackItemBase
       draft: { id: overrides.branchDraftId ?? 'draft-1' },
       touched: overrides.touched ?? false,
     },
+    row: overrides.row ?? null,
     updateTouched: jest.fn(),
   } as never,
   permissionContext: {
@@ -94,6 +103,7 @@ export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): RowSta
       dispose: jest.fn(),
     }) as never,
   schema: defaultSchema as never,
+  rowData: overrides.rowData,
 })
 
 export interface MockRowDataCardStore {

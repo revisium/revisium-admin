@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useEffectOnce } from 'react-use'
 import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
@@ -9,34 +9,30 @@ import { RowEditorActions, RowEditorMode } from 'src/features/CreateRowCard/mode
 interface CreateRowCardProps {
   store: RowDataCardStore
   tableId: string
-  onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => void
+  onCreateAndConnectForeignKey: (node: JsonStringValueStore) => void
 }
 
-export const CreateRowCard: React.FC<CreateRowCardProps> = observer(({ store, tableId, onSelectForeignKey }) => {
-  useEffectOnce(() => {
-    if (store.scrollPosition) {
-      window.scrollTo(0, store.scrollPosition)
-      store.setScrollPosition(null)
-    }
-  })
+export const CreateRowCard: React.FC<CreateRowCardProps> = observer(
+  ({ store, tableId, onSelectForeignKey, onCreateAndConnectForeignKey }) => {
+    useEffectOnce(() => {
+      if (store.scrollPosition) {
+        window.scrollTo(0, store.scrollPosition)
+        store.setScrollPosition(null)
+      }
+    })
 
-  const handleSelectForeignKey = useCallback(
-    async (node: JsonStringValueStore, isCreating?: boolean) => {
-      store.setScrollPosition(window.scrollY)
-      await onSelectForeignKey(node, isCreating)
-    },
-    [onSelectForeignKey, store],
-  )
-
-  return (
-    <RowEditorActions.Provider
-      value={{
-        onSelectForeignKey: handleSelectForeignKey,
-        onOverNode: store.setOverNode,
-        mode: RowEditorMode.Creating,
-      }}
-    >
-      <RowDataCard store={store} tableId={tableId} isEdit />
-    </RowEditorActions.Provider>
-  )
-})
+    return (
+      <RowEditorActions.Provider
+        value={{
+          onSelectForeignKey,
+          onCreateAndConnectForeignKey,
+          onOverNode: store.setOverNode,
+          mode: RowEditorMode.Creating,
+        }}
+      >
+        <RowDataCard store={store} tableId={tableId} isEdit />
+      </RowEditorActions.Provider>
+    )
+  },
+)

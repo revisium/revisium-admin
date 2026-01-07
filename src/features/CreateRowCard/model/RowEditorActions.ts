@@ -9,7 +9,8 @@ export enum RowEditorMode {
 }
 
 export interface RowEditorActionsType {
-  onSelectForeignKey: (node: JsonStringValueStore, isCreating?: boolean) => Promise<void>
+  onSelectForeignKey: (node: JsonStringValueStore) => void
+  onCreateAndConnectForeignKey: (node: JsonStringValueStore) => void
   mode: RowEditorMode
   onOverNode: (node: JsonValueStore | null) => void
   onUploadFile?: (fileId: string, file: File) => Promise<void>

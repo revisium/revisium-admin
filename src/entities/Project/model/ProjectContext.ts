@@ -11,12 +11,16 @@ import { ProjectLoaderData } from '../api/ProjectDataSource.ts'
 
 export type ProjectData = GetProjectQuery['project']
 
+export interface RowContextData extends RowLoaderData {
+  foreignKeysCount: number
+}
+
 export class ProjectContext {
   private _project: ProjectLoaderData | null = null
   private _branch: BranchLoaderData | null = null
   private _revision: RevisionLoaderData | null = null
   private _table: TableLoaderData | null = null
-  private _row: RowLoaderData | null = null
+  private _row: RowContextData | null = null
 
   constructor(
     private readonly apiService: ApiService,
@@ -60,32 +64,44 @@ export class ProjectContext {
   }
 
   public setProject(project: ProjectLoaderData | null): void {
+    const isNewProject = project?.id !== this._project?.id
     this._project = project
-    this._branch = null
-    this._revision = null
-    this._table = null
-    this._row = null
+    if (isNewProject) {
+      this._branch = null
+      this._revision = null
+      this._table = null
+      this._row = null
+    }
   }
 
   public setBranch(branch: BranchLoaderData | null): void {
+    const isNewBranch = branch?.id !== this._branch?.id
     this._branch = branch
-    this._revision = null
-    this._table = null
-    this._row = null
+    if (isNewBranch) {
+      this._revision = null
+      this._table = null
+      this._row = null
+    }
   }
 
   public setRevision(revision: RevisionLoaderData | null): void {
+    const isNewRevision = revision?.id !== this._revision?.id
     this._revision = revision
-    this._table = null
-    this._row = null
+    if (isNewRevision) {
+      this._table = null
+      this._row = null
+    }
   }
 
   public setTable(table: TableLoaderData | null): void {
+    const isNewTable = table?.id !== this._table?.id
     this._table = table
-    this._row = null
+    if (isNewTable) {
+      this._row = null
+    }
   }
 
-  public setRow(row: RowLoaderData | null): void {
+  public setRow(row: RowContextData | null): void {
     this._row = row
   }
 

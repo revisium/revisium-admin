@@ -2,7 +2,6 @@ import { Box, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo } from 'react'
 import { TableVirtuoso, TableVirtuosoHandle } from 'react-virtuoso'
-import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowListViewModel } from 'src/widgets/RowList/model/RowListViewModel'
 import { HeaderContent } from './HeaderContent'
 import { RowListContext } from './RowListContext'
@@ -18,7 +17,7 @@ interface RowListProps {
   tableId: string
   isRevisionReadonly?: boolean
   onSelect?: (rowId: string) => void
-  onCopy?: (rowData: JsonValue) => void
+  onCopy?: (rowId: string) => void
   onCreate?: () => void
 }
 

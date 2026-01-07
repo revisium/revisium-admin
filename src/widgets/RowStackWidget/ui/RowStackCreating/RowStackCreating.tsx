@@ -1,92 +1,54 @@
 import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import { ViewerSwitcherMode } from 'src/entities/Schema'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { CreateRowCard } from 'src/features/CreateRowCard'
+import { RowCreatingItem } from 'src/pages/RowPage/model/items'
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 import { ApproveButton, CloseButton, toaster } from 'src/shared/ui'
-
-import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
-import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
 import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
 import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 
-export const RowStackCreating: React.FC = observer(() => {
+interface Props {
+  item: RowCreatingItem
+}
+
+export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
   const navigate = useNavigate()
   const linkMaker = useLinkMaker()
-  const { root, item } = useRowStackModel()
 
-  const [isLoading, setIsLoading] = useState(false)
-
-  const isFirstLevel = root.stack.indexOf(item) === 0
-  const showBreadcrumbs = isFirstLevel && !item.state.isSelectingForeignKey
-
-  const handleSelectForeignKey = useCallback(
-    async (node: JsonStringValueStore, isCreating?: boolean) => {
-      await root.selectForeignKey(item, node, isCreating)
-    },
-    [item, root],
-  )
-
-  const handleSetRowName = useCallback(
-    (value: string) => {
-      if (item.state.type === RowStackModelStateType.CreatingRow) {
-        item.state.store.name.setValue(value)
-      }
-    },
-    [item],
-  )
+  const store = item.store
+  const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
 
   const handleCreateRow = useCallback(async () => {
-    if (item.state.type !== RowStackModelStateType.CreatingRow) return
-
-    const store = item.state.store
-    setIsLoading(true)
-
     try {
-      const createdRow = await item.createRow(store.name.getPlainValue(), store.root.getPlainValue())
+      const createdRowId = await item.approve()
 
-      if (createdRow) {
-        if (item.state.isSelectingForeignKey) {
-          root.onSelectedForeignKey(item, store.name.getPlainValue())
-        } else {
-          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: createdRow.id }))
-        }
+      if (createdRowId && !item.isSelectingForeignKey) {
+        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: createdRowId }))
       }
     } catch {
       toaster.error({ title: 'Create failed' })
-    } finally {
-      setIsLoading(false)
     }
-  }, [item, linkMaker, navigate, root])
+  }, [item, linkMaker, navigate])
 
   const handleCopyJson = useCallback(async () => {
-    if (item.state.type !== RowStackModelStateType.CreatingRow) return
-
-    const json = JSON.stringify(item.state.store.root.getPlainValue(), null, 2)
+    const json = item.getJsonString()
     await navigator.clipboard.writeText(json)
     toaster.info({ title: 'Copied to clipboard' })
   }, [item])
-
-  if (item.state.type !== RowStackModelStateType.CreatingRow) {
-    return null
-  }
-
-  const store = item.state.store
-  const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
 
   const actions = (
     <Flex gap="4px">
       <CloseButton dataTestId="close-create-row-button" onClick={item.toList} />
       <ApproveButton
         dataTestId="approve-create-row-button"
-        loading={isLoading}
+        loading={item.isLoading}
         onClick={handleCreateRow}
         isDisabled={!store.root.isValid}
       />
@@ -97,7 +59,7 @@ export const RowStackCreating: React.FC = observer(() => {
     <RowViewerSwitcher availableRefByMode={false} mode={effectiveViewMode} onChange={store.setViewMode} />
   )
 
-  const rowIdInput = <RowIdInput value={store.name.value} setValue={handleSetRowName} dataTestId="row-id-input" />
+  const rowIdInput = <RowIdInput value={store.name.value} setValue={item.setRowName} dataTestId="row-id-input" />
 
   const isTreeMode = effectiveViewMode === ViewerSwitcherMode.Tree
   const showTreeActions = isTreeMode && store.node.hasCollapsibleContent
@@ -113,16 +75,21 @@ export const RowStackCreating: React.FC = observer(() => {
 
   return (
     <Flex flexDirection="column" flex={1}>
-      {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.table.id} />}
+      {item.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.tableId} />}
       <RowStackHeader
-        showBreadcrumbs={showBreadcrumbs}
+        showBreadcrumbs={item.showBreadcrumbs}
         rowIdInput={rowIdInput}
         actions={actions}
         actionsMenu={actionsMenu}
         switcher={switcher}
       />
       <Flex flexDirection="column" paddingTop="60px">
-        <CreateRowCard store={store} tableId={item.table.id} onSelectForeignKey={handleSelectForeignKey} />
+        <CreateRowCard
+          store={store}
+          tableId={item.tableId}
+          onSelectForeignKey={item.handleSelectForeignKey}
+          onCreateAndConnectForeignKey={item.handleCreateAndConnectForeignKey}
+        />
       </Flex>
     </Flex>
   )

@@ -84,7 +84,7 @@ describe('TableStackManager', () => {
       listItem.toCreating()
       const creatingItem = manager.stack[0] as TableCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(manager.stack).toHaveLength(2)
@@ -100,7 +100,7 @@ describe('TableStackManager', () => {
       listItem.toCreating()
       const creatingItem = manager.stack[0] as TableCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(creatingItem.hasPendingRequest).toBe(true)
@@ -117,7 +117,7 @@ describe('TableStackManager', () => {
       const creatingItem = manager.stack[0] as TableCreatingItem
       const store = creatingItem.store
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(manager.stack).toHaveLength(2)
@@ -138,7 +138,7 @@ describe('TableStackManager', () => {
       listItem.toCreating()
       const creatingItem = manager.stack[0] as TableCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(creatingItem.hasPendingRequest).toBe(true)
@@ -160,7 +160,7 @@ describe('TableStackManager', () => {
       const creatingItem = manager.stack[0] as TableCreatingItem
       const store = creatingItem.store
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(manager.stack).toHaveLength(2)
@@ -183,7 +183,7 @@ describe('TableStackManager', () => {
       level0.toCreating()
       const creatingItem0 = manager.stack[0] as TableCreatingItem
 
-      const mockForeignKeyNode1 = { setValue: jest.fn() } as never
+      const mockForeignKeyNode1 = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem0.startForeignKeySelection(mockForeignKeyNode1)
 
       expect(manager.stack).toHaveLength(2)
@@ -192,7 +192,7 @@ describe('TableStackManager', () => {
       level1.toCreating()
       const creatingItem1 = manager.stack[1] as TableCreatingItem
 
-      const mockForeignKeyNode2 = { setValue: jest.fn() } as never
+      const mockForeignKeyNode2 = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem1.startForeignKeySelection(mockForeignKeyNode2)
 
       expect(manager.stack).toHaveLength(3)
@@ -215,7 +215,7 @@ describe('TableStackManager', () => {
       const creatingItem0 = manager.stack[0] as TableCreatingItem
       const store0 = creatingItem0.store
 
-      const mockForeignKeyNode0 = { setValue: jest.fn() } as never
+      const mockForeignKeyNode0 = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem0.startForeignKeySelection(mockForeignKeyNode0)
 
       expect(manager.stack).toHaveLength(2)
@@ -226,7 +226,7 @@ describe('TableStackManager', () => {
       const creatingItem1 = manager.stack[1] as TableCreatingItem
       const store1 = creatingItem1.store
 
-      const mockForeignKeyNode1 = { setValue: jest.fn() } as never
+      const mockForeignKeyNode1 = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem1.startForeignKeySelection(mockForeignKeyNode1)
 
       expect(manager.stack).toHaveLength(3)
@@ -237,7 +237,7 @@ describe('TableStackManager', () => {
       const creatingItem2 = manager.stack[2] as TableCreatingItem
       const store2 = creatingItem2.store
 
-      const mockForeignKeyNode2 = { setValue: jest.fn() } as never
+      const mockForeignKeyNode2 = { setForeignKey: jest.fn(), draftParent: {} } as never
       creatingItem2.startForeignKeySelection(mockForeignKeyNode2)
 
       expect(manager.stack).toHaveLength(4)

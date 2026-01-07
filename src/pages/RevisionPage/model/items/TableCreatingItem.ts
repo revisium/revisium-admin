@@ -59,4 +59,8 @@ export class TableCreatingItem extends TableEditorItemBase {
   public selectTable(tableId: string): void {
     this.resolve({ type: 'selectTable', tableId })
   }
+
+  public override dispose(): void {
+    this.deps.mutationDataSource.dispose()
+  }
 }

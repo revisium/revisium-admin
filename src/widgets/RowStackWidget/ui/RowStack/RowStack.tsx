@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { RowStackItem } from 'src/pages/RowPage/model/RowStackManager.ts'
+import { RowStackItem } from 'src/pages/RowPage/model'
 import { RowStackItemType } from 'src/pages/RowPage/config/types.ts'
 import { RowStackCreating } from 'src/widgets/RowStackWidget/ui/RowStackCreating/RowStackCreating.tsx'
 import { RowStackList } from 'src/widgets/RowStackWidget/ui/RowStackList/RowStackList.tsx'

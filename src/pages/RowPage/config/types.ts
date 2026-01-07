@@ -1,9 +1,16 @@
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 
 export enum RowStackItemType {
   List = 'List',
   Creating = 'Creating',
   Updating = 'Updating',
+}
+
+export interface RowData {
+  rowId: string
+  data: JsonValue
+  foreignKeysCount: number
 }
 
 export interface SelectForeignKeyRowPayload {
@@ -34,3 +41,17 @@ export type RowUpdatingItemResult =
   | { type: 'cancelForeignKeySelection' }
 
 export type RowStackItemResult = RowListItemResult | RowCreatingItemResult | RowUpdatingItemResult
+
+export interface RowEditorNotifications {
+  onCopySuccess: () => void
+  onCopyError: () => void
+  onUploadStart: () => string
+  onUploadSuccess: (toastId: string) => void
+  onUploadError: (toastId: string) => void
+  onCreateError: () => void
+  onUpdateError: () => void
+}
+
+export interface RowEditorNavigation {
+  navigateToRow: (rowId: string) => void
+}

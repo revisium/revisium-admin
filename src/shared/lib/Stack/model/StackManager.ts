@@ -3,35 +3,41 @@ import { StackItem } from './StackItem.ts'
 import { createStackRequest } from './StackRequest.ts'
 import { StackRequest } from './types.ts'
 
-export abstract class StackManager<TItem extends StackItem<unknown>, TRequestPayload = unknown, TResult = unknown> {
+export abstract class StackManager<
+  TItem extends StackItem<TItemResult>,
+  TItemResult,
+  TRequestPayload = unknown,
+  TParentResult = unknown,
+> {
   public stack: [TItem] & TItem[]
 
   constructor(firstItem: TItem) {
-    this.stack = [firstItem] as [TItem] & TItem[]
+    this.stack = [firstItem]
+    this.setupItemResolver(firstItem)
     makeObservable(this, {
       stack: observable,
-      pushRequest: action,
-      resolveRequest: action,
-      rejectRequest: action,
-      cancelFromItem: action,
-      dispose: action,
+      pushRequest: action.bound,
+      resolveToParent: action.bound,
+      rejectRequest: action.bound,
+      cancelFromItem: action.bound,
+      dispose: action.bound,
     })
   }
 
   public pushRequest(
     fromItem: TItem,
     payload: TRequestPayload,
-    onResolve: (result: TResult) => void,
+    onResolve: (result: TParentResult) => void,
     onReject: () => void,
   ): void {
     const request = createStackRequest(payload, onResolve, onReject)
     fromItem.setPendingRequest(request)
 
     const newItem = this.createItemForRequest(request)
-    this.stack.push(newItem)
+    this.addItem(newItem)
   }
 
-  public resolveRequest(item: TItem, result: TResult): void {
+  public resolveToParent(item: TItem, result: TParentResult): void {
     const foundIndex = this.stack.findIndex((i) => i === item)
     if (foundIndex === -1) {
       return
@@ -85,5 +91,16 @@ export abstract class StackManager<TItem extends StackItem<unknown>, TRequestPay
     this.stack.forEach((item) => item.dispose())
   }
 
-  protected abstract createItemForRequest(request: StackRequest<TRequestPayload, TResult>): TItem
+  protected addItem(item: TItem): void {
+    this.setupItemResolver(item)
+    this.stack.push(item)
+  }
+
+  protected abstract handleItemResult(item: TItem, result: TItemResult): void
+
+  protected abstract createItemForRequest(request: StackRequest<TRequestPayload, TParentResult>): TItem
+
+  private setupItemResolver(item: TItem): void {
+    item.setResolver((result) => this.handleItemResult(item, result))
+  }
 }

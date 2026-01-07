@@ -1,126 +1,28 @@
-import { Box } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useCallback } from 'react'
-import { CreateTableButton } from 'src/features/CreateTableButton'
-import { SchemaEditor, StringForeignKeyNodeStore, SchemaEditorMode } from 'src/widgets/SchemaEditor'
-import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
-import { useTableStackModel } from 'src/pages/RevisionPage/model/TableStackModelContext.ts'
-import { SelectingForeignKeyDivider } from 'src/pages/RevisionPage/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
+import React from 'react'
+import { TableStackItem } from 'src/pages/RevisionPage/model/items'
+import { TableStackItemType } from 'src/pages/RevisionPage/config/types.ts'
 import { ShortSchemaEditor } from 'src/pages/RevisionPage/ui/ShoreSchemaEditor/ShortSchemaEditor.tsx'
-import { TableList } from 'src/widgets/TableList'
+import { TableStackList } from 'src/pages/RevisionPage/ui/TableStackList/TableStackList.tsx'
+import { TableStackEditor } from 'src/pages/RevisionPage/ui/TableStackEditor'
 
-export const TableStack: React.FC = observer(() => {
-  const { root, item } = useTableStackModel()
+interface Props {
+  item: TableStackItem
+}
 
-  const handleSelectForeignKey = useCallback(
-    (node: StringForeignKeyNodeStore) => {
-      root.selectForeignKey(item, node)
-    },
-    [item, root],
-  )
-
-  const handleCancelSelectForeignKey = useCallback(() => {
-    root.cancelSelectingForeignKey(item)
-  }, [item, root])
-
-  const handleApprove = useCallback(async () => {
-    if (item.state.type === TableStackModelStateType.CreatingTable) {
-      const store = item.state.store
-      const result = await item.createTable(store.draftTableId, store.getPlainSchema())
-
-      if (result) {
-        store.submitChanges()
-
-        if (item.state.isSelectingForeignKey) {
-          root.onSelectedForeignKey(item, store.draftTableId)
-        } else {
-          item.toUpdatingTableFromCreatingTable()
-        }
-      }
+export const TableStack: React.FC<Props> = observer(({ item }) => {
+  if (item.hasPendingRequest) {
+    if (item.type === TableStackItemType.Creating || item.type === TableStackItemType.Updating) {
+      return <ShortSchemaEditor item={item} />
     }
-  }, [item, root])
-
-  const handleUpdate = useCallback(async () => {
-    if (item.state.type === TableStackModelStateType.UpdatingTable) {
-      const store = item.state.store
-      const result = await item.updateTable(store)
-      if (result) {
-        store.submitChanges()
-      }
-    }
-  }, [item])
-
-  const handleSelectTable = useCallback(
-    (tableId: string) => {
-      root.onSelectedForeignKey(item, tableId)
-    },
-    [item, root],
-  )
-
-  if (item.state.type === TableStackModelStateType.ConnectingForeignKeyTable) {
-    const schemaStore = item.state.store
-
-    return (
-      <>
-        <ShortSchemaEditor
-          previousType={item.state.previousType}
-          foreignKeyPath={item.currentForeignKeyPath}
-          onCancel={handleCancelSelectForeignKey}
-          tableId={schemaStore.draftTableId}
-        />
-      </>
-    )
   }
 
-  if (item.state.type === TableStackModelStateType.List) {
-    return (
-      <>
-        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-        {item.canCreateTable && <CreateTableButton onClick={item.toCreatingTable} />}
-
-        <Box paddingTop="0.5rem" paddingBottom="1rem">
-          <TableList
-            onSettings={item.toUpdatingTable}
-            onCopy={item.toCloningTable}
-            onSelect={item.state.isSelectingForeignKey ? handleSelectTable : undefined}
-          />
-        </Box>
-      </>
-    )
+  if (item.type === TableStackItemType.List) {
+    return <TableStackList item={item} />
   }
 
-  if (item.state.type === TableStackModelStateType.CreatingTable) {
-    const schemaStore = item.state.store
-
-    return (
-      <>
-        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-        <SchemaEditor
-          store={schemaStore}
-          mode={SchemaEditorMode.Creating}
-          onApprove={handleApprove}
-          onCancel={item.toList}
-          onSelectForeignKey={handleSelectForeignKey}
-        />
-      </>
-    )
-  }
-
-  if (item.state.type === TableStackModelStateType.UpdatingTable) {
-    const schemaStore = item.state.store
-
-    return (
-      <>
-        {item.state.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-        <SchemaEditor
-          store={schemaStore}
-          mode={SchemaEditorMode.Updating}
-          onApprove={handleUpdate}
-          onCancel={item.toList}
-          onSelectForeignKey={handleSelectForeignKey}
-        />
-      </>
-    )
+  if (item.type === TableStackItemType.Creating || item.type === TableStackItemType.Updating) {
+    return <TableStackEditor item={item} />
   }
 
   return null

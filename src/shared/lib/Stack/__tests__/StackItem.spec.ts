@@ -1,24 +1,19 @@
 import { StackItem } from '../model/StackItem.ts'
 import { StackRequest } from '../model/types.ts'
 
-interface TestState {
-  value: string
+interface TestResult {
+  action: string
+  value?: string
 }
 
-class TestStackItem extends StackItem<TestState> {
-  constructor(state: TestState = { value: 'initial' }) {
-    super(state)
+class TestStackItem extends StackItem<TestResult> {
+  public callResolve(result: TestResult): void {
+    this.resolve(result)
   }
 }
 
 describe('StackItem', () => {
   describe('initialization', () => {
-    it('should create with initial state', () => {
-      const item = new TestStackItem({ value: 'test' })
-
-      expect(item.state).toEqual({ value: 'test' })
-    })
-
     it('should generate unique id', () => {
       const item1 = new TestStackItem()
       const item2 = new TestStackItem()
@@ -36,13 +31,36 @@ describe('StackItem', () => {
     })
   })
 
-  describe('state management', () => {
-    it('should allow state updates', () => {
-      const item = new TestStackItem({ value: 'initial' })
+  describe('resolver', () => {
+    it('should call resolver when resolve is called', () => {
+      const item = new TestStackItem()
+      const resolver = jest.fn()
 
-      item.state = { value: 'updated' }
+      item.setResolver(resolver)
+      item.callResolve({ action: 'test', value: 'data' })
 
-      expect(item.state).toEqual({ value: 'updated' })
+      expect(resolver).toHaveBeenCalledWith({ action: 'test', value: 'data' })
+    })
+
+    it('should not throw if resolver is not set', () => {
+      const item = new TestStackItem()
+
+      expect(() => item.callResolve({ action: 'test' })).not.toThrow()
+    })
+
+    it('should allow changing resolver', () => {
+      const item = new TestStackItem()
+      const resolver1 = jest.fn()
+      const resolver2 = jest.fn()
+
+      item.setResolver(resolver1)
+      item.callResolve({ action: 'first' })
+
+      item.setResolver(resolver2)
+      item.callResolve({ action: 'second' })
+
+      expect(resolver1).toHaveBeenCalledWith({ action: 'first' })
+      expect(resolver2).toHaveBeenCalledWith({ action: 'second' })
     })
   })
 

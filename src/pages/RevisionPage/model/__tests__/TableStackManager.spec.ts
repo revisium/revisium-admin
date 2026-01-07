@@ -1,178 +1,176 @@
 import { TableStackManager } from '../TableStackManager.ts'
-import { TableStackItemDeps } from '../TableStackItem.ts'
-import { TableStackStateType } from '../../config/types.ts'
-
-const createMockDeps = (): TableStackItemDeps => ({
-  projectContext: {
-    isDraftRevision: true,
-    revision: { id: 'rev-1' },
-    branch: {
-      draft: { id: 'draft-1' },
-      touched: false,
-    },
-    updateTouched: jest.fn(),
-  } as never,
-  permissionContext: {
-    canCreateTable: true,
-  } as never,
-  mutationDataSource: {
-    createTable: jest.fn(),
-    updateTable: jest.fn(),
-    renameTable: jest.fn(),
-    dispose: jest.fn(),
-  } as never,
-  tableListRefreshService: {
-    refresh: jest.fn(),
-  } as never,
-  fetchDataSourceFactory: () =>
-    ({
-      fetch: jest.fn().mockResolvedValue({
-        id: 'table-1',
-        schema: { type: 'object', properties: {}, additionalProperties: false, required: [] },
-      }),
-      dispose: jest.fn(),
-    }) as never,
-})
+import { TableListItem, TableCreatingItem, TableUpdatingItem } from '../items'
+import { TableStackItemType } from '../../config/types.ts'
+import { createMockManagerDeps as createMockDeps } from './createMockDeps.ts'
 
 describe('TableStackManager', () => {
   describe('initialization', () => {
-    it('should create with one item in List state', () => {
+    it('should create with one TableListItem', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
 
       expect(manager.stack).toHaveLength(1)
-      expect(manager.stack[0].state).toEqual({ type: TableStackStateType.List })
+      expect(manager.stack[0].type).toBe(TableStackItemType.List)
+      expect(manager.stack[0].isSelectingForeignKey).toBe(false)
     })
   })
 
-  describe('selectForeignKey', () => {
-    it('should push new item to stack', () => {
+  describe('item.toCreating', () => {
+    it('should replace TableListItem with TableCreatingItem', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
+      const listItem = manager.stack[0] as TableListItem
 
-      firstItem.toCreating()
-
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
-
-      expect(manager.stack).toHaveLength(2)
-      expect(manager.stack[1].state.type).toBe(TableStackStateType.List)
-    })
-
-    it('should save item state before pushing', () => {
-      const deps = createMockDeps()
-      const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
-
-      firstItem.toCreating()
-      const store = firstItem.state.type === TableStackStateType.Creating ? firstItem.state.store : null
-
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
-
-      expect(firstItem.hasPendingRequest).toBe(true)
-
-      manager.resolveRequest(manager.stack[1], 'selected-table-id')
-
-      expect(firstItem.state.type).toBe(TableStackStateType.Creating)
-      if (firstItem.state.type === TableStackStateType.Creating) {
-        expect(firstItem.state.store).toBe(store)
-      }
-    })
-
-    it('should restore state on reject', () => {
-      const deps = createMockDeps()
-      const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
-
-      firstItem.toCreating()
-      const store = firstItem.state.type === TableStackStateType.Creating ? firstItem.state.store : null
-
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
-
-      manager.rejectRequest(manager.stack[1])
-
-      expect(firstItem.state.type).toBe(TableStackStateType.Creating)
-      if (firstItem.state.type === TableStackStateType.Creating) {
-        expect(firstItem.state.store).toBe(store)
-      }
-    })
-  })
-
-  describe('resolveRequest', () => {
-    it('should remove selecting item from stack', () => {
-      const deps = createMockDeps()
-      const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
-
-      firstItem.toCreating()
-
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
-
-      expect(manager.stack).toHaveLength(2)
-
-      manager.resolveRequest(manager.stack[1], 'selected-table-id')
+      listItem.toCreating()
 
       expect(manager.stack).toHaveLength(1)
+      expect(manager.stack[0].type).toBe(TableStackItemType.Creating)
+    })
+
+    it('should preserve isSelectingForeignKey', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+
+      expect(creatingItem.isSelectingForeignKey).toBe(false)
+    })
+  })
+
+  describe('item.toList', () => {
+    it('should replace TableCreatingItem with TableListItem', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+
+      creatingItem.toList()
+
+      expect(manager.stack).toHaveLength(1)
+      expect(manager.stack[0].type).toBe(TableStackItemType.List)
+    })
+  })
+
+  describe('item.toUpdating (from Creating)', () => {
+    it('should replace TableCreatingItem with TableUpdatingItem preserving store', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+      const store = creatingItem.store
+
+      creatingItem.toUpdating()
+
+      expect(manager.stack).toHaveLength(1)
+      expect(manager.stack[0].type).toBe(TableStackItemType.Updating)
+
+      const updatingItem = manager.stack[0] as TableUpdatingItem
+      expect(updatingItem.store).toBe(store)
+    })
+  })
+
+  describe('item.startForeignKeySelection', () => {
+    it('should push new TableListItem with isSelectingForeignKey true', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode)
+
+      expect(manager.stack).toHaveLength(2)
+      expect(manager.stack[1].type).toBe(TableStackItemType.List)
+      expect(manager.stack[1].isSelectingForeignKey).toBe(true)
+    })
+
+    it('should set pending request on parent item', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode)
+
+      expect(creatingItem.hasPendingRequest).toBe(true)
+    })
+  })
+
+  describe('item.selectTable (completeForeignKeySelection)', () => {
+    it('should remove selecting item from stack and restore parent', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      const listItem = manager.stack[0] as TableListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+      const store = creatingItem.store
+
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode)
+
+      expect(manager.stack).toHaveLength(2)
+
+      const selectingListItem = manager.stack[1] as TableListItem
+      selectingListItem.selectTable('selected-table-id')
+
+      expect(manager.stack).toHaveLength(1)
+      expect(manager.stack[0].type).toBe(TableStackItemType.Creating)
+      expect((manager.stack[0] as TableCreatingItem).store).toBe(store)
     })
 
     it('should clear pending request on parent', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
+      const listItem = manager.stack[0] as TableListItem
 
-      firstItem.toCreating()
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
-      expect(firstItem.hasPendingRequest).toBe(true)
+      expect(creatingItem.hasPendingRequest).toBe(true)
 
-      manager.resolveRequest(manager.stack[1], 'selected-table-id')
+      const selectingListItem = manager.stack[1] as TableListItem
+      selectingListItem.selectTable('selected-table-id')
 
-      expect(firstItem.hasPendingRequest).toBe(false)
+      expect(manager.stack[0].hasPendingRequest).toBe(false)
     })
   })
 
-  describe('cancelFromItem', () => {
+  describe('item.cancelForeignKeySelection', () => {
     it('should cancel all children and restore parent state', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
+      const listItem = manager.stack[0] as TableListItem
 
-      firstItem.toCreating()
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as TableCreatingItem
+      const store = creatingItem.store
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
+      const mockForeignKeyNode = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode)
 
       expect(manager.stack).toHaveLength(2)
 
-      manager.cancelFromItem(firstItem)
+      creatingItem.cancelForeignKeySelection()
 
       expect(manager.stack).toHaveLength(1)
-      expect(firstItem.hasPendingRequest).toBe(false)
-      expect(firstItem.state.type).toBe(TableStackStateType.Creating)
-    })
-  })
-
-  describe('dispose', () => {
-    it('should dispose all items', () => {
-      const deps = createMockDeps()
-      const manager = new TableStackManager(deps)
-      const firstItem = manager.stack[0]
-
-      firstItem.toCreating()
-
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      manager.selectForeignKey(firstItem, mockForeignKeyNode)
-
-      manager.dispose()
-
-      expect(deps.mutationDataSource.dispose).toHaveBeenCalledTimes(2)
+      expect(manager.stack[0].hasPendingRequest).toBe(false)
+      expect(manager.stack[0].type).toBe(TableStackItemType.Creating)
+      expect((manager.stack[0] as TableCreatingItem).store).toBe(store)
     })
   })
 
@@ -180,26 +178,141 @@ describe('TableStackManager', () => {
     it('should handle multiple levels of nesting', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
-      const level0 = manager.stack[0]
+      const level0 = manager.stack[0] as TableListItem
 
       level0.toCreating()
-      const mockForeignKeyNode1 = { setValue: jest.fn() } as never
-      manager.selectForeignKey(level0, mockForeignKeyNode1)
+      const creatingItem0 = manager.stack[0] as TableCreatingItem
+
+      const mockForeignKeyNode1 = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem0.startForeignKeySelection(mockForeignKeyNode1)
 
       expect(manager.stack).toHaveLength(2)
 
-      const level1 = manager.stack[1]
+      const level1 = manager.stack[1] as TableListItem
       level1.toCreating()
-      const mockForeignKeyNode2 = { setValue: jest.fn() } as never
-      manager.selectForeignKey(level1, mockForeignKeyNode2)
+      const creatingItem1 = manager.stack[1] as TableCreatingItem
+
+      const mockForeignKeyNode2 = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem1.startForeignKeySelection(mockForeignKeyNode2)
 
       expect(manager.stack).toHaveLength(3)
 
-      manager.resolveRequest(manager.stack[2], 'table-level-2')
+      const level2List = manager.stack[2] as TableListItem
+      level2List.selectTable('table-level-2')
       expect(manager.stack).toHaveLength(2)
 
-      manager.resolveRequest(manager.stack[1], 'table-level-1')
+      const level1List = manager.stack[1] as TableListItem
+      level1List.selectTable('table-level-1')
       expect(manager.stack).toHaveLength(1)
+    })
+
+    it('should handle three level nesting and restore correct parent state', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+
+      const listItem0 = manager.stack[0] as TableListItem
+      listItem0.toCreating()
+      const creatingItem0 = manager.stack[0] as TableCreatingItem
+      const store0 = creatingItem0.store
+
+      const mockForeignKeyNode0 = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem0.startForeignKeySelection(mockForeignKeyNode0)
+
+      expect(manager.stack).toHaveLength(2)
+      expect(creatingItem0.hasPendingRequest).toBe(true)
+
+      const listItem1 = manager.stack[1] as TableListItem
+      listItem1.toCreating()
+      const creatingItem1 = manager.stack[1] as TableCreatingItem
+      const store1 = creatingItem1.store
+
+      const mockForeignKeyNode1 = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem1.startForeignKeySelection(mockForeignKeyNode1)
+
+      expect(manager.stack).toHaveLength(3)
+      expect(creatingItem1.hasPendingRequest).toBe(true)
+
+      const listItem2 = manager.stack[2] as TableListItem
+      listItem2.toCreating()
+      const creatingItem2 = manager.stack[2] as TableCreatingItem
+      const store2 = creatingItem2.store
+
+      const mockForeignKeyNode2 = { setForeignKey: jest.fn(), draftParent: {} } as never
+      creatingItem2.startForeignKeySelection(mockForeignKeyNode2)
+
+      expect(manager.stack).toHaveLength(4)
+      expect(creatingItem2.hasPendingRequest).toBe(true)
+
+      const selectingList3 = manager.stack[3] as TableListItem
+      selectingList3.selectTable('table-3')
+
+      expect(manager.stack).toHaveLength(3)
+      expect(manager.stack[2].type).toBe(TableStackItemType.Creating)
+      expect((manager.stack[2] as TableCreatingItem).store).toBe(store2)
+      expect(manager.stack[2].hasPendingRequest).toBe(false)
+
+      const selectingList2 = manager.stack[2] as TableListItem
+      selectingList2.selectTable('table-2')
+
+      expect(manager.stack).toHaveLength(2)
+      expect(manager.stack[1].type).toBe(TableStackItemType.Creating)
+      expect((manager.stack[1] as TableCreatingItem).store).toBe(store1)
+      expect(manager.stack[1].hasPendingRequest).toBe(false)
+
+      const selectingList1 = manager.stack[1] as TableListItem
+      selectingList1.selectTable('table-1')
+
+      expect(manager.stack).toHaveLength(1)
+      expect(manager.stack[0].type).toBe(TableStackItemType.Creating)
+      expect((manager.stack[0] as TableCreatingItem).store).toBe(store0)
+      expect(manager.stack[0].hasPendingRequest).toBe(false)
+    })
+
+    it('should call setForeignKeyValue on correct store for each level in three level nesting', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+
+      const createMockForeignKeyNode = () => {
+        return {
+          setForeignKey: jest.fn(),
+          draftParent: {},
+        }
+      }
+
+      const listItem0 = manager.stack[0] as TableListItem
+      listItem0.toCreating()
+      const creatingItem0 = manager.stack[0] as TableCreatingItem
+
+      const mockForeignKeyNode0 = createMockForeignKeyNode()
+      creatingItem0.startForeignKeySelection(mockForeignKeyNode0 as never)
+
+      const listItem1 = manager.stack[1] as TableListItem
+      listItem1.toCreating()
+      const creatingItem1 = manager.stack[1] as TableCreatingItem
+
+      const mockForeignKeyNode1 = createMockForeignKeyNode()
+      creatingItem1.startForeignKeySelection(mockForeignKeyNode1 as never)
+
+      const listItem2 = manager.stack[2] as TableListItem
+      listItem2.toCreating()
+      const creatingItem2 = manager.stack[2] as TableCreatingItem
+
+      const mockForeignKeyNode2 = createMockForeignKeyNode()
+      creatingItem2.startForeignKeySelection(mockForeignKeyNode2 as never)
+
+      expect(manager.stack).toHaveLength(4)
+
+      const selectingList3 = manager.stack[3] as TableListItem
+      selectingList3.selectTable('table-3')
+      expect(mockForeignKeyNode2.setForeignKey).toHaveBeenCalledWith('table-3')
+
+      const selectingList2 = manager.stack[2] as TableListItem
+      selectingList2.selectTable('table-2')
+      expect(mockForeignKeyNode1.setForeignKey).toHaveBeenCalledWith('table-2')
+
+      const selectingList1 = manager.stack[1] as TableListItem
+      selectingList1.selectTable('table-1')
+      expect(mockForeignKeyNode0.setForeignKey).toHaveBeenCalledWith('table-1')
     })
   })
 })

@@ -1,43 +1,36 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
-import React, { useMemo } from 'react'
-import { TableStackModelStateType } from 'src/pages/RevisionPage/model/TableStackModel.ts'
+import { observer } from 'mobx-react-lite'
+import React from 'react'
+import { TableCreatingItem, TableUpdatingItem } from 'src/pages/RevisionPage/model/items'
+import { TableStackItemType } from 'src/pages/RevisionPage/config/types.ts'
 
 interface ShortSchemaEditorProps {
-  previousType: TableStackModelStateType
-  tableId: string
-  foreignKeyPath: string
-  onCancel: () => void
+  item: TableCreatingItem | TableUpdatingItem
 }
 
-export const ShortSchemaEditor: React.FC<ShortSchemaEditorProps> = ({
-  previousType,
-  tableId,
-  foreignKeyPath,
-  onCancel,
-}) => {
-  const prefix = useMemo(() => {
-    if (previousType === TableStackModelStateType.UpdatingTable) {
-      return 'updating'
-    } else if (previousType === TableStackModelStateType.CreatingTable) {
-      return 'creating'
-    }
+const getPrefix = (type: TableStackItemType): string => {
+  if (type === TableStackItemType.Updating) {
+    return 'updating'
+  } else if (type === TableStackItemType.Creating) {
+    return 'creating'
+  }
+  return ''
+}
 
-    return ''
-  }, [previousType])
-
+export const ShortSchemaEditor: React.FC<ShortSchemaEditorProps> = observer(({ item }) => {
   return (
     <Box width="100%" borderStyle="solid" borderLeftWidth={2} borderColor="gray.200" pl="1rem" mb="1rem">
       <Flex gap="4px" alignItems="center" height="30px" mt="2px" mb="2px" color="gray.400" fontWeight="300">
-        <Text textDecoration="underline" cursor="pointer" onClick={onCancel}>
+        <Text textDecoration="underline" cursor="pointer" onClick={item.cancelForeignKeySelection}>
           Back
         </Text>
         <Text whiteSpace="nowrap">
-          - {prefix} "{tableId}" -
+          - {getPrefix(item.type)} "{item.store.draftTableId}" -
         </Text>
         <Text minWidth={0} dir="rtl" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          path: {foreignKeyPath}
+          path: {item.pendingForeignKeyPath}
         </Text>
       </Flex>
     </Box>
   )
-}
+})

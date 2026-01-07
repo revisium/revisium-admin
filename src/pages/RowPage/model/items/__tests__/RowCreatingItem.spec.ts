@@ -62,7 +62,7 @@ describe('RowCreatingItem', () => {
       expect(resolver).toHaveBeenCalledWith({ type: 'creatingToUpdating' })
     })
 
-    it('should call selectRow when isSelectingForeignKey', async () => {
+    it('should call selectForeignKeyRow when isSelectingForeignKey', async () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
 
@@ -74,7 +74,7 @@ describe('RowCreatingItem', () => {
 
       await item.approve()
 
-      expect(resolver).toHaveBeenCalledWith({ type: 'selectRow', rowId: 'test-row' })
+      expect(resolver).toHaveBeenCalledWith({ type: 'selectForeignKeyRow', rowId: 'test-row' })
     })
 
     it('should not resolve on failure', async () => {

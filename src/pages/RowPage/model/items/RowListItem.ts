@@ -13,7 +13,7 @@ export class RowListItem extends RowStackItemBase {
       toCreating: action.bound,
       toCloning: action.bound,
       toUpdating: action.bound,
-      selectRow: action.bound,
+      selectForeignKeyRow: action.bound,
     })
   }
 
@@ -33,7 +33,7 @@ export class RowListItem extends RowStackItemBase {
     this.resolve({ type: 'toUpdating', rowId })
   }
 
-  public selectRow(rowId: string): void {
-    this.resolve({ type: 'selectRow', rowId })
+  public selectForeignKeyRow(rowId: string): void {
+    this.resolve({ type: 'selectForeignKeyRow', rowId })
   }
 }

@@ -17,12 +17,12 @@ export type RowListItemResult =
   | { type: 'toCreating' }
   | { type: 'toCloning'; rowId: string }
   | { type: 'toUpdating'; rowId: string }
-  | { type: 'selectRow'; rowId: string }
+  | { type: 'selectForeignKeyRow'; rowId: string }
 
 export type RowCreatingItemResult =
   | { type: 'toList' }
   | { type: 'creatingToUpdating' }
-  | { type: 'selectRow'; rowId: string }
+  | { type: 'selectForeignKeyRow'; rowId: string }
   | { type: 'startForeignKeySelection'; foreignKeyNode: JsonStringValueStore; foreignTableId: string }
   | { type: 'cancelForeignKeySelection' }
 

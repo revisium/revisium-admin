@@ -85,7 +85,7 @@ export class RowStackManager extends StackManager<
       case 'toList':
         this.handleToList(item as RowCreatingItem | RowUpdatingItem)
         break
-      case 'selectRow':
+      case 'selectForeignKeyRow':
         this.resolveToParent(item, result.rowId)
         break
       case 'startForeignKeySelection':

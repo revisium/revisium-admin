@@ -132,7 +132,7 @@ describe('RowStackManager', () => {
     })
   })
 
-  describe('item.selectRow (completeForeignKeySelection)', () => {
+  describe('item.selectForeignKeyRow (completeForeignKeySelection)', () => {
     it('should remove selecting item from stack and restore parent', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
@@ -148,7 +148,7 @@ describe('RowStackManager', () => {
       expect(manager.stack).toHaveLength(2)
 
       const selectingListItem = manager.stack[1] as RowListItem
-      selectingListItem.selectRow('selected-row-id')
+      selectingListItem.selectForeignKeyRow('selected-row-id')
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(RowStackItemType.Creating)
@@ -169,7 +169,7 @@ describe('RowStackManager', () => {
       expect(creatingItem.hasPendingRequest).toBe(true)
 
       const selectingListItem = manager.stack[1] as RowListItem
-      selectingListItem.selectRow('selected-row-id')
+      selectingListItem.selectForeignKeyRow('selected-row-id')
 
       expect(manager.stack[0].hasPendingRequest).toBe(false)
     })
@@ -187,7 +187,7 @@ describe('RowStackManager', () => {
       creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
 
       const selectingListItem = manager.stack[1] as RowListItem
-      selectingListItem.selectRow('selected-row-id')
+      selectingListItem.selectForeignKeyRow('selected-row-id')
 
       expect(setValueMock).toHaveBeenCalledWith('selected-row-id')
     })
@@ -233,7 +233,7 @@ describe('RowStackManager', () => {
       expect(manager.stack[1].isSelectingForeignKey).toBe(true)
 
       const level1List = manager.stack[1] as RowListItem
-      level1List.selectRow('row-level-1')
+      level1List.selectForeignKeyRow('row-level-1')
       expect(manager.stack).toHaveLength(1)
     })
 
@@ -252,7 +252,7 @@ describe('RowStackManager', () => {
       expect(manager.stack).toHaveLength(2)
 
       const selectingList1 = manager.stack[1] as RowListItem
-      selectingList1.selectRow('row-1')
+      selectingList1.selectForeignKeyRow('row-1')
       expect(setValue0).toHaveBeenCalledWith('row-1')
       expect(manager.stack).toHaveLength(1)
     })
@@ -334,7 +334,7 @@ describe('RowStackManager', () => {
       creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
 
       const selectingListItem = manager.stack[1] as RowListItem
-      selectingListItem.selectRow('selected-row-id')
+      selectingListItem.selectForeignKeyRow('selected-row-id')
 
       expect((manager.stack[0] as RowCreatingItem).isConnectingForeignKey).toBe(false)
     })

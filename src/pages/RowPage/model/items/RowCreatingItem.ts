@@ -30,7 +30,7 @@ export class RowCreatingItem extends RowEditorItemBase {
       isLoading: computed,
       approve: action.bound,
       toUpdating: action.bound,
-      selectRow: action.bound,
+      selectForeignKeyRow: action.bound,
     })
   }
 
@@ -54,7 +54,7 @@ export class RowCreatingItem extends RowEditorItemBase {
       if (result) {
         this.store.save()
         if (this.isSelectingForeignKey) {
-          this.selectRow(rowId)
+          this.selectForeignKeyRow(rowId)
         } else {
           this.toUpdating()
         }
@@ -71,7 +71,7 @@ export class RowCreatingItem extends RowEditorItemBase {
     this.resolve({ type: 'creatingToUpdating' })
   }
 
-  public selectRow(rowId: string): void {
-    this.resolve({ type: 'selectRow', rowId })
+  public selectForeignKeyRow(rowId: string): void {
+    this.resolve({ type: 'selectForeignKeyRow', rowId })
   }
 }

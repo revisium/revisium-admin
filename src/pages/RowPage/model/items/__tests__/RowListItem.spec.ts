@@ -104,15 +104,15 @@ describe('RowListItem', () => {
       expect(resolver).toHaveBeenCalledWith({ type: 'toUpdating', rowId: 'row-1' })
     })
 
-    it('selectRow should resolve with selectRow type and rowId', () => {
+    it('selectForeignKeyRow should resolve with selectForeignKeyRow type and rowId', () => {
       const deps = createMockBaseDeps()
       const item = new RowListItem(deps, false)
       const resolver = jest.fn()
       item.setResolver(resolver)
 
-      item.selectRow('row-1')
+      item.selectForeignKeyRow('row-1')
 
-      expect(resolver).toHaveBeenCalledWith({ type: 'selectRow', rowId: 'row-1' })
+      expect(resolver).toHaveBeenCalledWith({ type: 'selectForeignKeyRow', rowId: 'row-1' })
     })
   })
 

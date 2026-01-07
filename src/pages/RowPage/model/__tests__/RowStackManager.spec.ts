@@ -339,4 +339,108 @@ describe('RowStackManager', () => {
       expect((manager.stack[0] as RowCreatingItem).isConnectingForeignKey).toBe(false)
     })
   })
+
+  describe('foreign table operations', () => {
+    it('should load foreign schema when creating row in foreign table', async () => {
+      const foreignSchema = {
+        type: 'object',
+        properties: { title: { type: 'string', default: '' } },
+        additionalProperties: false,
+        required: ['title'],
+      }
+      const loadTableWithRowsMock = jest.fn().mockResolvedValue({
+        table: { id: 'foreign-table', schema: foreignSchema },
+        rows: [],
+      })
+      const deps = createMockDeps()
+      deps.foreignKeyTableDataSourceFactory = () =>
+        ({
+          loadTableWithRows: loadTableWithRowsMock,
+          dispose: jest.fn(),
+        }) as never
+
+      const manager = new RowStackManager(deps)
+      const listItem = manager.stack[0] as RowListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as RowCreatingItem
+
+      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
+
+      const selectingListItem = manager.stack[1] as RowListItem
+      expect(selectingListItem.tableId).toBe('foreign-table')
+
+      await selectingListItem.toCreating()
+
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      expect(loadTableWithRowsMock).toHaveBeenCalledWith('rev-1', 'foreign-table', 0)
+      expect(manager.stack[1].type).toBe(RowStackItemType.Creating)
+    })
+
+    it('should cache foreign schema and not reload on second operation', async () => {
+      const foreignSchema = {
+        type: 'object',
+        properties: { title: { type: 'string', default: '' } },
+        additionalProperties: false,
+        required: ['title'],
+      }
+      const loadTableWithRowsMock = jest.fn().mockResolvedValue({
+        table: { id: 'foreign-table', schema: foreignSchema },
+        rows: [],
+      })
+      const deps = createMockDeps()
+      deps.foreignKeyTableDataSourceFactory = () =>
+        ({
+          loadTableWithRows: loadTableWithRowsMock,
+          dispose: jest.fn(),
+        }) as never
+
+      const manager = new RowStackManager(deps)
+      const listItem = manager.stack[0] as RowListItem
+
+      listItem.toCreating()
+      const creatingItem = manager.stack[0] as RowCreatingItem
+
+      const mockForeignKeyNode = { setValue: jest.fn() } as never
+      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
+
+      const selectingListItem = manager.stack[1] as RowListItem
+
+      await selectingListItem.toCreating()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      expect(loadTableWithRowsMock).toHaveBeenCalledTimes(1)
+
+      const creatingInForeign = manager.stack[1] as RowCreatingItem
+      creatingInForeign.toList()
+
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      const listInForeign = manager.stack[1] as RowListItem
+      await listInForeign.toCreating()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      expect(loadTableWithRowsMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should not load schema when creating row in main table', async () => {
+      const loadTableWithRowsMock = jest.fn()
+      const deps = createMockDeps()
+      deps.foreignKeyTableDataSourceFactory = () =>
+        ({
+          loadTableWithRows: loadTableWithRowsMock,
+          dispose: jest.fn(),
+        }) as never
+
+      const manager = new RowStackManager(deps)
+      const listItem = manager.stack[0] as RowListItem
+
+      await listItem.toCreating()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      expect(loadTableWithRowsMock).not.toHaveBeenCalled()
+    })
+  })
 })

@@ -45,6 +45,8 @@ export class RowStackManager extends StackManager<
   SelectForeignKeyRowPayload,
   SelectForeignKeyRowResult
 > {
+  private readonly foreignSchemas = new Map<string, JsonObjectSchema>()
+
   constructor(private readonly deps: RowStackManagerDeps) {
     const firstItem = new RowListItem(
       {
@@ -114,14 +116,24 @@ export class RowStackManager extends StackManager<
     )
   }
 
-  private handleToCreating(item: RowListItem): void {
-    const store = this.createEmptyStore(item.tableId)
-    const newItem = new RowCreatingItem(this.getCreatingDeps(item.tableId), item.isSelectingForeignKey, store)
-    this.replaceItem(item, newItem)
+  private async handleToCreating(item: RowListItem): Promise<void> {
+    try {
+      if (item.tableId !== this.deps.tableId) {
+        await this.fetchForeignTableSchema(item.tableId)
+      }
+      const store = this.createEmptyStore(item.tableId)
+      const newItem = new RowCreatingItem(this.getCreatingDeps(item.tableId), item.isSelectingForeignKey, store)
+      this.replaceItem(item, newItem)
+    } catch {
+      toaster.error({ title: 'Failed to create row' })
+    }
   }
 
   private async handleToCloning(item: RowListItem, rowId: string): Promise<void> {
     try {
+      if (item.tableId !== this.deps.tableId) {
+        await this.fetchForeignTableSchema(item.tableId)
+      }
       const rowData = await this.fetchRow(item.tableId, rowId)
       const store = this.createStoreFromClone(item.tableId, rowData.data)
       const newItem = new RowCreatingItem(this.getCreatingDeps(item.tableId), item.isSelectingForeignKey, store)
@@ -133,6 +145,9 @@ export class RowStackManager extends StackManager<
 
   private async handleListToUpdating(item: RowListItem, rowId: string): Promise<void> {
     try {
+      if (item.tableId !== this.deps.tableId) {
+        await this.fetchForeignTableSchema(item.tableId)
+      }
       const rowData = await this.fetchRow(item.tableId, rowId)
       const store = this.createStoreForUpdating(item.tableId, rowData)
       const newItem = new RowUpdatingItem(this.getUpdatingDeps(item.tableId), item.isSelectingForeignKey, store, rowId)
@@ -223,7 +238,31 @@ export class RowStackManager extends StackManager<
     if (tableId === this.deps.tableId) {
       return this.deps.schema
     }
+    const foreignSchema = this.foreignSchemas.get(tableId)
+    if (foreignSchema) {
+      return foreignSchema
+    }
     throw new Error(`Schema for table ${tableId} not available`)
+  }
+
+  private async fetchForeignTableSchema(tableId: string): Promise<JsonObjectSchema> {
+    const cached = this.foreignSchemas.get(tableId)
+    if (cached) {
+      return cached
+    }
+
+    const dataSource = this.deps.foreignKeyTableDataSourceFactory()
+    try {
+      const result = await dataSource.loadTableWithRows(this.deps.projectContext.revision.id, tableId, 0)
+      if (!result) {
+        throw new Error(`Failed to load schema for table ${tableId}`)
+      }
+      const schema = result.table.schema as JsonObjectSchema
+      this.foreignSchemas.set(tableId, schema)
+      return schema
+    } finally {
+      dataSource.dispose()
+    }
   }
 
   private createEmptyStore(tableId: string): RowDataCardStore {

@@ -58,6 +58,7 @@ export const createMockBaseDeps = (overrides: MockDepsOverrides = {}): RowStackI
 
 export const createMockNotifications = (): RowEditorNotifications => ({
   onCopySuccess: jest.fn(),
+  onCopyError: jest.fn(),
   onUploadStart: jest.fn().mockReturnValue('toast-id'),
   onUploadSuccess: jest.fn(),
   onUploadError: jest.fn(),

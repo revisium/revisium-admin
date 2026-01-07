@@ -52,6 +52,7 @@ const createSchemaCache = (tableId: string, schema: JsonObjectSchema): ForeignSc
 
 const createNotifications = (): RowEditorNotifications => ({
   onCopySuccess: () => toaster.info({ title: 'Copied to clipboard' }),
+  onCopyError: () => toaster.error({ title: 'Failed to copy to clipboard' }),
   onUploadStart: () => {
     const toastId = nanoid()
     toaster.loading({ id: toastId, title: 'Uploading...' })

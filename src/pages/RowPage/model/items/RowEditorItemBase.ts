@@ -58,9 +58,13 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
   }
 
   public async copyJsonToClipboard(): Promise<void> {
-    const json = this.getJsonString()
-    await navigator.clipboard.writeText(json)
-    this.deps.notifications.onCopySuccess()
+    try {
+      const json = this.getJsonString()
+      await navigator.clipboard.writeText(json)
+      this.deps.notifications.onCopySuccess()
+    } catch {
+      this.deps.notifications.onCopyError()
+    }
   }
 
   public toList(): void {

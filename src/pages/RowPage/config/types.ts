@@ -44,6 +44,7 @@ export type RowStackItemResult = RowListItemResult | RowCreatingItemResult | Row
 
 export interface RowEditorNotifications {
   onCopySuccess: () => void
+  onCopyError: () => void
   onUploadStart: () => string
   onUploadSuccess: (toastId: string) => void
   onUploadError: (toastId: string) => void

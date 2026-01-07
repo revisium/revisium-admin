@@ -80,6 +80,8 @@ export class RowUpdatingItem extends RowEditorItemBase {
 
       if (result) {
         this.deps.navigation.navigateToRow(this.currentRowId)
+      } else {
+        this.deps.notifications.onUpdateError()
       }
     } catch {
       this.deps.notifications.onUpdateError()

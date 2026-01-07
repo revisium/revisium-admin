@@ -1,4 +1,8 @@
 export { RowStackManager, type RowStackManagerDeps, type RowStackItem } from './RowStackManager.ts'
 export { RowFetchDataSource, type RowFetchParams, type RowFetchResult } from './RowFetchDataSource.ts'
+export { RowStackItemFactory, type RowStackItemFactoryDeps } from './RowStackItemFactory.ts'
+export { ForeignSchemaCache } from './ForeignSchemaCache.ts'
+export { RowDataCardStoreFactory } from './RowDataCardStoreFactory.ts'
+import './RowStackManager.registration.ts'
 export * from './items'
 export * from './commands'

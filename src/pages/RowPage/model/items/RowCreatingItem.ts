@@ -29,6 +29,7 @@ export class RowCreatingItem extends RowEditorItemBase {
       _isLoading: observable,
       isLoading: computed,
       approve: action.bound,
+      approveAndNavigate: action.bound,
       toUpdating: action.bound,
       selectForeignKeyRow: action.bound,
     })
@@ -64,6 +65,18 @@ export class RowCreatingItem extends RowEditorItemBase {
       return null
     } finally {
       this._isLoading = false
+    }
+  }
+
+  public async approveAndNavigate(): Promise<void> {
+    try {
+      const createdRowId = await this.approve()
+
+      if (createdRowId && !this.isSelectingForeignKey) {
+        this.deps.navigation.navigateToRow(createdRowId)
+      }
+    } catch {
+      this.deps.notifications.onCreateError()
     }
   }
 

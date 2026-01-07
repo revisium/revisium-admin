@@ -1,15 +1,11 @@
 import { Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { nanoid } from 'nanoid'
-import React, { useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
+import React from 'react'
 import { ViewerSwitcherMode } from 'src/entities/Schema'
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { EditRowDataCard } from 'src/features/EditRowDataCard'
 import { RowUpdatingItem } from 'src/pages/RowPage/model/items'
-import { DRAFT_TAG } from 'src/shared/config/routes.ts'
-import { ApproveButton, toaster } from 'src/shared/ui'
+import { ApproveButton } from 'src/shared/ui'
 import { RevertButton } from 'src/shared/ui/RevertButton/RevertButton.tsx'
 import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
 import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
@@ -21,64 +17,8 @@ interface Props {
 }
 
 export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
-  const navigate = useNavigate()
-  const linkMaker = useLinkMaker()
-
   const store = item.store
   const effectiveViewMode = store.viewMode || ViewerSwitcherMode.Tree
-
-  const handleUpdateRow = useCallback(async () => {
-    try {
-      const result = await item.approve()
-
-      if (result) {
-        const newRowId = store.name.value
-        navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: newRowId }))
-      }
-    } catch {
-      toaster.error({ title: 'Update failed' })
-    }
-  }, [item, linkMaker, navigate, store.name.value])
-
-  const handleCopyJson = useCallback(async () => {
-    const json = item.getJsonString()
-    await navigator.clipboard.writeText(json)
-    toaster.info({ title: 'Copied to clipboard' })
-  }, [item])
-
-  const handleUploadFile = useCallback(
-    async (fileId: string, file: File) => {
-      const toastId = nanoid()
-      toaster.loading({ id: toastId, title: 'Uploading...' })
-
-      try {
-        const freshData = await item.uploadFile(fileId, file)
-
-        if (freshData) {
-          toaster.update(toastId, {
-            type: 'info',
-            title: 'Successfully uploaded!',
-            duration: 1500,
-          })
-          item.syncReadOnlyStores(freshData)
-          navigate(linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId: store.name.getPlainValue() }))
-        } else {
-          toaster.update(toastId, {
-            type: 'error',
-            title: 'Upload failed',
-            duration: 3000,
-          })
-        }
-      } catch {
-        toaster.update(toastId, {
-          type: 'error',
-          title: 'Upload failed',
-          duration: 3000,
-        })
-      }
-    },
-    [item, linkMaker, navigate, store.name],
-  )
 
   const actions = store.touched ? (
     <Flex gap="4px">
@@ -86,7 +26,7 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
         dataTestId="row-editor-approve-button"
         isDisabled={!store.isValid}
         loading={item.isLoading}
-        onClick={handleUpdateRow}
+        onClick={item.approveAndNavigate}
       />
       <RevertButton dataTestId="row-editor-revert-button" onClick={item.revert} />
     </Flex>
@@ -117,7 +57,7 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
       showTreeActions={showTreeActions}
       onExpandAll={() => store.node.expandAllContent()}
       onCollapseAll={() => store.node.collapseAllContent()}
-      onCopyJson={handleCopyJson}
+      onCopyJson={item.copyJsonToClipboard}
     />
   ) : null
 
@@ -138,7 +78,7 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
           tableId={item.tableId}
           onSelectForeignKey={item.handleSelectForeignKey}
           onCreateAndConnectForeignKey={item.handleCreateAndConnectForeignKey}
-          onUploadFile={handleUploadFile}
+          onUploadFile={item.uploadFileWithNotification}
         />
       </Flex>
     </Flex>

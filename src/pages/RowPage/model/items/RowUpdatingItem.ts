@@ -38,6 +38,8 @@ export class RowUpdatingItem extends RowEditorItemBase {
       isLoading: computed,
       canUpdateRow: computed,
       approve: action.bound,
+      approveAndNavigate: action.bound,
+      uploadFileWithNotification: action.bound,
       revert: action.bound,
     })
   }
@@ -72,6 +74,18 @@ export class RowUpdatingItem extends RowEditorItemBase {
     }
   }
 
+  public async approveAndNavigate(): Promise<void> {
+    try {
+      const result = await this.approve()
+
+      if (result) {
+        this.deps.navigation.navigateToRow(this.currentRowId)
+      }
+    } catch {
+      this.deps.notifications.onUpdateError()
+    }
+  }
+
   public revert(): void {
     this.store.reset()
   }
@@ -93,6 +107,24 @@ export class RowUpdatingItem extends RowEditorItemBase {
     }
 
     return null
+  }
+
+  public async uploadFileWithNotification(fileId: string, file: File): Promise<void> {
+    const toastId = this.deps.notifications.onUploadStart()
+
+    try {
+      const freshData = await this.uploadFile(fileId, file)
+
+      if (freshData) {
+        this.deps.notifications.onUploadSuccess(toastId)
+        this.syncReadOnlyStores(freshData)
+        this.deps.navigation.navigateToRow(this.currentRowId)
+      } else {
+        this.deps.notifications.onUploadError(toastId)
+      }
+    } catch {
+      this.deps.notifications.onUploadError(toastId)
+    }
   }
 
   public syncReadOnlyStores(freshData?: JsonValue): void {

@@ -1,7 +1,11 @@
+import { JsonObjectSchema } from 'src/entities/Schema'
 import { RowStackItemBaseDeps } from '../items/RowStackItemBase.ts'
 import { RowCreatingItemDeps } from '../items/RowCreatingItem.ts'
 import { RowUpdatingItemDeps } from '../items/RowUpdatingItem.ts'
-import { RowData, RowStackManagerDeps } from '../RowStackManager.ts'
+import { RowStackManagerDeps } from '../RowStackManager.ts'
+import { RowStackItemFactory, RowStackItemFactoryDeps } from '../RowStackItemFactory.ts'
+import { ForeignSchemaCache } from '../ForeignSchemaCache.ts'
+import { RowData, RowEditorNavigation, RowEditorNotifications } from '../../config/types.ts'
 
 export interface MockRow {
   id: string
@@ -20,26 +24,28 @@ export interface MockDepsOverrides {
   row?: MockRow | null
 }
 
-const defaultSchema = {
+const defaultSchema: JsonObjectSchema = {
   type: 'object',
   properties: {
     name: { type: 'string', default: '' },
   },
   additionalProperties: false,
   required: ['name'],
-}
+} as JsonObjectSchema
+
+const createMockProjectContext = (overrides: MockDepsOverrides = {}) => ({
+  isDraftRevision: overrides.isDraftRevision ?? true,
+  revision: { id: overrides.revisionId ?? 'rev-1' },
+  branch: {
+    draft: { id: overrides.branchDraftId ?? 'draft-1' },
+    touched: overrides.touched ?? false,
+  },
+  row: overrides.row ?? null,
+  updateTouched: jest.fn(),
+})
 
 const createBaseMockDeps = (overrides: MockDepsOverrides = {}): RowStackItemBaseDeps => ({
-  projectContext: {
-    isDraftRevision: overrides.isDraftRevision ?? true,
-    revision: { id: overrides.revisionId ?? 'rev-1' },
-    branch: {
-      draft: { id: overrides.branchDraftId ?? 'draft-1' },
-      touched: overrides.touched ?? false,
-    },
-    row: overrides.row ?? null,
-    updateTouched: jest.fn(),
-  } as never,
+  projectContext: createMockProjectContext(overrides) as never,
   permissionContext: {
     canCreateRow: overrides.canCreateRow ?? true,
   } as never,
@@ -50,6 +56,19 @@ export const createMockBaseDeps = (overrides: MockDepsOverrides = {}): RowStackI
   return createBaseMockDeps(overrides)
 }
 
+export const createMockNotifications = (): RowEditorNotifications => ({
+  onCopySuccess: jest.fn(),
+  onUploadStart: jest.fn().mockReturnValue('toast-id'),
+  onUploadSuccess: jest.fn(),
+  onUploadError: jest.fn(),
+  onCreateError: jest.fn(),
+  onUpdateError: jest.fn(),
+})
+
+export const createMockNavigation = (): RowEditorNavigation => ({
+  navigateToRow: jest.fn(),
+})
+
 export const createMockCreatingDeps = (overrides: MockDepsOverrides = {}): RowCreatingItemDeps => ({
   ...createBaseMockDeps(overrides),
   mutationDataSource: {
@@ -59,6 +78,8 @@ export const createMockCreatingDeps = (overrides: MockDepsOverrides = {}): RowCr
   rowListRefreshService: {
     refresh: jest.fn(),
   } as never,
+  notifications: createMockNotifications(),
+  navigation: createMockNavigation(),
 })
 
 export const createMockUpdatingDeps = (overrides: MockDepsOverrides = {}): RowUpdatingItemDeps => ({
@@ -71,40 +92,83 @@ export const createMockUpdatingDeps = (overrides: MockDepsOverrides = {}): RowUp
   rowListRefreshService: {
     refresh: jest.fn(),
   } as never,
+  notifications: createMockNotifications(),
+  navigation: createMockNavigation(),
 })
 
-export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): RowStackManagerDeps => ({
-  ...createBaseMockDeps(overrides),
-  mutationDataSource: {
-    createRow: jest.fn(),
-    updateRow: jest.fn(),
-    renameRow: jest.fn(),
-    dispose: jest.fn(),
-  } as never,
-  rowListRefreshService: {
-    refresh: jest.fn(),
-  } as never,
-  fetchDataSourceFactory: () =>
-    ({
-      fetch: jest.fn().mockResolvedValue({
-        rowId: 'row-1',
-        data: { name: 'Test' },
-        schema: defaultSchema,
-        foreignKeysCount: 0,
-      }),
-      dispose: jest.fn(),
-    }) as never,
-  foreignKeyTableDataSourceFactory: () =>
-    ({
+const createMockStoreFactory = () => ({
+  createEmpty: jest.fn().mockReturnValue(createMockRowDataCardStore()),
+  createFromClone: jest.fn().mockReturnValue(createMockRowDataCardStore()),
+  createForUpdating: jest.fn().mockReturnValue(createMockRowDataCardStore()),
+})
+
+export const createMockSchemaCache = (
+  tableId: string,
+  dataSourceFactory?: () => { loadTableWithRows: jest.Mock; dispose: jest.Mock },
+) => {
+  const factory =
+    dataSourceFactory ??
+    (() => ({
       loadTableWithRows: jest.fn().mockResolvedValue({
         table: { id: 'fk-table', schema: defaultSchema },
         rows: [],
       }),
       dispose: jest.fn(),
-    }) as never,
-  schema: defaultSchema as never,
-  rowData: overrides.rowData,
-})
+    }))
+
+  const cache = new ForeignSchemaCache(tableId, defaultSchema, factory as never)
+  return cache
+}
+
+const createMockItemFactory = (overrides: MockDepsOverrides = {}): RowStackItemFactory => {
+  const tableId = overrides.tableId ?? 'test-table'
+  const schemaCache = createMockSchemaCache(tableId)
+
+  const factoryDeps: RowStackItemFactoryDeps = {
+    projectContext: createMockProjectContext(overrides) as never,
+    permissionContext: {
+      canCreateRow: overrides.canCreateRow ?? true,
+    } as never,
+    mutationDataSource: {
+      createRow: jest.fn(),
+      updateRow: jest.fn(),
+      renameRow: jest.fn(),
+      dispose: jest.fn(),
+    } as never,
+    rowListRefreshService: {
+      refresh: jest.fn(),
+    } as never,
+    storeFactory: createMockStoreFactory() as never,
+    schemaCache,
+    notifications: createMockNotifications(),
+    navigation: createMockNavigation(),
+  }
+
+  return new RowStackItemFactory(factoryDeps)
+}
+
+export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): RowStackManagerDeps => {
+  const tableId = overrides.tableId ?? 'test-table'
+  const schemaCache = createMockSchemaCache(tableId)
+
+  return {
+    projectContext: createMockProjectContext(overrides) as never,
+    itemFactory: createMockItemFactory(overrides),
+    schemaCache,
+    fetchDataSourceFactory: () =>
+      ({
+        fetch: jest.fn().mockResolvedValue({
+          rowId: 'row-1',
+          data: { name: 'Test' },
+          schema: defaultSchema,
+          foreignKeysCount: 0,
+        }),
+        dispose: jest.fn(),
+      }) as never,
+    tableId,
+    rowData: overrides.rowData,
+  }
+}
 
 export interface MockRowDataCardStore {
   name: {

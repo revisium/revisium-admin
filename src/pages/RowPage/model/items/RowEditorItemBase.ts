@@ -4,12 +4,14 @@ import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
-import { SelectForeignKeyRowPayload } from '../../config/types.ts'
+import { RowEditorNavigation, RowEditorNotifications, SelectForeignKeyRowPayload } from '../../config/types.ts'
 import { RowStackItemBase, RowStackItemBaseDeps } from './RowStackItemBase.ts'
 
 export interface RowEditorItemBaseDeps extends RowStackItemBaseDeps {
   mutationDataSource: RowMutationDataSource
   rowListRefreshService: RowListRefreshService
+  notifications: RowEditorNotifications
+  navigation: RowEditorNavigation
 }
 
 export abstract class RowEditorItemBase extends RowStackItemBase {
@@ -53,6 +55,12 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
 
   public getJsonString(): string {
     return JSON.stringify(this.store.root.getPlainValue(), null, 2)
+  }
+
+  public async copyJsonToClipboard(): Promise<void> {
+    const json = this.getJsonString()
+    await navigator.clipboard.writeText(json)
+    this.deps.notifications.onCopySuccess()
   }
 
   public toList(): void {

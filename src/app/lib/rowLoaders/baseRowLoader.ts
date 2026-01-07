@@ -5,18 +5,26 @@ import { RowDataSource, RowLoaderData } from 'src/entities/Row'
 import { NotFoundRow } from 'src/shared/errors/NotFoundRow.ts'
 import { container } from 'src/shared/lib'
 
-export const baseRowLoader = async (params: Params, revisionId: string): Promise<RowLoaderData> => {
+export interface RowLoaderResult extends RowLoaderData {
+  foreignKeysCount: number
+}
+
+export const baseRowLoader = async (params: Params, revisionId: string): Promise<RowLoaderResult> => {
   const variables = getRowVariables(params, revisionId)
   const rowDataSource = container.get(RowDataSource)
   const context = container.get(ProjectContext)
 
-  const row = await rowDataSource.getRow(variables.revisionId, variables.tableId, variables.rowId)
+  const [row, foreignKeysCount] = await Promise.all([
+    rowDataSource.getRow(variables.revisionId, variables.tableId, variables.rowId),
+    rowDataSource.getRowCountForeignKeysTo(variables.revisionId, variables.tableId, variables.rowId),
+  ])
 
   if (!row) {
     throw new NotFoundRow(params.rowId)
   }
 
-  context.setRow(row)
+  const result: RowLoaderResult = { ...row, foreignKeysCount }
+  context.setRow(result)
 
-  return row
+  return result
 }

@@ -1,13 +1,15 @@
 import { computed, makeObservable, observable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { JsonSchema } from 'src/entities/Schema'
 import { StackItem } from 'src/shared/lib/Stack'
 import { PermissionContext } from 'src/shared/model/AbilityService'
-import { RowStackItemType, RowStackItemResult, SelectForeignKeyRowPayload } from '../../config/types.ts'
+import { RowStackItemType, RowStackItemResult } from '../../config/types.ts'
 
 export interface RowStackItemBaseDeps {
   projectContext: ProjectContext
   permissionContext: PermissionContext
   tableId: string
+  schema?: JsonSchema
 }
 
 export abstract class RowStackItemBase extends StackItem<RowStackItemResult> {
@@ -31,7 +33,7 @@ export abstract class RowStackItemBase extends StackItem<RowStackItemResult> {
       showBreadcrumbs: computed,
       isEditableRevision: computed,
       revisionId: computed,
-      pendingForeignKeyPath: computed,
+      schema: computed,
     })
   }
 
@@ -55,12 +57,10 @@ export abstract class RowStackItemBase extends StackItem<RowStackItemResult> {
     return this.deps.projectContext.revision.id
   }
 
-  public get pendingForeignKeyPath(): string {
-    const payload = this.pendingRequest?.payload as SelectForeignKeyRowPayload | undefined
-    const foreignKeyNode = payload?.foreignKeyNode
-    if (foreignKeyNode) {
-      return foreignKeyNode.foreignKey ?? ''
+  public get schema(): JsonSchema | null {
+    if (this.deps.schema) {
+      return this.deps.schema
     }
-    return ''
+    return this.deps.projectContext.table?.schema as JsonSchema | null
   }
 }

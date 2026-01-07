@@ -1,42 +1,33 @@
 import { observer } from 'mobx-react-lite'
-import React, { useCallback } from 'react'
-
-import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel.ts'
-import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext.ts'
+import React from 'react'
+import { RowStackItem } from 'src/pages/RowPage/model/RowStackManager.ts'
+import { RowStackItemType } from 'src/pages/RowPage/config/types.ts'
 import { RowStackCreating } from 'src/widgets/RowStackWidget/ui/RowStackCreating/RowStackCreating.tsx'
 import { RowStackList } from 'src/widgets/RowStackWidget/ui/RowStackList/RowStackList.tsx'
 import { RowStackUpdating } from 'src/widgets/RowStackWidget/ui/RowStackUpdating/RowStackUpdating.tsx'
 import { ShortRowEditor } from 'src/widgets/RowStackWidget/ui/ShortRowEditor/ShortRowEditor.tsx'
 
-export const RowStack: React.FC = observer(() => {
-  const { root, item } = useRowStackModel()
+interface Props {
+  item: RowStackItem
+}
 
-  const handleCancelSelectForeignKey = useCallback(() => {
-    root.cancelSelectingForeignKey(item)
-  }, [item, root])
-
-  if (item.state.type === RowStackModelStateType.ConnectingForeignKeyRow) {
-    return (
-      <ShortRowEditor
-        previousType={item.state.previousType}
-        foreignKeyPath={item.currentForeignKeyPath}
-        onCancel={handleCancelSelectForeignKey}
-        tableId={item.table.id}
-        rowId={item.state.store.name.getPlainValue()}
-      />
-    )
+export const RowStack: React.FC<Props> = observer(({ item }) => {
+  if (item.hasPendingRequest) {
+    if (item.type === RowStackItemType.Creating || item.type === RowStackItemType.Updating) {
+      return <ShortRowEditor item={item} />
+    }
   }
 
-  if (item.state.type === RowStackModelStateType.List) {
-    return <RowStackList />
+  if (item.type === RowStackItemType.List) {
+    return <RowStackList item={item} />
   }
 
-  if (item.state.type === RowStackModelStateType.CreatingRow) {
-    return <RowStackCreating />
+  if (item.type === RowStackItemType.Creating) {
+    return <RowStackCreating item={item} />
   }
 
-  if (item.state.type === RowStackModelStateType.UpdatingRow) {
-    return <RowStackUpdating />
+  if (item.type === RowStackItemType.Updating) {
+    return <RowStackUpdating item={item} />
   }
 
   return null

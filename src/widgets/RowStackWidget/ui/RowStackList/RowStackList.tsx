@@ -3,40 +3,36 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback, useRef } from 'react'
 import { PiPlus } from 'react-icons/pi'
 import { JsonSchema } from 'src/entities/Schema'
+import { RowListItem } from 'src/pages/RowPage/model/items'
 import { useViewModel } from 'src/shared/lib/hooks'
 import { Tooltip } from 'src/shared/ui'
 import { RowList, RowListViewModel, SearchInput } from 'src/widgets/RowList'
 import { FilterPopover } from 'src/widgets/RowList/ui/FilterBar'
 import { SortPopover } from 'src/widgets/RowList/ui/SortPopover'
 import { ViewSettingsBadge } from 'src/widgets/RowList/ui/ViewSettingsBadge'
-import { RowStackModelStateType } from 'src/widgets/RowStackWidget/model/RowStackModel'
-import { useRowStackModel } from 'src/widgets/RowStackWidget/model/RowStackModelContext'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider'
 
-export const RowStackList: React.FC = observer(() => {
-  const { root, item } = useRowStackModel()
+interface Props {
+  item: RowListItem
+}
+
+export const RowStackList: React.FC<Props> = observer(({ item }) => {
   const filterAnchorRef = useRef<HTMLDivElement>(null)
 
-  const tableId = item.table.id
+  const tableId = item.tableId
   const schema = item.schema as JsonSchema
 
   const model = useViewModel(RowListViewModel, tableId, schema)
 
-  const isFirstLevel = root.stack.indexOf(item) === 0
-  const showBreadcrumbs = isFirstLevel && !item.state.isSelectingForeignKey
-  const isSelectMode = item.state.isSelectingForeignKey
+  const isSelectMode = item.isSelectingForeignKey
 
   const handleSelectRow = useCallback(
     (rowId: string) => {
-      root.onSelectedForeignKey(item, rowId)
+      item.selectForeignKeyRow(rowId)
     },
-    [item, root],
+    [item],
   )
-
-  if (item.state.type !== RowStackModelStateType.List) {
-    return null
-  }
 
   const createRowButton = model.canCreateRow ? (
     <Tooltip content="New row" openDelay={300}>
@@ -44,7 +40,7 @@ export const RowStackList: React.FC = observer(() => {
         aria-label="New row"
         size="xs"
         variant="ghost"
-        onClick={item.toCreatingRow}
+        onClick={item.toCreating}
         data-testid="create-row-button"
         color="gray.500"
         _hover={{ bg: 'gray.100' }}
@@ -64,11 +60,11 @@ export const RowStackList: React.FC = observer(() => {
 
   return (
     <Flex flexDirection="column" flex={1}>
-      {showBreadcrumbs && <RowStackHeader showBreadcrumbs actions={createRowButton} search={searchAndFilter} />}
+      {item.showBreadcrumbs && <RowStackHeader showBreadcrumbs actions={createRowButton} search={searchAndFilter} />}
       {isSelectMode && (
         <>
-          <SelectingForeignKeyDivider tableId={item.table.id} />
-          <RowStackHeader tableTitle={item.table.id} actions={createRowButton} search={searchAndFilter} />
+          <SelectingForeignKeyDivider tableId={tableId} />
+          <RowStackHeader tableTitle={tableId} actions={createRowButton} search={searchAndFilter} />
         </>
       )}
       <Box ref={filterAnchorRef} paddingX="8px" />
@@ -79,8 +75,8 @@ export const RowStackList: React.FC = observer(() => {
           tableId={tableId}
           isRevisionReadonly={!item.isEditableRevision}
           onSelect={isSelectMode ? handleSelectRow : undefined}
-          onCopy={item.toCloneRowFromData}
-          onCreate={model.canCreateRow ? item.toCreatingRow : undefined}
+          onCopy={item.toCloning}
+          onCreate={model.canCreateRow ? item.toCreating : undefined}
         />
       </Box>
       {!model.showEmpty && !model.showLoading && (

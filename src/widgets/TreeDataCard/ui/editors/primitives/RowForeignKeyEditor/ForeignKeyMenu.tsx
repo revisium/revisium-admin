@@ -15,7 +15,7 @@ interface ForeignKeyMenuProps {
 
 export const ForeignKeyMenu: FC<ForeignKeyMenuProps> = ({ store, children, onChange, disabled }) => {
   const projectContext = container.get(ProjectContext)
-  const { onSelectForeignKey } = useRowEditorActions()
+  const { onSelectForeignKey, onCreateAndConnectForeignKey } = useRowEditorActions()
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -27,18 +27,22 @@ export const ForeignKeyMenu: FC<ForeignKeyMenuProps> = ({ store, children, onCha
     [onChange],
   )
 
+  const handleOpenTableSearch = useCallback(() => {
+    onSelectForeignKey(store)
+  }, [onSelectForeignKey, store])
+
+  const handleCreateAndConnect = useCallback(() => {
+    onCreateAndConnectForeignKey(store)
+  }, [onCreateAndConnectForeignKey, store])
+
   return (
     <FocusPopover isOpen={isOpen} setIsOpen={setIsOpen} trigger={children} disabled={disabled}>
       <SearchForeignKey
         revisionId={projectContext.revision.id}
         tableId={store.foreignKey ?? ''}
         onChange={handleSelect}
-        onCreateAndConnect={async () => {
-          await onSelectForeignKey(store, true)
-        }}
-        onOpenTableSearch={async () => {
-          await onSelectForeignKey(store)
-        }}
+        onCreateAndConnect={handleCreateAndConnect}
+        onOpenTableSearch={handleOpenTableSearch}
       />
     </FocusPopover>
   )

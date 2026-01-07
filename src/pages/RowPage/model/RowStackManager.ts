@@ -28,6 +28,12 @@ import { RowStackItemResult, SelectForeignKeyRowPayload, SelectForeignKeyRowResu
 
 export type RowStackItem = RowListItem | RowCreatingItem | RowUpdatingItem
 
+export interface RowData {
+  rowId: string
+  data: JsonValue
+  foreignKeysCount: number
+}
+
 export interface RowStackManagerDeps {
   projectContext: ProjectContext
   permissionContext: PermissionContext
@@ -37,6 +43,7 @@ export interface RowStackManagerDeps {
   foreignKeyTableDataSourceFactory: () => ForeignKeyTableDataSource
   tableId: string
   schema: JsonObjectSchema
+  rowData?: RowData
 }
 
 export class RowStackManager extends StackManager<
@@ -47,8 +54,23 @@ export class RowStackManager extends StackManager<
 > {
   private readonly foreignSchemas = new Map<string, JsonObjectSchema>()
 
+  private currentRowId: string | undefined
+
   constructor(private readonly deps: RowStackManagerDeps) {
-    const firstItem = new RowListItem(
+    const firstItem = deps.rowData ? RowStackManager.createUpdatingItem(deps) : RowStackManager.createListItem(deps)
+
+    super(firstItem)
+    firstItem.setIsFirstLevel(true)
+    this.currentRowId = deps.rowData?.rowId
+
+    makeObservable<RowStackManager, 'handleItemResult' | 'resetToInitialState'>(this, {
+      handleItemResult: action.bound,
+      resetToInitialState: action.bound,
+    })
+  }
+
+  private static createListItem(deps: RowStackManagerDeps): RowListItem {
+    return new RowListItem(
       {
         projectContext: deps.projectContext,
         permissionContext: deps.permissionContext,
@@ -56,19 +78,67 @@ export class RowStackManager extends StackManager<
       },
       false,
     )
-    super(firstItem)
-    firstItem.setIsFirstLevel(true)
+  }
 
-    makeObservable<RowStackManager, 'handleItemResult'>(this, {
-      handleItemResult: action.bound,
-    })
+  private static createUpdatingItem(deps: RowStackManagerDeps): RowUpdatingItem {
+    const rowData = deps.rowData!
+    const schemaStore = createJsonSchemaStore(deps.schema)
+    const store = new RowDataCardStore(
+      schemaStore,
+      createEmptyJsonValueStore(schemaStore),
+      rowData.rowId,
+      { data: rowData.data },
+      rowData.foreignKeysCount,
+    )
+
+    return new RowUpdatingItem(
+      {
+        projectContext: deps.projectContext,
+        permissionContext: deps.permissionContext,
+        tableId: deps.tableId,
+        mutationDataSource: deps.mutationDataSource,
+        rowListRefreshService: deps.rowListRefreshService,
+      },
+      false,
+      store,
+      rowData.rowId,
+    )
   }
 
   public get currentItem(): RowStackItem {
     return this.stack[this.stack.length - 1]
   }
 
-  public init(): void {}
+  public init(rowId: string | undefined): void {
+    if (rowId === this.currentRowId) {
+      return
+    }
+    this.resetToInitialState(rowId)
+  }
+
+  private resetToInitialState(rowId: string | undefined): void {
+    this.stack.forEach((item) => item.dispose())
+    this.stack.splice(0, this.stack.length)
+    this.currentRowId = rowId
+
+    const row = this.deps.projectContext.row
+    const rowData: RowData | undefined =
+      rowId && row
+        ? {
+            rowId: row.id,
+            data: row.data as JsonValue,
+            foreignKeysCount: row.foreignKeysCount,
+          }
+        : undefined
+
+    const firstItem = rowData
+      ? RowStackManager.createUpdatingItem({ ...this.deps, rowData })
+      : RowStackManager.createListItem(this.deps)
+
+    this.stack.push(firstItem)
+    firstItem.setIsFirstLevel(true)
+    firstItem.setResolver((result) => this.handleItemResult(firstItem, result))
+  }
 
   protected handleItemResult(item: RowStackItem, result: RowStackItemResult): void {
     switch (result.type) {
@@ -97,6 +167,13 @@ export class RowStackManager extends StackManager<
           result.foreignTableId,
         )
         break
+      case 'startForeignKeyCreation':
+        this.handleStartForeignKeyCreation(
+          item as RowCreatingItem | RowUpdatingItem,
+          result.foreignKeyNode,
+          result.foreignTableId,
+        )
+        break
       case 'cancelForeignKeySelection':
         this.cancelFromItem(item)
         break
@@ -106,11 +183,15 @@ export class RowStackManager extends StackManager<
   protected createItemForRequest(
     request: StackRequest<SelectForeignKeyRowPayload, SelectForeignKeyRowResult>,
   ): RowStackItem {
+    const foreignTableId = request.payload.foreignTableId
+    const schema = this.foreignSchemas.get(foreignTableId)
+
     return new RowListItem(
       {
         projectContext: this.deps.projectContext,
         permissionContext: this.deps.permissionContext,
-        tableId: request.payload.foreignTableId,
+        tableId: foreignTableId,
+        schema,
       },
       true,
     )
@@ -173,11 +254,18 @@ export class RowStackManager extends StackManager<
     this.replaceItem(item, newItem, false)
   }
 
-  private handleStartForeignKeySelection(
+  private async handleStartForeignKeySelection(
     item: RowCreatingItem | RowUpdatingItem,
     foreignKeyNode: JsonStringValueStore,
     foreignTableId: string,
-  ): void {
+  ): Promise<void> {
+    try {
+      await this.fetchForeignTableSchema(foreignTableId)
+    } catch {
+      toaster.error({ title: 'Failed to load foreign table' })
+      return
+    }
+
     const savedItem = item
     const payload: SelectForeignKeyRowPayload = { foreignKeyNode, foreignTableId }
 
@@ -192,6 +280,37 @@ export class RowStackManager extends StackManager<
         this.restoreAfterForeignKeySelection(savedItem)
       },
     )
+  }
+
+  private async handleStartForeignKeyCreation(
+    item: RowCreatingItem | RowUpdatingItem,
+    foreignKeyNode: JsonStringValueStore,
+    foreignTableId: string,
+  ): Promise<void> {
+    try {
+      await this.fetchForeignTableSchema(foreignTableId)
+    } catch {
+      toaster.error({ title: 'Failed to load foreign table' })
+      return
+    }
+
+    const savedItem = item
+    const payload: SelectForeignKeyRowPayload = { foreignKeyNode, foreignTableId }
+
+    this.pushRequest(
+      item,
+      payload,
+      (result: SelectForeignKeyRowResult) => {
+        foreignKeyNode.setValue(result)
+        this.restoreAfterForeignKeySelection(savedItem)
+      },
+      () => {
+        this.restoreAfterForeignKeySelection(savedItem)
+      },
+    )
+
+    const lastItem = this.stack[this.stack.length - 1] as RowListItem
+    lastItem.toCreating()
   }
 
   private restoreAfterForeignKeySelection(savedItem: RowCreatingItem | RowUpdatingItem): void {
@@ -209,6 +328,7 @@ export class RowStackManager extends StackManager<
   private replaceItem(oldItem: RowStackItem, newItem: RowStackItem, dispose = true): void {
     const index = this.stack.indexOf(oldItem)
     if (index !== -1) {
+      newItem.setIsFirstLevel(oldItem.isFirstLevel)
       newItem.setResolver((result) => this.handleItemResult(newItem, result))
       this.stack[index] = newItem
       if (dispose) {
@@ -305,10 +425,13 @@ export class RowStackManager extends StackManager<
   }
 
   private getBaseDeps(tableId: string): RowStackItemBaseDeps {
+    const schema = tableId === this.deps.tableId ? this.deps.schema : this.foreignSchemas.get(tableId)
+
     return {
       projectContext: this.deps.projectContext,
       permissionContext: this.deps.permissionContext,
       tableId,
+      schema,
     }
   }
 
@@ -338,6 +461,15 @@ container.register(
       throw new Error('RowStackManager: table is not available in context')
     }
 
+    const row = projectContext.row
+    const rowData: RowData | undefined = row
+      ? {
+          rowId: row.id,
+          data: row.data as JsonValue,
+          foreignKeysCount: row.foreignKeysCount,
+        }
+      : undefined
+
     const deps: RowStackManagerDeps = {
       projectContext,
       permissionContext: container.get(PermissionContext),
@@ -347,6 +479,7 @@ container.register(
       foreignKeyTableDataSourceFactory: () => container.get(ForeignKeyTableDataSource),
       tableId: table.id,
       schema: table.schema as JsonObjectSchema,
+      rowData,
     }
     return new RowStackManager(deps)
   },

@@ -24,11 +24,13 @@ export type RowCreatingItemResult =
   | { type: 'creatingToUpdating' }
   | { type: 'selectForeignKeyRow'; rowId: string }
   | { type: 'startForeignKeySelection'; foreignKeyNode: JsonStringValueStore; foreignTableId: string }
+  | { type: 'startForeignKeyCreation'; foreignKeyNode: JsonStringValueStore; foreignTableId: string }
   | { type: 'cancelForeignKeySelection' }
 
 export type RowUpdatingItemResult =
   | { type: 'toList' }
   | { type: 'startForeignKeySelection'; foreignKeyNode: JsonStringValueStore; foreignTableId: string }
+  | { type: 'startForeignKeyCreation'; foreignKeyNode: JsonStringValueStore; foreignTableId: string }
   | { type: 'cancelForeignKeySelection' }
 
 export type RowStackItemResult = RowListItemResult | RowCreatingItemResult | RowUpdatingItemResult

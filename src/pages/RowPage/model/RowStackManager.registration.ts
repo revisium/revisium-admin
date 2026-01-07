@@ -3,8 +3,6 @@ import { container } from 'src/shared/lib/DIContainer.ts'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
-import { JsonObjectSchema } from 'src/entities/Schema'
-import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 import { ForeignKeyTableDataSource } from 'src/widgets/RowStackWidget/model/ForeignKeyTableDataSource.ts'
@@ -16,38 +14,10 @@ import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
 import { RowStackItemFactory } from './RowStackItemFactory.ts'
 import { RowFetchDataSource } from './RowFetchDataSource.ts'
 import { RowStackManager } from './RowStackManager.ts'
-import { RowData, RowEditorNavigation, RowEditorNotifications } from '../config/types.ts'
+import { RowEditorNavigation, RowEditorNotifications } from '../config/types.ts'
 
-interface TableContext {
-  tableId: string
-  schema: JsonObjectSchema
-}
-
-const getTableContext = (projectContext: ProjectContext): TableContext => {
-  const table = projectContext.table
-  if (!table) {
-    throw new Error('RowStackManager: table is not available in context')
-  }
-  return {
-    tableId: table.id,
-    schema: table.schema as JsonObjectSchema,
-  }
-}
-
-const getRowData = (projectContext: ProjectContext): RowData | undefined => {
-  const row = projectContext.row
-  if (!row) {
-    return undefined
-  }
-  return {
-    rowId: row.id,
-    data: row.data as JsonValue,
-    foreignKeysCount: row.foreignKeysCount,
-  }
-}
-
-const createSchemaCache = (tableId: string, schema: JsonObjectSchema): ForeignSchemaCache => {
-  return new ForeignSchemaCache(tableId, schema, () => container.get(ForeignKeyTableDataSource))
+const createSchemaCache = (): ForeignSchemaCache => {
+  return new ForeignSchemaCache(() => container.get(ForeignKeyTableDataSource))
 }
 
 const createNotifications = (): RowEditorNotifications => ({
@@ -64,8 +34,6 @@ const createNotifications = (): RowEditorNotifications => ({
   onUploadError: (toastId: string) => {
     toaster.update(toastId, { type: 'error', title: 'Upload failed', duration: 3000 })
   },
-  onCreateError: () => toaster.error({ title: 'Create failed' }),
-  onUpdateError: () => toaster.error({ title: 'Update failed' }),
 })
 
 const createNavigation = (projectContext: ProjectContext): RowEditorNavigation => {
@@ -95,8 +63,7 @@ const createItemFactory = (projectContext: ProjectContext, schemaCache: ForeignS
 
 const createRowStackManager = (): RowStackManager => {
   const projectContext = container.get(ProjectContext)
-  const { tableId, schema } = getTableContext(projectContext)
-  const schemaCache = createSchemaCache(tableId, schema)
+  const schemaCache = createSchemaCache()
   const itemFactory = createItemFactory(projectContext, schemaCache)
 
   return new RowStackManager({
@@ -105,8 +72,6 @@ const createRowStackManager = (): RowStackManager => {
     schemaCache,
     fetchDataSourceFactory: () => container.get(RowFetchDataSource),
     onError: (message) => toaster.error({ title: message }),
-    tableId,
-    rowData: getRowData(projectContext),
   })
 }
 

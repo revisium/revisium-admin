@@ -7,17 +7,27 @@ export interface ForeignSchemaCacheDataSource {
 }
 
 export class ForeignSchemaCache {
+  private mainTableId: string | null = null
+  private mainSchema: JsonObjectSchema | null = null
   private readonly cache = new Map<string, JsonObjectSchema>()
 
-  constructor(
-    private readonly mainTableId: string,
-    private readonly mainSchema: JsonObjectSchema,
-    private readonly dataSourceFactory: () => ForeignSchemaCacheDataSource,
-  ) {}
+  constructor(private readonly dataSourceFactory: () => ForeignSchemaCacheDataSource) {}
+
+  public init(tableId: string, schema: JsonObjectSchema): void {
+    this.mainTableId = tableId
+    this.mainSchema = schema
+    this.cache.clear()
+  }
+
+  public dispose(): void {
+    this.mainTableId = null
+    this.mainSchema = null
+    this.cache.clear()
+  }
 
   public get(tableId: string): JsonObjectSchema | undefined {
     if (tableId === this.mainTableId) {
-      return this.mainSchema
+      return this.mainSchema ?? undefined
     }
     return this.cache.get(tableId)
   }
@@ -35,7 +45,7 @@ export class ForeignSchemaCache {
   }
 
   public async load(revisionId: string, tableId: string): Promise<JsonObjectSchema> {
-    if (tableId === this.mainTableId) {
+    if (tableId === this.mainTableId && this.mainSchema) {
       return this.mainSchema
     }
 

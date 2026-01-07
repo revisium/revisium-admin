@@ -37,15 +37,21 @@ export class TableStackManager extends StackManager<
   SelectForeignKeyResult
 > {
   constructor(private readonly deps: TableStackManagerDeps) {
-    const firstItem = new TableListItem(deps, false)
-    super(firstItem)
+    super()
 
     makeObservable<TableStackManager, 'handleItemResult'>(this, {
       handleItemResult: action.bound,
     })
   }
 
-  public init(): void {}
+  public init(): void {
+    const firstItem = new TableListItem(this.getBaseDeps(), false)
+    this.initStack(firstItem)
+  }
+
+  public dispose(): void {
+    super.dispose()
+  }
 
   protected handleItemResult(item: TableStackItem, result: TableStackItemResult): void {
     switch (result.type) {

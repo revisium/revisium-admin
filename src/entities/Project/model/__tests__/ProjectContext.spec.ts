@@ -304,6 +304,21 @@ describe('ProjectContext', () => {
       })
       expect(context.table).toEqual(table)
     })
+
+    it('should clear table data when tableId is cleared', async () => {
+      const table = createMockTable()
+      mockClient.getTableForLoader.mockResolvedValue({ table })
+
+      navigateTo({ tableId: 'users' })
+      await flushPromises()
+
+      expect(context.table).toEqual(table)
+
+      navigateTo({ tableId: null })
+      await flushPromises()
+
+      expect(context.table).toBeNull()
+    })
   })
 
   describe('row loading', () => {
@@ -346,6 +361,7 @@ describe('ProjectContext', () => {
       navigateTo({ rowId: null })
       await flushPromises()
 
+      expect(context.row).toBeNull()
       expect(context.isRowLoading).toBe(false)
     })
   })

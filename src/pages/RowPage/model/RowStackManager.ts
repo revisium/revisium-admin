@@ -1,6 +1,8 @@
-import { action, makeObservable } from 'mobx'
+import { action, makeObservable, reaction } from 'mobx'
 import { StackManager, StackRequest } from 'src/shared/lib/Stack'
+import { IViewModel } from 'src/shared/config/types.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { JsonObjectSchema } from 'src/entities/Schema'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
@@ -17,26 +19,18 @@ export interface RowStackManagerDeps {
   schemaCache: ForeignSchemaCache
   fetchDataSourceFactory: () => RowFetchDataSource
   onError?: (message: string) => void
-  tableId: string
-  rowData?: RowData
 }
 
-export class RowStackManager extends StackManager<
-  RowStackItem,
-  RowStackItemResult,
-  SelectForeignKeyRowPayload,
-  SelectForeignKeyRowResult
-> {
-  private currentRowId: string | undefined
+export class RowStackManager
+  extends StackManager<RowStackItem, RowStackItemResult, SelectForeignKeyRowPayload, SelectForeignKeyRowResult>
+  implements IViewModel
+{
+  private disposeReaction: (() => void) | null = null
 
   constructor(private readonly deps: RowStackManagerDeps) {
-    const firstItem = deps.itemFactory.createInitialItem(deps.tableId, deps.rowData)
-    super(firstItem)
-    this.initializeFirstItem(firstItem, deps.rowData?.rowId)
-
-    makeObservable<RowStackManager, 'handleItemResult' | 'resetToInitialState'>(this, {
+    super()
+    makeObservable<RowStackManager, 'handleItemResult'>(this, {
       handleItemResult: action.bound,
-      resetToInitialState: action.bound,
     })
   }
 
@@ -44,46 +38,64 @@ export class RowStackManager extends StackManager<
     return this.deps.projectContext.revision.id
   }
 
-  private initializeFirstItem(item: RowStackItem, rowId?: string): void {
-    item.setIsFirstLevel(true)
-    item.setResolver((result) => this.handleItemResult(item, result))
-    this.currentRowId = rowId
-  }
-
-  public get currentItem(): RowStackItem {
+  public get currentItem(): RowStackItem | undefined {
     return this.stack[this.stack.length - 1]
   }
 
-  public init(rowId: string | undefined): void {
-    if (rowId === this.currentRowId) {
+  public init(): void {
+    console.log('[RowStackManager] init() called')
+    this.disposeReaction = reaction(
+      () => {
+        const data = {
+          revisionId: this.deps.projectContext.revision?.id,
+          tableId: this.deps.projectContext.table?.id,
+          rowId: this.deps.projectContext.row?.id,
+        }
+        console.log('[RowStackManager] reaction tracking:', data)
+        return data
+      },
+      () => {
+        console.log('[RowStackManager] reaction effect triggered')
+        this.cleanup()
+        this.setupStack()
+      },
+      { fireImmediately: true },
+    )
+  }
+
+  public dispose(): void {
+    this.disposeReaction?.()
+    this.disposeReaction = null
+    this.cleanup()
+  }
+
+  private cleanup(): void {
+    console.log('[RowStackManager] cleanup() called, stack length:', this.stack.length)
+    super.dispose()
+    this.deps.schemaCache.dispose()
+  }
+
+  private setupStack(): void {
+    const table = this.deps.projectContext.table
+    const row = this.deps.projectContext.row
+    console.log('[RowStackManager] setupStack() table:', table?.id, 'row:', row?.id)
+
+    if (!table) {
+      console.log('[RowStackManager] setupStack() - no table, returning')
       return
     }
-    this.resetToInitialState(rowId)
-  }
 
-  private resetToInitialState(rowId: string | undefined): void {
-    this.disposeAllItems()
-    const rowData = this.getRowDataFromContext(rowId)
-    const firstItem = this.deps.itemFactory.createInitialItem(this.deps.tableId, rowData)
-    this.stack.push(firstItem)
-    this.initializeFirstItem(firstItem, rowId)
-  }
+    const schema = table.schema as JsonObjectSchema
+    this.deps.schemaCache.init(table.id, schema)
 
-  private disposeAllItems(): void {
-    this.stack.forEach((item) => item.dispose())
-    this.stack.splice(0, this.stack.length)
-  }
+    const rowData: RowData | undefined = row
+      ? { rowId: row.id, data: row.data as JsonValue, foreignKeysCount: row.foreignKeysCount }
+      : undefined
 
-  private getRowDataFromContext(rowId: string | undefined): RowData | undefined {
-    const row = this.deps.projectContext.row
-    if (!rowId || !row || row.id !== rowId) {
-      return undefined
-    }
-    return {
-      rowId: row.id,
-      data: row.data as JsonValue,
-      foreignKeysCount: row.foreignKeysCount,
-    }
+    const firstItem = this.deps.itemFactory.createInitialItem(table.id, rowData)
+    this.initStack(firstItem)
+    firstItem.setIsFirstLevel(true)
+    console.log('[RowStackManager] setupStack() done, item type:', firstItem.type, 'stack length:', this.stack.length)
   }
 
   protected handleItemResult(item: RowStackItem, result: RowStackItemResult): void {

@@ -29,6 +29,10 @@ class TestStackManager extends StackManager<TestStackItem, TestItemResult, TestP
   public lastRequestPayload: TestPayload | null = null
   public handledResults: Array<{ item: TestStackItem; result: TestItemResult }> = []
 
+  constructor() {
+    super()
+  }
+
   protected handleItemResult(item: TestStackItem, result: TestItemResult): void {
     this.handledResults.push({ item, result })
   }
@@ -41,17 +45,26 @@ class TestStackManager extends StackManager<TestStackItem, TestItemResult, TestP
 
 describe('StackManager', () => {
   describe('initialization', () => {
-    it('should create with first item', () => {
+    it('should create with empty stack', () => {
+      const manager = new TestStackManager()
+
+      expect(manager.stack).toHaveLength(0)
+    })
+
+    it('should init with first item via initStack', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+
+      manager.initStack(firstItem)
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0]).toBe(firstItem)
     })
 
     it('should setup resolver on first item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       firstItem.callResolve({ type: 'test', value: 'data' })
 
@@ -63,8 +76,9 @@ describe('StackManager', () => {
 
   describe('handleItemResult', () => {
     it('should receive result when item calls resolve', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       firstItem.callResolve({ type: 'action', value: 'result' })
 
@@ -73,8 +87,9 @@ describe('StackManager', () => {
     })
 
     it('should setup resolver on pushed items', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const secondItem = manager.stack[1]
@@ -89,8 +104,9 @@ describe('StackManager', () => {
 
   describe('pushRequest', () => {
     it('should push new item to stack', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
 
@@ -98,8 +114,9 @@ describe('StackManager', () => {
     })
 
     it('should set pending request on source item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
 
@@ -108,8 +125,9 @@ describe('StackManager', () => {
     })
 
     it('should pass payload to createItemForRequest', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'find-table' }, jest.fn(), jest.fn())
 
@@ -119,8 +137,9 @@ describe('StackManager', () => {
 
   describe('resolveToParent', () => {
     it('should call resolve callback on parent', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const resolveFn = jest.fn()
 
       manager.pushRequest(firstItem, { query: 'test' }, resolveFn, jest.fn())
@@ -132,8 +151,9 @@ describe('StackManager', () => {
     })
 
     it('should clear pending request on parent', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const selectingItem = manager.stack[1]
@@ -144,8 +164,9 @@ describe('StackManager', () => {
     })
 
     it('should remove resolved item and all items after it', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const selectingItem = manager.stack[1]
@@ -157,8 +178,9 @@ describe('StackManager', () => {
     })
 
     it('should dispose removed items', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const selectingItem = manager.stack[1]
@@ -169,8 +191,9 @@ describe('StackManager', () => {
     })
 
     it('should handle nested requests', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const resolve1 = jest.fn()
       const resolve2 = jest.fn()
 
@@ -194,8 +217,9 @@ describe('StackManager', () => {
     })
 
     it('should handle three level nesting with correct resolve order', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const resolve0 = jest.fn()
       const resolve1 = jest.fn()
       const resolve2 = jest.fn()
@@ -237,8 +261,9 @@ describe('StackManager', () => {
 
   describe('rejectRequest', () => {
     it('should call reject callback on parent', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const rejectFn = jest.fn()
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), rejectFn)
@@ -250,8 +275,9 @@ describe('StackManager', () => {
     })
 
     it('should clear pending request on parent', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const selectingItem = manager.stack[1]
@@ -262,8 +288,9 @@ describe('StackManager', () => {
     })
 
     it('should remove all items after the rejecting item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'level-1' }, jest.fn(), jest.fn())
       const level1Item = manager.stack[1]
@@ -280,8 +307,9 @@ describe('StackManager', () => {
 
   describe('cancelFromItem', () => {
     it('should remove all items after the specified item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'level-1' }, jest.fn(), jest.fn())
       const level1Item = manager.stack[1]
@@ -297,8 +325,9 @@ describe('StackManager', () => {
     })
 
     it('should call reject on pending request of the item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const rejectFn = jest.fn()
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), rejectFn)
@@ -309,8 +338,9 @@ describe('StackManager', () => {
     })
 
     it('should clear pending request on the item', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
 
@@ -320,8 +350,9 @@ describe('StackManager', () => {
     })
 
     it('should handle item not in stack', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const orphanItem = new TestStackItem()
 
       expect(() => manager.cancelFromItem(orphanItem)).not.toThrow()
@@ -331,8 +362,9 @@ describe('StackManager', () => {
 
   describe('dispose', () => {
     it('should dispose all items in stack', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       manager.pushRequest(firstItem, { query: 'test' }, jest.fn(), jest.fn())
       const level1Item = manager.stack[1]
@@ -342,20 +374,32 @@ describe('StackManager', () => {
       expect(firstItem.disposed).toBe(true)
       expect(level1Item.disposed).toBe(true)
     })
+
+    it('should clear the stack after dispose', () => {
+      const manager = new TestStackManager()
+      const firstItem = new TestStackItem()
+      manager.initStack(firstItem)
+
+      manager.dispose()
+
+      expect(manager.stack).toHaveLength(0)
+    })
   })
 
   describe('edge cases', () => {
     it('should handle resolveToParent with item not in stack', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
       const orphanItem = new TestStackItem()
 
       expect(() => manager.resolveToParent(orphanItem, 'result')).not.toThrow()
     })
 
     it('should handle deep nesting', () => {
+      const manager = new TestStackManager()
       const firstItem = new TestStackItem()
-      const manager = new TestStackManager(firstItem)
+      manager.initStack(firstItem)
 
       for (let i = 0; i < 5; i++) {
         const currentItem = manager.stack[manager.stack.length - 1]

@@ -18,10 +18,66 @@ describe('ForeignSchemaCache', () => {
     dispose: jest.fn(),
   })
 
+  describe('init', () => {
+    it('should set mainTableId and mainSchema', () => {
+      const mainSchema = createTestSchema('main')
+      const cache = new ForeignSchemaCache(jest.fn())
+
+      cache.init('main-table', mainSchema)
+
+      expect(cache.get('main-table')).toBe(mainSchema)
+    })
+
+    it('should clear cache on reinit', async () => {
+      const mainSchema = createTestSchema('main')
+      const foreignSchema = createTestSchema('foreign')
+      const mockDataSource = createMockDataSource(foreignSchema)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+
+      cache.init('main-table', mainSchema)
+      await cache.load('rev-1', 'foreign-table')
+      expect(cache.has('foreign-table')).toBe(true)
+
+      cache.init('other-table', mainSchema)
+
+      expect(cache.has('foreign-table')).toBe(false)
+      expect(cache.has('main-table')).toBe(false)
+      expect(cache.has('other-table')).toBe(true)
+    })
+  })
+
+  describe('dispose', () => {
+    it('should clear mainTableId, mainSchema and cache', async () => {
+      const mainSchema = createTestSchema('main')
+      const foreignSchema = createTestSchema('foreign')
+      const mockDataSource = createMockDataSource(foreignSchema)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+
+      cache.init('main-table', mainSchema)
+      await cache.load('rev-1', 'foreign-table')
+
+      cache.dispose()
+
+      expect(cache.get('main-table')).toBeUndefined()
+      expect(cache.get('foreign-table')).toBeUndefined()
+      expect(cache.has('main-table')).toBe(false)
+      expect(cache.has('foreign-table')).toBe(false)
+    })
+  })
+
   describe('get', () => {
+    it('should return undefined before init', () => {
+      const cache = new ForeignSchemaCache(jest.fn())
+
+      const result = cache.get('any-table')
+
+      expect(result).toBeUndefined()
+    })
+
     it('should return main schema for main tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       const result = cache.get('main-table')
 
@@ -30,7 +86,8 @@ describe('ForeignSchemaCache', () => {
 
     it('should return undefined for unknown tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       const result = cache.get('unknown-table')
 
@@ -41,7 +98,8 @@ describe('ForeignSchemaCache', () => {
       const mainSchema = createTestSchema('main')
       const foreignSchema = createTestSchema('foreign')
       const mockDataSource = createMockDataSource(foreignSchema)
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       await cache.load('rev-1', 'foreign-table')
       const result = cache.get('foreign-table')
@@ -53,7 +111,8 @@ describe('ForeignSchemaCache', () => {
   describe('getOrThrow', () => {
     it('should return main schema for main tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       const result = cache.getOrThrow('main-table')
 
@@ -62,23 +121,32 @@ describe('ForeignSchemaCache', () => {
 
     it('should throw for unknown tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       expect(() => cache.getOrThrow('unknown-table')).toThrow('Schema for table unknown-table not available')
     })
   })
 
   describe('has', () => {
+    it('should return false before init', () => {
+      const cache = new ForeignSchemaCache(jest.fn())
+
+      expect(cache.has('any-table')).toBe(false)
+    })
+
     it('should return true for main tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       expect(cache.has('main-table')).toBe(true)
     })
 
     it('should return false for unknown tableId', () => {
       const mainSchema = createTestSchema('main')
-      const cache = new ForeignSchemaCache('main-table', mainSchema, jest.fn())
+      const cache = new ForeignSchemaCache(jest.fn())
+      cache.init('main-table', mainSchema)
 
       expect(cache.has('unknown-table')).toBe(false)
     })
@@ -87,7 +155,8 @@ describe('ForeignSchemaCache', () => {
       const mainSchema = createTestSchema('main')
       const foreignSchema = createTestSchema('foreign')
       const mockDataSource = createMockDataSource(foreignSchema)
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       await cache.load('rev-1', 'foreign-table')
 
@@ -99,7 +168,8 @@ describe('ForeignSchemaCache', () => {
     it('should return main schema immediately for main tableId', async () => {
       const mainSchema = createTestSchema('main')
       const mockFactory = jest.fn()
-      const cache = new ForeignSchemaCache('main-table', mainSchema, mockFactory)
+      const cache = new ForeignSchemaCache(mockFactory)
+      cache.init('main-table', mainSchema)
 
       const result = await cache.load('rev-1', 'main-table')
 
@@ -111,7 +181,8 @@ describe('ForeignSchemaCache', () => {
       const mainSchema = createTestSchema('main')
       const foreignSchema = createTestSchema('foreign')
       const mockDataSource = createMockDataSource(foreignSchema)
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       const result = await cache.load('rev-1', 'foreign-table')
 
@@ -124,7 +195,8 @@ describe('ForeignSchemaCache', () => {
       const mainSchema = createTestSchema('main')
       const foreignSchema = createTestSchema('foreign')
       const mockDataSource = createMockDataSource(foreignSchema)
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       await cache.load('rev-1', 'foreign-table')
       const result = await cache.load('rev-1', 'foreign-table')
@@ -139,7 +211,8 @@ describe('ForeignSchemaCache', () => {
         loadTableWithRows: jest.fn().mockResolvedValue(null),
         dispose: jest.fn(),
       }
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       await expect(cache.load('rev-1', 'foreign-table')).rejects.toThrow(
         'Failed to load schema for table foreign-table',
@@ -153,7 +226,8 @@ describe('ForeignSchemaCache', () => {
         loadTableWithRows: jest.fn().mockRejectedValue(new Error('Network error')),
         dispose: jest.fn(),
       }
-      const cache = new ForeignSchemaCache('main-table', mainSchema, () => mockDataSource)
+      const cache = new ForeignSchemaCache(() => mockDataSource)
+      cache.init('main-table', mainSchema)
 
       await expect(cache.load('rev-1', 'foreign-table')).rejects.toThrow('Network error')
       expect(mockDataSource.dispose).toHaveBeenCalled()

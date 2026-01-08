@@ -1,3 +1,7 @@
+jest.mock('src/shared/model/RouterService.ts', () => ({
+  RouterService: jest.fn(),
+}))
+
 import { TableStackManager } from '../TableStackManager.ts'
 import { TableListItem, TableCreatingItem, TableUpdatingItem } from '../items'
 import { TableStackItemType } from '../../config/types.ts'

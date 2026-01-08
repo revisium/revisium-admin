@@ -69,16 +69,10 @@ export class RowCreatingItem extends RowEditorItemBase {
   }
 
   public async approveAndNavigate(): Promise<void> {
-    try {
-      const createdRowId = await this.approve()
+    const createdRowId = await this.approve()
 
-      if (createdRowId && !this.isSelectingForeignKey) {
-        this.deps.navigation.navigateToRow(createdRowId)
-      } else if (!createdRowId) {
-        this.deps.notifications.onCreateError()
-      }
-    } catch {
-      this.deps.notifications.onCreateError()
+    if (createdRowId && !this.isSelectingForeignKey) {
+      this.deps.navigation.navigateToRow(createdRowId)
     }
   }
 

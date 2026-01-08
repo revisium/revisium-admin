@@ -75,16 +75,10 @@ export class RowUpdatingItem extends RowEditorItemBase {
   }
 
   public async approveAndNavigate(): Promise<void> {
-    try {
-      const result = await this.approve()
+    const result = await this.approve()
 
-      if (result) {
-        this.deps.navigation.navigateToRow(this.currentRowId)
-      } else {
-        this.deps.notifications.onUpdateError()
-      }
-    } catch {
-      this.deps.notifications.onUpdateError()
+    if (result) {
+      this.deps.navigation.navigateToRow(this.currentRowId)
     }
   }
 
@@ -114,17 +108,13 @@ export class RowUpdatingItem extends RowEditorItemBase {
   public async uploadFileWithNotification(fileId: string, file: File): Promise<void> {
     const toastId = this.deps.notifications.onUploadStart()
 
-    try {
-      const freshData = await this.uploadFile(fileId, file)
+    const freshData = await this.uploadFile(fileId, file)
 
-      if (freshData) {
-        this.deps.notifications.onUploadSuccess(toastId)
-        this.syncReadOnlyStores(freshData)
-        this.deps.navigation.navigateToRow(this.currentRowId)
-      } else {
-        this.deps.notifications.onUploadError(toastId)
-      }
-    } catch {
+    if (freshData) {
+      this.deps.notifications.onUploadSuccess(toastId)
+      this.syncReadOnlyStores(freshData)
+      this.deps.navigation.navigateToRow(this.currentRowId)
+    } else {
       this.deps.notifications.onUploadError(toastId)
     }
   }

@@ -9,9 +9,17 @@ import { createMockManagerDeps as createMockDeps } from './createMockDeps.ts'
 
 describe('TableStackManager', () => {
   describe('initialization', () => {
-    it('should create with one TableListItem', () => {
+    it('should create with empty stack before init', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+
+      expect(manager.stack).toHaveLength(0)
+    })
+
+    it('should create with one TableListItem after init', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      manager.init()
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(TableStackItemType.List)
@@ -19,10 +27,27 @@ describe('TableStackManager', () => {
     })
   })
 
+  describe('dispose', () => {
+    it('should dispose all items and clear stack', () => {
+      const deps = createMockDeps()
+      const manager = new TableStackManager(deps)
+      manager.init()
+
+      const item = manager.stack[0]
+      const disposeSpy = jest.spyOn(item, 'dispose')
+
+      manager.dispose()
+
+      expect(disposeSpy).toHaveBeenCalled()
+      expect(manager.stack).toHaveLength(0)
+    })
+  })
+
   describe('item.toCreating', () => {
     it('should replace TableListItem with TableCreatingItem', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -34,6 +59,7 @@ describe('TableStackManager', () => {
     it('should preserve isSelectingForeignKey', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -47,6 +73,7 @@ describe('TableStackManager', () => {
     it('should replace TableCreatingItem with TableListItem', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -63,6 +90,7 @@ describe('TableStackManager', () => {
     it('should replace TableCreatingItem with TableUpdatingItem preserving store', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -83,6 +111,7 @@ describe('TableStackManager', () => {
     it('should push new TableListItem with isSelectingForeignKey true', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -99,6 +128,7 @@ describe('TableStackManager', () => {
     it('should set pending request on parent item', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -115,6 +145,7 @@ describe('TableStackManager', () => {
     it('should remove selecting item from stack and restore parent', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -137,6 +168,7 @@ describe('TableStackManager', () => {
     it('should clear pending request on parent', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -158,6 +190,7 @@ describe('TableStackManager', () => {
     it('should cancel all children and restore parent state', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const listItem = manager.stack[0] as TableListItem
 
       listItem.toCreating()
@@ -182,6 +215,7 @@ describe('TableStackManager', () => {
     it('should handle multiple levels of nesting', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
       const level0 = manager.stack[0] as TableListItem
 
       level0.toCreating()
@@ -213,6 +247,7 @@ describe('TableStackManager', () => {
     it('should handle three level nesting and restore correct parent state', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
 
       const listItem0 = manager.stack[0] as TableListItem
       listItem0.toCreating()
@@ -275,6 +310,7 @@ describe('TableStackManager', () => {
     it('should call setForeignKeyValue on correct store for each level in three level nesting', () => {
       const deps = createMockDeps()
       const manager = new TableStackManager(deps)
+      manager.init()
 
       const createMockForeignKeyNode = () => {
         return {

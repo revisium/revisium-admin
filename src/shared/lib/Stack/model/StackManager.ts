@@ -9,19 +9,23 @@ export abstract class StackManager<
   TRequestPayload = unknown,
   TParentResult = unknown,
 > {
-  public stack: [TItem] & TItem[]
+  public stack: TItem[] = []
 
-  constructor(firstItem: TItem) {
-    this.stack = [firstItem]
-    this.setupItemResolver(firstItem)
+  constructor() {
     makeObservable(this, {
       stack: observable,
+      initStack: action.bound,
       pushRequest: action.bound,
       resolveToParent: action.bound,
       rejectRequest: action.bound,
       cancelFromItem: action.bound,
       dispose: action.bound,
     })
+  }
+
+  public initStack(firstItem: TItem): void {
+    this.stack = [firstItem]
+    this.setupItemResolver(firstItem)
   }
 
   public pushRequest(
@@ -89,6 +93,7 @@ export abstract class StackManager<
 
   public dispose(): void {
     this.stack.forEach((item) => item.dispose())
+    this.stack = []
   }
 
   protected addItem(item: TItem): void {

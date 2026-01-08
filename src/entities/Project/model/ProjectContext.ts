@@ -279,7 +279,10 @@ export class ProjectContext {
       }),
       isValid: ({ tableId, revision }) => Boolean(tableId && revision),
       onValid: ({ tableId, revision }) => this.loadTable(revision!.id, tableId!),
-      onInvalid: () => this.tableRequest.abort(),
+      onInvalid: () => {
+        this.tableRequest.abort()
+        this.tableRequest.setDataDirectly(null)
+      },
     })
   }
 
@@ -295,6 +298,8 @@ export class ProjectContext {
       onInvalid: () => {
         this.rowRequest.abort()
         this.rowForeignKeysCountRequest.abort()
+        this.rowRequest.setDataDirectly(null)
+        this.rowForeignKeysCountRequest.setDataDirectly(null)
       },
     })
   }

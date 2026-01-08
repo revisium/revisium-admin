@@ -48,8 +48,6 @@ export interface RowEditorNotifications {
   onUploadStart: () => string
   onUploadSuccess: (toastId: string) => void
   onUploadError: (toastId: string) => void
-  onCreateError: () => void
-  onUpdateError: () => void
 }
 
 export interface RowEditorNavigation {

@@ -1,3 +1,6 @@
+import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { PermissionContext } from 'src/shared/model/AbilityService'
+import { TableFetchDataSource } from '../TableFetchDataSource.ts'
 import { TableStackItemBaseDeps } from '../items/TableStackItemBase.ts'
 import { TableCreatingItemDeps } from '../items/TableCreatingItem.ts'
 import { TableUpdatingItemDeps } from '../items/TableUpdatingItem.ts'
@@ -7,40 +10,40 @@ export interface MockDepsOverrides {
   isDraftRevision?: boolean
   canCreateTable?: boolean
   revisionId?: string
-  branchDraftId?: string
   touched?: boolean
 }
 
 const createBaseMockDeps = (overrides: MockDepsOverrides = {}): TableStackItemBaseDeps => {
   const isDraft = overrides.isDraftRevision ?? true
-  const revisionId = overrides.revisionId ?? 'rev-1'
-  const branchDraftId = overrides.branchDraftId ?? 'draft-1'
+  const revisionId = overrides.revisionId ?? 'draft-1'
 
-  const branchData = {
-    draft: { id: branchDraftId },
+  const projectContext: Pick<
+    ProjectContext,
+    'revisionId' | 'isDraftRevision' | 'isLoading' | 'touched' | 'updateTouched'
+  > = {
+    revisionId,
+    isDraftRevision: isDraft,
+    isLoading: false,
     touched: overrides.touched ?? false,
+    updateTouched: jest.fn(),
   }
 
+  const permissionContext: Pick<PermissionContext, 'canCreateTable'> = {
+    canCreateTable: overrides.canCreateTable ?? true,
+  }
+
+  const fetchDataSourceFactory = (): Pick<TableFetchDataSource, 'fetch' | 'dispose'> => ({
+    fetch: jest.fn().mockResolvedValue({
+      id: 'table-1',
+      schema: { type: 'object', properties: {}, additionalProperties: false, required: [] },
+    }),
+    dispose: jest.fn(),
+  })
+
   return {
-    projectContext: {
-      revisionId: isDraft ? branchDraftId : revisionId,
-      revisionOrNull: { id: isDraft ? branchDraftId : revisionId },
-      branchOrNull: branchData,
-      isDraftRevision: isDraft,
-      isLoading: false,
-      updateTouched: jest.fn(),
-    } as never,
-    permissionContext: {
-      canCreateTable: overrides.canCreateTable ?? true,
-    } as never,
-    fetchDataSourceFactory: () =>
-      ({
-        fetch: jest.fn().mockResolvedValue({
-          id: 'table-1',
-          schema: { type: 'object', properties: {}, additionalProperties: false, required: [] },
-        }),
-        dispose: jest.fn(),
-      }) as never,
+    projectContext: projectContext as ProjectContext,
+    permissionContext: permissionContext as PermissionContext,
+    fetchDataSourceFactory: fetchDataSourceFactory as () => TableFetchDataSource,
   }
 }
 

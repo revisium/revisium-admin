@@ -12,6 +12,20 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
+    <style>
+      html {
+        opacity: 0;
+        transition: opacity 0.2s ease-in;
+      }
+      html.fonts-loaded {
+        opacity: 1;
+      }
+    </style>
+    <script>
+      document.fonts.ready.then(function() {
+        document.documentElement.classList.add('fonts-loaded');
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -11,3 +11,4 @@ export const invariant = (condition: unknown, message: string): asserts conditio
 
 export { StackItem, StackManager, createStackRequest, createStackContext } from '../src/shared/lib/Stack'
 export type { StackRequest } from '../src/shared/lib/Stack'
+export { ObservableRequest } from '../src/shared/lib/ObservableRequest'

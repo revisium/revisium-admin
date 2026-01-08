@@ -1,21 +1,12 @@
 import { LoaderFunction } from 'react-router-dom'
-import { getBranchVariables } from 'src/app/lib/utils.ts'
-import { BranchDataSource } from 'src/entities/Branch'
+import { when } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
 
-export const branchLoader: LoaderFunction = async ({ params }) => {
-  const branchVariables = getBranchVariables(params)
-  const branchDataSource = container.get(BranchDataSource)
+export const branchLoader: LoaderFunction = async () => {
   const context = container.get(ProjectContext)
 
-  const branch = await branchDataSource.getBranch(
-    branchVariables.organizationId,
-    branchVariables.projectName,
-    branchVariables.branchName,
-  )
+  await when(() => !context.isBranchLoading && context.branchOrNull !== null)
 
-  context.setBranch(branch)
-
-  return branch
+  return null
 }

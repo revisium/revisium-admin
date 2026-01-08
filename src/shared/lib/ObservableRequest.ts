@@ -59,6 +59,11 @@ export class ObservableRequest<T, Args extends any[], E extends ClientError> {
     this._abortController = null
   }
 
+  public setDataDirectly(value: T | null): void {
+    this._data = value
+    this._isLoaded = true
+  }
+
   public async fetch(...args: Args): Promise<Either<E | AbortError, T>> {
     this.abort()
     this._abortController = new AbortController()

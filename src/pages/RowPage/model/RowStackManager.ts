@@ -43,19 +43,13 @@ export class RowStackManager
   }
 
   public init(): void {
-    console.log('[RowStackManager] init() called')
     this.disposeReaction = reaction(
+      () => ({
+        revisionId: this.deps.projectContext.revision?.id,
+        tableId: this.deps.projectContext.table?.id,
+        rowId: this.deps.projectContext.row?.id,
+      }),
       () => {
-        const data = {
-          revisionId: this.deps.projectContext.revision?.id,
-          tableId: this.deps.projectContext.table?.id,
-          rowId: this.deps.projectContext.row?.id,
-        }
-        console.log('[RowStackManager] reaction tracking:', data)
-        return data
-      },
-      () => {
-        console.log('[RowStackManager] reaction effect triggered')
         this.cleanup()
         this.setupStack()
       },
@@ -70,7 +64,6 @@ export class RowStackManager
   }
 
   private cleanup(): void {
-    console.log('[RowStackManager] cleanup() called, stack length:', this.stack.length)
     super.dispose()
     this.deps.schemaCache.dispose()
   }
@@ -78,10 +71,8 @@ export class RowStackManager
   private setupStack(): void {
     const table = this.deps.projectContext.table
     const row = this.deps.projectContext.row
-    console.log('[RowStackManager] setupStack() table:', table?.id, 'row:', row?.id)
 
     if (!table) {
-      console.log('[RowStackManager] setupStack() - no table, returning')
       return
     }
 
@@ -95,7 +86,6 @@ export class RowStackManager
     const firstItem = this.deps.itemFactory.createInitialItem(table.id, rowData)
     this.initStack(firstItem)
     firstItem.setIsFirstLevel(true)
-    console.log('[RowStackManager] setupStack() done, item type:', firstItem.type, 'stack length:', this.stack.length)
   }
 
   protected handleItemResult(item: RowStackItem, result: RowStackItemResult): void {

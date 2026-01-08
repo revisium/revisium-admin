@@ -6,7 +6,11 @@ import { container } from 'src/shared/lib'
 export const projectLoader: LoaderFunction = async () => {
   const context = container.get(ProjectContext)
 
-  await when(() => !context.isProjectLoading && context.projectOrNull !== null)
+  await when(() => !context.isProjectLoading)
+
+  if (context.projectError) {
+    throw new Response(context.projectError, { status: 404 })
+  }
 
   return null
 }

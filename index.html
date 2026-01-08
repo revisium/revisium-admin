@@ -21,10 +21,9 @@
         opacity: 1;
       }
     </style>
-    <script>
-      document.fonts.ready.then(function() {
-        document.documentElement.classList.add('fonts-loaded');
-      });
+    <script type="module">
+      await document.fonts.ready;
+      document.documentElement.classList.add('fonts-loaded');
     </script>
   </head>
   <body>

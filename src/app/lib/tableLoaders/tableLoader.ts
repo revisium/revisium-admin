@@ -6,7 +6,11 @@ import { container } from 'src/shared/lib'
 export const tableLoader: LoaderFunction = async () => {
   const context = container.get(ProjectContext)
 
-  await when(() => !context.isTableLoading && context.table !== null)
+  await when(() => !context.isTableLoading)
+
+  if (context.tableError) {
+    throw new Response(context.tableError, { status: 404 })
+  }
 
   return null
 }

@@ -16,7 +16,7 @@ export interface RowContextData extends RowLoaderData {
 
 type ReactionConfig<T> = {
   selector: () => T
-  onValid: (params: T) => void
+  onValid: (params: T) => void | Promise<void>
   onInvalid: () => void
   isValid: (params: T) => boolean
 }

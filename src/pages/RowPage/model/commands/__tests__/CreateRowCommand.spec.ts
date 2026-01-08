@@ -16,10 +16,8 @@ const createMockDeps = (
       refresh: jest.fn(),
     } as never,
     projectContext: {
-      branch: {
-        draft: { id: 'draft-1' },
-        touched,
-      },
+      revisionId: 'draft-1',
+      touched,
       updateTouched: jest.fn(),
     } as never,
     tableId: 'test-table',

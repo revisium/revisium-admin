@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
 import { buildBranchTree } from 'src/widgets/BranchRevisionContent/lib/buildBranchTree.ts'
@@ -55,28 +55,27 @@ export class BranchesViewModel implements IViewModel {
   public dispose(): void {}
 
   private async request(): Promise<void> {
-    try {
-      const result = await this.findBranches.fetch({
-        data: {
-          first: 100,
-          organizationId: this.context.organization.id,
-          projectName: this.context.project.name,
-        },
-      })
+    const result = await this.findBranches.fetch({
+      data: {
+        first: 100,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+      },
+    })
 
-      runInAction(() => {
-        if (result.isRight) {
-          this.state = result.data.branches.totalCount ? State.list : State.empty
-        } else {
-          this.state = State.error
-        }
-      })
-    } catch (e) {
+    if (!result.isRight) {
+      if (isAborted(result)) {
+        return
+      }
       runInAction(() => {
         this.state = State.error
       })
-      console.error(e)
+      return
     }
+
+    runInAction(() => {
+      this.state = result.data.branches.totalCount ? State.list : State.empty
+    })
   }
 }
 

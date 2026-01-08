@@ -84,9 +84,9 @@ export const EndpointsPage = observer(() => {
             />
             <BranchFilterPopover
               branches={model.branches}
-              selectedBranchId={model.selectedBranchId}
               selectedBranchName={model.selectedBranchName}
-              onSelect={(branchId) => model.setSelectedBranchId(branchId)}
+              selectedBranchLabel={model.selectedBranchLabel}
+              onSelect={(branchName) => model.setSelectedBranchName(branchName)}
             />
           </HStack>
         </Flex>

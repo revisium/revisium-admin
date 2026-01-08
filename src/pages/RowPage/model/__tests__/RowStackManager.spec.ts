@@ -18,24 +18,26 @@ describe('RowStackManager', () => {
       expect(manager.stack).toHaveLength(0)
     })
 
-    it('should create with one RowListItem when no row in context', () => {
+    it('should create with one RowListItem when no row in context', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
 
       manager.init()
+      await flushPromises()
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(RowStackItemType.List)
       expect(manager.stack[0].isSelectingForeignKey).toBe(false)
     })
 
-    it('should create with one RowUpdatingItem when row exists in context', () => {
+    it('should create with one RowUpdatingItem when row exists in context', async () => {
       const deps = createMockDeps({
         row: { id: 'row-123', data: { name: 'Test Row' }, foreignKeysCount: 2 },
       })
       const manager = new RowStackManager(deps)
 
       manager.init()
+      await flushPromises()
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(RowStackItemType.Updating)
@@ -45,32 +47,35 @@ describe('RowStackManager', () => {
       expect(updatingItem.originalRowId).toBe('row-123')
     })
 
-    it('should set isFirstLevel true on RowUpdatingItem when row provided', () => {
+    it('should set isFirstLevel true on RowUpdatingItem when row provided', async () => {
       const deps = createMockDeps({
         row: { id: 'row-123', data: { name: 'Test Row' }, foreignKeysCount: 0 },
       })
       const manager = new RowStackManager(deps)
 
       manager.init()
+      await flushPromises()
 
       expect(manager.stack[0].isFirstLevel).toBe(true)
     })
 
-    it('should set tableId from projectContext', () => {
+    it('should set tableId from routerParams', async () => {
       const deps = createMockDeps({ tableId: 'my-table' })
       const manager = new RowStackManager(deps)
 
       manager.init()
+      await flushPromises()
 
       expect(manager.stack[0].tableId).toBe('my-table')
     })
 
-    it('should do nothing when table is null in context', () => {
+    it('should do nothing when tableId is not in routerParams', async () => {
       const deps = createMockDeps()
-      ;(deps.projectContext as { table: null }).table = null
+      ;(deps.routerParams as { tableId: null }).tableId = null
       const manager = new RowStackManager(deps)
 
       manager.init()
+      await flushPromises()
 
       expect(manager.stack).toHaveLength(0)
     })
@@ -81,6 +86,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -94,6 +100,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -109,6 +116,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -127,6 +135,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -149,6 +158,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -168,6 +178,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -185,6 +196,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -204,6 +216,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -223,6 +236,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -240,6 +254,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -257,6 +272,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -282,6 +298,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -307,6 +324,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -329,6 +347,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -352,6 +371,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -379,6 +399,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const level0 = manager.stack[0] as RowListItem
 
       level0.toCreating()
@@ -401,6 +422,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
 
       const listItem0 = manager.stack[0] as RowListItem
       listItem0.toCreating()
@@ -429,10 +451,11 @@ describe('RowStackManager', () => {
       expect(manager.currentItem).toBeUndefined()
     })
 
-    it('should return the last item in stack', () => {
+    it('should return the last item in stack', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
 
       expect(manager.currentItem).toBe(manager.stack[0])
     })
@@ -441,6 +464,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -456,10 +480,11 @@ describe('RowStackManager', () => {
   })
 
   describe('isFirstLevel', () => {
-    it('should set isFirstLevel true on first item', () => {
+    it('should set isFirstLevel true on first item', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const firstItem = manager.stack[0]
 
       expect(firstItem.isFirstLevel).toBe(true)
@@ -469,6 +494,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -486,6 +512,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       expect(listItem.isFirstLevel).toBe(true)
@@ -501,6 +528,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -519,6 +547,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -539,6 +568,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -558,6 +588,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -576,10 +607,11 @@ describe('RowStackManager', () => {
   })
 
   describe('dispose', () => {
-    it('should dispose all items in stack and clear schemaCache', () => {
+    it('should dispose all items in stack and clear schemaCache', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
 
       const item = manager.stack[0]
       const disposeSpy = jest.spyOn(item, 'dispose')
@@ -596,6 +628,7 @@ describe('RowStackManager', () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -639,6 +672,7 @@ describe('RowStackManager', () => {
 
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -649,7 +683,7 @@ describe('RowStackManager', () => {
       creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
       await flushPromises()
 
-      expect(loadTableWithRowsMock).toHaveBeenCalledWith('rev-1', 'foreign-table', 0)
+      expect(loadTableWithRowsMock).toHaveBeenCalledWith('draft-1', 'foreign-table', 0)
       expect(manager.stack).toHaveLength(2)
 
       const selectingListItem = manager.stack[1] as RowListItem
@@ -675,6 +709,7 @@ describe('RowStackManager', () => {
 
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()
@@ -713,6 +748,7 @@ describe('RowStackManager', () => {
 
       const manager = new RowStackManager(deps)
       manager.init()
+      await flushPromises()
       const listItem = manager.stack[0] as RowListItem
 
       listItem.toCreating()

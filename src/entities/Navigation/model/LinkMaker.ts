@@ -5,9 +5,7 @@ import {
   APP_ROUTE,
   BRANCH_ROUTE,
   CHANGES_ROUTE,
-  DRAFT_TAG,
   ENDPOINTS_ROUTE,
-  HEAD_TAG,
   MIGRATIONS_ROUTE,
   ORGANIZATION_ROUTE,
   PROJECT_MCP_ROUTE,
@@ -24,12 +22,11 @@ import { RouterService } from 'src/shared/model/RouterService.ts'
 type CurrentSection = 'changes' | 'migrations' | undefined
 
 export class LinkMaker {
-  constructor(private context: ProjectContext) {
+  constructor(
+    private projectContext: ProjectContext,
+    private routerService: RouterService,
+  ) {
     makeAutoObservable(this)
-  }
-
-  private get routerService(): RouterService {
-    return container.get(RouterService)
   }
 
   private get currentPathname(): string {
@@ -47,69 +44,86 @@ export class LinkMaker {
     return undefined
   }
 
-  private get organization() {
-    return this.context.project.organization
+  private get organizationId(): string {
+    return this.projectContext.organizationId
   }
 
-  private get project() {
-    return this.context.project
+  private get projectName(): string {
+    return this.projectContext.projectName
   }
 
-  private get branch() {
-    return this.context.branch
+  private get branchName(): string {
+    return this.projectContext.branchName
   }
 
-  private get revision() {
-    return this.context.revision
+  private get revisionIdOrTag(): string {
+    return this.projectContext.revisionIdOrTag
   }
 
-  public get currentBaseLink() {
-    return getBaseLink(this.organization.id, this.project.name, this.branch.name, this.getCurrentOptions())
+  public get isDataLoaded(): boolean {
+    return this.organizationId !== '' && this.projectName !== '' && this.branchName !== ''
+  }
+
+  public get currentBaseLink(): string {
+    if (!this.isDataLoaded) {
+      return ''
+    }
+    return getBaseLink(this.organizationId, this.projectName, this.branchName, {
+      revisionIdOrTag: this.revisionIdOrTag,
+    })
   }
 
   public getCurrentOptions(): RevisionOptionType {
-    if (this.revision.id === this.branch.draft.id) {
-      return { revisionIdOrTag: DRAFT_TAG }
-    } else if (this.revision.id === this.branch.head.id) {
-      return { revisionIdOrTag: HEAD_TAG }
-    } else {
-      return { revisionIdOrTag: this.revision.id }
+    return { revisionIdOrTag: this.revisionIdOrTag }
+  }
+
+  public makeProjectSettingsLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
     }
-  }
-
-  public makeProjectSettingsLink() {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_SETTINGS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
+      organizationId: this.organizationId,
+      projectName: this.projectName,
     })
   }
 
-  public makeEndpointsLink() {
+  public makeEndpointsLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
+    }
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${ENDPOINTS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
+      organizationId: this.organizationId,
+      projectName: this.projectName,
     })
   }
 
-  public makeProjectUsersLink() {
+  public makeProjectUsersLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
+    }
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_USERS_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
+      organizationId: this.organizationId,
+      projectName: this.projectName,
     })
   }
 
-  public makeMcpLink() {
+  public makeMcpLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
+    }
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_MCP_ROUTE}`, {
-      organizationId: this.organization.id,
-      projectName: this.project.name,
+      organizationId: this.organizationId,
+      projectName: this.projectName,
     })
   }
 
-  public make(options: RevisionOptionType) {
-    const tableId = options.tableId || this.context.table?.id
-    const rowId = options.rowId || this.context.row?.id
+  public make(options: RevisionOptionType): string {
+    if (!this.organizationId || !this.projectName || !this.branchName) {
+      return ''
+    }
+    const { tableId, rowId } = options
 
-    const BASE_LINK = getBaseLink(this.organization.id, this.project.name, this.branch.name, options)
+    const BASE_LINK = getBaseLink(this.organizationId, this.projectName, this.branchName, options)
 
     if (tableId && rowId) {
       return generatePath(`${BASE_LINK}/${TABLE_ROUTE}/${ROW_ROUTE}`, {
@@ -126,7 +140,10 @@ export class LinkMaker {
   }
 
   public makeRevisionLink(options: { revisionIdOrTag: string }): string {
-    const baseLink = getBaseLink(this.organization.id, this.project.name, this.branch.name, options)
+    if (!this.organizationId || !this.projectName || !this.branchName) {
+      return ''
+    }
+    const baseLink = getBaseLink(this.organizationId, this.projectName, this.branchName, options)
 
     if (this.currentSection === 'changes') {
       return `${baseLink}/${CHANGES_ROUTE}`
@@ -163,3 +180,7 @@ const getBaseLink = (
     revisionIdOrTag: revision.revisionIdOrTag,
   })
 }
+
+container.register(LinkMaker, () => new LinkMaker(container.get(ProjectContext), container.get(RouterService)), {
+  scope: 'singleton',
+})

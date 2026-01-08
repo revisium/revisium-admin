@@ -63,14 +63,14 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
     this.load()
     this.unsubscribeRefresh = this.refreshService.subscribe(() => this.load())
     this.disposeRevisionReaction = reaction(
-      () => this.projectContext.revision.id,
+      () => this.projectContext.revisionId,
       () => this.load(),
     )
   }
 
   private load(): void {
     this.dataSource.reset()
-    void (this.dataSource as TableListDataSource).load({ revisionId: this.projectContext.revision.id })
+    void (this.dataSource as TableListDataSource).load({ revisionId: this.projectContext.revisionId })
   }
 
   public override dispose(): void {
@@ -82,12 +82,12 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
 
   public async removeTable(tableId: string): Promise<boolean> {
     const result = await this.removeDataSource.remove({
-      revisionId: this.projectContext.branch.draft.id,
+      revisionId: this.projectContext.revisionId,
       tableId,
     })
 
     if (result) {
-      if (!this.projectContext.branch.touched) {
+      if (!this.projectContext.touched) {
         this.projectContext.updateTouched(true)
       }
       this.load()

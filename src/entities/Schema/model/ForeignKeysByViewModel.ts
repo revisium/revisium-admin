@@ -52,7 +52,7 @@ container.register(
   () => {
     const dataSource = container.get(ForeignKeysByDataSource)
     const projectContext = container.get(ProjectContext)
-    return new ForeignKeysByViewModel(dataSource, () => projectContext.revision.id)
+    return new ForeignKeysByViewModel(dataSource, () => projectContext.revisionId)
   },
   { scope: 'request' },
 )

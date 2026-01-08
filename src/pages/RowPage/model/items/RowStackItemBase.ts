@@ -54,13 +54,10 @@ export abstract class RowStackItemBase extends StackItem<RowStackItemResult> {
   }
 
   public get revisionId(): string {
-    return this.deps.projectContext.revision.id
+    return this.deps.projectContext.revisionId
   }
 
   public get schema(): JsonSchema | null {
-    if (this.deps.schema) {
-      return this.deps.schema
-    }
-    return this.deps.projectContext.table?.schema as JsonSchema | null
+    return this.deps.schema ?? null
   }
 }

@@ -13,11 +13,11 @@ export class McpPageViewModel implements IViewModel {
   }
 
   public get organizationId(): string {
-    return this.context.project.organization.id
+    return this.context.organizationId
   }
 
   public get projectName(): string {
-    return this.context.project.name
+    return this.context.projectName
   }
 
   public get serverName(): string {

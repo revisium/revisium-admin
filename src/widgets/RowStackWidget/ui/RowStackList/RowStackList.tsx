@@ -1,8 +1,8 @@
-import { Box, Flex, IconButton, Spinner, Text } from '@chakra-ui/react'
+import { Box, Flex, IconButton, Skeleton, Spinner, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useRef } from 'react'
 import { PiPlus } from 'react-icons/pi'
-import { JsonSchema } from 'src/entities/Schema'
+import { JsonObjectSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { RowListItem } from 'src/pages/RowPage/model/items'
 import { useViewModel } from 'src/shared/lib/hooks'
 import { Tooltip } from 'src/shared/ui'
@@ -17,13 +17,35 @@ interface Props {
   item: RowListItem
 }
 
+const RowListSkeleton: React.FC = () => (
+  <Flex flexDirection="column" flex={1}>
+    <VStack gap={2} align="stretch" marginTop="16px">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <Skeleton key={i} height="40px" />
+      ))}
+    </VStack>
+  </Flex>
+)
+
+const EMPTY_SCHEMA: JsonObjectSchema = {
+  type: JsonSchemaTypeName.Object,
+  properties: {},
+  additionalProperties: false,
+  required: [],
+}
+
 export const RowStackList: React.FC<Props> = observer(({ item }) => {
   const filterAnchorRef = useRef<HTMLDivElement>(null)
 
   const tableId = item.tableId
-  const schema = item.schema as JsonSchema
+  const schema = item.schema
+  const revisionId = item.revisionId
 
-  const model = useViewModel(RowListViewModel, tableId, schema)
+  const model = useViewModel(RowListViewModel, tableId, schema ?? EMPTY_SCHEMA)
+
+  if (!schema) {
+    return <RowListSkeleton />
+  }
 
   const isSelectMode = item.isSelectingForeignKey
 
@@ -71,7 +93,7 @@ export const RowStackList: React.FC<Props> = observer(({ item }) => {
       <Box flex={1} position="relative" marginTop="16px">
         <RowList
           model={model}
-          revisionId={item.revisionId}
+          revisionId={revisionId}
           tableId={tableId}
           isRevisionReadonly={!item.isEditableRevision}
           onSelect={isSelectMode ? handleSelectRow : undefined}

@@ -35,7 +35,7 @@ export class RevisionEndpointItemModel {
       return ''
     }
 
-    const baseUrl = `${this.baseUrl}/${this.organization.id}/${this.project.name}/${this.branch.name}`
+    const baseUrl = `${this.baseUrl}/${this.context.organizationId}/${this.context.projectName}/${this.context.branchName}`
 
     if (this.revision.isDraft) {
       return `${baseUrl}/draft`
@@ -85,18 +85,6 @@ export class RevisionEndpointItemModel {
 
   private get endpoint(): EndpointFragment | undefined {
     return this.revision.endpoints.find((endpoint) => endpoint.type === this.endpointType)
-  }
-
-  private get organization() {
-    return this.context.organization
-  }
-
-  private get project() {
-    return this.context.project
-  }
-
-  private get branch() {
-    return this.context.branch
   }
 
   private get baseUrl() {

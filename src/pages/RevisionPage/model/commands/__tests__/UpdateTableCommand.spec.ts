@@ -44,10 +44,8 @@ const createMocks = (options: MockDepsOptions = {}) => ({
     refresh: jest.fn(),
   },
   projectContext: {
-    branch: {
-      draft: { id: 'draft-1' },
-      touched: options.touched ?? false,
-    },
+    revisionId: 'draft-1',
+    touched: options.touched ?? false,
     updateTouched: jest.fn(),
   },
 })

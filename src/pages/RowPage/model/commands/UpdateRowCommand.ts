@@ -15,7 +15,6 @@ export class UpdateRowCommand {
 
   public async execute(store: RowDataCardStore, originalRowId: string): Promise<boolean> {
     const { mutationDataSource, rowListRefreshService, projectContext, tableId } = this.deps
-    const branch = projectContext.branch
 
     try {
       const currentRowId = store.name.getPlainValue()
@@ -24,7 +23,7 @@ export class UpdateRowCommand {
 
       if (needsRename) {
         const renameResult = await mutationDataSource.renameRow({
-          revisionId: branch.draft.id,
+          revisionId: projectContext.revisionId,
           tableId,
           rowId: originalRowId,
           nextRowId: currentRowId,
@@ -37,7 +36,7 @@ export class UpdateRowCommand {
 
       if (needsUpdate) {
         const updateResult = await mutationDataSource.updateRow({
-          revisionId: branch.draft.id,
+          revisionId: projectContext.revisionId,
           tableId,
           rowId: currentRowId,
           data: store.root.getPlainValue(),
@@ -49,7 +48,7 @@ export class UpdateRowCommand {
       }
 
       if (needsRename || needsUpdate) {
-        if (!branch.touched) {
+        if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }
         rowListRefreshService.refresh()

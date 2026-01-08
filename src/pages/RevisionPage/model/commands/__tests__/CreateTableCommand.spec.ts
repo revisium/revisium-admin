@@ -32,10 +32,8 @@ const createMocks = (
     refresh: jest.fn(),
   },
   projectContext: {
-    branch: {
-      draft: { id: 'draft-1' },
-      touched: overrides.touched ?? false,
-    },
+    revisionId: 'draft-1',
+    touched: overrides.touched ?? false,
     updateTouched: jest.fn(),
   },
 })

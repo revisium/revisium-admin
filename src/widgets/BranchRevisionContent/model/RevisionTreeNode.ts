@@ -18,7 +18,7 @@ export class RevisionTreeNode {
     private readonly revision: FindRevisionFragment,
     private readonly context: ProjectContext,
   ) {
-    this.linkMaker = new LinkMaker(container.get(ProjectContext))
+    this.linkMaker = container.get(LinkMaker)
 
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -60,7 +60,7 @@ export class RevisionTreeNode {
   }
 
   public get isActive(): boolean {
-    return this.revision.id === this.context.revision.id
+    return this.revision.id === this.context.revisionId
   }
 
   public get badgeText(): string | null {
@@ -86,7 +86,7 @@ export class RevisionTreeNode {
   }
 
   public get branchName(): string {
-    return this.context.branch.name
+    return this.context.branchName
   }
 
   private get toastPath(): string {

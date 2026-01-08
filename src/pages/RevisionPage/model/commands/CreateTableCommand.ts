@@ -14,17 +14,15 @@ export class CreateTableCommand {
 
   public async execute(tableId: string, schema: JsonSchema): Promise<boolean> {
     const { mutationDataSource, tableListRefreshService, projectContext } = this.deps
-    const branch = projectContext.branch
-
     try {
       const result = await mutationDataSource.createTable({
-        revisionId: branch.draft.id,
+        revisionId: projectContext.revisionId,
         tableId,
         schema,
       })
 
       if (result !== null) {
-        if (!branch.touched) {
+        if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }
         tableListRefreshService.refresh()

@@ -2,7 +2,7 @@ import { IReactionDisposer, makeAutoObservable, reaction, runInAction } from 'mo
 import { SortOrder, FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
 import { RevisionTreeNode } from 'src/widgets/BranchRevisionContent/model/RevisionTreeNode.ts'
@@ -61,7 +61,7 @@ export class RevisionsViewModel implements IViewModel {
     this.reset()
 
     this.branchDisposer = reaction(
-      () => this.context.branch,
+      () => this.context.branchName,
       () => {
         this.reset()
       },
@@ -90,45 +90,44 @@ export class RevisionsViewModel implements IViewModel {
       return
     }
 
-    try {
-      const result = await this.findRevisions.fetch({
-        data: {
-          organizationId: this.context.project.organization.id,
-          projectName: this.context.project.name,
-          branchName: this.context.branch.name,
-        },
-        revisionsData: {
-          first: this.pageSize,
-          sort: SortOrder.Desc,
-          ...(this.cursor ? { after: this.cursor } : {}),
-        },
-      })
+    const result = await this.findRevisions.fetch({
+      data: {
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+        branchName: this.context.branchName,
+      },
+      revisionsData: {
+        first: this.pageSize,
+        sort: SortOrder.Desc,
+        ...(this.cursor ? { after: this.cursor } : {}),
+      },
+    })
 
-      runInAction(() => {
-        if (result.isRight) {
-          const newRevisions = result.data.branch.revisions.edges.map((edge) => edge.node)
-
-          if (this.cursor) {
-            const existingIds = new Set(this.allRevisions.map((r) => r.id))
-            const uniqueNewRevisions = newRevisions.filter((r) => !existingIds.has(r.id))
-            this.allRevisions = [...this.allRevisions, ...uniqueNewRevisions]
-          } else {
-            this.allRevisions = newRevisions
-          }
-
-          this.cursor = result.data.branch.revisions.pageInfo.endCursor
-          this.hasNextPage = result.data.branch.revisions.pageInfo.hasNextPage
-          this.state = this.allRevisions.length ? State.list : State.empty
-        } else {
-          this.state = State.error
-        }
-      })
-    } catch (e) {
+    if (!result.isRight) {
+      if (isAborted(result)) {
+        return
+      }
       runInAction(() => {
         this.state = State.error
       })
-      console.error(e)
+      return
     }
+
+    runInAction(() => {
+      const newRevisions = result.data.branch.revisions.edges.map((edge) => edge.node)
+
+      if (this.cursor) {
+        const existingIds = new Set(this.allRevisions.map((r) => r.id))
+        const uniqueNewRevisions = newRevisions.filter((r) => !existingIds.has(r.id))
+        this.allRevisions = [...this.allRevisions, ...uniqueNewRevisions]
+      } else {
+        this.allRevisions = newRevisions
+      }
+
+      this.cursor = result.data.branch.revisions.pageInfo.endCursor
+      this.hasNextPage = result.data.branch.revisions.pageInfo.hasNextPage
+      this.state = this.allRevisions.length ? State.list : State.empty
+    })
   }
 }
 

@@ -44,7 +44,7 @@ export class RowChangesListModel implements IViewModel {
   }
 
   private get revisionId(): string {
-    return this.context.revision.id
+    return this.context.revisionId
   }
 
   public init(tableId?: string): void {
@@ -219,10 +219,6 @@ export class RowChangesListModel implements IViewModel {
 
 container.register(
   RowChangesListModel,
-  () => {
-    const context = container.get(ProjectContext)
-    const linkMaker = new LinkMaker(context)
-    return new RowChangesListModel(context, linkMaker)
-  },
+  () => new RowChangesListModel(container.get(ProjectContext), container.get(LinkMaker)),
   { scope: 'request' },
 )

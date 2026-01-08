@@ -15,18 +15,17 @@ export class CreateRowCommand {
 
   public async execute(rowId: string, data: JsonValue): Promise<boolean> {
     const { mutationDataSource, rowListRefreshService, projectContext, tableId } = this.deps
-    const branch = projectContext.branch
 
     try {
       const result = await mutationDataSource.createRow({
-        revisionId: branch.draft.id,
+        revisionId: projectContext.revisionId,
         tableId,
         rowId,
         data,
       })
 
       if (result !== null) {
-        if (!branch.touched) {
+        if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }
         rowListRefreshService.refresh()

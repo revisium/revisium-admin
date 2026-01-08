@@ -45,7 +45,7 @@ describe('TableListItem', () => {
       const deps = createMockBaseDeps()
       const item = new TableListItem(deps, false)
 
-      expect(item.revisionId).toBe('rev-1')
+      expect(item.revisionId).toBe('draft-1')
     })
 
     it('should return canCreateTable based on permissions and editable state', () => {

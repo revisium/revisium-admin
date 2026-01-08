@@ -149,11 +149,11 @@ export class CreateEndpointModalViewModel {
   }
 
   private get organizationId(): string {
-    return this.context.project.organization.id
+    return this.context.organizationId
   }
 
   private get projectName(): string {
-    return this.context.project.name
+    return this.context.projectName
   }
 
   private async loadBranches(): Promise<void> {

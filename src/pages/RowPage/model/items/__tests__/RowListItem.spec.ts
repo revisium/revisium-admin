@@ -52,7 +52,7 @@ describe('RowListItem', () => {
       const deps = createMockBaseDeps()
       const item = new RowListItem(deps, false)
 
-      expect(item.revisionId).toBe('rev-1')
+      expect(item.revisionId).toBe('draft-1')
     })
 
     it('should return canCreateRow based on permissions and editable state', () => {

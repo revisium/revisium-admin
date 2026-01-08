@@ -11,28 +11,38 @@ export interface MockDepsOverrides {
   touched?: boolean
 }
 
-const createBaseMockDeps = (overrides: MockDepsOverrides = {}): TableStackItemBaseDeps => ({
-  projectContext: {
-    isDraftRevision: overrides.isDraftRevision ?? true,
-    revision: { id: overrides.revisionId ?? 'rev-1' },
-    branch: {
-      draft: { id: overrides.branchDraftId ?? 'draft-1' },
-      touched: overrides.touched ?? false,
-    },
-    updateTouched: jest.fn(),
-  } as never,
-  permissionContext: {
-    canCreateTable: overrides.canCreateTable ?? true,
-  } as never,
-  fetchDataSourceFactory: () =>
-    ({
-      fetch: jest.fn().mockResolvedValue({
-        id: 'table-1',
-        schema: { type: 'object', properties: {}, additionalProperties: false, required: [] },
-      }),
-      dispose: jest.fn(),
-    }) as never,
-})
+const createBaseMockDeps = (overrides: MockDepsOverrides = {}): TableStackItemBaseDeps => {
+  const isDraft = overrides.isDraftRevision ?? true
+  const revisionId = overrides.revisionId ?? 'rev-1'
+  const branchDraftId = overrides.branchDraftId ?? 'draft-1'
+
+  const branchData = {
+    draft: { id: branchDraftId },
+    touched: overrides.touched ?? false,
+  }
+
+  return {
+    projectContext: {
+      revisionId: isDraft ? branchDraftId : revisionId,
+      revisionOrNull: { id: isDraft ? branchDraftId : revisionId },
+      branchOrNull: branchData,
+      isDraftRevision: isDraft,
+      isLoading: false,
+      updateTouched: jest.fn(),
+    } as never,
+    permissionContext: {
+      canCreateTable: overrides.canCreateTable ?? true,
+    } as never,
+    fetchDataSourceFactory: () =>
+      ({
+        fetch: jest.fn().mockResolvedValue({
+          id: 'table-1',
+          schema: { type: 'object', properties: {}, additionalProperties: false, required: [] },
+        }),
+        dispose: jest.fn(),
+      }) as never,
+  }
+}
 
 export const createMockBaseDeps = (overrides: MockDepsOverrides = {}): TableStackItemBaseDeps => {
   return createBaseMockDeps(overrides)

@@ -74,7 +74,7 @@ export class MigrationsViewModel implements IViewModel {
   public init(): void {
     this.load()
     this.revisionReaction = reaction(
-      () => this.context.revision.id,
+      () => this.context.revisionId,
       () => {
         this.reset()
         this.load()
@@ -99,7 +99,7 @@ export class MigrationsViewModel implements IViewModel {
     try {
       const result = await this.getMigrationsRequest.fetch({
         data: {
-          revisionId: this.context.revision.id,
+          revisionId: this.context.revisionId,
         },
       })
 

@@ -9,6 +9,8 @@ import { ForeignKeyTableDataSource } from 'src/widgets/RowStackWidget/model/Fore
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 import { toaster } from 'src/shared/ui'
 import { RouterService } from 'src/shared/model/RouterService.ts'
+import { RouterParams } from 'src/shared/model/RouterParams.ts'
+import { TableFetchDataSource } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
 import { RowDataCardStoreFactory } from './RowDataCardStoreFactory.ts'
 import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
 import { RowStackItemFactory } from './RowStackItemFactory.ts'
@@ -36,13 +38,13 @@ const createNotifications = (): RowEditorNotifications => ({
   },
 })
 
-const createNavigation = (projectContext: ProjectContext): RowEditorNavigation => {
-  const linkMaker = new LinkMaker(projectContext)
+const createNavigation = (): RowEditorNavigation => {
+  const linkMaker = container.get(LinkMaker)
   const routerService = container.get(RouterService)
 
   return {
-    navigateToRow: (rowId: string) => {
-      const path = linkMaker.make({ revisionIdOrTag: DRAFT_TAG, rowId })
+    navigateToRow: (tableId: string, rowId: string) => {
+      const path = linkMaker.make({ revisionIdOrTag: DRAFT_TAG, tableId, rowId })
       routerService.navigate(path)
     },
   }
@@ -57,20 +59,23 @@ const createItemFactory = (projectContext: ProjectContext, schemaCache: ForeignS
     storeFactory: container.get(RowDataCardStoreFactory),
     schemaCache,
     notifications: createNotifications(),
-    navigation: createNavigation(projectContext),
+    navigation: createNavigation(),
   })
 }
 
 const createRowStackManager = (): RowStackManager => {
   const projectContext = container.get(ProjectContext)
+  const routerParams = container.get(RouterParams)
   const schemaCache = createSchemaCache()
   const itemFactory = createItemFactory(projectContext, schemaCache)
 
   return new RowStackManager({
     projectContext,
+    routerParams,
     itemFactory,
     schemaCache,
     fetchDataSourceFactory: () => container.get(RowFetchDataSource),
+    tableFetchDataSourceFactory: () => container.get(TableFetchDataSource),
     onError: (message) => toaster.error({ title: message }),
   })
 }

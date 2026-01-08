@@ -30,19 +30,19 @@ export class ProjectSettingsPageModel {
   }
 
   public get isPublic() {
-    return this.context.project.isPublic
+    return this.context.isProjectPublic
   }
 
   public get projectName() {
-    return this.context.project.name
+    return this.context.projectName
   }
 
   public async setIsPublic(value: boolean) {
     const result = await this.updateRequest.fetch({
       data: {
         isPublic: value,
-        projectName: this.context.project.name,
-        organizationId: this.context.organization.id,
+        projectName: this.context.projectName,
+        organizationId: this.context.organizationId,
       },
     })
 
@@ -81,8 +81,8 @@ export class ProjectSettingsPageModel {
     try {
       const result = await this.deleteRequest.fetch({
         data: {
-          organizationId: this.context.organization.id,
-          projectName: this.context.project.name,
+          organizationId: this.context.organizationId,
+          projectName: this.context.projectName,
         },
       })
 

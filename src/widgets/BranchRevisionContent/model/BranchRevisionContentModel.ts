@@ -5,7 +5,7 @@ export class BranchRevisionContentModel {
   constructor(private readonly context: ProjectContext) {}
 
   public get revisionsTitle() {
-    return `Revisions [${this.context.branch.name}]`
+    return `Revisions [${this.context.branchName}]`
   }
 
   public init() {}

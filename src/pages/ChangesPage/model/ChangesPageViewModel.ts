@@ -64,11 +64,11 @@ export class ChangesPageViewModel implements IViewModel {
   }
 
   public get showRevertButton(): boolean {
-    return this.context.isDraftRevision && this.context.branch.touched && this.permissionContext.canRevertRevision
+    return this.context.isDraftRevision && this.context.touched && this.permissionContext.canRevertRevision
   }
 
   public get showCommitButton(): boolean {
-    return this.context.isDraftRevision && this.context.branch.touched && this.permissionContext.canCreateRevision
+    return this.context.isDraftRevision && this.context.touched && this.permissionContext.canCreateRevision
   }
 
   public get isDraftRevision(): boolean {
@@ -92,9 +92,9 @@ export class ChangesPageViewModel implements IViewModel {
   public async handleRevertChanges(): Promise<void> {
     try {
       const result = await this.branchMutationDataSource.revertChanges({
-        organizationId: this.context.organization.id,
-        projectName: this.context.project.name,
-        branchName: this.context.branch.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+        branchName: this.context.branchName,
       })
 
       if (result) {
@@ -109,9 +109,9 @@ export class ChangesPageViewModel implements IViewModel {
   public async handleCommitChanges(comment: string): Promise<void> {
     try {
       const result = await this.branchMutationDataSource.createRevision({
-        organizationId: this.context.organization.id,
-        projectName: this.context.project.name,
-        branchName: this.context.branch.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+        branchName: this.context.branchName,
         comment,
       })
 
@@ -126,7 +126,7 @@ export class ChangesPageViewModel implements IViewModel {
   public init(): void {
     this.load()
     this.revisionReaction = reaction(
-      () => this.context.revision.id,
+      () => this.context.revisionId,
       () => {
         this.reset()
         this.load()
@@ -150,7 +150,7 @@ export class ChangesPageViewModel implements IViewModel {
 
   private async request(): Promise<void> {
     const result = await this.getRevisionChangesRequest.fetch({
-      revisionId: this.context.revision.id,
+      revisionId: this.context.revisionId,
       includeSystem: true,
     })
 

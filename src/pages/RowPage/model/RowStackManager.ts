@@ -4,20 +4,23 @@ import { IViewModel } from 'src/shared/config/types.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'
 import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
-import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
+import { RouterParams } from 'src/shared/model/RouterParams.ts'
 import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
 import { RowStackItemFactory } from './RowStackItemFactory.ts'
 import { RowListItem, RowCreatingItem, RowUpdatingItem } from './items'
 import { RowFetchDataSource, RowFetchResult } from './RowFetchDataSource.ts'
+import { TableFetchDataSource, TableFetchResult } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
 import { RowData, RowStackItemResult, SelectForeignKeyRowPayload, SelectForeignKeyRowResult } from '../config/types.ts'
 
 export type RowStackItem = RowListItem | RowCreatingItem | RowUpdatingItem
 
 export interface RowStackManagerDeps {
   projectContext: ProjectContext
+  routerParams: RouterParams
   itemFactory: RowStackItemFactory
   schemaCache: ForeignSchemaCache
   fetchDataSourceFactory: () => RowFetchDataSource
+  tableFetchDataSourceFactory: () => TableFetchDataSource
   onError?: (message: string) => void
 }
 
@@ -35,7 +38,7 @@ export class RowStackManager
   }
 
   private get revisionId(): string {
-    return this.deps.projectContext.revision.id
+    return this.deps.projectContext.revisionId
   }
 
   public get currentItem(): RowStackItem | undefined {
@@ -45,16 +48,40 @@ export class RowStackManager
   public init(): void {
     this.disposeReaction = reaction(
       () => ({
-        revisionId: this.deps.projectContext.revision?.id,
-        tableId: this.deps.projectContext.table?.id,
-        rowId: this.deps.projectContext.row?.id,
+        revisionId: this.deps.projectContext.revisionId,
+        tableId: this.deps.routerParams.tableId,
+        rowId: this.deps.routerParams.rowId,
       }),
       () => {
         this.cleanup()
-        this.setupStack()
+        void this.loadAndSetupStack()
       },
       { fireImmediately: true },
     )
+  }
+
+  private async loadAndSetupStack(): Promise<void> {
+    const revisionId = this.deps.projectContext.revisionId
+    const tableId = this.deps.routerParams.tableId
+    const rowId = this.deps.routerParams.rowId
+
+    if (!revisionId || !tableId) {
+      return
+    }
+
+    try {
+      const tableData = await this.fetchTable(tableId)
+
+      let rowData: RowData | undefined
+      if (rowId) {
+        const row = await this.fetchRow(tableId, rowId)
+        rowData = { rowId: row.rowId, data: row.data, foreignKeysCount: row.foreignKeysCount }
+      }
+
+      this.setupStack(tableData, rowData)
+    } catch {
+      this.deps.onError?.('Failed to load data')
+    }
   }
 
   public dispose(): void {
@@ -68,24 +95,26 @@ export class RowStackManager
     this.deps.schemaCache.dispose()
   }
 
-  private setupStack(): void {
-    const table = this.deps.projectContext.table
-    const row = this.deps.projectContext.row
+  private setupStack(tableData: TableFetchResult, rowData?: RowData): void {
+    const schema = tableData.schema as JsonObjectSchema
+    this.deps.schemaCache.init(tableData.id, schema)
 
-    if (!table) {
-      return
-    }
-
-    const schema = table.schema as JsonObjectSchema
-    this.deps.schemaCache.init(table.id, schema)
-
-    const rowData: RowData | undefined = row
-      ? { rowId: row.id, data: row.data as JsonValue, foreignKeysCount: row.foreignKeysCount }
-      : undefined
-
-    const firstItem = this.deps.itemFactory.createInitialItem(table.id, rowData)
+    const firstItem = this.deps.itemFactory.createInitialItem(tableData.id, rowData)
     this.initStack(firstItem)
     firstItem.setIsFirstLevel(true)
+  }
+
+  private async fetchTable(tableId: string): Promise<TableFetchResult> {
+    const fetchDataSource = this.deps.tableFetchDataSourceFactory()
+    try {
+      const result = await fetchDataSource.fetch({ revisionId: this.revisionId, tableId })
+      if (!result) {
+        throw new Error(`Table ${tableId} not found`)
+      }
+      return result
+    } finally {
+      fetchDataSource.dispose()
+    }
   }
 
   protected handleItemResult(item: RowStackItem, result: RowStackItemResult): void {

@@ -14,7 +14,6 @@ export class UpdateTableCommand {
 
   public async execute(store: RootNodeStore): Promise<boolean> {
     const { mutationDataSource, tableListRefreshService, projectContext } = this.deps
-    const branch = projectContext.branch
 
     try {
       const needRename = store.tableId !== store.draftTableId
@@ -23,7 +22,7 @@ export class UpdateTableCommand {
 
       if (needRename) {
         const renameResult = await mutationDataSource.renameTable({
-          revisionId: branch.draft.id,
+          revisionId: projectContext.revisionId,
           tableId: store.tableId,
           nextTableId: store.draftTableId,
         })
@@ -39,7 +38,7 @@ export class UpdateTableCommand {
 
       if (patches.length) {
         const updateResult = await mutationDataSource.updateTable({
-          revisionId: branch.draft.id,
+          revisionId: projectContext.revisionId,
           tableId: store.draftTableId,
           patches,
         })
@@ -51,7 +50,7 @@ export class UpdateTableCommand {
         wasUpdated = true
       }
 
-      if ((wasRenamed || wasUpdated) && !branch.touched) {
+      if ((wasRenamed || wasUpdated) && !projectContext.touched) {
         projectContext.updateTouched(true)
       }
 

@@ -207,7 +207,7 @@ export class RowListViewModel implements IViewModel {
   }
 
   private get revisionId(): string {
-    return this.projectContext.revision.id
+    return this.projectContext.revisionId
   }
 
   public init(tableId: string, schema: JsonSchema, options?: { showAllColumns?: boolean }): void {

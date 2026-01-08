@@ -51,5 +51,5 @@ export interface RowEditorNotifications {
 }
 
 export interface RowEditorNavigation {
-  navigateToRow: (rowId: string) => void
+  navigateToRow: (tableId: string, rowId: string) => void
 }

@@ -35,7 +35,7 @@ export class TableChangesListModel implements IViewModel {
   }
 
   private get revisionId(): string {
-    return this.context.revision.id
+    return this.context.revisionId
   }
 
   public init(): void {
@@ -157,10 +157,6 @@ export class TableChangesListModel implements IViewModel {
 
 container.register(
   TableChangesListModel,
-  () => {
-    const context = container.get(ProjectContext)
-    const linkMaker = new LinkMaker(context)
-    return new TableChangesListModel(context, linkMaker)
-  },
+  () => new TableChangesListModel(container.get(ProjectContext), container.get(LinkMaker)),
   { scope: 'request' },
 )

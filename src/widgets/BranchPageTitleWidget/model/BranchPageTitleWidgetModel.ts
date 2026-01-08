@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
-import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { TABLE_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
@@ -55,12 +54,6 @@ export class BranchPageTitleWidgetModel implements IViewModel {
   public dispose(): void {}
 }
 
-container.register(
-  BranchPageTitleWidgetModel,
-  () => {
-    const projectContext = container.get(ProjectContext)
-    const linkMaker = new LinkMaker(projectContext)
-    return new BranchPageTitleWidgetModel(linkMaker)
-  },
-  { scope: 'request' },
-)
+container.register(BranchPageTitleWidgetModel, () => new BranchPageTitleWidgetModel(container.get(LinkMaker)), {
+  scope: 'request',
+})

@@ -17,7 +17,7 @@ export class SidebarBranchWidgetModel {
   }
 
   public get name() {
-    return this.context.branch.name
+    return this.context.branchName
   }
 
   public get postfix() {
@@ -29,7 +29,7 @@ export class SidebarBranchWidgetModel {
       return ''
     }
 
-    const shortId = this.context.revision.id.slice(0, 3)
+    const shortId = this.context.revisionId.slice(0, 3)
 
     return ` [${shortId}]`
   }
@@ -51,7 +51,7 @@ export class SidebarBranchWidgetModel {
   }
 
   public get touched() {
-    return this.context.isDraftRevision && this.context.branch.touched
+    return this.context.isDraftRevision && this.context.touched
   }
 
   public get changesLink(): string {
@@ -67,9 +67,9 @@ export class SidebarBranchWidgetModel {
   public async handleRevertChanges() {
     try {
       const result = await this.mutationDataSource.revertChanges({
-        organizationId: this.context.organization.id,
-        projectName: this.context.project.name,
-        branchName: this.context.branch.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+        branchName: this.context.branchName,
       })
 
       if (result) {
@@ -84,9 +84,9 @@ export class SidebarBranchWidgetModel {
   public async handleCommitChanges(comment: string) {
     try {
       const result = await this.mutationDataSource.createRevision({
-        organizationId: this.context.organization.id,
-        projectName: this.context.project.name,
-        branchName: this.context.branch.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
+        branchName: this.context.branchName,
         comment,
       })
 
@@ -101,7 +101,7 @@ export class SidebarBranchWidgetModel {
   public async handleCreateBranch(name: string) {
     try {
       const result = await this.mutationDataSource.createBranch({
-        revisionId: this.context.revision.id,
+        revisionId: this.context.revisionId,
         branchName: name,
       })
 
@@ -117,11 +117,12 @@ export class SidebarBranchWidgetModel {
 container.register(
   SidebarBranchWidgetModel,
   () => {
-    const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    const mutationDataSource = container.get(BranchMutationDataSource)
-
-    return new SidebarBranchWidgetModel(new LinkMaker(context), context, permissionContext, mutationDataSource)
+    return new SidebarBranchWidgetModel(
+      container.get(LinkMaker),
+      container.get(ProjectContext),
+      container.get(PermissionContext),
+      container.get(BranchMutationDataSource),
+    )
   },
   { scope: 'request' },
 )

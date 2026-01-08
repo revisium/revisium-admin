@@ -26,6 +26,7 @@ export abstract class TableStackItemBase extends StackItem<TableStackItemResult>
     makeObservable(this, {
       isEditableRevision: computed,
       revisionId: computed,
+      isRevisionLoading: computed,
       pendingForeignKeyPath: computed,
     })
   }
@@ -34,8 +35,12 @@ export abstract class TableStackItemBase extends StackItem<TableStackItemResult>
     return this.deps.projectContext.isDraftRevision
   }
 
-  public get revisionId(): string {
-    return this.deps.projectContext.revision.id
+  public get revisionId(): string | null {
+    return this.deps.projectContext.revisionId
+  }
+
+  public get isRevisionLoading(): boolean {
+    return this.deps.projectContext.isLoading || this.deps.projectContext.revisionId === null
   }
 
   public get pendingForeignKeyPath(): string {

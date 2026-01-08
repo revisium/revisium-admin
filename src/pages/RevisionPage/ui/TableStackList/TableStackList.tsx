@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Skeleton, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { CreateTableButton } from 'src/features/CreateTableButton'
@@ -10,7 +10,19 @@ interface Props {
   item: TableListItem
 }
 
+const TableListSkeleton: React.FC = () => (
+  <VStack gap={2} align="stretch" paddingTop="0.5rem" paddingBottom="1rem">
+    {Array.from({ length: 7 }).map((_, i) => (
+      <Skeleton key={i} height="40px" />
+    ))}
+  </VStack>
+)
+
 export const TableStackList: React.FC<Props> = observer(({ item }) => {
+  if (item.isRevisionLoading) {
+    return <TableListSkeleton />
+  }
+
   return (
     <>
       {item.isSelectingForeignKey && <SelectingForeignKeyDivider />}

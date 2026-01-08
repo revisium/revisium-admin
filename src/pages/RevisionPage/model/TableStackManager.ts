@@ -175,10 +175,15 @@ export class TableStackManager extends StackManager<
   }
 
   private async fetchTable(tableId: string): Promise<TableFetchResult> {
+    const revisionId = this.deps.projectContext.revisionId
+    if (!revisionId) {
+      throw new Error('Revision not loaded')
+    }
+
     const fetchDataSource = this.deps.fetchDataSourceFactory()
     try {
       const result = await fetchDataSource.fetch({
-        revisionId: this.deps.projectContext.revision.id,
+        revisionId,
         tableId,
       })
       if (!result) {

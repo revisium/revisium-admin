@@ -87,8 +87,8 @@ export class EndpointItemViewModel {
   }
 
   private get pathSegment(): string {
-    const orgId = this.context.project.organization.id
-    const projectName = this.context.project.name
+    const orgId = this.context.organizationId
+    const projectName = this.context.projectName
     return `${orgId}/${projectName}/${this.branchName}/${this.revisionTag}`
   }
 }

@@ -72,7 +72,7 @@ export class RowCreatingItem extends RowEditorItemBase {
     const createdRowId = await this.approve()
 
     if (createdRowId && !this.isSelectingForeignKey) {
-      this.deps.navigation.navigateToRow(createdRowId)
+      this.deps.navigation.navigateToRow(this.tableId, createdRowId)
     }
   }
 

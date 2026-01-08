@@ -38,7 +38,7 @@ export const ForeignKeyMenu: FC<ForeignKeyMenuProps> = ({ store, children, onCha
   return (
     <FocusPopover isOpen={isOpen} setIsOpen={setIsOpen} trigger={children} disabled={disabled}>
       <SearchForeignKey
-        revisionId={projectContext.revision.id}
+        revisionId={projectContext.revisionId}
         tableId={store.foreignKey ?? ''}
         onChange={handleSelect}
         onCreateAndConnect={handleCreateAndConnect}

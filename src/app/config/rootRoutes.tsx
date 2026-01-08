@@ -1,15 +1,10 @@
 import { Outlet, RouteObject } from 'react-router-dom'
-import { branchLoader } from 'src/app/lib/branchLoader.ts'
 import { checkAdmin } from 'src/app/lib/checkAdmin.ts'
 import { checkAuth } from 'src/app/lib/checkAuth.ts'
 import { checkGuest } from 'src/app/lib/checkGuest.ts'
 import { checkSignUp } from 'src/app/lib/checkSignUp.ts'
 import { composeLoaders } from 'src/app/lib/composeLoaders.ts'
 import { mainPageLoader } from 'src/app/lib/mainPageLoader.ts'
-import { projectLoader } from 'src/app/lib/projectLoader.ts'
-import { revisionLoader } from 'src/app/lib/revisionLoaders/revisionLoader.ts'
-import { rowLoader } from 'src/app/lib/rowLoaders/rowLoader.ts'
-import { tableLoader } from 'src/app/lib/tableLoaders/tableLoader.ts'
 import { AdminDashboardPage } from 'src/pages/AdminDashboardPage'
 import { AdminLayout } from 'src/pages/AdminLayout'
 import { AdminOrganizationsPage } from 'src/pages/AdminOrganizationsPage'
@@ -21,6 +16,7 @@ import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
 import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { McpPage } from 'src/pages/McpPage'
 import { McpTokenPage } from 'src/pages/McpTokenPage'
+import { ProjectLayout } from 'src/pages/ProjectLayout'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
 
@@ -106,7 +102,6 @@ const createMigrationsRouteObject = (): RouteObject => ({
 
 const createTableRouteObject = (): RouteObject => ({
   path: TABLE_ROUTE,
-  loader: tableLoader,
   id: RouteIds.Table,
   children: [
     {
@@ -115,7 +110,6 @@ const createTableRouteObject = (): RouteObject => ({
     },
     {
       path: ROW_ROUTE,
-      loader: rowLoader,
       id: RouteIds.Row,
       element: <RowPage />,
     },
@@ -130,8 +124,8 @@ const organizationRouteObject = {
   children: [
     {
       path: PROJECT_ROUTE,
-      element: <Outlet />,
-      loader: composeLoaders(checkAuth, projectLoader),
+      element: <ProjectLayout />,
+      loader: checkAuth,
       id: RouteIds.Project,
       children: [
         {
@@ -161,12 +155,10 @@ const organizationRouteObject = {
         },
         {
           path: BRANCH_ROUTE,
-          loader: branchLoader,
           id: RouteIds.Branch,
           children: [
             {
               path: REVISION_ROUTE,
-              loader: revisionLoader,
               id: RouteIds.Revision,
               errorElement: <RevisionPageErrorWidget />,
               children: [

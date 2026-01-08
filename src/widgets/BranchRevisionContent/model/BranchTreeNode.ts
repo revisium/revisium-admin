@@ -40,14 +40,14 @@ export class BranchTreeNode {
   }
 
   public get isActive(): boolean {
-    return this.branch.id === this.context.branch.id
+    return this.branch.name === this.context.branchName
   }
 
   public get link(): string {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCH_ROUTE}/${REVISION_ROUTE}`, {
-      organizationId: this.context.organization.id,
-      projectName: this.context.project.name,
-      branchName: this.branch.name,
+      organizationId: this.context.organizationId,
+      projectName: this.context.projectName,
+      branchName: this.name,
       revisionIdOrTag: DRAFT_TAG,
     })
   }

@@ -186,8 +186,8 @@ export class AddUserModalViewModel {
 
     try {
       const result = await client.addUserToProject({
-        organizationId: this.context.project.organization.id,
-        projectName: this.context.project.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
         userId: this._selectedUserId,
         roleId: this._selectedRole,
       })
@@ -238,8 +238,8 @@ export class AddUserModalViewModel {
       }
 
       const addResult = await client.addUserToProject({
-        organizationId: this.context.project.organization.id,
-        projectName: this.context.project.name,
+        organizationId: this.context.organizationId,
+        projectName: this.context.projectName,
         userId: newUser.node.id,
         roleId: this._selectedRole,
       })

@@ -30,29 +30,11 @@ export class ProjectSidebarViewModel {
   }
 
   public get projectName() {
-    return this.context.project.name
-  }
-
-  public get isProjectPublic() {
-    return this.context.project.isPublic
+    return this.context.projectName
   }
 
   public get organizationId() {
-    return this.context.organization.id
-  }
-
-  public get changesCount(): number | null {
-    if (!this.context.isDraftRevision) {
-      return null
-    }
-    return this.getRevisionChangesRequest.data?.revisionChanges.totalChanges ?? null
-  }
-
-  public setIsOnSettingsPage(value: boolean) {
-    this.isOnSettingsPage = value
-    if (value) {
-      this.isProjectSectionExpanded = true
-    }
+    return this.context.organizationId
   }
 
   public init() {
@@ -67,7 +49,7 @@ export class ProjectSidebarViewModel {
     }
     try {
       await this.getRevisionChangesRequest.fetch({
-        revisionId: this.context.revision.id,
+        revisionId: this.context.revisionId,
         includeSystem: true,
       })
     } catch (e) {

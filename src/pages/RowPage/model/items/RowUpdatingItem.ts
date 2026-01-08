@@ -78,7 +78,7 @@ export class RowUpdatingItem extends RowEditorItemBase {
     const result = await this.approve()
 
     if (result) {
-      this.deps.navigation.navigateToRow(this.currentRowId)
+      this.deps.navigation.navigateToRow(this.tableId, this.currentRowId)
     }
   }
 
@@ -88,7 +88,7 @@ export class RowUpdatingItem extends RowEditorItemBase {
 
   public async uploadFile(fileId: string, file: File): Promise<JsonValue | null> {
     const result = await this.deps.mutationDataSource.uploadFile({
-      revisionId: this.deps.projectContext.branch.draft.id,
+      revisionId: this.deps.projectContext.revisionId,
       tableId: this.tableId,
       rowId: this.store.name.getPlainValue(),
       fileId,
@@ -96,7 +96,7 @@ export class RowUpdatingItem extends RowEditorItemBase {
     })
 
     if (result) {
-      if (!this.deps.projectContext.branch.touched) {
+      if (!this.deps.projectContext.touched) {
         this.deps.projectContext.updateTouched(true)
       }
       return result.row.data as JsonValue
@@ -113,7 +113,7 @@ export class RowUpdatingItem extends RowEditorItemBase {
     if (freshData) {
       this.deps.notifications.onUploadSuccess(toastId)
       this.syncReadOnlyStores(freshData)
-      this.deps.navigation.navigateToRow(this.currentRowId)
+      this.deps.navigation.navigateToRow(this.tableId, this.currentRowId)
     } else {
       this.deps.notifications.onUploadError(toastId)
     }

@@ -145,7 +145,7 @@ export class SearchModalModel implements IViewModel {
       const result = await this.searchRequest.fetch({
         data: {
           query: this.searchQuery,
-          revisionId: this.context.revision.id,
+          revisionId: this.context.revisionId,
           first: 20,
         },
       })
@@ -168,12 +168,6 @@ export class SearchModalModel implements IViewModel {
 
 container.register(
   SearchModalModel,
-  () => {
-    const context = container.get(ProjectContext)
-    const linkMaker = new LinkMaker(context)
-    const router = container.get(RouterService)
-
-    return new SearchModalModel(context, linkMaker, router)
-  },
+  () => new SearchModalModel(container.get(ProjectContext), container.get(LinkMaker), container.get(RouterService)),
   { scope: 'request' },
 )

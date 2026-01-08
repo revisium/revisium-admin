@@ -36,25 +36,36 @@ const defaultSchema: JsonObjectSchema = {
 } as JsonObjectSchema
 
 export const createMockProjectContext = (overrides: MockDepsOverrides = {}) => {
+  const isDraft = overrides.isDraftRevision ?? true
+  const branchDraftId = overrides.branchDraftId ?? 'draft-1'
+  const revisionId = overrides.revisionId ?? 'rev-1'
+
+  const branchData = {
+    draft: { id: branchDraftId },
+    touched: overrides.touched ?? false,
+  }
+
+  const computedRevisionId = isDraft ? branchDraftId : revisionId
+
   const context = observable(
     {
-      isDraftRevision: overrides.isDraftRevision ?? true,
-      revision: { id: overrides.revisionId ?? 'rev-1' },
-      branch: {
-        draft: { id: overrides.branchDraftId ?? 'draft-1' },
-        touched: overrides.touched ?? false,
-      },
-      table: {
-        id: overrides.tableId ?? 'test-table',
-        schema: overrides.schema ?? defaultSchema,
-      },
-      row: overrides.row ?? null,
+      revisionId: computedRevisionId,
+      isDraftRevision: isDraft,
+      branchOrNull: branchData,
+      isLoading: false,
     },
     {},
     { deep: false },
   )
 
   return Object.assign(context, { updateTouched: jest.fn() })
+}
+
+export const createMockRouterParams = (overrides: MockDepsOverrides = {}) => {
+  return {
+    tableId: overrides.tableId ?? 'test-table',
+    rowId: overrides.row?.id ?? null,
+  }
 }
 
 const createBaseMockDeps = (overrides: MockDepsOverrides = {}): RowStackItemBaseDeps => ({
@@ -78,7 +89,7 @@ export const createMockNotifications = (): RowEditorNotifications => ({
 })
 
 export const createMockNavigation = (): RowEditorNavigation => ({
-  navigateToRow: jest.fn(),
+  navigateToRow: jest.fn<void, [string, string]>(),
 })
 
 export const createMockCreatingDeps = (overrides: MockDepsOverrides = {}): RowCreatingItemDeps => ({
@@ -161,19 +172,29 @@ const createMockItemFactory = (
 
 export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): RowStackManagerDeps => {
   const projectContext = createMockProjectContext(overrides)
+  const routerParams = createMockRouterParams(overrides)
   const schemaCache = createMockSchemaCache()
 
   return {
     projectContext: projectContext as never,
+    routerParams: routerParams as never,
     itemFactory: createMockItemFactory(projectContext, schemaCache, overrides),
     schemaCache,
     fetchDataSourceFactory: () =>
       ({
         fetch: jest.fn().mockResolvedValue({
-          rowId: 'row-1',
-          data: { name: 'Test' },
+          rowId: overrides.row?.id ?? 'row-1',
+          data: overrides.row?.data ?? { name: 'Test' },
           schema: defaultSchema,
-          foreignKeysCount: 0,
+          foreignKeysCount: overrides.row?.foreignKeysCount ?? 0,
+        }),
+        dispose: jest.fn(),
+      }) as never,
+    tableFetchDataSourceFactory: () =>
+      ({
+        fetch: jest.fn().mockResolvedValue({
+          id: overrides.tableId ?? 'test-table',
+          schema: overrides.schema ?? defaultSchema,
         }),
         dispose: jest.fn(),
       }) as never,

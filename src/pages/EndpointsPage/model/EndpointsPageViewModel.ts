@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
@@ -13,7 +13,6 @@ import { SystemApiViewModel } from './SystemApiViewModel.ts'
 type BranchItem = FindBranchesQuery['branches']['edges'][number]['node']
 
 interface BranchOption {
-  id: string
   name: string
 }
 
@@ -30,12 +29,13 @@ export class EndpointsPageViewModel implements IViewModel {
   private readonly getEndpointsRequest = ObservableRequest.of(client.GetProjectEndpoints, {
     skipResetting: true,
   })
+  private readonly getTotalCountRequest = ObservableRequest.of(client.GetProjectEndpoints)
   private readonly getBranchesRequest = ObservableRequest.of(client.findBranches)
 
   private _items: EndpointItemViewModel[] = []
   private _hasNextPage = false
   private _endCursor: string | null = null
-  private _selectedBranchId: string | null = null
+  private _selectedBranchName: string | null = null
   private _selectedType: EndpointType | null = null
   private _totalEndpointsCount: number | null = null
   private _isInitialLoad = true
@@ -109,20 +109,24 @@ export class EndpointsPageViewModel implements IViewModel {
     return this.getEndpointsRequest.isLoading
   }
 
-  public get selectedBranchId(): string | null {
-    return this._selectedBranchId
+  public get selectedBranchName(): string | null {
+    return this._selectedBranchName
   }
 
   public get branches(): BranchOption[] {
-    return this._filterBranches.map((b) => ({ id: b.id, name: b.name }))
+    return this._filterBranches.map((b) => ({ name: b.name }))
   }
 
-  public get selectedBranchName(): string {
-    if (!this._selectedBranchId) {
-      return 'All branches'
+  public get selectedBranchLabel(): string {
+    return this._selectedBranchName ?? 'All branches'
+  }
+
+  private get selectedBranchId(): string | null {
+    if (!this._selectedBranchName) {
+      return null
     }
-    const branch = this._filterBranches.find((b) => b.id === this._selectedBranchId)
-    return branch?.name ?? 'All branches'
+    const branch = this._filterBranches.find((b) => b.name === this._selectedBranchName)
+    return branch?.id ?? null
   }
 
   public get selectedType(): EndpointType | null {
@@ -137,16 +141,17 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   public init(): void {
-    this._selectedBranchId = this.context.branch.id
-    void this.loadFilterBranches()
-    void this.loadTotalCount()
-    void this.loadInitial()
+    this._selectedBranchName = this.context.branchName
+    void this.loadFilterBranches().then(() => {
+      void this.loadTotalCount()
+      void this.loadInitial()
+    })
   }
 
   public dispose(): void {}
 
-  public setSelectedBranchId(branchId: string | null): void {
-    this._selectedBranchId = branchId
+  public setSelectedBranchName(branchName: string | null): void {
+    this._selectedBranchName = branchName
     void this.reload()
   }
 
@@ -165,7 +170,7 @@ export class EndpointsPageViewModel implements IViewModel {
       projectName: this.projectName,
       first: 50,
       after: this._endCursor,
-      branchId: this._selectedBranchId ?? undefined,
+      branchId: this.selectedBranchId ?? undefined,
       type: this._selectedType ?? undefined,
     })
 
@@ -180,11 +185,11 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   private get organizationId(): string {
-    return this.context.project.organization.id
+    return this.context.organizationId
   }
 
   private get projectName(): string {
-    return this.context.project.name
+    return this.context.projectName
   }
 
   private createItemViewModel(item: EndpointFragment): EndpointItemViewModel {
@@ -219,42 +224,47 @@ export class EndpointsPageViewModel implements IViewModel {
       organizationId: this.organizationId,
       projectName: this.projectName,
       first: 50,
-      branchId: this._selectedBranchId ?? undefined,
+      branchId: this.selectedBranchId ?? undefined,
       type: this._selectedType ?? undefined,
     })
 
-    runInAction(() => {
-      if (result.isRight) {
-        this._items = result.data.projectEndpoints.edges.map((edge) => this.createItemViewModel(edge.node))
-        this._hasNextPage = result.data.projectEndpoints.pageInfo.hasNextPage
-        this._endCursor = result.data.projectEndpoints.pageInfo.endCursor ?? null
-
-        if (this._items.length > 0) {
-          this.state = State.list
-        } else {
-          this.state = State.empty
-        }
-      } else {
+    if (!result.isRight) {
+      if (isAborted(result)) {
+        return
+      }
+      runInAction(() => {
         this.state = State.error
+      })
+      return
+    }
+
+    runInAction(() => {
+      this._items = result.data.projectEndpoints.edges.map((edge) => this.createItemViewModel(edge.node))
+      this._hasNextPage = result.data.projectEndpoints.pageInfo.hasNextPage
+      this._endCursor = result.data.projectEndpoints.pageInfo.endCursor ?? null
+
+      if (this._items.length > 0) {
+        this.state = State.list
+      } else {
+        this.state = State.empty
       }
     })
   }
 
   private async loadTotalCount(): Promise<void> {
-    try {
-      const result = await this.getEndpointsRequest.fetch({
-        organizationId: this.organizationId,
-        projectName: this.projectName,
-        first: 1,
-      })
-      runInAction(() => {
-        if (result.isRight) {
-          this._totalEndpointsCount = result.data.projectEndpoints.totalCount
-        }
-      })
-    } catch (e) {
-      console.error(e)
+    const result = await this.getTotalCountRequest.fetch({
+      organizationId: this.organizationId,
+      projectName: this.projectName,
+      first: 1,
+    })
+
+    if (!result.isRight) {
+      return
     }
+
+    runInAction(() => {
+      this._totalEndpointsCount = result.data.projectEndpoints.totalCount
+    })
   }
 
   private async loadFilterBranches(): Promise<void> {

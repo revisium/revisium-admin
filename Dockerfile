@@ -15,9 +15,7 @@ RUN apk update && apk add git
 
 RUN npm run build
 
-FROM nginx:1.25.3-alpine
+FROM nginxinc/nginx-unprivileged:1.25.3-alpine
 
 COPY --from=builder /home/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
-
-USER nginx

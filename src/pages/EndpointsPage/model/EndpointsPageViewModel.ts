@@ -233,7 +233,7 @@ export class EndpointsPageViewModel implements IViewModel {
     return endpoint?.id ?? null
   }
 
-  private handleEndpointChanged = (): void => {
+  private readonly handleEndpointChanged = (): void => {
     void this.reload()
   }
 }

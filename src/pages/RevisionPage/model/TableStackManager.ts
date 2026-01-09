@@ -89,7 +89,7 @@ export class TableStackManager extends StackManager<
   }
 
   private handleToCreating(item: TableListItem): void {
-    const newItem = new TableCreatingItem(this.getCreatingDeps(), item.isSelectingForeignKey)
+    const newItem = new TableCreatingItem(this.getMutationDeps(), item.isSelectingForeignKey)
     this.replaceItem(item, newItem)
   }
 
@@ -99,7 +99,7 @@ export class TableStackManager extends StackManager<
       const node = createSchemaNode(table.schema as JsonSchema, { collapse: true })
       const store = new RootNodeStore(node, table.id)
 
-      const newItem = new TableCreatingItem(this.getCreatingDeps(), item.isSelectingForeignKey, store)
+      const newItem = new TableCreatingItem(this.getMutationDeps(), item.isSelectingForeignKey, store)
       this.replaceItem(item, newItem)
     } catch {
       toaster.error({ title: 'Failed to clone table' })
@@ -114,7 +114,7 @@ export class TableStackManager extends StackManager<
       node.submitChanges()
 
       const store = new RootNodeStore(node, table.id)
-      const newItem = new TableUpdatingItem(this.getUpdatingDeps(), item.isSelectingForeignKey, store)
+      const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, store)
       this.replaceItem(item, newItem)
     } catch {
       toaster.error({ title: 'Failed to load table' })
@@ -127,7 +127,7 @@ export class TableStackManager extends StackManager<
   }
 
   private handleCreatingToUpdating(item: TableCreatingItem): void {
-    const newItem = new TableUpdatingItem(this.getUpdatingDeps(), item.isSelectingForeignKey, item.store)
+    const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, item.store)
     this.replaceItem(item, newItem, false)
   }
 
@@ -203,15 +203,7 @@ export class TableStackManager extends StackManager<
     }
   }
 
-  private getCreatingDeps(): TableCreatingItemDeps {
-    return {
-      ...this.getBaseDeps(),
-      mutationDataSource: this.deps.mutationDataSource,
-      tableListRefreshService: this.deps.tableListRefreshService,
-    }
-  }
-
-  private getUpdatingDeps(): TableUpdatingItemDeps {
+  private getMutationDeps(): TableCreatingItemDeps & TableUpdatingItemDeps {
     return {
       ...this.getBaseDeps(),
       mutationDataSource: this.deps.mutationDataSource,

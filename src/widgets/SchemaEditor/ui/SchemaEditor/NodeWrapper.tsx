@@ -69,9 +69,7 @@ export const NodeWrapper: React.FC<NodeWrapperProps & PropsWithChildren> = obser
           )}
           {field}
         </Flex>
-        {node && node.showSettings && !isCollapsed && (
-          <NodeSettings dataTestId={`${dataTestId}-settings`} node={node} />
-        )}
+        {node?.showSettings && !isCollapsed && <NodeSettings dataTestId={`${dataTestId}-settings`} node={node} />}
         {children && !isCollapsed && (
           <Flex
             ml="7px"

@@ -25,5 +25,5 @@ export const NodeFields: React.FC<NodeFieldsProps> = ({ node, dataTestId }) => {
     return <StringNode dataTestId={dataTestId} node={node} />
   }
 
-  return
+  return null
 }

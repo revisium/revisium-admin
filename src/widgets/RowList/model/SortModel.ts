@@ -314,7 +314,7 @@ export class SortModel {
   }
 
   public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {
-    if (!view || !view.sorts || view.sorts.length === 0) {
+    if (!view?.sorts || view.sorts.length === 0) {
       this._sorts = []
       this._appliedSortSnapshot = JSON.stringify(this._sorts)
       this._appliedSorts = []

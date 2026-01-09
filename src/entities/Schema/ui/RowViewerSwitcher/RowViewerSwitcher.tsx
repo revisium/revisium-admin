@@ -21,13 +21,7 @@ export const RowViewerSwitcher: React.FC<ViewerSwitcherProps> = ({ mode, onChang
   const [tooltipOpen, setTooltipOpen] = useState(false)
 
   const currentModes = useMemo(
-    () =>
-      modes.filter((item) => {
-        if (item.mode === ViewerSwitcherMode.RefBy && !availableRefByMode) {
-          return false
-        }
-        return true
-      }),
+    () => modes.filter((item) => !(item.mode === ViewerSwitcherMode.RefBy && !availableRefByMode)),
     [availableRefByMode],
   )
 

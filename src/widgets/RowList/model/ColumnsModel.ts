@@ -477,7 +477,7 @@ export class ColumnsModel {
   }
 
   public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {
-    if (!view || !view.columns) {
+    if (!view?.columns) {
       if (this._schemaStore) {
         const defaultColumns = selectDefaultColumns(this._schemaStore, DEFAULT_VISIBLE_COLUMNS)
         this._visibleColumnIds = defaultColumns.map((item) => item.nodeId)

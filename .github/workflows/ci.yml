@@ -1,8 +1,5 @@
 name: Client CI
 
-permissions:
-  contents: read
-
 on:
   push:
     branches: [master]
@@ -19,6 +16,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     defaults:
       run:
@@ -46,6 +45,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     if: |
       github.ref == 'refs/heads/master' ||
       (github.event_name == 'workflow_dispatch' && inputs.run_e2e)

@@ -5,14 +5,11 @@ import { ObjectNodeStore } from 'src/widgets/SchemaEditor/model/ObjectNodeStore.
 export const getSequenceByNode = (target: SchemaNode, options: { preferDraftParent: boolean }): SchemaNode[] => {
   const result: SchemaNode[] = [target]
 
-  let node = target
   let parent = getParent(target, options?.preferDraftParent)
 
   while (parent) {
     result.push(parent)
-
-    node = parent
-    parent = getParent(node, options?.preferDraftParent)
+    parent = getParent(parent, options?.preferDraftParent)
   }
 
   return result

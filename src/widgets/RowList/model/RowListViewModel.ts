@@ -348,9 +348,7 @@ export class RowListViewModel implements IViewModel {
   }
 
   public revertViewSettings(): void {
-    this.restoreViewFromSaved()
-    this._savedViewsSnapshot = this.getCurrentViewSnapshot()
-    this._hasPendingViewChanges = false
+    this.applyViewSettings()
   }
 
   private ensureViewsData(): void {
@@ -552,20 +550,20 @@ export class RowListViewModel implements IViewModel {
     }
   }
 
-  private handleSearch = (): void => {
+  private readonly handleSearch = (): void => {
     void this.reload()
   }
 
-  private handleFilterChange = (): void => {
+  private readonly handleFilterChange = (): void => {
     void this.reload()
   }
 
-  private handleSortChange = (): void => {
+  private readonly handleSortChange = (): void => {
     void this.reload()
     this.markViewsAsChanged()
   }
 
-  private handleColumnsChange = (): void => {
+  private readonly handleColumnsChange = (): void => {
     this.markViewsAsChanged()
   }
 

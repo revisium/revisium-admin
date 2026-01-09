@@ -90,14 +90,13 @@ const typesSchemas: OptionSchemas[] = [
         default: '',
       }
 
-      if (!('$ref' in currentSchema)) {
-        if (currentSchema.type === JsonSchemaTypeName.Number) {
-          items = currentSchema
-        } else if (currentSchema.type === JsonSchemaTypeName.Boolean) {
-          items = currentSchema
-        } else if (currentSchema.type === JsonSchemaTypeName.String) {
-          items = currentSchema
-        }
+      if (
+        !('$ref' in currentSchema) &&
+        (currentSchema.type === JsonSchemaTypeName.Number ||
+          currentSchema.type === JsonSchemaTypeName.Boolean ||
+          currentSchema.type === JsonSchemaTypeName.String)
+      ) {
+        items = currentSchema
       }
 
       return createSchemaNode({

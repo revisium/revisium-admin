@@ -119,14 +119,14 @@ export class UsersPageViewModel implements IViewModel {
     return new UserItemViewModel(this.context, this.permissionContext, item, this.handleUserRemoved)
   }
 
-  private handleUserAdded = (): void => {
+  private readonly handleUserAdded = (): void => {
     if (this._totalCount !== null) {
       this._totalCount++
     }
     void this.reload()
   }
 
-  private handleUserRemoved = (): void => {
+  private readonly handleUserRemoved = (): void => {
     if (this._totalCount !== null) {
       this._totalCount--
     }

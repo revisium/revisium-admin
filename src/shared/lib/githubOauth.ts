@@ -2,7 +2,7 @@ import { LOGIN_GITHUB_ROUTE, LOGIN_ROUTE } from 'src/shared/config/routes.ts'
 import { buildOAuthState } from './redirectUtils.ts'
 
 export const githubRedirectUrl = () => {
-  return `${window.location.origin}/${LOGIN_ROUTE}/${LOGIN_GITHUB_ROUTE}`
+  return `${globalThis.location.origin}/${LOGIN_ROUTE}/${LOGIN_GITHUB_ROUTE}`
 }
 
 export const githubOauth = (clientId: string, redirectAfterLogin?: string) => {
@@ -14,5 +14,5 @@ export const githubOauth = (clientId: string, redirectAfterLogin?: string) => {
     url += `&state=${encodeURIComponent(state)}`
   }
 
-  window.location.href = url
+  globalThis.location.href = url
 }

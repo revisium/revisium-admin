@@ -42,7 +42,7 @@ export abstract class StackManager<
   }
 
   public resolveToParent(item: TItem, result: TParentResult): void {
-    const foundIndex = this.stack.findIndex((i) => i === item)
+    const foundIndex = this.stack.indexOf(item)
     if (foundIndex === -1) {
       return
     }
@@ -58,7 +58,7 @@ export abstract class StackManager<
   }
 
   public rejectRequest(item: TItem): void {
-    const foundIndex = this.stack.findIndex((i) => i === item)
+    const foundIndex = this.stack.indexOf(item)
 
     if (foundIndex !== -1) {
       const removed = this.stack.splice(foundIndex + 1)
@@ -76,7 +76,7 @@ export abstract class StackManager<
   }
 
   public cancelFromItem(item: TItem): void {
-    const foundIndex = this.stack.findIndex((i) => i === item)
+    const foundIndex = this.stack.indexOf(item)
 
     if (foundIndex === -1) {
       return

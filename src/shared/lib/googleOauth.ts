@@ -2,7 +2,7 @@ import { LOGIN_GOOGLE_ROUTE, LOGIN_ROUTE } from 'src/shared/config/routes.ts'
 import { buildOAuthState } from './redirectUtils.ts'
 
 export const googleRedirectUrl = () => {
-  return `${window.location.origin}/${LOGIN_ROUTE}/${LOGIN_GOOGLE_ROUTE}`
+  return `${globalThis.location.origin}/${LOGIN_ROUTE}/${LOGIN_GOOGLE_ROUTE}`
 }
 
 export const googleOauth = (clientId: string, redirectAfterLogin?: string) => {
@@ -14,5 +14,5 @@ export const googleOauth = (clientId: string, redirectAfterLogin?: string) => {
     url += `&state=${encodeURIComponent(state)}`
   }
 
-  window.location.href = url
+  globalThis.location.href = url
 }

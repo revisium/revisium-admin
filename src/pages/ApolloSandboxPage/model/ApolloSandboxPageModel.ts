@@ -23,7 +23,7 @@ export class ApolloSandboxPageModel {
   public get baseUrl() {
     const url = getEnv('REACT_APP_ENDPOINT_SERVER_URL')
 
-    return `${window.location.origin}${url}/graphql`
+    return `${globalThis.location.origin}${url}/graphql`
   }
 
   public dispose(): void {}

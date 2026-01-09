@@ -9,7 +9,7 @@ export class TableDetailModalModel {
   private _item: TableChangeItem | null = null
   private _isOpen = false
 
-  constructor(private linkMaker: LinkMaker) {
+  constructor(private readonly linkMaker: LinkMaker) {
     makeAutoObservable(this)
   }
 

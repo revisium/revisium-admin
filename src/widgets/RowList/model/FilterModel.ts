@@ -187,7 +187,7 @@ export class FilterModel {
         return 'Value is required'
       }
 
-      if (condition.fieldType === FilterFieldType.Number && isNaN(Number(condition.value))) {
+      if (condition.fieldType === FilterFieldType.Number && Number.isNaN(Number(condition.value))) {
         return 'Invalid number'
       }
     }

@@ -129,7 +129,7 @@ export class AccountSettingsViewModel implements IViewModel {
 
   public logout(): void {
     this.close()
-    window.location.href = `/${LOGOUT_ROUTE}`
+    globalThis.location.href = `/${LOGOUT_ROUTE}`
   }
 
   private resetPasswordForm(): void {

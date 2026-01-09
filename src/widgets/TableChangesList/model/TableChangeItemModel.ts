@@ -5,7 +5,7 @@ import { getChangeTypeBadgeColor, getChangeTypeLabel } from 'src/entities/Change
 type TableChangeItem = GetTableChangesQuery['tableChanges']['edges'][number]['node']
 
 export class TableChangeItemModel {
-  constructor(private _item: TableChangeItem) {
+  constructor(private readonly _item: TableChangeItem) {
     makeAutoObservable(this)
   }
 

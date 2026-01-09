@@ -6,7 +6,7 @@ export function toDateTimeLocalValue(isoString: string | null | undefined): stri
   if (!isoString) return ''
   try {
     const date = new Date(isoString)
-    if (isNaN(date.getTime())) return ''
+    if (Number.isNaN(date.getTime())) return ''
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
@@ -26,7 +26,7 @@ export function fromDateTimeLocalValue(localValue: string): string {
   if (!localValue) return ''
   try {
     const date = new Date(localValue)
-    if (isNaN(date.getTime())) return ''
+    if (Number.isNaN(date.getTime())) return ''
     return date.toISOString()
   } catch {
     return ''

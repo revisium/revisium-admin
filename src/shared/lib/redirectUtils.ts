@@ -23,7 +23,7 @@ export const buildOAuthState = (redirectAfterLogin?: string): string | undefined
 }
 
 export const getRedirectFromSearchParams = (): string | undefined => {
-  const params = new URLSearchParams(window.location.search)
+  const params = new URLSearchParams(globalThis.location.search)
   return getSafeRedirectUrl(params.get('redirect'))
 }
 

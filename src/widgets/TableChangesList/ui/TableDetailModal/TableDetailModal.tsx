@@ -1,5 +1,4 @@
-import { Box, Button, Flex, Text, Portal, Link } from '@chakra-ui/react'
-import { Dialog } from '@chakra-ui/react'
+import { Box, Button, Dialog, Flex, Link, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'

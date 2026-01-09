@@ -47,13 +47,13 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
   }, [autoFocus])
 
   useLayoutEffect(() => {
-    const selection = window.getSelection()
+    const selection = globalThis.getSelection()
     if (selection && cursorPosition.current !== null && ref.current) {
       const maxPosition = (ref.current.textContent || '').length
       const position = Math.min(maxPosition, cursorPosition.current)
 
       const range = document.createRange()
-      const sel = window.getSelection()
+      const sel = globalThis.getSelection()
       const node = ref.current.childNodes.length ? ref.current.childNodes[0] : ref.current
       range.setStart(node, position)
       range.collapse(true)
@@ -68,7 +68,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
   useUpdateEffect(() => {
     if (focusIfDependencyList) {
       ref.current?.focus()
-      const selection = window.getSelection()
+      const selection = globalThis.getSelection()
 
       if (ref.current && selection) {
         const range = document.createRange()
@@ -82,7 +82,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
 
   const handleChange: React.FormEventHandler<HTMLDivElement> = useCallback(
     (event) => {
-      const selection = window.getSelection()
+      const selection = globalThis.getSelection()
       if (selection && selection.rangeCount > 0) {
         cursorPosition.current = selection.getRangeAt(0).startOffset
       }

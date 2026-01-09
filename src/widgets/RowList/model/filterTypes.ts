@@ -7,7 +7,7 @@ import { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 
 export { FilterFieldType, SystemFieldId } from '../config/fieldTypes'
 export { getSystemFieldBySchemaRef, SYSTEM_FIELDS_CONFIG } from '../config/systemFields'
-export { SearchLanguage }
+export { SearchLanguage } from 'src/__generated__/globalTypes'
 
 export enum FilterOperator {
   Equals = 'equals',

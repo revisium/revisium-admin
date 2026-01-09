@@ -1,6 +1,5 @@
-import { IconButtonProps } from '@chakra-ui/react'
+import { IconButton, IconButtonProps } from '@chakra-ui/react'
 import { PiTrash } from 'react-icons/pi'
-import { IconButton } from '@chakra-ui/react'
 import { FC } from 'react'
 
 interface RemoveButtonProps extends IconButtonProps {

@@ -23,8 +23,8 @@ type CurrentSection = 'changes' | 'migrations' | undefined
 
 export class LinkMaker {
   constructor(
-    private projectContext: ProjectContext,
-    private routerService: RouterService,
+    private readonly projectContext: ProjectContext,
+    private readonly routerService: RouterService,
   ) {
     makeAutoObservable(this)
   }

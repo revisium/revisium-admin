@@ -7,7 +7,7 @@ export class TypeFilterModel {
   private _isOpen = false
 
   constructor(
-    private onTypesChange: (types: ChangeType[]) => void,
+    private readonly onTypesChange: (types: ChangeType[]) => void,
     initialTypes: ChangeType[] = [],
   ) {
     this._selectedTypes = initialTypes

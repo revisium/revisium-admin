@@ -20,8 +20,8 @@ type RootNodeStoreState = {
 export class RootNodeStore {
   public viewMode: ViewerSwitcherMode = ViewerSwitcherMode.Tree
 
-  private state: RootNodeStoreState & IViewModel<RootNodeStoreState>
-  private history: NodeHistory = new NodeHistory()
+  private readonly state: RootNodeStoreState & IViewModel<RootNodeStoreState>
+  private readonly history: NodeHistory = new NodeHistory()
 
   constructor(node: SchemaNode = new ObjectNodeStore(), tableId = '') {
     makeAutoObservable(this, {}, { autoBind: true })

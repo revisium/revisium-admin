@@ -29,7 +29,7 @@ export class StringNodeStore {
 
   public $ref: string = ''
 
-  private state: StringNodeStoreState & IViewModel<StringNodeStoreState>
+  private readonly state: StringNodeStoreState & IViewModel<StringNodeStoreState>
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

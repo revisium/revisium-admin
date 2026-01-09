@@ -10,8 +10,8 @@ export class ProjectSettingsPageModel {
   public isDeleteDialogOpen = false
   public deleteConfirmationText = ''
 
-  private updateRequest = ObservableRequest.of(client.updateProject)
-  private deleteRequest = ObservableRequest.of(client.deleteProjectForSettings)
+  private readonly updateRequest = ObservableRequest.of(client.updateProject)
+  private readonly deleteRequest = ObservableRequest.of(client.deleteProjectForSettings)
 
   constructor(
     private readonly context: ProjectContext,

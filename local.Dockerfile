@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:24.11.1-alpine as builder
+FROM --platform=linux/amd64 node:24.11.1-alpine AS builder
 
 WORKDIR /home/app
 
@@ -13,9 +13,9 @@ RUN apk update && apk add git
 
 RUN npm run build
 
-FROM  --platform=linux/amd64 nginx:1.25.3-alpine
+FROM --platform=linux/amd64 nginx:1.25.3-alpine
 
 COPY --from=builder /home/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-
+USER nginx

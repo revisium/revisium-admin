@@ -11,7 +11,7 @@ interface Registration<T> {
 }
 
 class DIContainer {
-  private registrations = new Map<new (...args: any[]) => any, Registration<any>>()
+  private readonly registrations = new Map<new (...args: any[]) => any, Registration<any>>()
 
   public register<T>(token: new (...args: any[]) => T, factory: Factory<T>, options: { scope: Scope }): void {
     this.registrations.set(token, {

@@ -4,7 +4,7 @@ import { container } from 'src/shared/lib'
 type RefreshCallback = () => void
 
 export class RowListRefreshService {
-  private callbacks: Set<RefreshCallback> = new Set()
+  private readonly callbacks: Set<RefreshCallback> = new Set()
 
   constructor() {
     makeAutoObservable(this)

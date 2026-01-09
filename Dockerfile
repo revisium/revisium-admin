@@ -1,4 +1,4 @@
-FROM node:24.11.1-alpine as builder
+FROM node:24.11.1-alpine AS builder
 
 WORKDIR /home/app
 
@@ -20,4 +20,4 @@ FROM nginx:1.25.3-alpine
 COPY --from=builder /home/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-
+USER nginx

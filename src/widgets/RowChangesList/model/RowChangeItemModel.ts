@@ -11,7 +11,7 @@ import {
 export type RowChangeItem = GetRowChangesQuery['rowChanges']['edges'][number]['node']
 
 export class RowChangeItemModel {
-  constructor(private _item: RowChangeItem) {
+  constructor(private readonly _item: RowChangeItem) {
     makeAutoObservable(this)
   }
 

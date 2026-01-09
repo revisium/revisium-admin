@@ -26,7 +26,7 @@ export class NumberNodeStore {
 
   public $ref: string = ''
 
-  private state: NumberNodeStoreState & IViewModel<NumberNodeStoreState>
+  private readonly state: NumberNodeStoreState & IViewModel<NumberNodeStoreState>
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

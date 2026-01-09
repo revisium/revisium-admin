@@ -20,13 +20,13 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
     if (model.isEnabled) {
       setIsDisablePopoverOpen(true)
     } else {
-      void model.enable()
+      model.enable()
     }
   }, [model])
 
   const handleDisableConfirm = useCallback(() => {
     setIsDisablePopoverOpen(false)
-    void model.disable()
+    model.disable()
   }, [model])
 
   const handleDisableCancel = useCallback(() => {

@@ -71,9 +71,7 @@ export const SearchModal: FC<SearchModalProps> = observer(({ model }) => {
                         key={result.rowId}
                         model={result}
                         isSelected={index === model.selectedIndex}
-                        onClick={() => {
-                          void model.navigateToResult(result)
-                        }}
+                        onClick={() => model.navigateToResult(result)}
                       />
                     ))}
                   </VStack>

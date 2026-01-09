@@ -44,6 +44,25 @@ export type AdminUserInput = {
   userId: Scalars['String']['input']
 }
 
+export type ApplyMigrationResultModel = {
+  __typename: 'ApplyMigrationResultModel'
+  error?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  status: ApplyMigrationStatus
+}
+
+/** Status of migration application */
+export enum ApplyMigrationStatus {
+  APPLIED = 'applied',
+  FAILED = 'failed',
+  SKIPPED = 'skipped',
+}
+
+export type ApplyMigrationsInput = {
+  migrations: Array<Scalars['JSON']['input']>
+  revisionId: Scalars['String']['input']
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -495,6 +514,7 @@ export type Mutation = {
   __typename: 'Mutation'
   addUserToOrganization: Scalars['Boolean']['output']
   addUserToProject: Scalars['Boolean']['output']
+  applyMigrations: Array<ApplyMigrationResultModel>
   confirmEmailCode: LoginModel
   createBranchByRevisionId: BranchModel
   createEndpoint: EndpointModel
@@ -537,6 +557,10 @@ export type MutationAddUserToOrganizationArgs = {
 
 export type MutationAddUserToProjectArgs = {
   data: AddUserToProjectInput
+}
+
+export type MutationApplyMigrationsArgs = {
+  data: ApplyMigrationsInput
 }
 
 export type MutationConfirmEmailCodeArgs = {

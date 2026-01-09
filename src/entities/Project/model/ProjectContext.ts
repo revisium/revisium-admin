@@ -39,6 +39,10 @@ export class ProjectContext {
     return this.data.name
   }
 
+  public get branchId(): string {
+    return this.branch.id
+  }
+
   public get branchName(): string {
     return this.branch.name
   }

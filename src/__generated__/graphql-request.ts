@@ -47,6 +47,24 @@ export type AdminUserInput = {
   userId: Scalars['String']['input']
 }
 
+export type ApplyMigrationResultModel = {
+  error?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  status: ApplyMigrationStatus
+}
+
+/** Status of migration application */
+export enum ApplyMigrationStatus {
+  Applied = 'applied',
+  Failed = 'failed',
+  Skipped = 'skipped',
+}
+
+export type ApplyMigrationsInput = {
+  migrations: Array<Scalars['JSON']['input']>
+  revisionId: Scalars['String']['input']
+}
+
 export type BooleanFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>
   not?: InputMaybe<Scalars['Boolean']['input']>
@@ -478,6 +496,7 @@ export type ModifiedRowChangeModel = {
 export type Mutation = {
   addUserToOrganization: Scalars['Boolean']['output']
   addUserToProject: Scalars['Boolean']['output']
+  applyMigrations: Array<ApplyMigrationResultModel>
   confirmEmailCode: LoginModel
   createBranchByRevisionId: BranchModel
   createEndpoint: EndpointModel
@@ -520,6 +539,10 @@ export type MutationAddUserToOrganizationArgs = {
 
 export type MutationAddUserToProjectArgs = {
   data: AddUserToProjectInput
+}
+
+export type MutationApplyMigrationsArgs = {
+  data: ApplyMigrationsInput
 }
 
 export type MutationConfirmEmailCodeArgs = {
@@ -2150,6 +2173,41 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { login: { accessToken: string } }
 
+export type MigrationBranchFragment = {
+  id: string
+  name: string
+  isRoot: boolean
+  head: { id: string }
+  draft: { id: string }
+}
+
+export type GetMigrationBranchesQueryVariables = Exact<{
+  data: GetBranchesInput
+}>
+
+export type GetMigrationBranchesQuery = {
+  branches: {
+    totalCount: number
+    edges: Array<{ node: { id: string; name: string; isRoot: boolean; head: { id: string }; draft: { id: string } } }>
+  }
+}
+
+export type GetBranchMigrationsQueryVariables = Exact<{
+  data: GetRevisionInput
+}>
+
+export type GetBranchMigrationsQuery = {
+  revision: { id: string; migrations: Array<{ [key: string]: any } | string | number | boolean | null> }
+}
+
+export type ApplyMigrationsMutationVariables = Exact<{
+  data: ApplyMigrationsInput
+}>
+
+export type ApplyMigrationsMutation = {
+  applyMigrations: Array<{ id: string; status: ApplyMigrationStatus; error?: string | null }>
+}
+
 export type GetMigrationsQueryVariables = Exact<{
   data: GetRevisionInput
 }>
@@ -3088,6 +3146,19 @@ export const EndpointBranchFragmentDoc = gql`
     }
   }
 `
+export const MigrationBranchFragmentDoc = gql`
+  fragment MigrationBranch on BranchModel {
+    id
+    name
+    isRoot
+    head {
+      id
+    }
+    draft {
+      id
+    }
+  }
+`
 export const TableStackFragmentFragmentDoc = gql`
   fragment TableStackFragment on TableModel {
     id
@@ -3685,6 +3756,36 @@ export const LoginDocument = gql`
   mutation login($data: LoginInput!) {
     login(data: $data) {
       accessToken
+    }
+  }
+`
+export const GetMigrationBranchesDocument = gql`
+  query getMigrationBranches($data: GetBranchesInput!) {
+    branches(data: $data) {
+      totalCount
+      edges {
+        node {
+          ...MigrationBranch
+        }
+      }
+    }
+  }
+  ${MigrationBranchFragmentDoc}
+`
+export const GetBranchMigrationsDocument = gql`
+  query getBranchMigrations($data: GetRevisionInput!) {
+    revision(data: $data) {
+      id
+      migrations
+    }
+  }
+`
+export const ApplyMigrationsDocument = gql`
+  mutation applyMigrations($data: ApplyMigrationsInput!) {
+    applyMigrations(data: $data) {
+      id
+      status
+      error
     }
   }
 `
@@ -4620,6 +4721,51 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         (wrappedRequestHeaders) =>
           client.request<LoginMutation>(LoginDocument, variables, { ...requestHeaders, ...wrappedRequestHeaders }),
         'login',
+        'mutation',
+        variables,
+      )
+    },
+    getMigrationBranches(
+      variables: GetMigrationBranchesQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetMigrationBranchesQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetMigrationBranchesQuery>(GetMigrationBranchesDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getMigrationBranches',
+        'query',
+        variables,
+      )
+    },
+    getBranchMigrations(
+      variables: GetBranchMigrationsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetBranchMigrationsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetBranchMigrationsQuery>(GetBranchMigrationsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getBranchMigrations',
+        'query',
+        variables,
+      )
+    },
+    applyMigrations(
+      variables: ApplyMigrationsMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<ApplyMigrationsMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<ApplyMigrationsMutation>(ApplyMigrationsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'applyMigrations',
         'mutation',
         variables,
       )

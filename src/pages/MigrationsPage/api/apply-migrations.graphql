@@ -1,0 +1,37 @@
+fragment MigrationBranch on BranchModel {
+  id
+  name
+  isRoot
+  head {
+    id
+  }
+  draft {
+    id
+  }
+}
+
+query getMigrationBranches($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    edges {
+      node {
+        ...MigrationBranch
+      }
+    }
+  }
+}
+
+query getBranchMigrations($data: GetRevisionInput!) {
+  revision(data: $data) {
+    id
+    migrations
+  }
+}
+
+mutation applyMigrations($data: ApplyMigrationsInput!) {
+  applyMigrations(data: $data) {
+    id
+    status
+    error
+  }
+}

@@ -30,3 +30,11 @@ export interface RemoveMigration extends BaseMigration {
 }
 
 export type MigrationData = InitMigration | UpdateMigration | RenameMigration | RemoveMigration
+
+export type MigrationDiffStatus = 'apply' | 'skip' | 'conflict' | 'blocked'
+
+export interface MigrationDiffItem {
+  status: MigrationDiffStatus
+  migration: MigrationData
+  reason?: string
+}

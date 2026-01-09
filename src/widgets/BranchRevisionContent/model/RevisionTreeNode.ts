@@ -8,7 +8,7 @@ import { container } from 'src/shared/lib'
 import { showNavigationToast } from 'src/widgets/BranchRevisionContent/lib/showNavigationToast.ts'
 
 export class RevisionTreeNode {
-  private linkMaker: LinkMaker
+  private readonly linkMaker: LinkMaker
 
   constructor(
     private readonly revision: FindRevisionFragment,

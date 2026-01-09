@@ -61,11 +61,7 @@ export class JsonStringValueStore {
   }
 
   public get isValid(): boolean {
-    if (this.schema.foreignKey && !this.value) {
-      return false
-    }
-
-    return true
+    return !(this.schema.foreignKey && !this.value)
   }
 
   public getPlainValue() {

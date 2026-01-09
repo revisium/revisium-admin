@@ -47,7 +47,8 @@ export class JsonObjectStore implements JsonObjectSchema {
     store.name = name
 
     this.required.push(name)
-    return (this.properties[name] = store)
+    this.properties[name] = store
+    return store
   }
 
   public getProperty(name: string): JsonSchemaStore | undefined {

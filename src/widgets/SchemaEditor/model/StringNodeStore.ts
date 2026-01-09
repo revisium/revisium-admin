@@ -152,15 +152,11 @@ export class StringNodeStore {
   }
 
   public get isValid(): boolean {
-    if (this.state.foreignKey && !this.state.foreignKey.draftForeignKey) {
-      return false
-    }
-
-    return true
+    return !(this.state.foreignKey && !this.state.foreignKey.draftForeignKey)
   }
 
   public get isDirtyItself() {
-    return this.state.isDirty || Boolean(this.state.foreignKey && this.state.foreignKey.isDirtyItself)
+    return this.state.isDirty || Boolean(this.state.foreignKey?.isDirtyItself)
   }
 
   public get isDirty() {

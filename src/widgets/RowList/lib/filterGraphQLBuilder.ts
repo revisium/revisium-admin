@@ -8,6 +8,8 @@ import {
   SystemFieldId,
 } from '../model/filterTypes'
 
+type FilterValue = FilterValue
+
 export function buildGraphQLWhere(group: FilterGroup): object | undefined {
   return groupToGraphQL(group)
 }
@@ -128,7 +130,7 @@ function buildSystemFieldFilter(
   systemFieldId: SystemFieldId,
   fieldType: FilterFieldType,
   operator: FilterOperator,
-  value: string | number | boolean | null,
+  value: FilterValue,
 ): object | undefined {
   const whereKey = SYSTEM_FIELD_TO_WHERE_KEY[systemFieldId]
   if (!whereKey) return undefined
@@ -142,7 +144,7 @@ function buildSystemFieldFilter(
 function buildSystemFieldFilterValue(
   fieldType: FilterFieldType,
   operator: FilterOperator,
-  value: string | number | boolean | null,
+  value: FilterValue,
 ): object | undefined {
   switch (operator) {
     case FilterOperator.Equals:
@@ -195,7 +197,7 @@ function buildDataFilter(path: string[], filter: object): object {
   }
 }
 
-function normalizeValue(value: string | number | boolean | null, fieldType: FilterFieldType): unknown {
+function normalizeValue(value: FilterValue, fieldType: FilterFieldType): unknown {
   if (value === null) return null
 
   switch (fieldType) {

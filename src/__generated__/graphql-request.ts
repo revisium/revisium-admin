@@ -1870,18 +1870,6 @@ export type CreateProjectMutationVariables = Exact<{
 
 export type CreateProjectMutation = { createProject: { id: string; name: string; organizationId: string } }
 
-export type CreateEndpointMutationVariables = Exact<{
-  data: CreateEndpointInput
-}>
-
-export type CreateEndpointMutation = { createEndpoint: { id: string; type: EndpointType; createdAt: string } }
-
-export type DeleteEndpointMutationVariables = Exact<{
-  data: DeleteEndpointInput
-}>
-
-export type DeleteEndpointMutation = { deleteEndpoint: boolean }
-
 export type FindForeignKeyQueryVariables = Exact<{
   data: GetRowsInput
 }>
@@ -2032,6 +2020,35 @@ export type EndpointFragment = {
   revision: { id: string; isDraft: boolean; isHead: boolean; createdAt: string; branch: { id: string; name: string } }
 }
 
+export type RevisionWithEndpointsFragment = {
+  id: string
+  comment: string
+  isDraft: boolean
+  isHead: boolean
+  isStart: boolean
+  createdAt: string
+  endpoints: Array<{ id: string; type: EndpointType }>
+}
+
+export type EndpointBranchFragment = {
+  id: string
+  name: string
+  isRoot: boolean
+  head: { id: string }
+  draft: { id: string }
+}
+
+export type GetEndpointBranchesQueryVariables = Exact<{
+  data: GetBranchesInput
+}>
+
+export type GetEndpointBranchesQuery = {
+  branches: {
+    totalCount: number
+    edges: Array<{ node: { id: string; name: string; isRoot: boolean; head: { id: string }; draft: { id: string } } }>
+  }
+}
+
 export type GetProjectEndpointsQueryVariables = Exact<{
   organizationId: Scalars['String']['input']
   projectName: Scalars['String']['input']
@@ -2063,6 +2080,57 @@ export type GetProjectEndpointsQuery = {
     pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
   }
 }
+
+export type GetBranchRevisionsQueryVariables = Exact<{
+  data: GetBranchInput
+  revisionsData: GetBranchRevisionsInput
+}>
+
+export type GetBranchRevisionsQuery = {
+  branch: {
+    revisions: {
+      totalCount: number
+      pageInfo: {
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor?: string | null
+        endCursor?: string | null
+      }
+      edges: Array<{
+        cursor: string
+        node: {
+          id: string
+          comment: string
+          isDraft: boolean
+          isHead: boolean
+          isStart: boolean
+          createdAt: string
+          endpoints: Array<{ id: string; type: EndpointType }>
+        }
+      }>
+    }
+  }
+}
+
+export type CreateEndpointMutationVariables = Exact<{
+  data: CreateEndpointInput
+}>
+
+export type CreateEndpointMutation = {
+  createEndpoint: {
+    id: string
+    type: EndpointType
+    createdAt: string
+    revisionId: string
+    revision: { id: string; isDraft: boolean; isHead: boolean; createdAt: string; branch: { id: string; name: string } }
+  }
+}
+
+export type DeleteEndpointMutationVariables = Exact<{
+  data: DeleteEndpointInput
+}>
+
+export type DeleteEndpointMutation = { deleteEndpoint: boolean }
 
 export type LoginGithubMutationVariables = Exact<{
   data: LoginGithubInput
@@ -2174,16 +2242,6 @@ export type RenameTableForStackMutation = {
   }
 }
 
-export type RowPageItemFragment = {
-  id: string
-  versionId: string
-  createdId: string
-  createdAt: string
-  updatedAt: string
-  readonly: boolean
-  data: { [key: string]: any } | string | number | boolean | null
-}
-
 export type RowPageDataQueryVariables = Exact<{
   rowData: GetRowInput
   tableData: GetTableInput
@@ -2192,25 +2250,8 @@ export type RowPageDataQueryVariables = Exact<{
 
 export type RowPageDataQuery = {
   getRowCountForeignKeysTo: number
-  row?: {
-    id: string
-    versionId: string
-    createdId: string
-    createdAt: string
-    updatedAt: string
-    readonly: boolean
-    data: { [key: string]: any } | string | number | boolean | null
-  } | null
-  table?: {
-    id: string
-    versionId: string
-    createdId: string
-    createdAt: string
-    updatedAt: string
-    readonly: boolean
-    count: number
-    schema: { [key: string]: any } | string | number | boolean | null
-  } | null
+  row?: { id: string; data: { [key: string]: any } | string | number | boolean | null } | null
+  table?: { id: string; schema: { [key: string]: any } | string | number | boolean | null } | null
 }
 
 export type SignUpMutationVariables = Exact<{
@@ -2396,7 +2437,6 @@ export type FindRevisionFragment = {
   isHead: boolean
   isStart: boolean
   createdAt: string
-  endpoints: Array<{ id: string; type: EndpointType }>
 }
 
 export type FindRevisionsQueryVariables = Exact<{
@@ -2416,15 +2456,7 @@ export type FindRevisionsQuery = {
       }
       edges: Array<{
         cursor: string
-        node: {
-          id: string
-          comment: string
-          isDraft: boolean
-          isHead: boolean
-          isStart: boolean
-          createdAt: string
-          endpoints: Array<{ id: string; type: EndpointType }>
-        }
+        node: { id: string; comment: string; isDraft: boolean; isHead: boolean; isStart: boolean; createdAt: string }
       }>
     }
   }
@@ -3029,6 +3061,33 @@ export const EndpointFragmentDoc = gql`
     }
   }
 `
+export const RevisionWithEndpointsFragmentDoc = gql`
+  fragment RevisionWithEndpoints on RevisionModel {
+    id
+    comment
+    isDraft
+    isHead
+    isStart
+    createdAt
+    endpoints {
+      id
+      type
+    }
+  }
+`
+export const EndpointBranchFragmentDoc = gql`
+  fragment EndpointBranch on BranchModel {
+    id
+    name
+    isRoot
+    head {
+      id
+    }
+    draft {
+      id
+    }
+  }
+`
 export const TableStackFragmentFragmentDoc = gql`
   fragment TableStackFragment on TableModel {
     id
@@ -3036,17 +3095,6 @@ export const TableStackFragmentFragmentDoc = gql`
     readonly
     count
     schema
-  }
-`
-export const RowPageItemFragmentDoc = gql`
-  fragment RowPageItem on RowModel {
-    id
-    versionId
-    createdId
-    createdAt
-    updatedAt
-    readonly
-    data
   }
 `
 export const UserProjectItemFragmentDoc = gql`
@@ -3113,10 +3161,6 @@ export const FindRevisionFragmentDoc = gql`
     isHead
     isStart
     createdAt
-    endpoints {
-      id
-      type
-    }
   }
 `
 export const MeProjectListItemFragmentDoc = gql`
@@ -3392,20 +3436,6 @@ export const CreateProjectDocument = gql`
     }
   }
 `
-export const CreateEndpointDocument = gql`
-  mutation createEndpoint($data: CreateEndpointInput!) {
-    createEndpoint(data: $data) {
-      id
-      type
-      createdAt
-    }
-  }
-`
-export const DeleteEndpointDocument = gql`
-  mutation deleteEndpoint($data: DeleteEndpointInput!) {
-    deleteEndpoint(data: $data)
-  }
-`
 export const FindForeignKeyDocument = gql`
   query findForeignKey($data: GetRowsInput!) {
     rows(data: $data) {
@@ -3553,8 +3583,21 @@ export const ConfirmEmailCodeDocument = gql`
     }
   }
 `
+export const GetEndpointBranchesDocument = gql`
+  query getEndpointBranches($data: GetBranchesInput!) {
+    branches(data: $data) {
+      totalCount
+      edges {
+        node {
+          ...EndpointBranch
+        }
+      }
+    }
+  }
+  ${EndpointBranchFragmentDoc}
+`
 export const GetProjectEndpointsDocument = gql`
-  query GetProjectEndpoints(
+  query getProjectEndpoints(
     $organizationId: String!
     $projectName: String!
     $first: Int!
@@ -3588,6 +3631,41 @@ export const GetProjectEndpointsDocument = gql`
     }
   }
   ${EndpointFragmentDoc}
+`
+export const GetBranchRevisionsDocument = gql`
+  query getBranchRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
+    branch(data: $data) {
+      revisions(data: $revisionsData) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            ...RevisionWithEndpoints
+          }
+        }
+      }
+    }
+  }
+  ${RevisionWithEndpointsFragmentDoc}
+`
+export const CreateEndpointDocument = gql`
+  mutation createEndpoint($data: CreateEndpointInput!) {
+    createEndpoint(data: $data) {
+      ...Endpoint
+    }
+  }
+  ${EndpointFragmentDoc}
+`
+export const DeleteEndpointDocument = gql`
+  mutation deleteEndpoint($data: DeleteEndpointInput!) {
+    deleteEndpoint(data: $data)
+  }
 `
 export const LoginGithubDocument = gql`
   mutation loginGithub($data: LoginGithubInput!) {
@@ -3675,21 +3753,15 @@ export const RowPageDataDocument = gql`
     $foreignKeysData: GetRowCountForeignKeysByInput!
   ) {
     row(data: $rowData) {
-      ...RowPageItem
+      id
+      data
     }
     table(data: $tableData) {
       id
-      versionId
-      createdId
-      createdAt
-      updatedAt
-      readonly
-      count
       schema
     }
     getRowCountForeignKeysTo(data: $foreignKeysData)
   }
-  ${RowPageItemFragmentDoc}
 `
 export const SignUpDocument = gql`
   mutation signUp($data: SignUpInput!) {
@@ -4306,36 +4378,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    createEndpoint(
-      variables: CreateEndpointMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateEndpointMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateEndpointMutation>(CreateEndpointDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'createEndpoint',
-        'mutation',
-        variables,
-      )
-    },
-    deleteEndpoint(
-      variables: DeleteEndpointMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<DeleteEndpointMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<DeleteEndpointMutation>(DeleteEndpointDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'deleteEndpoint',
-        'mutation',
-        variables,
-      )
-    },
     findForeignKey(
       variables: FindForeignKeyQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -4468,7 +4510,22 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    GetProjectEndpoints(
+    getEndpointBranches(
+      variables: GetEndpointBranchesQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetEndpointBranchesQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetEndpointBranchesQuery>(GetEndpointBranchesDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getEndpointBranches',
+        'query',
+        variables,
+      )
+    },
+    getProjectEndpoints(
       variables: GetProjectEndpointsQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
     ): Promise<GetProjectEndpointsQuery> {
@@ -4478,8 +4535,53 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'GetProjectEndpoints',
+        'getProjectEndpoints',
         'query',
+        variables,
+      )
+    },
+    getBranchRevisions(
+      variables: GetBranchRevisionsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetBranchRevisionsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetBranchRevisionsQuery>(GetBranchRevisionsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getBranchRevisions',
+        'query',
+        variables,
+      )
+    },
+    createEndpoint(
+      variables: CreateEndpointMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateEndpointMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateEndpointMutation>(CreateEndpointDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createEndpoint',
+        'mutation',
+        variables,
+      )
+    },
+    deleteEndpoint(
+      variables: DeleteEndpointMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<DeleteEndpointMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<DeleteEndpointMutation>(DeleteEndpointDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'deleteEndpoint',
+        'mutation',
         variables,
       )
     },

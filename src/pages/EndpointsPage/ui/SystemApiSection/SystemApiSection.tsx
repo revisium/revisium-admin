@@ -10,10 +10,7 @@ interface SystemApiSectionProps {
 
 export const SystemApiSection: FC<SystemApiSectionProps> = observer(({ model }) => {
   return (
-    <Box mt={8} p={4} borderWidth="1px" borderColor="newGray.100" borderRadius="md">
-      <Text fontSize="sm" fontWeight="500" color="newGray.500" mb={1}>
-        System API
-      </Text>
+    <Box>
       <Text fontSize="xs" color="newGray.400" mb={3}>
         Full access to Revisium management API for projects, branches, revisions, tables, and data
       </Text>

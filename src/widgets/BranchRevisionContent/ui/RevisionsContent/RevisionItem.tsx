@@ -1,8 +1,7 @@
-import { Box, Flex, Text, Badge } from '@chakra-ui/react'
+import { Badge, Box, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { RevisionEndpointPopover } from 'src/features/RevisionEndpointPopover'
 import { Tooltip } from 'src/shared/ui'
 import { RevisionTreeNode } from 'src/widgets/BranchRevisionContent/model/RevisionTreeNode.ts'
 
@@ -11,8 +10,6 @@ interface RevisionItemProps {
 }
 
 export const RevisionItem: FC<RevisionItemProps> = observer(({ model }) => {
-  const [isHovered, setIsHovered] = useState(false)
-
   return (
     <Box
       width="100%"
@@ -22,8 +19,6 @@ export const RevisionItem: FC<RevisionItemProps> = observer(({ model }) => {
       }}
       borderBottom="1px solid"
       borderColor="border.subtle"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <Flex alignItems="center" justifyContent="space-between" paddingY="2" paddingX="3" gap={3}>
         <Link
@@ -62,16 +57,6 @@ export const RevisionItem: FC<RevisionItemProps> = observer(({ model }) => {
             </Text>
           )}
         </Link>
-
-        {(isHovered || model.isOpenEndpointPopover) && (
-          <Box position="relative">
-            <RevisionEndpointPopover
-              isOpen={model.isOpenEndpointPopover}
-              setIsOpen={model.setIsOpenEndpointPopover}
-              model={model.popover}
-            />
-          </Box>
-        )}
       </Flex>
     </Box>
   )

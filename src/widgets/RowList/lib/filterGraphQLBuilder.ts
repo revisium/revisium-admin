@@ -8,7 +8,7 @@ import {
   SystemFieldId,
 } from '../model/filterTypes'
 
-type FilterValue = FilterValue
+type FilterValue = string | number | boolean | null
 
 export function buildGraphQLWhere(group: FilterGroup): object | undefined {
   return groupToGraphQL(group)

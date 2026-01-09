@@ -1,20 +1,18 @@
-import { Box, Flex, Spinner, Text, Button, HStack, VStack } from '@chakra-ui/react'
+import { Box, Button, Flex, HStack, HoverCard, Icon, Portal, Spinner, Tabs, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { PiPlugLight, PiPlusLight } from 'react-icons/pi'
-import { EndpointsPageViewModel } from 'src/pages/EndpointsPage/model/EndpointsPageViewModel.ts'
+import { PiInfoLight, PiPlusLight } from 'react-icons/pi'
+import { EndpointsPageViewModel, TabType } from 'src/pages/EndpointsPage/model/EndpointsPageViewModel.ts'
 import { useViewModel } from 'src/shared/lib'
-import { Page } from 'src/shared/ui'
+import { Page, Tooltip } from 'src/shared/ui'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
-import { BranchFilterPopover } from '../BranchFilterPopover/BranchFilterPopover'
-import { TypeFilterPopover } from '../TypeFilterPopover/TypeFilterPopover'
-import { CreateEndpointModal } from '../CreateEndpointModal/CreateEndpointModal'
-import { EndpointCard } from '../EndpointCard/EndpointCard'
-import { SystemApiSection } from '../SystemApiSection/SystemApiSection'
+import { CreateEndpointDialog } from '../CreateEndpointDialog/CreateEndpointDialog.tsx'
+import { EndpointTabContent } from '../EndpointTabContent/EndpointTabContent.tsx'
+import { SystemApiSection } from '../SystemApiSection/SystemApiSection.tsx'
 
 export const EndpointsPage = observer(() => {
   const model = useViewModel(EndpointsPageViewModel)
 
-  if (model.showInitialLoading) {
+  if (model.isLoading) {
     return (
       <Page sidebar={<ProjectSidebar />}>
         <Flex justify="center" align="center" height="200px">
@@ -24,7 +22,7 @@ export const EndpointsPage = observer(() => {
     )
   }
 
-  if (model.showError) {
+  if (model.isError) {
     return (
       <Page sidebar={<ProjectSidebar />}>
         <Flex justify="center" align="center" height="200px">
@@ -34,97 +32,111 @@ export const EndpointsPage = observer(() => {
     )
   }
 
-  if (model.showNoEndpoints) {
-    return (
-      <Page sidebar={<ProjectSidebar />}>
-        <Box mb="4rem">
-          <Flex justify="center" align="center" height="200px" flexDirection="column" gap={4}>
-            <Box textAlign="center">
-              <PiPlugLight size={48} color="var(--chakra-colors-newGray-400)" style={{ margin: '0 auto' }} />
-              <Text color="newGray.400" mt={2}>
-                No endpoints found
-              </Text>
-              <Text fontSize="xs" color="newGray.400" mt={1}>
-                Create endpoints to expose your data via GraphQL or REST API
-              </Text>
-            </Box>
-            {model.canCreateEndpoint && (
-              <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()} focusRing="none">
-                <PiPlusLight />
-                Create endpoint
-              </Button>
-            )}
-          </Flex>
-
-          <SystemApiSection model={model.systemApi} />
-        </Box>
-        <CreateEndpointModal model={model.createModal} />
-      </Page>
-    )
-  }
-
   return (
     <Page sidebar={<ProjectSidebar />}>
       <Box mb="4rem">
-        <Flex justify="space-between" align="center" marginBottom="0.5rem">
+        <HStack justify="space-between" align="flex-start" mb={1}>
           <Text fontSize="20px" fontWeight="600" color="newGray.500">
-            Endpoints ({model.totalCount})
+            Endpoints
           </Text>
-          <HStack gap={2}>
-            {model.canCreateEndpoint && (
-              <Button color="gray" variant="ghost" size="sm" onClick={() => model.createModal.open()}>
+          {model.canCreateEndpoint && (
+            <Tooltip content="Create endpoint for a specific revision (not just Draft/Head)">
+              <Button size="xs" variant="ghost" color="newGray.400" onClick={model.openCreateDialog}>
                 <PiPlusLight />
-                Create
+                Add custom
               </Button>
-            )}
-            <TypeFilterPopover
-              selectedType={model.selectedType}
-              selectedTypeName={model.selectedTypeName}
-              onSelect={(type) => model.setSelectedType(type)}
+            </Tooltip>
+          )}
+        </HStack>
+        <HStack gap={1} mb={6}>
+          <Text fontSize="xs" color="newGray.400">
+            Auto-generated APIs from your table schemas.
+          </Text>
+          <HoverCard.Root openDelay={200} closeDelay={100}>
+            <HoverCard.Trigger>
+              <Icon as={PiInfoLight} color="newGray.400" cursor="help" />
+            </HoverCard.Trigger>
+            <Portal>
+              <HoverCard.Positioner>
+                <HoverCard.Content maxWidth="360px" p={3}>
+                  <HoverCard.Arrow>
+                    <HoverCard.ArrowTip />
+                  </HoverCard.Arrow>
+                  <VStack align="start" gap={3}>
+                    <Text fontSize="xs" color="newGray.600">
+                      Each branch has two revisions:
+                    </Text>
+                    <VStack align="start" gap={1}>
+                      <Text fontSize="xs" color="newGray.600">
+                        <Text as="span" fontWeight="600">
+                          Draft
+                        </Text>{' '}
+                        — working revision. Edit tables and data here, changes apply immediately.
+                      </Text>
+                      <Text fontSize="xs" color="newGray.600">
+                        <Text as="span" fontWeight="600">
+                          Head
+                        </Text>{' '}
+                        — published revision. Read-only, updates when you commit Draft.
+                      </Text>
+                    </VStack>
+                    <VStack align="start" gap={0}>
+                      <Text fontSize="xs" color="newGray.500">
+                        Typical workflow: make changes in Draft, then commit to publish them to Head.
+                      </Text>
+                      <Text fontSize="xs" color="newGray.500">
+                        Use Draft for dev/preview, Head for production (or connect to Draft directly if you prefer live
+                        updates).
+                      </Text>
+                    </VStack>
+                    <Text fontSize="xs" color="newGray.500">
+                      You can also create endpoints for any saved version.
+                    </Text>
+                  </VStack>
+                </HoverCard.Content>
+              </HoverCard.Positioner>
+            </Portal>
+          </HoverCard.Root>
+        </HStack>
+
+        <Tabs.Root
+          value={model.selectedTab}
+          onValueChange={(e) => model.setSelectedTab(e.value as TabType)}
+          variant="line"
+        >
+          <Tabs.List mb={4}>
+            <Tabs.Trigger value="graphql">GraphQL</Tabs.Trigger>
+            <Tabs.Trigger value="rest-api">REST API</Tabs.Trigger>
+            <Tabs.Trigger value="system-api">System API</Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="graphql">
+            <EndpointTabContent
+              branchSections={model.branchSections}
+              customEndpoints={model.customEndpoints}
+              hasCustomEndpoints={model.hasCustomEndpoints}
+              canDeleteEndpoint={model.canDeleteEndpoint}
+              onDeleteEndpoint={model.deleteCustomEndpoint}
             />
-            <BranchFilterPopover
-              branches={model.branches}
-              selectedBranchName={model.selectedBranchName}
-              selectedBranchLabel={model.selectedBranchLabel}
-              onSelect={(branchName) => model.setSelectedBranchName(branchName)}
+          </Tabs.Content>
+
+          <Tabs.Content value="rest-api">
+            <EndpointTabContent
+              branchSections={model.branchSections}
+              customEndpoints={model.customEndpoints}
+              hasCustomEndpoints={model.hasCustomEndpoints}
+              canDeleteEndpoint={model.canDeleteEndpoint}
+              onDeleteEndpoint={model.deleteCustomEndpoint}
             />
-          </HStack>
-        </Flex>
-        <Text fontSize="xs" color="newGray.400" marginBottom="1.5rem">
-          Auto-generated APIs based on your table schemas. Create endpoints for specific branch revisions to expose your
-          data via GraphQL or REST.
-        </Text>
+          </Tabs.Content>
 
-        {model.isFilterLoading ? (
-          <Flex justify="center" align="center" height="200px">
-            <Spinner />
-          </Flex>
-        ) : model.showEmptyFiltered ? (
-          <Flex justify="center" align="center" height="200px" flexDirection="column" gap={2}>
-            <PiPlugLight size={48} color="var(--chakra-colors-newGray-400)" />
-            <Text color="newGray.400">No endpoints match the selected filters</Text>
-          </Flex>
-        ) : model.showList ? (
-          <>
-            <VStack align="stretch" gap={3}>
-              {model.items.map((itemModel) => (
-                <EndpointCard key={itemModel.id} model={itemModel} />
-              ))}
-            </VStack>
-
-            {model.hasNextPage && (
-              <Flex justify="center" mt={4}>
-                <Button variant="plain" onClick={() => model.tryToFetchNextPage()} loading={model.isLoading}>
-                  Load more
-                </Button>
-              </Flex>
-            )}
-          </>
-        ) : null}
-
-        <SystemApiSection model={model.systemApi} />
+          <Tabs.Content value="system-api">
+            <SystemApiSection model={model.systemApi} />
+          </Tabs.Content>
+        </Tabs.Root>
       </Box>
-      <CreateEndpointModal model={model.createModal} />
+
+      {model.createDialog && <CreateEndpointDialog model={model.createDialog} />}
     </Page>
   )
 })

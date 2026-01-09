@@ -9,3 +9,7 @@ export class EnvironmentService {
     return undefined
   }
 }
+
+export const client = {
+  getBranchRevisions: jest.fn(),
+}

@@ -1,7 +1,0 @@
-mutation createEndpoint($data: CreateEndpointInput!) {
-  createEndpoint(data: $data) {
-    id
-    type
-    createdAt
-  }
-}

@@ -9,6 +9,10 @@ export const invariant = (condition: unknown, message: string): asserts conditio
   }
 }
 
+export const getOrigin = jest.fn(() => 'https://example.com')
+
+export const copyToClipboard = jest.fn().mockResolvedValue(undefined)
+
 export { StackItem, StackManager, createStackRequest, createStackContext } from '../src/shared/lib/Stack'
 export type { StackRequest } from '../src/shared/lib/Stack'
 export { ObservableRequest } from '../src/shared/lib/ObservableRequest'

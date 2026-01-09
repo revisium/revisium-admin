@@ -5,10 +5,6 @@ fragment FindRevision on RevisionModel {
   isHead
   isStart
   createdAt
-  endpoints {
-    id
-    type
-  }
 }
 
 query findRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {

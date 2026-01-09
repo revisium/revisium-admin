@@ -1,0 +1,15 @@
+query rowPageData(
+  $rowData: GetRowInput!
+  $tableData: GetTableInput!
+  $foreignKeysData: GetRowCountForeignKeysByInput!
+) {
+  row(data: $rowData) {
+    id
+    data
+  }
+  table(data: $tableData) {
+    id
+    schema
+  }
+  getRowCountForeignKeysTo(data: $foreignKeysData)
+}

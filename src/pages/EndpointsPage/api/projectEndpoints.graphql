@@ -15,7 +15,43 @@ fragment Endpoint on EndpointModel {
   }
 }
 
-query GetProjectEndpoints(
+fragment RevisionWithEndpoints on RevisionModel {
+  id
+  comment
+  isDraft
+  isHead
+  isStart
+  createdAt
+  endpoints {
+    id
+    type
+  }
+}
+
+fragment EndpointBranch on BranchModel {
+  id
+  name
+  isRoot
+  head {
+    id
+  }
+  draft {
+    id
+  }
+}
+
+query getEndpointBranches($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    edges {
+      node {
+        ...EndpointBranch
+      }
+    }
+  }
+}
+
+query getProjectEndpoints(
   $organizationId: String!
   $projectName: String!
   $first: Int!
@@ -47,4 +83,34 @@ query GetProjectEndpoints(
     }
     totalCount
   }
+}
+
+query getBranchRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
+  branch(data: $data) {
+    revisions(data: $revisionsData) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      edges {
+        cursor
+        node {
+          ...RevisionWithEndpoints
+        }
+      }
+    }
+  }
+}
+
+mutation createEndpoint($data: CreateEndpointInput!) {
+  createEndpoint(data: $data) {
+    ...Endpoint
+  }
+}
+
+mutation deleteEndpoint($data: DeleteEndpointInput!) {
+  deleteEndpoint(data: $data)
 }

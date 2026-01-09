@@ -3,16 +3,12 @@ import { makeAutoObservable } from 'mobx'
 import { FindRevisionFragment } from 'src/__generated__/graphql-request.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { RevisionEndpointPopoverModel } from 'src/features/RevisionEndpointPopover'
 import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
 import { showNavigationToast } from 'src/widgets/BranchRevisionContent/lib/showNavigationToast.ts'
 
 export class RevisionTreeNode {
-  public isOpenEndpointPopover: boolean = false
-
   private linkMaker: LinkMaker
-  private _popover: RevisionEndpointPopoverModel | null = null
 
   constructor(
     private readonly revision: FindRevisionFragment,
@@ -21,14 +17,6 @@ export class RevisionTreeNode {
     this.linkMaker = container.get(LinkMaker)
 
     makeAutoObservable(this, {}, { autoBind: true })
-  }
-
-  public get popover() {
-    if (!this._popover) {
-      this._popover = new RevisionEndpointPopoverModel(this.context, this.revision)
-    }
-
-    return this._popover
   }
 
   public get id(): string {
@@ -110,9 +98,5 @@ export class RevisionTreeNode {
       path: this.toastPath,
       isReadonly: this.isReadonly,
     })
-  }
-
-  public setIsOpenEndpointPopover(value: boolean) {
-    this.isOpenEndpointPopover = value
   }
 }

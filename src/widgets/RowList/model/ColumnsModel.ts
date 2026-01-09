@@ -58,12 +58,12 @@ interface CachedRowData {
 export class ColumnsModel {
   private _visibleColumnIds: string[] = []
   private _availableFields: AvailableField[] = []
-  private _availableFieldsMap = new Map<string, AvailableField>()
+  private readonly _availableFieldsMap = new Map<string, AvailableField>()
   private _availableSystemFields: AvailableField[] = []
   private _schemaStore: ReturnType<typeof createJsonSchemaStore> | null = null
-  private _rowCache = new Map<string, CachedRowData>()
-  private _columnCache = new Map<string, ColumnType>()
-  private _columnWidths = observable.map<string, number>()
+  private readonly _rowCache = new Map<string, CachedRowData>()
+  private readonly _columnCache = new Map<string, ColumnType>()
+  private readonly _columnWidths = observable.map<string, number>()
   private _idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
   private _onColumnsChange: (() => void) | null = null
 

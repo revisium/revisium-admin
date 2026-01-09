@@ -29,7 +29,7 @@ export class ObjectNodeStore {
 
   public $ref: string = ''
 
-  private state: ObjectNodeStoreState & IViewModel<ObjectNodeStoreState>
+  private readonly state: ObjectNodeStoreState & IViewModel<ObjectNodeStoreState>
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

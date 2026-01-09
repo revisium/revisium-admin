@@ -9,7 +9,7 @@ export class TableFilterModel {
   private _tables: TableForFilter[] = []
 
   constructor(
-    private onTableChange: (tableId: string | null) => void,
+    private readonly onTableChange: (tableId: string | null) => void,
     initialTableId: string | null = null,
   ) {
     this._selectedTableId = initialTableId

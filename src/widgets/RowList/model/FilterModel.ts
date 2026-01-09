@@ -28,7 +28,7 @@ export class FilterModel {
   private _appliedGroup: FilterGroup | null = null
   private _hasPendingChanges = false
   private _showValidationErrors = false
-  private _validationErrors = observable.map<string, string>()
+  private readonly _validationErrors = observable.map<string, string>()
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

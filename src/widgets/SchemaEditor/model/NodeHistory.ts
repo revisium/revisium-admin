@@ -42,8 +42,8 @@ type StackItemMove = {
 type StackItem = StackItemAdd | StackItemRemove | StackItemReplace | StackItemMove
 
 export class NodeHistory {
-  private stack: StackItem[] = []
-  private setIdMap = new Set<string>()
+  private readonly stack: StackItem[] = []
+  private readonly setIdMap = new Set<string>()
 
   constructor() {}
 

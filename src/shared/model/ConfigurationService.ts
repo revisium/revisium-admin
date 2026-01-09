@@ -9,7 +9,7 @@ export class ConfigurationService {
 
   private data: ConfigurationQuery['configuration'] | null = null
 
-  constructor(private apiService: ApiService) {
+  constructor(private readonly apiService: ApiService) {
     makeAutoObservable(this)
 
     void this.init()

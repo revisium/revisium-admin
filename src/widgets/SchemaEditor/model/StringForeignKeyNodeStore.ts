@@ -15,7 +15,7 @@ export class StringForeignKeyNodeStore {
   public nodeId = nanoid()
   public readonly type: NodeStoreType = NodeStoreType.StringForeignKey
 
-  private state: StringForeignKeyNodeStoreState & IViewModel<StringForeignKeyNodeStoreState>
+  private readonly state: StringForeignKeyNodeStoreState & IViewModel<StringForeignKeyNodeStoreState>
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

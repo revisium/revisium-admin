@@ -5,8 +5,8 @@ import { ConfigurationService } from 'src/shared/model/ConfigurationService.ts'
 
 export class BootstrapService {
   constructor(
-    private authService: AuthService,
-    private configurationService: ConfigurationService,
+    private readonly authService: AuthService,
+    private readonly configurationService: ConfigurationService,
   ) {
     makeAutoObservable(this)
   }

@@ -6,7 +6,7 @@ import { Actions, PermissionRule, Subjects } from './types.ts'
 type AppAbility = MongoAbility<[Actions, Subjects]>
 
 export class AbilityService {
-  private ability: AppAbility = createMongoAbility<[Actions, Subjects]>()
+  private readonly ability: AppAbility = createMongoAbility<[Actions, Subjects]>()
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })

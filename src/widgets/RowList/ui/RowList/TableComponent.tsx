@@ -8,7 +8,6 @@ interface TableProps {
 export const TableComponent: React.FC<TableProps> = ({ style, children, ...props }) => (
   <table
     {...props}
-    role="grid"
     style={{
       ...style,
       width: 'max-content',

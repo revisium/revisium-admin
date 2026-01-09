@@ -1,7 +1,7 @@
 import { MigrationData } from 'src/pages/MigrationsPage/config/types.ts'
-import { JsonPatchOperation, PatchData, PatchItemModel } from '../model/PatchItemModel'
+import { JsonPatchOperation, PatchData } from '../model/MigrationItemViewModel.ts'
 
-export function parsePatches(migrations: MigrationData[]): PatchItemModel[] {
+export function parsePatches(migrations: MigrationData[]): PatchData[] {
   const patches: PatchData[] = []
 
   for (const migration of migrations) {
@@ -36,5 +36,5 @@ export function parsePatches(migrations: MigrationData[]): PatchItemModel[] {
     }
   }
 
-  return patches.map((patchData) => new PatchItemModel(patchData))
+  return patches
 }

@@ -1,14 +1,16 @@
 import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
-import { MigrationsViewModel } from 'src/pages/MigrationsPage/model/MigrationsViewModel.ts'
-import { MigrationsTableView } from 'src/pages/MigrationsPage/ui/MigrationsTableView/MigrationsTableView'
-import { MigrationsViewSwitcher } from 'src/pages/MigrationsPage/ui/MigrationsViewSwitcher/MigrationsViewSwitcher'
+import { MigrationsPageViewModel } from 'src/pages/MigrationsPage/model/MigrationsPageViewModel.ts'
+import { ApplyFromBranchDialog } from 'src/pages/MigrationsPage/ui/ApplyFromBranchDialog/ApplyFromBranchDialog.tsx'
+import { ApplyMigrationsDialog } from 'src/pages/MigrationsPage/ui/ApplyMigrationsDialog/ApplyMigrationsDialog.tsx'
+import { MigrationsHeader } from 'src/pages/MigrationsPage/ui/MigrationsHeader/MigrationsHeader.tsx'
+import { MigrationsList } from 'src/pages/MigrationsPage/ui/MigrationsList/MigrationsList.tsx'
 import { useViewModel } from 'src/shared/lib'
 import { JsonCard } from 'src/shared/ui'
 
 export const MigrationsPage = observer(() => {
-  const model = useViewModel(MigrationsViewModel)
+  const model = useViewModel(MigrationsPageViewModel)
 
   if (model.showLoading) {
     return (
@@ -28,27 +30,47 @@ export const MigrationsPage = observer(() => {
 
   if (model.showEmpty) {
     return (
-      <Flex justify="center" align="center" height="200px">
-        <Text color="newGray.400">No migrations found</Text>
-      </Flex>
+      <Box mb="4rem">
+        <MigrationsHeader
+          totalCount={0}
+          branchName={model.branchName}
+          viewMode={model.viewMode}
+          canApplyMigrations={model.canApplyMigrations}
+          onViewModeChange={model.setViewMode}
+          onApplyFromJson={model.openApplyDialog}
+          onApplyFromBranch={model.openApplyFromBranchDialog}
+        />
+        <Flex justify="center" align="center" height="200px">
+          <Text color="newGray.400">No migrations found</Text>
+        </Flex>
+
+        {model.applyDialog && <ApplyMigrationsDialog model={model.applyDialog} />}
+        {model.applyFromBranchDialog && <ApplyFromBranchDialog model={model.applyFromBranchDialog} />}
+      </Box>
     )
   }
 
   if (model.showList) {
     return (
       <Box mb="4rem">
-        <Flex justify="space-between" align="center" marginBottom="3rem">
-          <Text fontSize="20px" fontWeight="600" color="newGray.500">
-            {model.isTableMode ? `Latest operations (${model.totalCount})` : `Migrations (${model.data.length})`}
-          </Text>
-          <MigrationsViewSwitcher mode={model.viewMode} onChange={(mode) => model.setViewMode(mode)} />
-        </Flex>
+        <MigrationsHeader
+          totalCount={model.totalCount}
+          branchName={model.branchName}
+          viewMode={model.viewMode}
+          canApplyMigrations={model.canApplyMigrations}
+          onViewModeChange={model.setViewMode}
+          onApplyFromJson={model.openApplyDialog}
+          onApplyFromBranch={model.openApplyFromBranchDialog}
+        />
 
         {model.isTableMode ? (
-          <MigrationsTableView model={model} />
+          <MigrationsList items={model.items} />
         ) : (
           <JsonCard readonly data={model.data as unknown as JsonValue} />
         )}
+
+        {model.applyDialog && <ApplyMigrationsDialog model={model.applyDialog} />}
+        {model.applyFromBranchDialog && <ApplyFromBranchDialog model={model.applyFromBranchDialog} />}
       </Box>
     )
   }

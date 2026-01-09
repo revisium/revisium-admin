@@ -213,7 +213,7 @@ export abstract class BaseApplyMigrationsDialogViewModel {
       setTimeout(() => {
         this._virtuosoRef?.scrollToIndex({
           index: this._diffResult.length - 1,
-          behavior: 'smooth',
+          behavior: 'auto',
         })
       }, 100)
     }

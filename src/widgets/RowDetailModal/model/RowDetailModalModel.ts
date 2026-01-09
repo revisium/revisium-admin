@@ -15,7 +15,7 @@ export class RowDetailModalModel {
   private _item: RowChangeItem | null = null
   private _isOpen = false
 
-  constructor(private linkMaker: LinkMaker) {
+  constructor(private readonly linkMaker: LinkMaker) {
     makeAutoObservable(this)
   }
 

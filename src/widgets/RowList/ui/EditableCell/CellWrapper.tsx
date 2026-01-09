@@ -5,7 +5,8 @@ import { FC, PropsWithChildren, useCallback, useRef } from 'react'
 import { CellPosition, getClickOffset, getCellPosition } from '../../lib/getClickOffset'
 import { CellState } from '../../model/CellViewModel'
 
-export type { CellState, CellPosition }
+export type { CellPosition } from '../../lib/getClickOffset'
+export type { CellState } from '../../model/CellViewModel'
 
 interface CellWrapperProps extends PropsWithChildren {
   state: CellState

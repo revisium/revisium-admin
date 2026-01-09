@@ -188,7 +188,7 @@ export class ArrayValueNode extends BaseValueNode {
   }
 
   public deleteChild(child: BaseValueNode) {
-    const index = this.store.value.findIndex((item) => item === child.getStore())
+    const index = this.store.value.indexOf(child.getStore())
 
     this.store.removeItem(index)
     this.children.splice(index, 1)

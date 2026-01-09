@@ -1,5 +1,4 @@
-import { IconButtonProps } from '@chakra-ui/react'
-import { IconButton } from '@chakra-ui/react'
+import { IconButton, IconButtonProps } from '@chakra-ui/react'
 import { FC } from 'react'
 import { PiDotsThreeVerticalBold } from 'react-icons/pi'
 

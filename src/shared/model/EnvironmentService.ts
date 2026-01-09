@@ -14,10 +14,10 @@ export class EnvironmentService {
   constructor() {}
 
   public get(key: Envs): string | undefined {
-    const windowValue = window.__env__?.[key]
+    const runtimeValue = (globalThis as unknown as Window).__env__?.[key]
     const processValue = import.meta.env[key]
 
-    return windowValue || processValue
+    return runtimeValue || processValue
   }
 }
 

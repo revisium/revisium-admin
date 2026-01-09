@@ -11,7 +11,7 @@ type ENVS =
 
 export const getEnv = (value: ENVS) => {
   const metaEnv = import.meta.env[value]
-  const runtimeEnv = window.__env__?.[value]
+  const runtimeEnv = (globalThis as unknown as Window).__env__?.[value]
 
   return runtimeEnv || metaEnv
 }

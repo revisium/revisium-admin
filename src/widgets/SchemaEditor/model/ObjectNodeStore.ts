@@ -119,13 +119,13 @@ export class ObjectNodeStore {
   public get addedProperties(): SchemaNode[] {
     return this.draftProperties.filter(
       (property) =>
-        !property.parent && !this.properties.find((previousProperty) => previousProperty.nodeId === property.nodeId),
+        !property.parent && !this.properties.some((previousProperty) => previousProperty.nodeId === property.nodeId),
     )
   }
 
   public get removedProperties(): SchemaNode[] {
     return this.properties.filter((previousProperty) => {
-      const isNotReplacedProperty = !this.draftProperties.find(
+      const isNotReplacedProperty = !this.draftProperties.some(
         (property) => property.nodeId === previousProperty.nodeId,
       )
       return !previousProperty.draftConnectedToParent && isNotReplacedProperty
@@ -133,7 +133,7 @@ export class ObjectNodeStore {
   }
 
   public get notChangedProperties(): SchemaNode[] {
-    return this.properties.filter((property) => this.draftProperties.find((item) => item === property))
+    return this.properties.filter((property) => this.draftProperties.some((item) => item === property))
   }
 
   public get replacedProperties(): { previousProperty: SchemaNode; currentProperty: SchemaNode }[] {
@@ -211,7 +211,7 @@ export class ObjectNodeStore {
       })
     }
 
-    const sortedRequired = required.sort((a, b) => a.localeCompare(b))
+    const sortedRequired = [...required].sort((a, b) => a.localeCompare(b))
 
     const schema: JsonObjectSchema = {
       type: JsonSchemaTypeName.Object,
@@ -304,14 +304,14 @@ export class ObjectNodeStore {
     if (property.draftParent instanceof ObjectNodeStore) {
       property.draftParent.removeProperty(property.nodeId)
     } else if (property.draftParent instanceof ArrayNodeStore) {
-      throw new Error('Invalid parent')
+      throw new TypeError('Invalid parent')
     }
     property.setParent(this)
 
     this.createIfNeededNextProperties()
 
-    const foundBeforeIndex = this.state.properties.findIndex((property) => property === options?.beforeNode)
-    const foundAfterIndex = this.state.properties.findIndex((property) => property === options?.afterNode)
+    const foundBeforeIndex = this.state.properties.indexOf(options?.beforeNode as SchemaNode)
+    const foundAfterIndex = this.state.properties.indexOf(options?.afterNode as SchemaNode)
 
     if (foundBeforeIndex !== -1) {
       this.state.properties.splice(foundBeforeIndex, 0, property)

@@ -28,9 +28,7 @@ class DIContainer {
     }
 
     if (registration.scope === 'singleton') {
-      if (!registration.instance) {
-        registration.instance = registration.factory()
-      }
+      registration.instance ??= registration.factory()
       return registration.instance
     }
 

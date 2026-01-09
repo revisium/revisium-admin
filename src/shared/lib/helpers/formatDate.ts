@@ -9,7 +9,7 @@ export function formatDate(
 
   const parsedDate = new Date(date)
 
-  if (isNaN(parsedDate.getTime())) {
+  if (Number.isNaN(parsedDate.getTime())) {
     console.warn('Invalid date:', date)
 
     return ''

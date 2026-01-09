@@ -20,9 +20,9 @@ import { SortModel } from './SortModel'
 import { ColumnType } from './types'
 import { ViewSettingsBadgeModel } from '../ui/ViewSettingsBadge'
 
-const PAGE_SIZE = 50
+export type { ColumnType } from './types'
 
-export type { ColumnType }
+const PAGE_SIZE = 50
 
 export class RowListViewModel implements IViewModel {
   public readonly search: SearchController
@@ -352,12 +352,10 @@ export class RowListViewModel implements IViewModel {
   }
 
   private ensureViewsData(): void {
-    if (!this._viewsData) {
-      this._viewsData = {
-        version: 1,
-        defaultViewId: 'default',
-        views: [],
-      }
+    this._viewsData ??= {
+      version: 1,
+      defaultViewId: 'default',
+      views: [],
     }
   }
 

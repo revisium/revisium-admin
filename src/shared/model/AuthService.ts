@@ -18,8 +18,10 @@ export class AuthService {
     private readonly permissionContext: PermissionContext,
   ) {
     makeAutoObservable(this)
+  }
 
-    void this.init()
+  public async initialize(): Promise<void> {
+    await this.init()
   }
 
   public async setToken(token: string | null) {
@@ -88,7 +90,9 @@ container.register(
   () => {
     const apiService = container.get(ApiService)
     const permissionContext = container.get(PermissionContext)
-    return new AuthService(localStorage, apiService, permissionContext)
+    const authService = new AuthService(localStorage, apiService, permissionContext)
+    void authService.initialize()
+    return authService
   },
   { scope: 'singleton' },
 )

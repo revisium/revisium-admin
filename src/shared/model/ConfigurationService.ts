@@ -11,8 +11,10 @@ export class ConfigurationService {
 
   constructor(private readonly apiService: ApiService) {
     makeAutoObservable(this)
+  }
 
-    void this.init()
+  public async initialize(): Promise<void> {
+    await this.init()
   }
 
   public get availableSignUp() {
@@ -81,7 +83,9 @@ container.register(
   ConfigurationService,
   () => {
     const apiService = container.get(ApiService)
-    return new ConfigurationService(apiService)
+    const configurationService = new ConfigurationService(apiService)
+    void configurationService.initialize()
+    return configurationService
   },
   { scope: 'singleton' },
 )

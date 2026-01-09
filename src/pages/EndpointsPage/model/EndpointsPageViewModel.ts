@@ -117,9 +117,7 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   public openCreateDialog(): void {
-    if (!this._createDialogViewModel) {
-      this._createDialogViewModel = this.createDialogFactory.create(this._branches, this.handleEndpointChanged)
-    }
+    this._createDialogViewModel ??= this.createDialogFactory.create(this._branches, this.handleEndpointChanged)
     this._createDialogViewModel.open()
   }
 

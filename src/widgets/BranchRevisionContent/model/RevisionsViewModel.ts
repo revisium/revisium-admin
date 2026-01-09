@@ -25,7 +25,7 @@ export class RevisionsViewModel implements IViewModel {
 
   private branchDisposer: IReactionDisposer | null = null
 
-  constructor(private context: ProjectContext) {
+  constructor(private readonly context: ProjectContext) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 

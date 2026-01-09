@@ -147,7 +147,7 @@ export class RootNodeStore {
   }
 
   public setForeignKeyValue(foreignKeyNode: StringForeignKeyNodeStore | null, tableId: string) {
-    if (foreignKeyNode && foreignKeyNode.draftParent) {
+    if (foreignKeyNode?.draftParent) {
       foreignKeyNode.setForeignKey(tableId)
       this.history.replace(foreignKeyNode.draftParent, foreignKeyNode.draftParent)
     }

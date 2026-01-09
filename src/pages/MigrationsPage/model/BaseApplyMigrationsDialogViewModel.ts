@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable, runInAction } from 'mobx'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { ApplyMigrationStatus } from 'src/__generated__/graphql-request'
 import { ApplyMigrationResult, MigrationsDataSource } from 'src/pages/MigrationsPage/api/MigrationsDataSource.ts'
@@ -32,6 +33,7 @@ export abstract class BaseApplyMigrationsDialogViewModel {
   protected _viewMode: ViewMode = ViewMode.Table
   protected _applyResult: ApplyMigrationResult[] | null = null
   protected _isApplying = false
+  private _virtuosoRef: VirtuosoHandle | null = null
 
   constructor(
     protected readonly context: ProjectContext,
@@ -63,6 +65,7 @@ export abstract class BaseApplyMigrationsDialogViewModel {
       failedResults: computed,
       showResult: computed,
       setViewMode: action.bound,
+      setVirtuosoRef: action.bound,
       removeLastMigration: action.bound,
       apply: action.bound,
       close: action.bound,
@@ -142,6 +145,10 @@ export abstract class BaseApplyMigrationsDialogViewModel {
     this._viewMode = mode
   }
 
+  public setVirtuosoRef(ref: VirtuosoHandle | null): void {
+    this._virtuosoRef = ref
+  }
+
   public removeLastMigration(): void {
     if (this._sourceMigrations.length === 0) {
       return
@@ -165,9 +172,14 @@ export abstract class BaseApplyMigrationsDialogViewModel {
 
     runInAction(() => {
       this._isApplying = false
+
+      if (!result) {
+        return
+      }
+
       this._applyResult = result
 
-      if (result && result.every((r) => r.status !== 'failed')) {
+      if (result.every((r) => r.status !== ApplyMigrationStatus.Failed)) {
         this.context.updateTouched(true)
         this.onApplied()
       }
@@ -185,6 +197,7 @@ export abstract class BaseApplyMigrationsDialogViewModel {
 
   protected recalculateDiff(): void {
     this._diffResult = diffMigrations(this._sourceMigrations, this.existingMigrations)
+    this.scrollToLast()
   }
 
   protected resetBase(): void {
@@ -192,6 +205,18 @@ export abstract class BaseApplyMigrationsDialogViewModel {
     this._diffResult = []
     this._applyResult = null
     this._isApplying = false
+    this._virtuosoRef = null
+  }
+
+  private scrollToLast(): void {
+    if (this._diffResult.length > 0 && this._viewMode === ViewMode.Table) {
+      setTimeout(() => {
+        this._virtuosoRef?.scrollToIndex({
+          index: this._diffResult.length - 1,
+          behavior: 'smooth',
+        })
+      }, 100)
+    }
   }
 
   protected abstract reset(): void

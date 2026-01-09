@@ -63,7 +63,7 @@ export const ApplyFromBranchDialog: FC<ApplyFromBranchDialogProps> = observer(({
                           <NativeSelect.Root>
                             <NativeSelect.Field
                               value={model.selectedBranchId ?? ''}
-                              onChange={(e) => void model.setSelectedBranchId(e.target.value || null)}
+                              onChange={(e) => model.setSelectedBranchId(e.target.value || null)}
                             >
                               <option value="">Select branch</option>
                               {model.branches.map((branch) => (
@@ -84,7 +84,7 @@ export const ApplyFromBranchDialog: FC<ApplyFromBranchDialogProps> = observer(({
                           <NativeSelect.Field
                             value={model.selectedRevision}
                             onChange={(e) =>
-                              void model.setSelectedRevision(e.target.value as typeof HEAD_TAG | typeof DRAFT_TAG)
+                              model.setSelectedRevision(e.target.value as typeof HEAD_TAG | typeof DRAFT_TAG)
                             }
                           >
                             <option value={DRAFT_TAG}>Draft (working)</option>
@@ -132,6 +132,7 @@ export const ApplyFromBranchDialog: FC<ApplyFromBranchDialogProps> = observer(({
                               summary={model.summary}
                               canRemoveLast={model.canRemoveLast}
                               onRemoveLast={model.removeLastMigration}
+                              onVirtuosoRef={model.setVirtuosoRef}
                             />
                           </>
                         )}

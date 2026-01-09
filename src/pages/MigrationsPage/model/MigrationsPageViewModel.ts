@@ -5,7 +5,7 @@ import { MigrationData } from 'src/pages/MigrationsPage/config/types.ts'
 import { ViewMode } from 'src/pages/MigrationsPage/config/viewMode.ts'
 import { parsePatches } from 'src/pages/MigrationsPage/lib/parsePatches.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
-import { container } from 'src/shared/lib'
+import { container, isAborted } from 'src/shared/lib'
 import { PermissionContext } from 'src/shared/model/AbilityService'
 import {
   ApplyFromBranchDialogViewModel,
@@ -160,18 +160,21 @@ export class MigrationsPageViewModel implements IViewModel {
   }
 
   private async load(): Promise<void> {
-    const migrations = await this.dataSource.getMigrations(this.context.revisionId)
+    const result = await this.dataSource.getMigrations(this.context.revisionId)
 
-    runInAction(() => {
-      if (migrations === null) {
-        if (!this.dataSource.wasAborted) {
-          this._state = State.error
-        }
+    if (!result.isRight) {
+      if (isAborted(result)) {
         return
       }
+      runInAction(() => {
+        this._state = State.error
+      })
+      return
+    }
 
-      this._migrations = migrations
-      this._state = migrations.length > 0 ? State.list : State.empty
+    runInAction(() => {
+      this._migrations = result.data
+      this._state = result.data.length > 0 ? State.list : State.empty
     })
   }
 

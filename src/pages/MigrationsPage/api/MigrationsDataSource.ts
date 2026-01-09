@@ -1,6 +1,5 @@
-import { makeAutoObservable, runInAction } from 'mobx'
 import { MigrationData } from 'src/pages/MigrationsPage/config/types.ts'
-import { container, isAborted, ObservableRequest } from 'src/shared/lib'
+import { container, ObservableRequest } from 'src/shared/lib'
 import { client } from 'src/shared/model/ApiService.ts'
 import { ApplyMigrationStatus, MigrationBranchFragment } from 'src/__generated__/graphql-request'
 
@@ -26,54 +25,22 @@ export class MigrationsDataSource {
   private readonly getBranchMigrationsRequest = ObservableRequest.of(client.getBranchMigrations)
   private readonly applyMigrationsRequest = ObservableRequest.of(client.applyMigrations)
 
-  private _wasAborted = false
-
-  constructor() {
-    makeAutoObservable(this, {}, { autoBind: true })
-  }
-
-  public get isLoadingMigrations(): boolean {
-    return this.getMigrationsRequest.isLoading
-  }
-
-  public get isLoadingBranches(): boolean {
-    return this.getBranchesRequest.isLoading
-  }
-
-  public get isApplying(): boolean {
-    return this.applyMigrationsRequest.isLoading
-  }
-
-  public get error(): string | null {
-    return this.getMigrationsRequest.errorMessage ?? null
-  }
-
-  public get wasAborted(): boolean {
-    return this._wasAborted
-  }
-
-  public async getMigrations(revisionId: string): Promise<MigrationData[] | null> {
-    this._wasAborted = false
-
+  public async getMigrations(revisionId: string) {
     const result = await this.getMigrationsRequest.fetch({
       data: { revisionId },
     })
 
     if (!result.isRight) {
-      if (isAborted(result)) {
-        runInAction(() => {
-          this._wasAborted = true
-        })
-      }
-      return null
+      return result
     }
 
-    return (result.data.revision.migrations as MigrationData[]) ?? []
+    return {
+      ...result,
+      data: (result.data.revision.migrations as MigrationData[]) ?? [],
+    }
   }
 
   public async getBranches(organizationId: string, projectName: string): Promise<BranchWithRevisions[] | null> {
-    this._wasAborted = false
-
     const result = await this.getBranchesRequest.fetch({
       data: {
         organizationId,
@@ -83,11 +50,6 @@ export class MigrationsDataSource {
     })
 
     if (!result.isRight) {
-      if (isAborted(result)) {
-        runInAction(() => {
-          this._wasAborted = true
-        })
-      }
       return null
     }
 

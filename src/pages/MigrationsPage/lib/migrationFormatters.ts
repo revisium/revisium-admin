@@ -27,5 +27,9 @@ export function getStatusLabel(status: MigrationDiffStatus): string {
       return 'Conflict'
     case 'blocked':
       return 'Blocked'
+    default: {
+      const exhaustiveCheck: never = status
+      throw new Error(`Unknown status: ${exhaustiveCheck}`)
+    }
   }
 }

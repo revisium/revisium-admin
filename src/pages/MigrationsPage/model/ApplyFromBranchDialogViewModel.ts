@@ -84,24 +84,24 @@ export class ApplyFromBranchDialogViewModel extends BaseApplyMigrationsDialogVie
     return this._isLoadingMigrations
   }
 
-  public async setSelectedBranchId(branchId: string | null): Promise<void> {
+  public setSelectedBranchId(branchId: string | null): void {
     this._selectedBranchId = branchId
     this._applyResult = null
 
     if (branchId) {
-      await this.loadMigrations()
+      void this.loadMigrations()
     } else {
       this._sourceMigrations = []
       this._diffResult = []
     }
   }
 
-  public async setSelectedRevision(revision: RevisionOption): Promise<void> {
+  public setSelectedRevision(revision: RevisionOption): void {
     this._selectedRevision = revision
     this._applyResult = null
 
     if (this._selectedBranchId) {
-      await this.loadMigrations()
+      void this.loadMigrations()
     }
   }
 

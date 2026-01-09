@@ -1,6 +1,6 @@
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useEffect, useMemo, useRef } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { MigrationDiffItem } from 'src/pages/MigrationsPage/config/types.ts'
@@ -15,6 +15,7 @@ interface MigrationsPreviewProps {
   onViewModeChange: (mode: ViewMode) => void
   onRemoveLast?: () => void
   canRemoveLast?: boolean
+  onVirtuosoRef?: (ref: VirtuosoHandle | null) => void
   summary: {
     toApply: number
     toSkip: number
@@ -24,20 +25,15 @@ interface MigrationsPreviewProps {
 }
 
 export const MigrationsPreview: FC<MigrationsPreviewProps> = observer(
-  ({ diffItems, viewMode, onViewModeChange, onRemoveLast, canRemoveLast = false, summary }) => {
+  ({ diffItems, viewMode, onViewModeChange, onRemoveLast, canRemoveLast = false, onVirtuosoRef, summary }) => {
     const isTableMode = viewMode === ViewMode.Table
-    const virtuosoRef = useRef<VirtuosoHandle>(null)
 
-    useEffect(() => {
-      if (diffItems.length > 0 && isTableMode) {
-        setTimeout(() => {
-          virtuosoRef.current?.scrollToIndex({
-            index: diffItems.length - 1,
-            behavior: 'smooth',
-          })
-        }, 100)
-      }
-    }, [diffItems.length, isTableMode])
+    const virtuosoRef = useCallback(
+      (ref: VirtuosoHandle | null) => {
+        onVirtuosoRef?.(ref)
+      },
+      [onVirtuosoRef],
+    )
 
     const jsonData = useMemo(() => {
       return diffItems.map((item) => item.migration) as unknown as JsonValue

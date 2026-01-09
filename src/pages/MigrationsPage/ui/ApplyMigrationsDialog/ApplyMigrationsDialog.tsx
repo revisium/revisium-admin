@@ -91,6 +91,7 @@ export const ApplyMigrationsDialog: FC<ApplyMigrationsDialogProps> = observer(({
                           onViewModeChange={model.setViewMode}
                           onRemoveLast={model.removeLastMigration}
                           canRemoveLast={model.canRemoveLast}
+                          onVirtuosoRef={model.setVirtuosoRef}
                           summary={model.summary}
                         />
                       </>

@@ -1,9 +1,10 @@
-import { Badge, Box, Button, Flex, HStack, IconButton, Link, Popover, Portal, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, HStack, IconButton, Popover, Portal, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useState } from 'react'
-import { PiCodeLight, PiCopyLight, PiFlaskLight, PiTrashLight } from 'react-icons/pi'
-import { toaster, Tooltip } from 'src/shared/ui'
+import { PiTrashLight } from 'react-icons/pi'
+import { Tooltip } from 'src/shared/ui'
 import { CustomEndpointCardViewModel } from '../../model/CustomEndpointCardViewModel.ts'
+import { EndpointActions } from '../EndpointActions/EndpointActions.tsx'
 
 interface CustomEndpointCardProps {
   model: CustomEndpointCardViewModel
@@ -13,14 +14,6 @@ interface CustomEndpointCardProps {
 
 export const CustomEndpointCard: FC<CustomEndpointCardProps> = observer(({ model, onDelete, canDelete }) => {
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = useState(false)
-
-  const handleCopy = useCallback(() => {
-    model.copyUrl()
-    toaster.info({
-      duration: 1500,
-      description: 'Copied to clipboard',
-    })
-  }, [model])
 
   const handleDeleteClick = useCallback(() => {
     setIsDeletePopoverOpen(true)
@@ -70,51 +63,13 @@ export const CustomEndpointCard: FC<CustomEndpointCardProps> = observer(({ model
         </Flex>
 
         <HStack gap={2}>
-          <HStack gap={1} opacity={0} _groupHover={{ opacity: 1 }} transition="opacity 0.15s">
-            <Tooltip content={model.copyTooltip}>
-              <IconButton
-                aria-label="Copy URL"
-                size="xs"
-                variant="ghost"
-                color="newGray.400"
-                _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                onClick={handleCopy}
-              >
-                <PiCopyLight size={16} />
-              </IconButton>
-            </Tooltip>
-
-            {model.sandboxUrl && (
-              <Tooltip content="Open Apollo Sandbox">
-                <Link href={model.sandboxUrl} target="_blank" rel="noopener noreferrer">
-                  <IconButton
-                    aria-label="Open Sandbox"
-                    size="xs"
-                    variant="ghost"
-                    color="newGray.400"
-                    _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                  >
-                    <PiFlaskLight size={16} />
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            )}
-
-            {model.swaggerUrl && (
-              <Tooltip content="Open Swagger UI">
-                <Link href={model.swaggerUrl} target="_blank" rel="noopener noreferrer">
-                  <IconButton
-                    aria-label="Open Swagger"
-                    size="xs"
-                    variant="ghost"
-                    color="newGray.400"
-                    _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                  >
-                    <PiCodeLight size={16} />
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            )}
+          <HStack opacity={0} _groupHover={{ opacity: 1 }} transition="opacity 0.15s">
+            <EndpointActions
+              copyTooltip={model.copyTooltip}
+              sandboxUrl={model.sandboxUrl}
+              swaggerUrl={model.swaggerUrl}
+              onCopy={model.copyUrl}
+            />
 
             {canDelete && (
               <Popover.Root

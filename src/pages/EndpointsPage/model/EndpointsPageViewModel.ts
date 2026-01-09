@@ -24,6 +24,7 @@ export class EndpointsPageViewModel implements IViewModel {
   private _branches: BranchWithRevisions[] = []
   private _endpoints: EndpointFragment[] = []
   private _branchViewModels: BranchEndpointsViewModel[] = []
+  private _customEndpointViewModels: CustomEndpointCardViewModel[] = []
   private _createDialogViewModel: CreateEndpointDialogViewModel | null = null
 
   public readonly systemApi: SystemApiViewModel
@@ -89,20 +90,11 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   public get customEndpoints(): CustomEndpointCardViewModel[] {
-    const draftHeadRevisionIds = new Set<string>()
-    for (const branch of this._branches) {
-      draftHeadRevisionIds.add(branch.draftRevisionId)
-      draftHeadRevisionIds.add(branch.headRevisionId)
-    }
-
-    const endpointType = this.selectedEndpointType
-    return this._endpoints
-      .filter((e) => e.type === endpointType && !draftHeadRevisionIds.has(e.revisionId))
-      .map((endpoint) => this.customEndpointFactory.create(endpoint))
+    return this._customEndpointViewModels
   }
 
   public get hasCustomEndpoints(): boolean {
-    return this.customEndpoints.length > 0
+    return this._customEndpointViewModels.length > 0
   }
 
   public async deleteCustomEndpoint(endpointId: string): Promise<void> {
@@ -143,7 +135,7 @@ export class EndpointsPageViewModel implements IViewModel {
     if (this._selectedTab !== tab) {
       this._selectedTab = tab
       if (tab !== 'system-api') {
-        this.rebuildBranchViewModels()
+        this.rebuildViewModels()
       }
     }
   }
@@ -170,7 +162,7 @@ export class EndpointsPageViewModel implements IViewModel {
 
       this._branches = this.sortBranches(branches)
       this._endpoints = endpointsResult.items
-      this.rebuildBranchViewModels()
+      this.rebuildViewModels()
       this._state = State.ready
     })
   }
@@ -185,7 +177,7 @@ export class EndpointsPageViewModel implements IViewModel {
     runInAction(() => {
       if (endpointsResult) {
         this._endpoints = endpointsResult.items
-        this.rebuildBranchViewModels()
+        this.rebuildViewModels()
       }
     })
   }
@@ -202,6 +194,11 @@ export class EndpointsPageViewModel implements IViewModel {
     })
   }
 
+  private rebuildViewModels(): void {
+    this.rebuildBranchViewModels()
+    this.rebuildCustomEndpointViewModels()
+  }
+
   private rebuildBranchViewModels(): void {
     const endpointType = this.selectedEndpointType
     this._branchViewModels = this._branches.map((branch) => {
@@ -216,6 +213,19 @@ export class EndpointsPageViewModel implements IViewModel {
         this.handleEndpointChanged,
       )
     })
+  }
+
+  private rebuildCustomEndpointViewModels(): void {
+    const draftHeadRevisionIds = new Set<string>()
+    for (const branch of this._branches) {
+      draftHeadRevisionIds.add(branch.draftRevisionId)
+      draftHeadRevisionIds.add(branch.headRevisionId)
+    }
+
+    const endpointType = this.selectedEndpointType
+    this._customEndpointViewModels = this._endpoints
+      .filter((e) => e.type === endpointType && !draftHeadRevisionIds.has(e.revisionId))
+      .map((endpoint) => this.customEndpointFactory.create(endpoint))
   }
 
   private findEndpointId(revisionId: string, type: EndpointType): string | null {

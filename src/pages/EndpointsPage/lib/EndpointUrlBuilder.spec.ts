@@ -62,18 +62,12 @@ describe('EndpointUrlBuilder', () => {
   })
 
   describe('buildCustomRevisionUrls', () => {
-    it('should use first 8 characters of revision ID', () => {
+    it('should use full revision ID', () => {
       const builder = createBuilder()
-      const urls = builder.buildCustomRevisionUrls(
-        'org1',
-        'project1',
-        'master',
-        'abcdefgh12345678',
-        EndpointType.Graphql,
-      )
+      const revisionId = 'abcdefgh12345678'
+      const urls = builder.buildCustomRevisionUrls('org1', 'project1', 'master', revisionId, EndpointType.Graphql)
 
-      expect(urls.graphql).toContain('/abcdefgh')
-      expect(urls.graphql).not.toContain('12345678')
+      expect(urls.graphql).toBe(`https://example.com/endpoint/graphql/org1/project1/master/${revisionId}`)
     })
   })
 })

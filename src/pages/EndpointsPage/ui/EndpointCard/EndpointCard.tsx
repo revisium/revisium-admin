@@ -1,9 +1,9 @@
-import { Badge, Box, Button, Flex, HStack, IconButton, Link, Popover, Portal, Switch, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, HStack, Popover, Portal, Switch, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useState } from 'react'
-import { PiCodeLight, PiCopyLight, PiFlaskLight } from 'react-icons/pi'
 import { EndpointCardViewModel } from 'src/pages/EndpointsPage/model/EndpointCardViewModel.ts'
-import { toaster, Tooltip } from 'src/shared/ui'
+import { Tooltip } from 'src/shared/ui'
+import { EndpointActions } from '../EndpointActions/EndpointActions.tsx'
 
 interface EndpointCardProps {
   model: EndpointCardViewModel
@@ -15,14 +15,6 @@ const HEAD_TOOLTIP =
 
 export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
   const [isDisablePopoverOpen, setIsDisablePopoverOpen] = useState(false)
-
-  const handleCopy = useCallback(() => {
-    model.copyUrl()
-    toaster.info({
-      duration: 1500,
-      description: 'Copied to clipboard',
-    })
-  }, [model])
 
   const handleToggle = useCallback(() => {
     if (model.isEnabled) {
@@ -81,56 +73,17 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
 
         <HStack gap={2}>
           <HStack
-            gap={1}
             opacity={0}
             _groupHover={{ opacity: model.isEnabled ? 1 : 0 }}
             transition="opacity 0.15s"
             visibility={model.isEnabled ? 'visible' : 'hidden'}
           >
-            <Tooltip content={model.copyTooltip}>
-              <IconButton
-                aria-label="Copy URL"
-                size="xs"
-                variant="ghost"
-                color="newGray.400"
-                _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                onClick={handleCopy}
-              >
-                <PiCopyLight size={16} />
-              </IconButton>
-            </Tooltip>
-
-            {model.sandboxUrl && (
-              <Tooltip content="Open Apollo Sandbox">
-                <Link href={model.sandboxUrl} target="_blank" rel="noopener noreferrer">
-                  <IconButton
-                    aria-label="Open Sandbox"
-                    size="xs"
-                    variant="ghost"
-                    color="newGray.400"
-                    _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                  >
-                    <PiFlaskLight size={16} />
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            )}
-
-            {model.swaggerUrl && (
-              <Tooltip content="Open Swagger UI">
-                <Link href={model.swaggerUrl} target="_blank" rel="noopener noreferrer">
-                  <IconButton
-                    aria-label="Open Swagger"
-                    size="xs"
-                    variant="ghost"
-                    color="newGray.400"
-                    _hover={{ color: 'newGray.600', backgroundColor: 'newGray.100' }}
-                  >
-                    <PiCodeLight size={16} />
-                  </IconButton>
-                </Link>
-              </Tooltip>
-            )}
+            <EndpointActions
+              copyTooltip={model.copyTooltip}
+              sandboxUrl={model.sandboxUrl}
+              swaggerUrl={model.swaggerUrl}
+              onCopy={model.copyUrl}
+            />
           </HStack>
 
           {(model.canCreate || model.canDelete) && (

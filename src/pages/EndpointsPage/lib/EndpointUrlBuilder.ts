@@ -73,7 +73,7 @@ export class EndpointUrlBuilder {
       organizationId,
       projectName,
       branchName,
-      revisionTag: revisionId.substring(0, 8),
+      revisionTag: revisionId,
       endpointType,
     })
   }

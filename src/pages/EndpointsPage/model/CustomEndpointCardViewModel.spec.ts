@@ -135,10 +135,11 @@ describe('CustomEndpointCardViewModel', () => {
       const urlBuilder = createMockUrlBuilder()
       const endpoint = createMockEndpoint({ revisionId: 'rev123' })
 
-      new CustomEndpointCardViewModel(endpoint as never, 'org1', 'project1', {
+      const _vm = new CustomEndpointCardViewModel(endpoint as never, 'org1', 'project1', {
         urlBuilder,
         copyToClipboard: jest.fn(),
       })
+      void _vm
 
       expect(urlBuilder.buildCustomRevisionUrls).toHaveBeenCalledWith(
         'org1',

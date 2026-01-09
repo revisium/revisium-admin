@@ -20,6 +20,8 @@ module.exports = {
     'sonarjs/redundant-type-aliases': 'off', // Type aliases for domain semantics are acceptable
     'sonarjs/cognitive-complexity': 'off', // Complex domain logic in Schema entity and related utilities
     'sonarjs/todo-tag': 'off', // TODOs are tracked separately
+    'sonarjs/different-types-comparison': 'off', // Negated conditions are sometimes more readable
+    'sonarjs/no-inverted-boolean-check': 'off', // Negated conditions are sometimes more readable
   },
   overrides: [
     {

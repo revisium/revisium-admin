@@ -87,7 +87,7 @@ export class ColumnsModel {
   public get columns(): ColumnType[] {
     return this._visibleColumnIds
       .map((id) => this._availableFieldsMap.get(id))
-      .filter((field): field is AvailableField => !!field)
+      .filter((field): field is AvailableField => Boolean(field))
       .map((field) => this.getOrCreateColumn(field))
   }
 

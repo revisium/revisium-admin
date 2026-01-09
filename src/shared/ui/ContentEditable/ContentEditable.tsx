@@ -19,7 +19,7 @@ interface ContentEditableBoxProps {
   textDecoration?: BoxProps['textDecoration']
 }
 
-const allowed = ['Backspace', 'Escape', 'Enter', 'ArrowRight', 'ArrowLeft', 'Delete']
+const allowed = new Set(['Backspace', 'Escape', 'Enter', 'ArrowRight', 'ArrowLeft', 'Delete'])
 
 export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
   initValue,
@@ -78,7 +78,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
         selection.addRange(range)
       }
     }
-  }, [...(focusIfDependencyList ? focusIfDependencyList : [])])
+  }, [...(focusIfDependencyList ?? [])])
 
   const handleChange: React.FormEventHandler<HTMLDivElement> = useCallback(
     (event) => {
@@ -116,7 +116,7 @@ export const ContentEditable: React.FC<ContentEditableBoxProps> = ({
         onEscape?.()
       }
 
-      if (restrict && !allowed.includes(event.key) && !restrict.test(event.key)) {
+      if (restrict && !allowed.has(event.key) && !restrict.test(event.key)) {
         event.preventDefault()
       }
     },

@@ -5,6 +5,7 @@
 Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform for hierarchical structures.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=revisium_revisium-admin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=revisium_revisium-admin)
 [![npm](https://img.shields.io/npm/v/@revisium/admin?color=red)](https://www.npmjs.com/package/@revisium/admin)
 [![Docker](https://img.shields.io/docker/v/revisium/revisium-admin?label=docker&sort=semver)](https://hub.docker.com/r/revisium/revisium-admin)
 

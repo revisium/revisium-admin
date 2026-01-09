@@ -8,7 +8,7 @@ export const useShowLoaderBar = (delay: number = 300) => {
 
   useEffect(() => {
     const current = ref.current
-    let timeout: number | typeof NaN = NaN
+    let timeout: number | typeof Number.NaN = Number.NaN
     let isRunning = false
 
     if (navigation.state === 'loading') {

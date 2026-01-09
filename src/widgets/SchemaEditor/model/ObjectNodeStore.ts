@@ -133,7 +133,7 @@ export class ObjectNodeStore {
   }
 
   public get notChangedProperties(): SchemaNode[] {
-    return this.properties.filter((property) => this.draftProperties.some((item) => item === property))
+    return this.properties.filter((property) => this.draftProperties.includes(property))
   }
 
   public get replacedProperties(): { previousProperty: SchemaNode; currentProperty: SchemaNode }[] {

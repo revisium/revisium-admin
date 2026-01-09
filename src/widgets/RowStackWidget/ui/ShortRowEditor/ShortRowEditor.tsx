@@ -22,18 +22,16 @@ export const ShortRowEditor: React.FC<Props> = observer(({ item }) => {
   const rowId = item.type === RowStackItemType.Creating ? item.rowId : (item as RowUpdatingItem).currentRowId
 
   return (
-    <>
-      <Box width="100%" borderStyle="solid" borderLeftWidth={2} borderColor="gray.200" pl="1rem" mb="1rem">
-        <Flex gap="4px" alignItems="center" height="30px" mt="2px" mb="2px" color="gray.400" fontWeight="300">
-          <Text textDecoration="underline" cursor="pointer" onClick={item.cancelForeignKeySelection}>
-            Back
-          </Text>
-          <Text>
-            - {prefix} "{item.tableId} - {rowId}":
-          </Text>
-          <Text>{item.pendingForeignKeyPath}</Text>
-        </Flex>
-      </Box>
-    </>
+    <Box width="100%" borderStyle="solid" borderLeftWidth={2} borderColor="gray.200" pl="1rem" mb="1rem">
+      <Flex gap="4px" alignItems="center" height="30px" mt="2px" mb="2px" color="gray.400" fontWeight="300">
+        <Text textDecoration="underline" cursor="pointer" onClick={item.cancelForeignKeySelection}>
+          Back
+        </Text>
+        <Text>
+          - {prefix} "{item.tableId} - {rowId}":
+        </Text>
+        <Text>{item.pendingForeignKeyPath}</Text>
+      </Flex>
+    </Box>
   )
 })

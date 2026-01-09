@@ -15,6 +15,6 @@ export class FormState<T extends Record<string, any>> {
   }
 
   public get isValid() {
-    return Object.values(this.values).every((value) => Boolean(value))
+    return Object.values(this.values).every(Boolean)
   }
 }

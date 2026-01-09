@@ -42,7 +42,7 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data, readonly, onChange, sc
 
           if (!result.result) {
             const instancePath = result.errors?.[0]?.instancePath
-            const path = instancePath ? instancePath : '/'
+            const path = instancePath || '/'
             setError(`"${path}": ${result.errors?.[0]?.message}`)
             return
           }

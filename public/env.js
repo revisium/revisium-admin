@@ -1,1 +1,1 @@
-window.__env__ = {}
+globalThis.__env__ = {}

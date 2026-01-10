@@ -56,6 +56,14 @@ export class CustomEndpointCardViewModel {
     return `${this.branchName} / ${this.revisionId.substring(0, 8)}`
   }
 
+  public get endpointType(): EndpointType {
+    return this.endpoint.type
+  }
+
+  public get endpointTypeLabel(): string {
+    return this.endpoint.type === EndpointType.Graphql ? 'GraphQL' : 'REST API'
+  }
+
   public get isGraphql(): boolean {
     return this.endpoint.type === EndpointType.Graphql
   }

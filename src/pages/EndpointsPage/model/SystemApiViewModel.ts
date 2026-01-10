@@ -7,6 +7,10 @@ export class SystemApiViewModel {
   }
 
   public get restApiUrl(): string {
+    return `${getOrigin()}/api-json`
+  }
+
+  public get restApiSwaggerUrl(): string {
     return `${getOrigin()}/api`
   }
 
@@ -14,7 +18,15 @@ export class SystemApiViewModel {
     return `${getOrigin()}/graphql`
   }
 
-  public copyUrl(url: string): void {
-    void copyToClipboard(url)
+  public get graphqlSandboxUrl(): string {
+    return `${getOrigin()}/graphql`
+  }
+
+  public copyRestApiUrl(): void {
+    void copyToClipboard(this.restApiUrl)
+  }
+
+  public copyGraphqlUrl(): void {
+    void copyToClipboard(this.graphqlUrl)
   }
 }

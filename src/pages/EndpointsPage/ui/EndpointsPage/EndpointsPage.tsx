@@ -64,33 +64,31 @@ export const EndpointsPage = observer(() => {
                   </HoverCard.Arrow>
                   <VStack align="start" gap={3}>
                     <Text fontSize="xs" color="newGray.600">
-                      Each branch has two revisions:
+                      Each branch maintains a history of revisions (commits).
                     </Text>
                     <VStack align="start" gap={1}>
                       <Text fontSize="xs" color="newGray.600">
                         <Text as="span" fontWeight="600">
                           Draft
                         </Text>{' '}
-                        — working revision. Edit tables and data here, changes apply immediately.
+                        — points to the working revision where you make changes.
                       </Text>
                       <Text fontSize="xs" color="newGray.600">
                         <Text as="span" fontWeight="600">
                           Head
                         </Text>{' '}
-                        — published revision. Read-only, updates when you commit Draft.
-                      </Text>
-                    </VStack>
-                    <VStack align="start" gap={0}>
-                      <Text fontSize="xs" color="newGray.500">
-                        Typical workflow: make changes in Draft, then commit to publish them to Head.
-                      </Text>
-                      <Text fontSize="xs" color="newGray.500">
-                        Use Draft for dev/preview, Head for production (or connect to Draft directly if you prefer live
-                        updates).
+                        — points to the last committed revision (read-only).
                       </Text>
                     </VStack>
                     <Text fontSize="xs" color="newGray.500">
-                      You can also create endpoints for any saved version.
+                      Typical workflow: make changes in Draft, then commit to create a new revision and move Head
+                      forward.
+                    </Text>
+                    <Text fontSize="xs" color="newGray.500">
+                      Use Draft for dev/preview, Head for production (or use Draft if you need live updates).
+                    </Text>
+                    <Text fontSize="xs" color="newGray.500">
+                      You can create endpoints for Head, Draft, or any revision in the history.
                     </Text>
                   </VStack>
                 </HoverCard.Content>

@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    if: false # temporarily disabled
+    if: github.event_name == 'workflow_dispatch' && inputs.run_e2e
 
     defaults:
       run:

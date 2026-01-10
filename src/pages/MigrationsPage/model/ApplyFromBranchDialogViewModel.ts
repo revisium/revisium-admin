@@ -153,13 +153,11 @@ export class ApplyFromBranchDialogViewModel extends BaseApplyMigrationsDialogVie
 container.register(
   ApplyFromBranchDialogViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-    const dataSource = container.get(MigrationsDataSource)
-
-    return new ApplyFromBranchDialogViewModelFactory(
-      (existingMigrations, onApplied, currentBranchId) =>
-        new ApplyFromBranchDialogViewModel(context, dataSource, existingMigrations, onApplied, currentBranchId),
-    )
+    return new ApplyFromBranchDialogViewModelFactory((existingMigrations, onApplied, currentBranchId) => {
+      const context = container.get(ProjectContext)
+      const dataSource = container.get(MigrationsDataSource)
+      return new ApplyFromBranchDialogViewModel(context, dataSource, existingMigrations, onApplied, currentBranchId)
+    })
   },
   { scope: 'request' },
 )

@@ -102,13 +102,11 @@ export class ApplyMigrationsDialogViewModel extends BaseApplyMigrationsDialogVie
 container.register(
   ApplyMigrationsDialogViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-    const dataSource = container.get(MigrationsDataSource)
-
-    return new ApplyMigrationsDialogViewModelFactory(
-      (existingMigrations, onApplied) =>
-        new ApplyMigrationsDialogViewModel(context, dataSource, existingMigrations, onApplied),
-    )
+    return new ApplyMigrationsDialogViewModelFactory((existingMigrations, onApplied) => {
+      const context = container.get(ProjectContext)
+      const dataSource = container.get(MigrationsDataSource)
+      return new ApplyMigrationsDialogViewModel(context, dataSource, existingMigrations, onApplied)
+    })
   },
   { scope: 'request' },
 )

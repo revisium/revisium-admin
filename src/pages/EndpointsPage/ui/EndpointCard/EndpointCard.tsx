@@ -51,12 +51,7 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
     >
       <Flex justify="space-between" align="center" gap={3} height="100%">
         <Flex align="center" gap={2} flex={1} minWidth={0}>
-          <Badge
-            size="sm"
-            colorPalette={model.endpointType === 'GRAPHQL' ? 'pink' : 'green'}
-            variant="subtle"
-            fontWeight="500"
-          >
+          <Badge size="sm" colorPalette="gray" variant="subtle" fontWeight="500">
             {model.endpointTypeLabel}
           </Badge>
 

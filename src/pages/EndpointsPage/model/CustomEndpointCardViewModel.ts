@@ -92,11 +92,10 @@ export class CustomEndpointCardViewModel {
 container.register(
   CustomEndpointCardViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-
-    return new CustomEndpointCardViewModelFactory(
-      (endpoint) => new CustomEndpointCardViewModel(endpoint, context.organizationId, context.projectName),
-    )
+    return new CustomEndpointCardViewModelFactory((endpoint) => {
+      const context = container.get(ProjectContext)
+      return new CustomEndpointCardViewModel(endpoint, context.organizationId, context.projectName)
+    })
   },
   { scope: 'request' },
 )

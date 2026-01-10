@@ -222,12 +222,11 @@ export class CreateEndpointDialogViewModel {
 container.register(
   CreateEndpointDialogViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-    const dataSource = container.get(EndpointsDataSource)
-
-    return new CreateEndpointDialogViewModelFactory(
-      (branches, onCreated) => new CreateEndpointDialogViewModel(context, dataSource, branches, onCreated),
-    )
+    return new CreateEndpointDialogViewModelFactory((branches, onCreated) => {
+      const context = container.get(ProjectContext)
+      const dataSource = container.get(EndpointsDataSource)
+      return new CreateEndpointDialogViewModel(context, dataSource, branches, onCreated)
+    })
   },
   { scope: 'request' },
 )

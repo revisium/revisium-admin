@@ -73,19 +73,17 @@ export class BranchEndpointsViewModel {
 container.register(
   BranchEndpointsViewModelFactory,
   () => {
-    const endpointCardFactory = container.get(EndpointCardViewModelFactory)
-
-    return new BranchEndpointsViewModelFactory(
-      (branch, endpointType, draftEndpointId, headEndpointId, onChanged) =>
-        new BranchEndpointsViewModel(
-          endpointCardFactory,
-          branch,
-          endpointType,
-          draftEndpointId,
-          headEndpointId,
-          onChanged,
-        ),
-    )
+    return new BranchEndpointsViewModelFactory((branch, endpointType, draftEndpointId, headEndpointId, onChanged) => {
+      const endpointCardFactory = container.get(EndpointCardViewModelFactory)
+      return new BranchEndpointsViewModel(
+        endpointCardFactory,
+        branch,
+        endpointType,
+        draftEndpointId,
+        headEndpointId,
+        onChanged,
+      )
+    })
   },
   { scope: 'request' },
 )

@@ -203,13 +203,12 @@ export class EndpointCardViewModel {
 container.register(
   EndpointCardViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    const dataSource = container.get(EndpointsDataSource)
-
-    return new EndpointCardViewModelFactory(
-      (data, onChanged) => new EndpointCardViewModel(context, permissionContext, dataSource, data, onChanged),
-    )
+    return new EndpointCardViewModelFactory((data, onChanged) => {
+      const context = container.get(ProjectContext)
+      const permissionContext = container.get(PermissionContext)
+      const dataSource = container.get(EndpointsDataSource)
+      return new EndpointCardViewModel(context, permissionContext, dataSource, data, onChanged)
+    })
   },
   { scope: 'request' },
 )

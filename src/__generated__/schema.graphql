@@ -38,9 +38,7 @@ type ApplyMigrationResultModel {
   status: ApplyMigrationStatus!
 }
 
-"""
-Status of migration application
-"""
+"""Status of migration application"""
 enum ApplyMigrationStatus {
   applied
   failed
@@ -195,6 +193,12 @@ input DateTimeFilter {
   notIn: [String!]
 }
 
+input DeleteBranchInput {
+  branchName: String!
+  organizationId: String!
+  projectName: String!
+}
+
 input DeleteEndpointInput {
   endpointId: String!
 }
@@ -248,9 +252,7 @@ input GetBranchRevisionsInput {
   comment: String
   first: Int!
   inclusive: Boolean
-  """
-  Sort order: asc (default) or desc
-  """
+  """Sort order: asc (default) or desc"""
   sort: SortOrder
 }
 
@@ -421,9 +423,7 @@ input JsonFilter {
   path: [String!]
   search: String
   searchIn: SearchIn
-  """
-  Default: simple
-  """
+  """Default: simple"""
   searchLanguage: SearchLanguage
   searchType: SearchType
   string_contains: String
@@ -503,6 +503,7 @@ type Mutation {
   createRows(data: CreateRowsInput!): CreateRowsResultModel!
   createTable(data: CreateTableInput!): CreateTableResultModel!
   createUser(data: CreateUserInput!): Boolean!
+  deleteBranch(data: DeleteBranchInput!): Boolean!
   deleteEndpoint(data: DeleteEndpointInput!): Boolean!
   deleteProject(data: DeleteProjectInput!): Boolean!
   login(data: LoginInput!): LoginModel!
@@ -661,8 +662,7 @@ type Query {
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
-    @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int! @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
   me: MeModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
   project(data: GetProjectInput!): ProjectModel!
@@ -931,9 +931,7 @@ enum SearchIn {
   values
 }
 
-"""
-Language for full-text search. Default: simple
-"""
+"""Language for full-text search. Default: simple"""
 enum SearchLanguage {
   arabic
   armenian

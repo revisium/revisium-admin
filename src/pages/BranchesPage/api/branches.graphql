@@ -1,0 +1,87 @@
+fragment BranchItem on BranchModel {
+  id
+  name
+  isRoot
+  touched
+  createdAt
+  start {
+    id
+    createdAt
+  }
+  parent {
+    revision {
+      id
+      isDraft
+      isHead
+      createdAt
+      branch {
+        id
+        name
+      }
+    }
+  }
+}
+
+query getProjectBranches($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      cursor
+      node {
+        ...BranchItem
+      }
+    }
+  }
+}
+
+mutation deleteBranch($data: DeleteBranchInput!) {
+  deleteBranch(data: $data)
+}
+
+fragment RevisionForSelect on RevisionModel {
+  id
+  isDraft
+  isHead
+  createdAt
+  comment
+}
+
+query getBranchesForSelect($data: GetBranchesInput!) {
+  branches(data: $data) {
+    edges {
+      node {
+        id
+        name
+        isRoot
+      }
+    }
+  }
+}
+
+query getBranchRevisionsForCreate($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
+  branch(data: $data) {
+    id
+    revisions(data: $revisionsData) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...RevisionForSelect
+        }
+      }
+    }
+  }
+}
+
+mutation createBranch($data: CreateBranchByRevisionIdInput!) {
+  createBranchByRevisionId(data: $data) {
+    id
+    name
+  }
+}

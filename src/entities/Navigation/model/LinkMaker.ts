@@ -4,6 +4,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
+  BRANCHES_ROUTE,
   CHANGES_ROUTE,
   ENDPOINTS_ROUTE,
   MIGRATIONS_ROUTE,
@@ -92,6 +93,16 @@ export class LinkMaker {
       return ''
     }
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${ENDPOINTS_ROUTE}`, {
+      organizationId: this.organizationId,
+      projectName: this.projectName,
+    })
+  }
+
+  public makeBranchesLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
+    }
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${BRANCHES_ROUTE}`, {
       organizationId: this.organizationId,
       projectName: this.projectName,
     })

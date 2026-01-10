@@ -98,6 +98,10 @@ export class PermissionContext {
     return this.can('create', 'Branch')
   }
 
+  public get canDeleteBranch(): boolean {
+    return this.can('delete', 'Branch')
+  }
+
   public get canCreateRevision(): boolean {
     return this.can('create', 'Revision')
   }

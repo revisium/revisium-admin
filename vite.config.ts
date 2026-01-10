@@ -30,6 +30,18 @@ export default function viteConfig({ mode }) {
         src: resolve(__dirname, 'src'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-mobx': ['mobx', 'mobx-react-lite', 'mobx-utils'],
+            'vendor-chakra': ['@chakra-ui/react', '@emotion/react'],
+            'vendor-graphql': ['graphql', 'graphql-request'],
+          },
+        },
+      },
+    },
     server: {
       proxy: {
         [process.env.REACT_APP_GRAPHQL_SERVER_URL]: {

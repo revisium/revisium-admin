@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@chakra-ui/react/dialog'
 import { json } from '@codemirror/lang-json'
-import * as themes from '@uiw/codemirror-themes-all'
+import { githubLight } from '@uiw/codemirror-theme-github'
 import CodeMirror, { EditorView } from '@uiw/react-codemirror'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
@@ -50,7 +50,7 @@ export const ApplyMigrationsDialog: FC<ApplyMigrationsDialogProps> = observer(({
                           value={model.jsonInput}
                           onChange={model.setJsonInput}
                           extensions={[EditorView.lineWrapping, json()]}
-                          theme={themes.githubLight}
+                          theme={githubLight}
                           placeholder='[{ "changeType": "init", "tableId": "posts", ... }]'
                           minHeight="150px"
                           maxHeight="200px"

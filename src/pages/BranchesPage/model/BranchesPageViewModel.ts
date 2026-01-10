@@ -53,6 +53,11 @@ export class BranchesPageViewModel extends PaginatedListViewModel<BranchItemFrag
   public handleItemDeleted(): void {
     void this.dataSource.reload()
   }
+
+  public override dispose(): void {
+    this._createDialogViewModel?.dispose()
+    super.dispose()
+  }
 }
 
 container.register(

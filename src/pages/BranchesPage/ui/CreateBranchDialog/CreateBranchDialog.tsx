@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, Field, Input, NativeSelect, Portal, Spinner, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import { CreateBranchDialogViewModel } from '../../model/CreateBranchDialogViewModel.ts'
 import { RevisionSelectItem } from './RevisionSelectItem.tsx'
@@ -10,29 +10,6 @@ interface CreateBranchDialogProps {
 }
 
 export const CreateBranchDialog: FC<CreateBranchDialogProps> = observer(({ model }) => {
-  const handleBranchChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      model.selectBranch(e.target.value)
-    },
-    [model],
-  )
-
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      model.setBranchName(e.target.value)
-    },
-    [model],
-  )
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' && model.canCreate) {
-        void model.create()
-      }
-    },
-    [model],
-  )
-
   return (
     <Dialog.Root open={model.isOpen} onOpenChange={(e) => !e.open && model.close()}>
       <Portal>
@@ -47,7 +24,7 @@ export const CreateBranchDialog: FC<CreateBranchDialogProps> = observer(({ model
                 <Field.Root>
                   <Field.Label>Source branch</Field.Label>
                   <NativeSelect.Root disabled={model.isLoadingBranches}>
-                    <NativeSelect.Field value={model.selectedBranchId ?? ''} onChange={handleBranchChange}>
+                    <NativeSelect.Field value={model.selectedBranchId ?? ''} onChange={model.handleBranchChange}>
                       <option value="">Select a branch...</option>
                       {model.branches.map((branch) => (
                         <option key={branch.id} value={branch.id}>
@@ -90,6 +67,7 @@ export const CreateBranchDialog: FC<CreateBranchDialogProps> = observer(({ model
                             }
                             return (
                               <RevisionSelectItem
+                                key={revision.id}
                                 revision={revision}
                                 isSelected={model.selectedRevisionId === revision.id}
                                 onClick={() => model.selectRevision(revision.id)}
@@ -107,8 +85,8 @@ export const CreateBranchDialog: FC<CreateBranchDialogProps> = observer(({ model
                     <Field.Label>New branch name</Field.Label>
                     <Input
                       value={model.branchName}
-                      onChange={handleNameChange}
-                      onKeyDown={handleKeyDown}
+                      onChange={model.handleNameChange}
+                      onKeyDown={model.handleKeyDown}
                       placeholder="Enter branch name..."
                       autoFocus
                     />

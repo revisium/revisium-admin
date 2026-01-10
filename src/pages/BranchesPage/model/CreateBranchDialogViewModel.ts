@@ -101,6 +101,20 @@ export class CreateBranchDialogViewModel {
     this._branchName = name
   }
 
+  public handleBranchChange(e: React.ChangeEvent<HTMLSelectElement>): void {
+    this.selectBranch(e.target.value)
+  }
+
+  public handleNameChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    this.setBranchName(e.target.value)
+  }
+
+  public handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
+    if (e.key === 'Enter' && this.canCreate) {
+      this.create()
+    }
+  }
+
   public async create(): Promise<void> {
     if (!this.canCreate || !this._selectedRevisionId) {
       return

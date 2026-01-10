@@ -101,7 +101,7 @@ export class TableRelationsLayoutService {
   }
 
   private makePairKey(tableA: string, tableB: string): string {
-    return [tableA, tableB].sort().join('::')
+    return [tableA, tableB].sort((a, b) => a.localeCompare(b)).join('::')
   }
 
   private calculateCurveOffset(edgeIndex: number): number {

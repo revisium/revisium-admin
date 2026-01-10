@@ -55,7 +55,7 @@ export class FullscreenService {
     }
   }
 
-  private handleFullscreenChange = (): void => {
+  private readonly handleFullscreenChange = (): void => {
     this._isFullscreen = document.fullscreenElement === this._containerRef
   }
 }

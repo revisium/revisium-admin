@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import CodeMirror, { EditorView } from '@uiw/react-codemirror'
-import * as themes from '@uiw/codemirror-themes-all'
+import { githubLight } from '@uiw/codemirror-theme-github'
 
 import { FC } from 'react'
 
@@ -19,7 +19,7 @@ export const MarkdownEditor: FC<MarkdownEditorProps> = ({ value, setValue, reado
         value={value}
         extensions={[markdown({ base: markdownLanguage }), EditorView.lineWrapping]}
         editable={!readonly}
-        theme={themes.githubLight}
+        theme={githubLight}
         maxWidth="100%"
         basicSetup={{
           lineNumbers: false,

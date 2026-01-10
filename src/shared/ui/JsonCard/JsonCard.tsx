@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
-import * as themes from '@uiw/codemirror-themes-all'
+import { githubLight } from '@uiw/codemirror-theme-github'
 import CodeMirror, { EditorView } from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import React, { useCallback, useState } from 'react'
@@ -65,7 +65,7 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data, readonly, onChange, sc
           value={text}
           extensions={[EditorView.lineWrapping, json()]}
           editable={!readonly}
-          theme={themes.githubLight}
+          theme={githubLight}
           maxWidth="100%"
           basicSetup={{
             lineNumbers: true,

@@ -1,5 +1,5 @@
 import { Box, IconButton, Popover, Portal } from '@chakra-ui/react'
-import * as themes from '@uiw/codemirror-themes-all'
+import { githubLight } from '@uiw/codemirror-theme-github'
 import CodeMirror, { EditorView } from '@uiw/react-codemirror'
 import { json } from '@codemirror/lang-json'
 import { observer } from 'mobx-react-lite'
@@ -51,7 +51,7 @@ export const CopyJsonPopover: FC<CopyJsonPopoverProps> = observer(({ data, toolt
                   value={text}
                   extensions={[EditorView.lineWrapping, json()]}
                   editable={false}
-                  theme={themes.githubLight}
+                  theme={githubLight}
                   maxWidth="100%"
                   maxHeight="300px"
                   basicSetup={{

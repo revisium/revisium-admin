@@ -1,3 +1,4 @@
+import { JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types.ts'
 import { container } from 'src/shared/lib'
 import { extractForeignKeys } from './extractForeignKeys.ts'
 import { GraphData, LayoutData, LayoutNode, RelationEdge, TableNode, TableWithSchema } from './types.ts'
@@ -22,7 +23,7 @@ export class TableRelationsLayoutService {
     const { nodes, edges } = graphData
 
     if (nodes.length === 0) {
-      return { nodes: [], edges: [], width: 0, height: 0 }
+      return { nodes: [], edges: [] }
     }
 
     const layers = this.assignLayers(nodes, edges)
@@ -32,8 +33,6 @@ export class TableRelationsLayoutService {
     return {
       nodes: layoutNodes,
       edges,
-      width: this.calculateGraphWidth(layoutNodes),
-      height: this.calculateGraphHeight(layoutNodes),
     }
   }
 
@@ -93,11 +92,19 @@ export class TableRelationsLayoutService {
   ): TableNode[] {
     return tables.map((table) => ({
       id: table.id,
-      fieldsCount: Object.keys(table.schema.properties).length,
+      fieldsCount: this.getFieldsCount(table),
       rowsCount: table.count,
       incomingEdges: incomingMap.get(table.id) ?? [],
       outgoingEdges: outgoingMap.get(table.id) ?? [],
     }))
+  }
+
+  private getFieldsCount(table: TableWithSchema): number {
+    const schema = table.schema
+    if ('type' in schema && schema.type === JsonSchemaTypeName.Object) {
+      return Object.keys(schema.properties).length
+    }
+    return 1
   }
 
   private makePairKey(tableA: string, tableB: string): string {
@@ -111,14 +118,6 @@ export class TableRelationsLayoutService {
     const direction = edgeIndex % 2 === 1 ? 1 : -1
     const magnitude = Math.ceil(edgeIndex / 2)
     return direction * magnitude * CURVE_BASE_OFFSET
-  }
-
-  private calculateGraphWidth(layoutNodes: LayoutNode[]): number {
-    return Math.max(...layoutNodes.map((n) => n.x)) + NODE_WIDTH
-  }
-
-  private calculateGraphHeight(layoutNodes: LayoutNode[]): number {
-    return Math.max(...layoutNodes.map((n) => n.y)) + NODE_HEIGHT
   }
 
   private assignLayers(nodes: TableNode[], edges: RelationEdge[]): Map<number, string[]> {
@@ -206,15 +205,18 @@ export class TableRelationsLayoutService {
   }
 
   private assignOrphanNodes(nodes: TableNode[], layers: Map<number, string[]>, nodeLayer: Map<string, number>): void {
-    for (const node of nodes) {
-      if (!nodeLayer.has(node.id)) {
-        const maxLayer = Math.max(...Array.from(layers.keys()), -1) + 1
-        if (!layers.has(maxLayer)) {
-          layers.set(maxLayer, [])
-        }
-        layers.get(maxLayer)?.push(node.id)
-        nodeLayer.set(node.id, maxLayer)
-      }
+    const orphanNodes = nodes.filter((node) => !nodeLayer.has(node.id))
+
+    if (orphanNodes.length === 0) {
+      return
+    }
+
+    const orphanLayer = Math.max(...Array.from(layers.keys()), -1) + 1
+    layers.set(orphanLayer, [])
+
+    for (const node of orphanNodes) {
+      layers.get(orphanLayer)?.push(node.id)
+      nodeLayer.set(node.id, orphanLayer)
     }
   }
 
@@ -267,16 +269,14 @@ export class TableRelationsLayoutService {
     for (const layerIndex of sortedLayerIndices) {
       const layerNodes = layers.get(layerIndex) ?? []
 
-      for (let row = 0; row < layerNodes.length; row++) {
-        const node = nodeMap.get(layerNodes[row])
+      for (let rowIndex = 0; rowIndex < layerNodes.length; rowIndex++) {
+        const node = nodeMap.get(layerNodes[rowIndex])
 
         if (node) {
           layoutNodes.push({
             ...node,
             x: layerIndex * (NODE_WIDTH + HORIZONTAL_GAP),
-            y: row * (NODE_HEIGHT + VERTICAL_GAP),
-            column: layerIndex,
-            row,
+            y: rowIndex * (NODE_HEIGHT + VERTICAL_GAP),
           })
         }
       }

@@ -43,6 +43,15 @@ export const CustomEndpointCard: FC<CustomEndpointCardProps> = observer(({ model
     >
       <Flex justify="space-between" align="center" gap={3} height="100%">
         <Flex align="center" gap={2} flex={1} minWidth={0}>
+          <Badge
+            size="sm"
+            colorPalette={model.endpointType === 'GRAPHQL' ? 'pink' : 'green'}
+            variant="subtle"
+            fontWeight="500"
+          >
+            {model.endpointTypeLabel}
+          </Badge>
+
           <Tooltip content="This is an immutable revision. Data reflects a specific point in time.">
             <Text
               fontSize="14px"

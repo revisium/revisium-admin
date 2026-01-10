@@ -1,16 +1,22 @@
-import { JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types.ts'
+import { JsonObjectSchema, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types.ts'
 import { TableRelationsLayoutService } from '../TableRelationsLayoutService.ts'
 import { TableWithSchema } from '../types.ts'
 
-const createTable = (id: string, properties: Record<string, unknown>, count = 0): TableWithSchema => ({
+const createObjectTable = (id: string, properties: Record<string, unknown>, count = 0): TableWithSchema => ({
   id,
   count,
   schema: {
     type: JsonSchemaTypeName.Object,
-    properties: properties as TableWithSchema['schema']['properties'],
+    properties: properties as JsonObjectSchema['properties'],
     required: Object.keys(properties),
     additionalProperties: false,
   },
+})
+
+const createPrimitiveTable = (id: string, schema: JsonSchema, count = 0): TableWithSchema => ({
+  id,
+  count,
+  schema,
 })
 
 const stringField = () => ({ type: JsonSchemaTypeName.String, default: '' })
@@ -36,7 +42,10 @@ describe('TableRelationsLayoutService', () => {
     })
 
     it('should create nodes without edges for tables without foreign keys', () => {
-      const tables = [createTable('users', { name: stringField() }), createTable('posts', { title: stringField() })]
+      const tables = [
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('posts', { title: stringField() }),
+      ]
 
       const result = service.buildGraph(tables)
 
@@ -48,8 +57,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should create edge for simple foreign key', () => {
       const tables = [
-        createTable('categories', { name: stringField() }),
-        createTable('products', { name: stringField(), categoryId: fkField('categories') }),
+        createObjectTable('categories', { name: stringField() }),
+        createObjectTable('products', { name: stringField(), categoryId: fkField('categories') }),
       ]
 
       const result = service.buildGraph(tables)
@@ -66,8 +75,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should track incoming and outgoing edges on nodes', () => {
       const tables = [
-        createTable('categories', { name: stringField() }),
-        createTable('products', { name: stringField(), categoryId: fkField('categories') }),
+        createObjectTable('categories', { name: stringField() }),
+        createObjectTable('products', { name: stringField(), categoryId: fkField('categories') }),
       ]
 
       const result = service.buildGraph(tables)
@@ -83,9 +92,9 @@ describe('TableRelationsLayoutService', () => {
 
     it('should handle multiple foreign keys from one table', () => {
       const tables = [
-        createTable('categories', { name: stringField() }),
-        createTable('authors', { name: stringField() }),
-        createTable('posts', {
+        createObjectTable('categories', { name: stringField() }),
+        createObjectTable('authors', { name: stringField() }),
+        createObjectTable('posts', {
           title: stringField(),
           categoryId: fkField('categories'),
           authorId: fkField('authors'),
@@ -102,9 +111,9 @@ describe('TableRelationsLayoutService', () => {
 
     it('should handle multiple tables pointing to same target', () => {
       const tables = [
-        createTable('users', { name: stringField() }),
-        createTable('posts', { authorId: fkField('users') }),
-        createTable('comments', { authorId: fkField('users') }),
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('posts', { authorId: fkField('users') }),
+        createObjectTable('comments', { authorId: fkField('users') }),
       ]
 
       const result = service.buildGraph(tables)
@@ -117,8 +126,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should handle nested foreign keys', () => {
       const tables = [
-        createTable('tags', { name: stringField() }),
-        createTable('posts', {
+        createObjectTable('tags', { name: stringField() }),
+        createObjectTable('posts', {
           metadata: {
             type: JsonSchemaTypeName.Object,
             properties: {
@@ -138,8 +147,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should handle array foreign keys', () => {
       const tables = [
-        createTable('tags', { name: stringField() }),
-        createTable('posts', {
+        createObjectTable('tags', { name: stringField() }),
+        createObjectTable('posts', {
           tagIds: {
             type: JsonSchemaTypeName.Array,
             items: fkField('tags'),
@@ -154,7 +163,7 @@ describe('TableRelationsLayoutService', () => {
     })
 
     it('should ignore foreign keys to non-existent tables', () => {
-      const tables = [createTable('posts', { categoryId: fkField('categories') })]
+      const tables = [createObjectTable('posts', { categoryId: fkField('categories') })]
 
       const result = service.buildGraph(tables)
 
@@ -162,7 +171,7 @@ describe('TableRelationsLayoutService', () => {
     })
 
     it('should calculate fieldsCount correctly', () => {
-      const tables = [createTable('users', { name: stringField(), email: stringField(), age: stringField() })]
+      const tables = [createObjectTable('users', { name: stringField(), email: stringField(), age: stringField() })]
 
       const result = service.buildGraph(tables)
 
@@ -170,7 +179,7 @@ describe('TableRelationsLayoutService', () => {
     })
 
     it('should preserve rowsCount from table', () => {
-      const tables = [createTable('users', { name: stringField() }, 42)]
+      const tables = [createObjectTable('users', { name: stringField() }, 42)]
 
       const result = service.buildGraph(tables)
 
@@ -179,8 +188,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should handle multiple FK fields to same table', () => {
       const tables = [
-        createTable('users', { name: stringField() }),
-        createTable('messages', {
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('messages', {
           senderId: fkField('users'),
           receiverId: fkField('users'),
         }),
@@ -196,8 +205,8 @@ describe('TableRelationsLayoutService', () => {
 
     it('should assign different curveOffset for multiple edges between same pair', () => {
       const tables = [
-        createTable('users', { name: stringField() }),
-        createTable('messages', {
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('messages', {
           senderId: fkField('users'),
           receiverId: fkField('users'),
         }),
@@ -211,7 +220,7 @@ describe('TableRelationsLayoutService', () => {
     })
 
     it('should assign different curveOffset for bidirectional edges', () => {
-      const tables = [createTable('a', { bId: fkField('b') }), createTable('b', { aId: fkField('a') })]
+      const tables = [createObjectTable('a', { bId: fkField('b') }), createObjectTable('b', { aId: fkField('a') })]
 
       const result = service.buildGraph(tables)
 
@@ -228,26 +237,22 @@ describe('TableRelationsLayoutService', () => {
 
       expect(result.nodes).toEqual([])
       expect(result.edges).toEqual([])
-      expect(result.width).toBe(0)
-      expect(result.height).toBe(0)
     })
 
     it('should assign coordinates to single node', () => {
-      const graph = service.buildGraph([createTable('users', { name: stringField() })])
+      const graph = service.buildGraph([createObjectTable('users', { name: stringField() })])
 
       const result = service.calculateLayout(graph)
 
       expect(result.nodes).toHaveLength(1)
       expect(result.nodes[0].x).toBe(0)
       expect(result.nodes[0].y).toBe(0)
-      expect(result.nodes[0].column).toBe(0)
-      expect(result.nodes[0].row).toBe(0)
     })
 
     it('should place connected tables in different columns', () => {
       const tables = [
-        createTable('categories', { name: stringField() }),
-        createTable('products', { categoryId: fkField('categories') }),
+        createObjectTable('categories', { name: stringField() }),
+        createObjectTable('products', { categoryId: fkField('categories') }),
       ]
       const graph = service.buildGraph(tables)
 
@@ -256,11 +261,14 @@ describe('TableRelationsLayoutService', () => {
       const categoriesNode = result.nodes.find((n) => n.id === 'categories')
       const productsNode = result.nodes.find((n) => n.id === 'products')
 
-      expect(productsNode?.column).toBeLessThan(categoriesNode?.column ?? 0)
+      expect(productsNode?.x).toBeLessThan(categoriesNode?.x ?? 0)
     })
 
     it('should place unconnected tables in same column', () => {
-      const tables = [createTable('users', { name: stringField() }), createTable('posts', { title: stringField() })]
+      const tables = [
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('posts', { title: stringField() }),
+      ]
       const graph = service.buildGraph(tables)
 
       const result = service.calculateLayout(graph)
@@ -268,41 +276,28 @@ describe('TableRelationsLayoutService', () => {
       const usersNode = result.nodes.find((n) => n.id === 'users')
       const postsNode = result.nodes.find((n) => n.id === 'posts')
 
-      expect(usersNode?.column).toBe(postsNode?.column)
+      expect(usersNode?.x).toBe(postsNode?.x)
     })
 
     it('should place multiple tables in same column vertically', () => {
       const tables = [
-        createTable('users', { name: stringField() }),
-        createTable('posts', { title: stringField() }),
-        createTable('comments', { text: stringField() }),
+        createObjectTable('users', { name: stringField() }),
+        createObjectTable('posts', { title: stringField() }),
+        createObjectTable('comments', { text: stringField() }),
       ]
       const graph = service.buildGraph(tables)
 
       const result = service.calculateLayout(graph)
 
-      const rows = result.nodes.map((n) => n.row)
-      expect(new Set(rows).size).toBe(3)
-    })
-
-    it('should calculate correct width and height', () => {
-      const tables = [
-        createTable('categories', { name: stringField() }),
-        createTable('products', { categoryId: fkField('categories') }),
-      ]
-      const graph = service.buildGraph(tables)
-
-      const result = service.calculateLayout(graph)
-
-      expect(result.width).toBeGreaterThan(0)
-      expect(result.height).toBeGreaterThan(0)
+      const yPositions = result.nodes.map((n) => n.y)
+      expect(new Set(yPositions).size).toBe(3)
     })
 
     it('should handle chain of dependencies', () => {
       const tables = [
-        createTable('a', { name: stringField() }),
-        createTable('b', { aId: fkField('a') }),
-        createTable('c', { bId: fkField('b') }),
+        createObjectTable('a', { name: stringField() }),
+        createObjectTable('b', { aId: fkField('a') }),
+        createObjectTable('c', { bId: fkField('b') }),
       ]
       const graph = service.buildGraph(tables)
 
@@ -312,8 +307,102 @@ describe('TableRelationsLayoutService', () => {
       const nodeB = result.nodes.find((n) => n.id === 'b')
       const nodeC = result.nodes.find((n) => n.id === 'c')
 
-      expect(nodeC?.column).toBeLessThan(nodeB?.column ?? 0)
-      expect(nodeB?.column).toBeLessThan(nodeA?.column ?? 0)
+      expect(nodeC?.x).toBeLessThan(nodeB?.x ?? 0)
+      expect(nodeB?.x).toBeLessThan(nodeA?.x ?? 0)
+    })
+  })
+
+  describe('non-object schemas', () => {
+    it('should handle table with string schema (fieldsCount = 1)', () => {
+      const tables = [createPrimitiveTable('const', { type: JsonSchemaTypeName.String, default: '' })]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(1)
+      expect(result.nodes[0].fieldsCount).toBe(1)
+      expect(result.nodes[0].id).toBe('const')
+    })
+
+    it('should handle table with number schema (fieldsCount = 1)', () => {
+      const tables = [createPrimitiveTable('counter', { type: JsonSchemaTypeName.Number, default: 0 })]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(1)
+      expect(result.nodes[0].fieldsCount).toBe(1)
+    })
+
+    it('should handle table with boolean schema (fieldsCount = 1)', () => {
+      const tables = [createPrimitiveTable('flag', { type: JsonSchemaTypeName.Boolean, default: false })]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(1)
+      expect(result.nodes[0].fieldsCount).toBe(1)
+    })
+
+    it('should handle table with $ref schema (fieldsCount = 1)', () => {
+      const tables = [createPrimitiveTable('files', { $ref: 'File' })]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(1)
+      expect(result.nodes[0].fieldsCount).toBe(1)
+    })
+
+    it('should handle table with array schema (fieldsCount = 1)', () => {
+      const tables = [
+        createPrimitiveTable('tags', {
+          type: JsonSchemaTypeName.Array,
+          items: { type: JsonSchemaTypeName.String, default: '' },
+        }),
+      ]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(1)
+      expect(result.nodes[0].fieldsCount).toBe(1)
+    })
+
+    it('should handle mixed object and primitive tables', () => {
+      const tables = [
+        createObjectTable('users', { name: stringField(), email: stringField() }),
+        createPrimitiveTable('const', { type: JsonSchemaTypeName.String, default: '' }),
+        createObjectTable('posts', { title: stringField() }),
+      ]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.nodes).toHaveLength(3)
+      expect(result.nodes.find((n) => n.id === 'users')?.fieldsCount).toBe(2)
+      expect(result.nodes.find((n) => n.id === 'const')?.fieldsCount).toBe(1)
+      expect(result.nodes.find((n) => n.id === 'posts')?.fieldsCount).toBe(1)
+    })
+
+    it('should create edge when object table references primitive table', () => {
+      const tables = [
+        createPrimitiveTable('const', { type: JsonSchemaTypeName.String, default: '' }),
+        createObjectTable('main', { constRef: fkField('const') }),
+      ]
+
+      const result = service.buildGraph(tables)
+
+      expect(result.edges).toHaveLength(1)
+      expect(result.edges[0].sourceTableId).toBe('main')
+      expect(result.edges[0].targetTableId).toBe('const')
+    })
+
+    it('should layout mixed tables correctly', () => {
+      const tables = [
+        createPrimitiveTable('const', { type: JsonSchemaTypeName.String, default: '' }),
+        createObjectTable('main', { constRef: fkField('const') }),
+      ]
+      const graph = service.buildGraph(tables)
+
+      const result = service.calculateLayout(graph)
+
+      expect(result.nodes).toHaveLength(2)
+      expect(result.nodes.every((n) => typeof n.x === 'number' && typeof n.y === 'number')).toBe(true)
     })
   })
 })

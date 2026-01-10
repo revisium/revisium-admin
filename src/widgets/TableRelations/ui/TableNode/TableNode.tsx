@@ -1,14 +1,12 @@
-import { Box, Flex, HoverCard, Portal, Text, VStack } from '@chakra-ui/react'
+import { Box, Flex, HoverCard, Portal, ScrollArea, Text, VStack } from '@chakra-ui/react'
 import { Handle, Position } from '@xyflow/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, memo } from 'react'
 import { useTableRelationsContext } from '../../lib/TableRelationsContext.ts'
 import { TableNodeViewModel } from '../../model/TableNodeViewModel.ts'
 
 export interface TableNodeData {
   model: TableNodeViewModel
-  isHighlighted: boolean
-  isDimmed: boolean
   onMouseEnter: (nodeId: string) => void
   onMouseLeave: () => void
   onClick: (nodeId: string) => void
@@ -18,9 +16,12 @@ interface TableNodeProps {
   data: TableNodeData
 }
 
-export const TableNode: FC<TableNodeProps> = observer(({ data }) => {
-  const { model, isHighlighted, isDimmed, onMouseEnter, onMouseLeave, onClick } = data
+const TableNodeInner: FC<TableNodeProps> = observer(({ data }) => {
+  const { model, onMouseEnter, onMouseLeave, onClick } = data
   const { containerRef } = useTableRelationsContext()
+
+  const isHighlighted = model.isHighlighted
+  const isDimmed = model.isDimmed
 
   const handleMouseEnter = () => {
     onMouseEnter(model.id)
@@ -68,36 +69,36 @@ export const TableNode: FC<TableNodeProps> = observer(({ data }) => {
 
         <Portal container={containerRef}>
           <HoverCard.Positioner>
-            <HoverCard.Content maxWidth="320px" p={3} bg="white" boxShadow="md">
+            <HoverCard.Content maxWidth="320px" maxHeight="300px" p={0} bg="white" boxShadow="md">
               <HoverCard.Arrow>
                 <HoverCard.ArrowTip />
               </HoverCard.Arrow>
-              <VStack align="start" gap={2}>
-                <Text fontSize="13px" fontWeight="600" color="gray.700">
-                  {model.id}
-                </Text>
+              <ScrollArea.Root maxHeight="300px" width="100%">
+                <ScrollArea.Viewport>
+                  <VStack align="start" gap={2} p={3} pr={4}>
+                    <Text fontSize="13px" fontWeight="600" color="gray.700">
+                      {model.id}
+                    </Text>
 
-                <Flex gap={4}>
-                  <VStack align="start" gap={0}>
-                    <Text fontSize="11px" color="gray.400">
-                      Fields
-                    </Text>
-                    <Text fontSize="13px" color="gray.600">
-                      {model.fieldsCount}
-                    </Text>
-                  </VStack>
-                  <VStack align="start" gap={0}>
-                    <Text fontSize="11px" color="gray.400">
-                      Rows
-                    </Text>
-                    <Text fontSize="13px" color="gray.600">
-                      {model.rowsCount}
-                    </Text>
-                  </VStack>
-                </Flex>
+                    <Flex gap={4}>
+                      <VStack align="start" gap={0}>
+                        <Text fontSize="11px" color="gray.400">
+                          Fields
+                        </Text>
+                        <Text fontSize="13px" color="gray.600">
+                          {model.fieldsCount}
+                        </Text>
+                      </VStack>
+                      <VStack align="start" gap={0}>
+                        <Text fontSize="11px" color="gray.400">
+                          Rows
+                        </Text>
+                        <Text fontSize="13px" color="gray.600">
+                          {model.rowsCount}
+                        </Text>
+                      </VStack>
+                    </Flex>
 
-                {model.hasRelations && (
-                  <VStack align="start" gap={1} width="100%">
                     {model.outgoingEdges.length > 0 && (
                       <Box width="100%" overflow="hidden">
                         <Text fontSize="11px" color="gray.400" mb={1}>
@@ -131,8 +132,11 @@ export const TableNode: FC<TableNodeProps> = observer(({ data }) => {
                       </Box>
                     )}
                   </VStack>
-                )}
-              </VStack>
+                </ScrollArea.Viewport>
+                <ScrollArea.Scrollbar orientation="vertical">
+                  <ScrollArea.Thumb />
+                </ScrollArea.Scrollbar>
+              </ScrollArea.Root>
             </HoverCard.Content>
           </HoverCard.Positioner>
         </Portal>
@@ -142,3 +146,5 @@ export const TableNode: FC<TableNodeProps> = observer(({ data }) => {
     </>
   )
 })
+
+export const TableNode = memo(TableNodeInner)

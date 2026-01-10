@@ -51,7 +51,7 @@ function extractFromSchema(schema: JsonSchema, currentPath: string, result: Fore
   }
 }
 
-export function extractForeignKeys(schema: JsonObjectSchema): ForeignKeyInfo[] {
+export function extractForeignKeys(schema: JsonSchema): ForeignKeyInfo[] {
   const result: ForeignKeyInfo[] = []
   extractFromSchema(schema, '', result)
   return result

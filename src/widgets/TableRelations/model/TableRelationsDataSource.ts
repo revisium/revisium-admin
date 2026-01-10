@@ -1,6 +1,5 @@
-import { makeAutoObservable } from 'mobx'
 import { TableRelationsDataQuery, TableRelationsItemFragment } from 'src/__generated__/graphql-request.ts'
-import { JsonObjectSchema } from 'src/entities/Schema/types/schema.types.ts'
+import { JsonSchema } from 'src/entities/Schema/types/schema.types.ts'
 import { container, isAborted } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
 import { client } from 'src/shared/model/ApiService.ts'
@@ -8,18 +7,6 @@ import { TableWithSchema } from '../lib/types.ts'
 
 export class TableRelationsDataSource {
   private readonly request = ObservableRequest.of(client.tableRelationsData)
-
-  constructor() {
-    makeAutoObservable(this)
-  }
-
-  public get isLoading(): boolean {
-    return this.request.isLoading
-  }
-
-  public get error(): string | null {
-    return this.request.errorMessage ?? null
-  }
 
   public async load(revisionId: string): Promise<{ tables: TableWithSchema[] | null; aborted: boolean }> {
     const result = await this.request.fetch({
@@ -48,7 +35,7 @@ export class TableRelationsDataSource {
     return {
       id: item.id,
       count: item.count,
-      schema: item.schema as JsonObjectSchema,
+      schema: item.schema as JsonSchema,
     }
   }
 }

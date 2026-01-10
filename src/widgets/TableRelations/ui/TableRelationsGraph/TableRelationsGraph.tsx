@@ -7,8 +7,9 @@ import {
   NodeTypes,
   EdgeTypes,
   ReactFlow,
-  ReactFlowInstance,
   ReactFlowProvider,
+  useNodesState,
+  useEdgesState,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { observer } from 'mobx-react-lite'
@@ -33,16 +34,21 @@ const edgeTypes: EdgeTypes = {
 
 const TableRelationsGraphInner: FC<TableRelationsGraphProps> = observer(({ model }) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [nodes, setNodes, onNodesChange] = useNodesState(model.initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(model.initialEdges)
 
   useEffect(() => {
     model.fullscreen.setContainerRef(containerRef.current)
     return () => model.fullscreen.setContainerRef(null)
   }, [model])
 
-  const handleInit = useCallback((instance: ReactFlowInstance) => model.setReactFlowInstance(instance), [model])
-
   useEffect(() => {
-    return () => model.setReactFlowInstance(null)
+    setNodes(model.initialNodes)
+    setEdges(model.initialEdges)
+  }, [model.dataVersion, setNodes, setEdges, model.initialNodes, model.initialEdges])
+
+  const handlePaneClick = useCallback(() => {
+    model.clearSelection()
   }, [model])
 
   const contextValue = useMemo(() => ({ containerRef }), [])
@@ -59,10 +65,11 @@ const TableRelationsGraphInner: FC<TableRelationsGraphProps> = observer(({ model
         bg="white"
       >
         <ReactFlow
-          defaultNodes={model.reactFlowNodes}
-          defaultEdges={model.reactFlowEdges}
-          onInit={handleInit}
-          onPaneClick={model.clearSelection}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onPaneClick={handlePaneClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView

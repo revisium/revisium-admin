@@ -1,16 +1,22 @@
-import { JsonObjectSchema, JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types.ts'
+import { JsonObjectSchema, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema/types/schema.types.ts'
 import { extractForeignKeys } from '../extractForeignKeys.ts'
 
-const createSchema = (properties: JsonObjectSchema['properties']): JsonObjectSchema => ({
+const createObjectSchema = (properties: JsonObjectSchema['properties']): JsonObjectSchema => ({
   type: JsonSchemaTypeName.Object,
   properties,
   required: Object.keys(properties),
   additionalProperties: false,
 })
 
+const createStringSchema = (foreignKey?: string): JsonSchema => ({
+  type: JsonSchemaTypeName.String,
+  default: '',
+  ...(foreignKey ? { foreignKey } : {}),
+})
+
 describe('extractForeignKeys', () => {
   it('should return empty array for schema without foreign keys', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       name: { type: JsonSchemaTypeName.String, default: '' },
       count: { type: JsonSchemaTypeName.Number, default: 0 },
     })
@@ -21,7 +27,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract single foreign key at root level', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       categoryId: {
         type: JsonSchemaTypeName.String,
         default: '',
@@ -35,7 +41,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract multiple foreign keys at root level', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       categoryId: {
         type: JsonSchemaTypeName.String,
         default: '',
@@ -56,7 +62,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign key from nested object', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       metadata: {
         type: JsonSchemaTypeName.Object,
         properties: {
@@ -77,7 +83,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign key from deeply nested object', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       level1: {
         type: JsonSchemaTypeName.Object,
         properties: {
@@ -105,7 +111,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign key from array of strings', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       tagIds: {
         type: JsonSchemaTypeName.Array,
         items: {
@@ -122,7 +128,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign key from array of objects', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       items: {
         type: JsonSchemaTypeName.Array,
         items: {
@@ -146,7 +152,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign key from nested array in object', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       data: {
         type: JsonSchemaTypeName.Object,
         properties: {
@@ -170,7 +176,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract foreign keys from complex nested structure', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       categoryId: {
         type: JsonSchemaTypeName.String,
         default: '',
@@ -214,7 +220,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should extract from nested arrays (array of arrays)', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       matrix: {
         type: JsonSchemaTypeName.Array,
         items: {
@@ -234,7 +240,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should ignore $ref schemas', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       file: {
         $ref: 'File',
       },
@@ -251,7 +257,7 @@ describe('extractForeignKeys', () => {
   })
 
   it('should handle mixed fields with and without foreign keys', () => {
-    const schema = createSchema({
+    const schema = createObjectSchema({
       name: { type: JsonSchemaTypeName.String, default: '' },
       categoryId: {
         type: JsonSchemaTypeName.String,
@@ -265,5 +271,58 @@ describe('extractForeignKeys', () => {
     const result = extractForeignKeys(schema)
 
     expect(result).toEqual([{ fieldPath: 'categoryId', targetTableId: 'categories' }])
+  })
+
+  describe('non-object schemas', () => {
+    it('should return empty array for string schema without foreign key', () => {
+      const schema = createStringSchema()
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([])
+    })
+
+    it('should extract foreign key from root-level string schema', () => {
+      const schema = createStringSchema('categories')
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([{ fieldPath: '', targetTableId: 'categories' }])
+    })
+
+    it('should return empty array for number schema', () => {
+      const schema: JsonSchema = { type: JsonSchemaTypeName.Number, default: 0 }
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([])
+    })
+
+    it('should return empty array for boolean schema', () => {
+      const schema: JsonSchema = { type: JsonSchemaTypeName.Boolean, default: false }
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([])
+    })
+
+    it('should return empty array for ref schema', () => {
+      const schema: JsonSchema = { $ref: 'File' }
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([])
+    })
+
+    it('should extract foreign keys from array schema at root', () => {
+      const schema: JsonSchema = {
+        type: JsonSchemaTypeName.Array,
+        items: createStringSchema('tags'),
+      }
+
+      const result = extractForeignKeys(schema)
+
+      expect(result).toEqual([{ fieldPath: '[*]', targetTableId: 'tags' }])
+    })
   })
 })

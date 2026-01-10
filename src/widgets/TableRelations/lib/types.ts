@@ -1,8 +1,8 @@
-import { JsonObjectSchema } from 'src/entities/Schema/types/schema.types.ts'
+import { JsonSchema } from 'src/entities/Schema/types/schema.types.ts'
 
 export interface TableWithSchema {
   id: string
-  schema: JsonObjectSchema
+  schema: JsonSchema
   count: number
 }
 
@@ -35,13 +35,9 @@ export interface GraphData {
 export interface LayoutNode extends TableNode {
   x: number
   y: number
-  column: number
-  row: number
 }
 
 export interface LayoutData {
   nodes: LayoutNode[]
   edges: RelationEdge[]
-  width: number
-  height: number
 }

@@ -13,9 +13,10 @@ import {
   PiMagnifyingGlassLight,
   PiPlugLight,
   PiRobotLight,
+  PiGraphLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
-import { CHANGES_ROUTE, MIGRATIONS_ROUTE } from 'src/shared/config/routes.ts'
+import { CHANGES_ROUTE, MIGRATIONS_ROUTE, RELATIONS_ROUTE } from 'src/shared/config/routes.ts'
 import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigationState.ts'
 import { ProjectSidebarViewModel } from 'src/widgets/ProjectSidebar/model/ProjectSidebarViewModel.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
@@ -36,6 +37,7 @@ export const ProjectSidebar: FC = observer(() => {
     isTablesActive,
     isChangesActive,
     isMigrationsActive,
+    isRelationsActive,
     isProjectSettingsActive,
     isEndpointsActive,
     isBranchesActive,
@@ -90,6 +92,12 @@ export const ProjectSidebar: FC = observer(() => {
           {/*  icon={<PiFileLight />}*/}
           {/*  isActive={isAssetsActive}*/}
           {/*/>*/}
+          <NavigationButton
+            to={`${linkMaker.currentBaseLink}/${RELATIONS_ROUTE}`}
+            label="Table Relations"
+            icon={<PiGraphLight />}
+            isActive={isRelationsActive}
+          />
           <NavigationButton
             to={`${linkMaker.currentBaseLink}/${MIGRATIONS_ROUTE}`}
             label="Migrations"

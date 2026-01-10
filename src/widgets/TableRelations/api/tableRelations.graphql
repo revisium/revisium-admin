@@ -1,0 +1,17 @@
+fragment TableRelationsItem on TableModel {
+  id
+  versionId
+  count
+  schema
+}
+
+query tableRelationsData($data: GetTablesInput!) {
+  tables(data: $data) {
+    totalCount
+    edges {
+      node {
+        ...TableRelationsItem
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, Position } from '@xyflow/react'
+import { FC } from 'react'
+
+export interface RelationEdgeData {
+  fieldPath: string
+  isHighlighted: boolean
+  curveOffset?: number
+}
+
+interface RelationEdgeProps {
+  id: string
+  sourceX: number
+  sourceY: number
+  targetX: number
+  targetY: number
+  sourcePosition: Position
+  targetPosition: Position
+  data?: RelationEdgeData
+}
+
+const ARROW_MARKER_ID = 'relation-arrow'
+const ARROW_MARKER_HIGHLIGHTED_ID = 'relation-arrow-highlighted'
+
+export const RelationEdge: FC<RelationEdgeProps> = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+}) => {
+  const curveOffset = data?.curveOffset ?? 0
+
+  const [edgePath, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY: sourceY + curveOffset,
+    sourcePosition,
+    targetX,
+    targetY: targetY + curveOffset,
+    targetPosition,
+  })
+
+  const isHighlighted = data?.isHighlighted ?? false
+  const fieldPath = data?.fieldPath ?? ''
+
+  return (
+    <>
+      <defs>
+        <marker
+          id={ARROW_MARKER_ID}
+          markerWidth="12"
+          markerHeight="12"
+          refX="10"
+          refY="6"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path d="M2,2 L10,6 L2,10 L4,6 Z" fill="#cbd5e1" />
+        </marker>
+        <marker
+          id={ARROW_MARKER_HIGHLIGHTED_ID}
+          markerWidth="12"
+          markerHeight="12"
+          refX="10"
+          refY="6"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path d="M2,2 L10,6 L2,10 L4,6 Z" fill="#475569" />
+        </marker>
+      </defs>
+
+      <BaseEdge
+        id={id}
+        path={edgePath}
+        style={{
+          stroke: isHighlighted ? '#475569' : '#cbd5e1',
+          strokeWidth: isHighlighted ? 2 : 1,
+          strokeDasharray: isHighlighted ? '6 3' : 'none',
+          animation: isHighlighted ? 'dash-flow 0.5s linear infinite' : 'none',
+          filter: isHighlighted ? 'drop-shadow(0 0 2px rgba(71, 85, 105, 0.5))' : 'none',
+          transition: 'stroke 0.15s, stroke-width 0.15s, filter 0.15s',
+        }}
+        markerEnd={`url(#${isHighlighted ? ARROW_MARKER_HIGHLIGHTED_ID : ARROW_MARKER_ID})`}
+      />
+
+      {isHighlighted && fieldPath && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              pointerEvents: 'none',
+              fontSize: '10px',
+              fontFamily: 'monospace',
+              color: '#475569',
+              backgroundColor: 'white',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              border: '1px solid #94a3b8',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            {fieldPath}
+          </div>
+        </EdgeLabelRenderer>
+      )}
+
+      <style>
+        {`
+          @keyframes dash-flow {
+            to {
+              stroke-dashoffset: -9;
+            }
+          }
+        `}
+      </style>
+    </>
+  )
+}

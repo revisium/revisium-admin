@@ -156,9 +156,10 @@ export class CreateBranchDialogViewModelFactory {
 container.register(
   CreateBranchDialogViewModelFactory,
   () => {
-    const dataSource = container.get(CreateBranchDataSource)
-
-    return new CreateBranchDialogViewModelFactory((onCreated) => new CreateBranchDialogViewModel(dataSource, onCreated))
+    return new CreateBranchDialogViewModelFactory((onCreated) => {
+      const dataSource = container.get(CreateBranchDataSource)
+      return new CreateBranchDialogViewModel(dataSource, onCreated)
+    })
   },
   { scope: 'request' },
 )

@@ -139,13 +139,12 @@ export class BranchItemViewModel {
 container.register(
   BranchItemViewModelFactory,
   () => {
-    const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    const dataSource = container.get(BranchesDataSource)
-
-    return new BranchItemViewModelFactory(
-      (item, onDeleted) => new BranchItemViewModel(context, permissionContext, dataSource, item, onDeleted),
-    )
+    return new BranchItemViewModelFactory((item, onDeleted) => {
+      const context = container.get(ProjectContext)
+      const permissionContext = container.get(PermissionContext)
+      const dataSource = container.get(BranchesDataSource)
+      return new BranchItemViewModel(context, permissionContext, dataSource, item, onDeleted)
+    })
   },
   { scope: 'request' },
 )

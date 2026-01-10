@@ -13,6 +13,7 @@ import { AdminUsersPage } from 'src/pages/AdminUsersPage'
 import { ApolloSandboxPage } from 'src/pages/ApolloSandboxPage'
 import { ChangesPage, ChangesLayout } from 'src/pages/ChangesPage'
 import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
+import { BranchesPage } from 'src/pages/BranchesPage'
 import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { McpPage } from 'src/pages/McpPage'
 import { McpTokenPage } from 'src/pages/McpTokenPage'
@@ -64,6 +65,7 @@ import {
   CHANGES_ROUTE,
   MIGRATIONS_ROUTE,
   ENDPOINTS_ROUTE,
+  BRANCHES_ROUTE,
   MCP_TOKEN_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
@@ -137,6 +139,11 @@ const organizationRouteObject = {
           path: ENDPOINTS_ROUTE,
           element: <EndpointsPage />,
           id: RouteIds.Endpoints,
+        },
+        {
+          path: BRANCHES_ROUTE,
+          element: <BranchesPage />,
+          id: RouteIds.Branches,
         },
         {
           path: PROJECT_MCP_ROUTE,

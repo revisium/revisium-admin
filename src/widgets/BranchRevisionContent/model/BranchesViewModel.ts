@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, isAborted } from 'src/shared/lib'
@@ -19,8 +20,15 @@ export class BranchesViewModel implements IViewModel {
 
   private readonly findBranches = ObservableRequest.of(client.findBranches, { skipResetting: true })
 
-  constructor(private readonly context: ProjectContext) {
+  constructor(
+    private readonly context: ProjectContext,
+    private readonly linkMaker: LinkMaker,
+  ) {
     makeAutoObservable(this)
+  }
+
+  public get branchesLink(): string {
+    return this.linkMaker.makeBranchesLink()
   }
 
   public get showLoading() {
@@ -83,8 +91,9 @@ container.register(
   BranchesViewModel,
   () => {
     const context = container.get(ProjectContext)
+    const linkMaker = container.get(LinkMaker)
 
-    return new BranchesViewModel(context)
+    return new BranchesViewModel(context, linkMaker)
   },
   { scope: 'request' },
 )

@@ -23,6 +23,7 @@ export const CHANGES_ROUTE = '-/changes'
 export const ASSETS_ROUTE = '-/assets'
 export const MIGRATIONS_ROUTE = '-/migrations'
 export const ENDPOINTS_ROUTE = '-/endpoints'
+export const BRANCHES_ROUTE = '-/branches'
 export const REVISION_ROUTE = ':revisionIdOrTag'
 export const TABLE_ROUTE = ':tableId'
 export const ROW_ROUTE = ':rowId'
@@ -46,6 +47,7 @@ export enum RouteIds {
   Changes = 'changes',
   Migrations = 'migrations',
   Endpoints = 'endpoints',
+  Branches = 'branches',
 
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',

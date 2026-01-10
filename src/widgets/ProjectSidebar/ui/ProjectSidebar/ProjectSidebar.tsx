@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC, useEffect } from 'react'
 import {
   PiGearLight,
+  PiGitBranchLight,
   // PiKeyLight,
   PiUsersLight,
   PiDatabaseLight,
@@ -37,6 +38,7 @@ export const ProjectSidebar: FC = observer(() => {
     isMigrationsActive,
     isProjectSettingsActive,
     isEndpointsActive,
+    isBranchesActive,
     isProjectUsersActive,
     isMcpActive,
     isProjectLevelActive,
@@ -106,6 +108,12 @@ export const ProjectSidebar: FC = observer(() => {
             label="Endpoints"
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
+          />
+          <NavigationButton
+            to={linkMaker.makeBranchesLink()}
+            label="Branches"
+            icon={<PiGitBranchLight />}
+            isActive={isBranchesActive}
           />
           <NavigationButton
             to={linkMaker.makeMcpLink()}

@@ -39,7 +39,7 @@ export const SystemApiSection: FC<SystemApiSectionProps> = observer(({ model }) 
         >
           <Flex justify="space-between" align="center" gap={3} height="100%">
             <Flex align="center" gap={2} flex={1} minWidth={0}>
-              <Badge size="sm" colorPalette="green" variant="subtle" fontWeight="500">
+              <Badge size="sm" colorPalette="gray" variant="subtle" fontWeight="500">
                 REST API
               </Badge>
               <Text fontSize="14px" fontWeight="500" color="newGray.600">
@@ -73,7 +73,7 @@ export const SystemApiSection: FC<SystemApiSectionProps> = observer(({ model }) 
         >
           <Flex justify="space-between" align="center" gap={3} height="100%">
             <Flex align="center" gap={2} flex={1} minWidth={0}>
-              <Badge size="sm" colorPalette="pink" variant="subtle" fontWeight="500">
+              <Badge size="sm" colorPalette="gray" variant="subtle" fontWeight="500">
                 GraphQL
               </Badge>
               <Text fontSize="14px" fontWeight="500" color="newGray.600">

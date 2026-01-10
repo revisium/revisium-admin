@@ -85,7 +85,8 @@ export const EndpointsPage = observer(() => {
                       forward.
                     </Text>
                     <Text fontSize="xs" color="newGray.500">
-                      Use Draft for dev/preview, Head for production (or use Draft if you need live updates).
+                      Head updates only after commit (stable for production). Draft reflects changes immediately (good
+                      for dev or live sync).
                     </Text>
                     <Text fontSize="xs" color="newGray.500">
                       You can create endpoints for Head, Draft, or any revision in the history.

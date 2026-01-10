@@ -13,6 +13,7 @@ import {
   PROJECT_ROUTE,
   PROJECT_SETTINGS_ROUTE,
   PROJECT_USERS_ROUTE,
+  BRANCH_MAP_ROUTE,
   REVISION_ROUTE,
   ROW_ROUTE,
   TABLE_ROUTE,
@@ -126,6 +127,16 @@ export class LinkMaker {
       organizationId: this.organizationId,
       projectName: this.projectName,
     })
+  }
+
+  public makeBranchMapLink(): string {
+    if (!this.organizationId || !this.projectName || !this.branchName) {
+      return ''
+    }
+    const baseLink = getBaseLink(this.organizationId, this.projectName, this.branchName, {
+      revisionIdOrTag: this.revisionIdOrTag,
+    })
+    return `${baseLink}/${BRANCH_MAP_ROUTE}`
   }
 
   public make(options: RevisionOptionType): string {

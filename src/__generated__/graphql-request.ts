@@ -2640,6 +2640,141 @@ export type MeProjectsListQuery = {
   }
 }
 
+export type RevisionMapRevisionBaseFragment = {
+  id: string
+  comment: string
+  isDraft: boolean
+  isHead: boolean
+  isStart: boolean
+  createdAt: string
+  parent?: { id: string } | null
+  endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+  childBranches: Array<{ branch: { id: string; name: string } }>
+}
+
+export type RevisionMapBranchFullFragment = {
+  id: string
+  name: string
+  isRoot: boolean
+  touched: boolean
+  createdAt: string
+  head: {
+    id: string
+    comment: string
+    isDraft: boolean
+    isHead: boolean
+    isStart: boolean
+    createdAt: string
+    parent?: { id: string } | null
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    childBranches: Array<{ branch: { id: string; name: string } }>
+  }
+  draft: {
+    id: string
+    comment: string
+    isDraft: boolean
+    isHead: boolean
+    isStart: boolean
+    createdAt: string
+    parent?: { id: string } | null
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    childBranches: Array<{ branch: { id: string; name: string } }>
+  }
+  start: {
+    id: string
+    comment: string
+    isDraft: boolean
+    isHead: boolean
+    isStart: boolean
+    createdAt: string
+    parent?: { id: string } | null
+    endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+    childBranches: Array<{ branch: { id: string; name: string } }>
+  }
+  parent?: {
+    revision: {
+      id: string
+      comment: string
+      isDraft: boolean
+      isHead: boolean
+      isStart: boolean
+      createdAt: string
+      parent?: { id: string } | null
+      endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+      childBranches: Array<{ branch: { id: string; name: string } }>
+    }
+    branch: { id: string; name: string }
+  } | null
+  revisions: { totalCount: number }
+}
+
+export type GetProjectGraphQueryVariables = Exact<{
+  data: GetBranchesInput
+}>
+
+export type GetProjectGraphQuery = {
+  branches: {
+    totalCount: number
+    edges: Array<{
+      node: {
+        id: string
+        name: string
+        isRoot: boolean
+        touched: boolean
+        createdAt: string
+        head: {
+          id: string
+          comment: string
+          isDraft: boolean
+          isHead: boolean
+          isStart: boolean
+          createdAt: string
+          parent?: { id: string } | null
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          childBranches: Array<{ branch: { id: string; name: string } }>
+        }
+        draft: {
+          id: string
+          comment: string
+          isDraft: boolean
+          isHead: boolean
+          isStart: boolean
+          createdAt: string
+          parent?: { id: string } | null
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          childBranches: Array<{ branch: { id: string; name: string } }>
+        }
+        start: {
+          id: string
+          comment: string
+          isDraft: boolean
+          isHead: boolean
+          isStart: boolean
+          createdAt: string
+          parent?: { id: string } | null
+          endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+          childBranches: Array<{ branch: { id: string; name: string } }>
+        }
+        parent?: {
+          revision: {
+            id: string
+            comment: string
+            isDraft: boolean
+            isHead: boolean
+            isStart: boolean
+            createdAt: string
+            parent?: { id: string } | null
+            endpoints: Array<{ id: string; type: EndpointType; createdAt: string }>
+            childBranches: Array<{ branch: { id: string; name: string } }>
+          }
+          branch: { id: string; name: string }
+        } | null
+        revisions: { totalCount: number }
+      }
+    }>
+  }
+}
+
 export type RowChangeRowFieldsFragment = { id: string }
 
 export type RowChangeTableFieldsFragment = { id: string }
@@ -3401,6 +3536,61 @@ export const MeProjectListItemFragmentDoc = gql`
       touched
     }
   }
+`
+export const RevisionMapRevisionBaseFragmentDoc = gql`
+  fragment RevisionMapRevisionBase on RevisionModel {
+    id
+    comment
+    isDraft
+    isHead
+    isStart
+    createdAt
+    parent {
+      id
+    }
+    endpoints {
+      id
+      type
+      createdAt
+    }
+    childBranches {
+      branch {
+        id
+        name
+      }
+    }
+  }
+`
+export const RevisionMapBranchFullFragmentDoc = gql`
+  fragment RevisionMapBranchFull on BranchModel {
+    id
+    name
+    isRoot
+    touched
+    createdAt
+    head {
+      ...RevisionMapRevisionBase
+    }
+    draft {
+      ...RevisionMapRevisionBase
+    }
+    start {
+      ...RevisionMapRevisionBase
+    }
+    parent {
+      revision {
+        ...RevisionMapRevisionBase
+      }
+      branch {
+        id
+        name
+      }
+    }
+    revisions(data: { first: 1000 }) {
+      totalCount
+    }
+  }
+  ${RevisionMapRevisionBaseFragmentDoc}
 `
 export const RowChangeRowFieldsFragmentDoc = gql`
   fragment RowChangeRowFields on RowChangeRowModel {
@@ -4259,6 +4449,19 @@ export const MeProjectsListDocument = gql`
   }
   ${PageInfoFragmentDoc}
   ${MeProjectListItemFragmentDoc}
+`
+export const GetProjectGraphDocument = gql`
+  query getProjectGraph($data: GetBranchesInput!) {
+    branches(data: $data) {
+      totalCount
+      edges {
+        node {
+          ...RevisionMapBranchFull
+        }
+      }
+    }
+  }
+  ${RevisionMapBranchFullFragmentDoc}
 `
 export const GetRowChangesDocument = gql`
   query GetRowChanges($revisionId: String!, $first: Int!, $after: String, $filters: RowChangesFiltersInput) {
@@ -5386,6 +5589,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'meProjectsList',
+        'query',
+        variables,
+      )
+    },
+    getProjectGraph(
+      variables: GetProjectGraphQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetProjectGraphQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetProjectGraphQuery>(GetProjectGraphDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getProjectGraph',
         'query',
         variables,
       )

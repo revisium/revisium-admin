@@ -29,6 +29,7 @@ import { LoginPage } from 'src/pages/LoginPage'
 import { LogoutPage } from 'src/pages/LogoutPage'
 import { MainPage } from 'src/pages/MainPage'
 import { MigrationsPage } from 'src/pages/MigrationsPage'
+import { BranchMapPage } from 'src/pages/BranchMapPage'
 import { TableRelationsPage } from 'src/pages/TableRelationsPage'
 import { RevisionPage } from 'src/pages/RevisionPage'
 import { RowPage } from 'src/pages/RowPage'
@@ -68,6 +69,7 @@ import {
   ENDPOINTS_ROUTE,
   BRANCHES_ROUTE,
   RELATIONS_ROUTE,
+  BRANCH_MAP_ROUTE,
   MCP_TOKEN_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
@@ -108,6 +110,12 @@ const createRelationsRouteObject = (): RouteObject => ({
   path: RELATIONS_ROUTE,
   element: <TableRelationsPage />,
   id: RouteIds.Relations,
+})
+
+const createBranchMapRouteObject = (): RouteObject => ({
+  path: BRANCH_MAP_ROUTE,
+  element: <BranchMapPage />,
+  id: RouteIds.BranchMap,
 })
 
 const createTableRouteObject = (): RouteObject => ({
@@ -183,7 +191,12 @@ const organizationRouteObject = {
                 },
                 {
                   element: <BranchPage showTitle={false} />,
-                  children: [createChangesRouteObject(), createMigrationsRouteObject(), createRelationsRouteObject()],
+                  children: [
+                    createChangesRouteObject(),
+                    createMigrationsRouteObject(),
+                    createRelationsRouteObject(),
+                    createBranchMapRouteObject(),
+                  ],
                 },
               ],
             },

@@ -1,0 +1,62 @@
+fragment RevisionMapRevisionBase on RevisionModel {
+  id
+  comment
+  isDraft
+  isHead
+  isStart
+  createdAt
+  parent {
+    id
+  }
+  endpoints {
+    id
+    type
+    createdAt
+  }
+  childBranches {
+    branch {
+      id
+      name
+    }
+  }
+}
+
+fragment RevisionMapBranchFull on BranchModel {
+  id
+  name
+  isRoot
+  touched
+  createdAt
+  head {
+    ...RevisionMapRevisionBase
+  }
+  draft {
+    ...RevisionMapRevisionBase
+  }
+  start {
+    ...RevisionMapRevisionBase
+  }
+  parent {
+    revision {
+      ...RevisionMapRevisionBase
+    }
+    branch {
+      id
+      name
+    }
+  }
+  revisions(data: { first: 1000 }) {
+    totalCount
+  }
+}
+
+query getProjectGraph($data: GetBranchesInput!) {
+  branches(data: $data) {
+    totalCount
+    edges {
+      node {
+        ...RevisionMapBranchFull
+      }
+    }
+  }
+}

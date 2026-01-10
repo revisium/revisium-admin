@@ -14,9 +14,10 @@ import {
   PiPlugLight,
   PiRobotLight,
   PiGraphLight,
+  PiTreeStructureLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
-import { CHANGES_ROUTE, MIGRATIONS_ROUTE, RELATIONS_ROUTE } from 'src/shared/config/routes.ts'
+import { BRANCH_MAP_ROUTE, CHANGES_ROUTE, MIGRATIONS_ROUTE, RELATIONS_ROUTE } from 'src/shared/config/routes.ts'
 import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigationState.ts'
 import { ProjectSidebarViewModel } from 'src/widgets/ProjectSidebar/model/ProjectSidebarViewModel.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
@@ -38,12 +39,14 @@ export const ProjectSidebar: FC = observer(() => {
     isChangesActive,
     isMigrationsActive,
     isRelationsActive,
+    isBranchMapActive,
     isProjectSettingsActive,
     isEndpointsActive,
     isBranchesActive,
     isProjectUsersActive,
     isMcpActive,
     isProjectLevelActive,
+    isBranchesLevelActive,
   } = useNavigationState()
 
   useEffect(() => {
@@ -51,6 +54,12 @@ export const ProjectSidebar: FC = observer(() => {
       model.expandProjectSection()
     }
   }, [isProjectLevelActive, model])
+
+  useEffect(() => {
+    if (isBranchesLevelActive) {
+      model.expandBranchesSection()
+    }
+  }, [isBranchesLevelActive, model])
 
   return (
     <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
@@ -107,6 +116,25 @@ export const ProjectSidebar: FC = observer(() => {
         </CollapsibleGroupButton>
 
         <CollapsibleGroupButton
+          label="Branches"
+          isExpanded={model.isBranchesSectionExpanded}
+          onClick={model.handleBranchesSectionClick}
+        >
+          <NavigationButton
+            to={linkMaker.makeBranchesLink()}
+            label="All Branches"
+            icon={<PiGitBranchLight />}
+            isActive={isBranchesActive}
+          />
+          <NavigationButton
+            to={`${linkMaker.currentBaseLink}/${BRANCH_MAP_ROUTE}`}
+            label="Branch Map"
+            icon={<PiTreeStructureLight />}
+            isActive={isBranchMapActive}
+          />
+        </CollapsibleGroupButton>
+
+        <CollapsibleGroupButton
           label="Management"
           isExpanded={model.isProjectSectionExpanded}
           onClick={model.handleProjectSectionClick}
@@ -116,12 +144,6 @@ export const ProjectSidebar: FC = observer(() => {
             label="Endpoints"
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
-          />
-          <NavigationButton
-            to={linkMaker.makeBranchesLink()}
-            label="Branches"
-            icon={<PiGitBranchLight />}
-            isActive={isBranchesActive}
           />
           <NavigationButton
             to={linkMaker.makeMcpLink()}
@@ -145,12 +167,6 @@ export const ProjectSidebar: FC = observer(() => {
               isActive={isProjectSettingsActive}
             />
           )}
-          {/*  <NavigationButton*/}
-          {/*    to={linkMaker.makeProjectApiKeysLink()}*/}
-          {/*    label="API Keys"*/}
-          {/*    icon={<PiKeyLight />}*/}
-          {/*    isActive={isProjectApiKeysActive}*/}
-          {/*  />*/}
         </CollapsibleGroupButton>
       </Flex>
 

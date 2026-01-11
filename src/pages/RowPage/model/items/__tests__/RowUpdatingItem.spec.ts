@@ -195,7 +195,7 @@ describe('RowUpdatingItem', () => {
 
     it('should return canUpdateRow based on permissions and revision', () => {
       const deps = createMockUpdatingDeps({ isDraftRevision: true })
-      ;(deps.permissionContext as { canUpdateRow: boolean }).canUpdateRow = true
+      ;(deps.projectPermissions as { canUpdateRow: boolean }).canUpdateRow = true
       const store = createMockRowDataCardStore()
       const item = new RowUpdatingItem(deps, false, store as never, 'original-row')
 
@@ -204,7 +204,7 @@ describe('RowUpdatingItem', () => {
 
     it('should return false for canUpdateRow when not draft revision', () => {
       const deps = createMockUpdatingDeps({ isDraftRevision: false })
-      ;(deps.permissionContext as { canUpdateRow: boolean }).canUpdateRow = true
+      ;(deps.projectPermissions as { canUpdateRow: boolean }).canUpdateRow = true
       const store = createMockRowDataCardStore()
       const item = new RowUpdatingItem(deps, false, store as never, 'original-row')
 

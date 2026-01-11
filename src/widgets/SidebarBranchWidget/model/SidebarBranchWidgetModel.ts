@@ -3,14 +3,14 @@ import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { CHANGES_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { BranchMutationDataSource } from 'src/widgets/SidebarBranchWidget/model/BranchMutationDataSource.ts'
 
 export class SidebarBranchWidgetModel {
   constructor(
     private readonly linkMaker: LinkMaker,
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly mutationDataSource: BranchMutationDataSource,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -35,11 +35,11 @@ export class SidebarBranchWidgetModel {
   }
 
   public get showRevertButton() {
-    return this.touched && this.permissionContext.canRevertRevision
+    return this.touched && this.projectPermissions.canRevertRevision
   }
 
   public get showCommitButton() {
-    return this.touched && this.permissionContext.canCreateRevision
+    return this.touched && this.projectPermissions.canCreateRevision
   }
 
   public get showActionsButton() {
@@ -47,7 +47,7 @@ export class SidebarBranchWidgetModel {
   }
 
   public get showCreateBranchButton() {
-    return !this.context.isDraftRevision && this.permissionContext.canCreateBranch
+    return !this.context.isDraftRevision && this.projectPermissions.canCreateBranch
   }
 
   public get touched() {
@@ -120,7 +120,7 @@ container.register(
     return new SidebarBranchWidgetModel(
       container.get(LinkMaker),
       container.get(ProjectContext),
-      container.get(PermissionContext),
+      container.get(ProjectPermissions),
       container.get(BranchMutationDataSource),
     )
   },

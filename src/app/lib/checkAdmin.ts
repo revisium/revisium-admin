@@ -1,12 +1,12 @@
 import { redirect } from 'react-router-dom'
 import { ROOT_ROUTE } from 'src/shared/config/routes'
 import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { SystemPermissions } from 'src/shared/model/AbilityService'
 
 export const checkAdmin = async () => {
-  const permissionContext = container.get(PermissionContext)
+  const systemPermissions = container.get(SystemPermissions)
 
-  if (!permissionContext.canReadUser) {
+  if (!systemPermissions.canReadUser) {
     return redirect(ROOT_ROUTE)
   }
 

@@ -1,5 +1,5 @@
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { TableFetchDataSource } from '../TableFetchDataSource.ts'
 import { TableStackItemBaseDeps } from '../items/TableStackItemBase.ts'
 import { TableCreatingItemDeps } from '../items/TableCreatingItem.ts'
@@ -28,7 +28,7 @@ const createBaseMockDeps = (overrides: MockDepsOverrides = {}): TableStackItemBa
     updateTouched: jest.fn(),
   }
 
-  const permissionContext: Pick<PermissionContext, 'canCreateTable'> = {
+  const projectPermissions: Pick<ProjectPermissions, 'canCreateTable'> = {
     canCreateTable: overrides.canCreateTable ?? true,
   }
 
@@ -42,7 +42,7 @@ const createBaseMockDeps = (overrides: MockDepsOverrides = {}): TableStackItemBa
 
   return {
     projectContext: projectContext as ProjectContext,
-    permissionContext: permissionContext as PermissionContext,
+    projectPermissions: projectPermissions as ProjectPermissions,
     fetchDataSourceFactory: fetchDataSourceFactory as () => TableFetchDataSource,
   }
 }

@@ -8,7 +8,7 @@ const createMockContext = () => ({
   projectName: 'project1',
 })
 
-const createMockPermissionContext = (
+const createMockProjectPermissions = (
   overrides: Partial<{ canCreateEndpoint: boolean; canDeleteEndpoint: boolean }> = {},
 ) => ({
   canCreateEndpoint: true,
@@ -51,7 +51,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct revision label for draft', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ revisionType: 'draft' }),
         jest.fn(),
@@ -64,7 +64,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct revision label for head', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ revisionType: 'head' }),
         jest.fn(),
@@ -77,7 +77,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct endpoint type label for GraphQL', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointType: EndpointType.Graphql }),
         jest.fn(),
@@ -90,7 +90,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct endpoint type label for REST API', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointType: EndpointType.RestApi }),
         jest.fn(),
@@ -103,7 +103,7 @@ describe('EndpointCardViewModel', () => {
     it('should return isEnabled false when endpointId is null', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointId: null }),
         jest.fn(),
@@ -116,7 +116,7 @@ describe('EndpointCardViewModel', () => {
     it('should return isEnabled true when endpointId is set', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointId: 'endpoint-1' }),
         jest.fn(),
@@ -129,7 +129,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct copy tooltip for GraphQL', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointType: EndpointType.Graphql }),
         jest.fn(),
@@ -142,7 +142,7 @@ describe('EndpointCardViewModel', () => {
     it('should return correct copy tooltip for REST API', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData({ endpointType: EndpointType.RestApi }),
         jest.fn(),
@@ -157,7 +157,7 @@ describe('EndpointCardViewModel', () => {
     it('should reflect canCreate from permission context', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext({ canCreateEndpoint: false }) as never,
+        createMockProjectPermissions({ canCreateEndpoint: false }) as never,
         createMockDataSource(),
         createMockData(),
         jest.fn(),
@@ -170,7 +170,7 @@ describe('EndpointCardViewModel', () => {
     it('should reflect canDelete from permission context', () => {
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext({ canDeleteEndpoint: false }) as never,
+        createMockProjectPermissions({ canDeleteEndpoint: false }) as never,
         createMockDataSource(),
         createMockData(),
         jest.fn(),
@@ -186,7 +186,7 @@ describe('EndpointCardViewModel', () => {
       const urls = createMockUrls()
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData(),
         jest.fn(),
@@ -207,7 +207,7 @@ describe('EndpointCardViewModel', () => {
       const urls = createMockUrls()
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         createMockDataSource(),
         createMockData(),
         jest.fn(),
@@ -228,7 +228,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: null }),
         onChanged,
@@ -251,7 +251,7 @@ describe('EndpointCardViewModel', () => {
       const dataSource = createMockDataSource()
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: 'existing-endpoint' }),
         jest.fn(),
@@ -274,7 +274,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: null }),
         jest.fn(),
@@ -303,7 +303,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: null }),
         jest.fn(),
@@ -334,7 +334,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: 'endpoint-to-delete' }),
         onChanged,
@@ -354,7 +354,7 @@ describe('EndpointCardViewModel', () => {
       const dataSource = createMockDataSource()
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: null }),
         jest.fn(),
@@ -373,7 +373,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: 'endpoint-to-delete' }),
         onChanged,
@@ -394,7 +394,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: null }),
         jest.fn(),
@@ -413,7 +413,7 @@ describe('EndpointCardViewModel', () => {
 
       const vm = new EndpointCardViewModel(
         createMockContext() as never,
-        createMockPermissionContext() as never,
+        createMockProjectPermissions() as never,
         dataSource,
         createMockData({ endpointId: 'existing-endpoint' }),
         jest.fn(),

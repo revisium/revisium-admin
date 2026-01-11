@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { EndpointFragment, EndpointType } from 'src/__generated__/graphql-request'
 import { BranchWithRevisions, EndpointsDataSource } from '../api/EndpointsDataSource.ts'
 import { BranchEndpointsViewModel, BranchEndpointsViewModelFactory } from './BranchEndpointsViewModel.ts'
@@ -31,7 +31,7 @@ export class EndpointsPageViewModel implements IViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly dataSource: EndpointsDataSource,
     private readonly branchViewModelFactory: BranchEndpointsViewModelFactory,
     private readonly customEndpointFactory: CustomEndpointCardViewModelFactory,
@@ -105,11 +105,11 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   public get canCreateEndpoint(): boolean {
-    return this.permissionContext.canCreateEndpoint
+    return this.projectPermissions.canCreateEndpoint
   }
 
   public get canDeleteEndpoint(): boolean {
-    return this.permissionContext.canDeleteEndpoint
+    return this.projectPermissions.canDeleteEndpoint
   }
 
   public get createDialog(): CreateEndpointDialogViewModel | null {
@@ -240,7 +240,7 @@ container.register(
   EndpointsPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
     const dataSource = container.get(EndpointsDataSource)
     const branchViewModelFactory = container.get(BranchEndpointsViewModelFactory)
     const customEndpointFactory = container.get(CustomEndpointCardViewModelFactory)
@@ -248,7 +248,7 @@ container.register(
 
     return new EndpointsPageViewModel(
       context,
-      permissionContext,
+      projectPermissions,
       dataSource,
       branchViewModelFactory,
       customEndpointFactory,

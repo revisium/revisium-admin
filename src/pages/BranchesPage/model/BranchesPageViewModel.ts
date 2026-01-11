@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable } from 'mobx'
 import { BranchItemFragment } from 'src/__generated__/graphql-request.ts'
 import { container, PaginatedListViewModel } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { BranchesDataSource } from '../api/BranchesDataSource.ts'
 import { BranchItemViewModel, BranchItemViewModelFactory } from './BranchItemViewModel.ts'
 import { CreateBranchDialogViewModel, CreateBranchDialogViewModelFactory } from './CreateBranchDialogViewModel.ts'
@@ -10,7 +10,7 @@ export class BranchesPageViewModel extends PaginatedListViewModel<BranchItemFrag
   private _createDialogViewModel: CreateBranchDialogViewModel | null = null
 
   constructor(
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     protected readonly dataSource: BranchesDataSource,
     private readonly itemFactory: BranchItemViewModelFactory,
     private readonly createDialogFactory: CreateBranchDialogViewModelFactory,
@@ -34,7 +34,7 @@ export class BranchesPageViewModel extends PaginatedListViewModel<BranchItemFrag
   }
 
   public get canCreateBranch(): boolean {
-    return this.permissionContext.canCreateBranch
+    return this.projectPermissions.canCreateBranch
   }
 
   public get createDialog(): CreateBranchDialogViewModel | null {
@@ -63,11 +63,11 @@ export class BranchesPageViewModel extends PaginatedListViewModel<BranchItemFrag
 container.register(
   BranchesPageViewModel,
   () => {
-    const permissionContext = container.get(PermissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
     const dataSource = container.get(BranchesDataSource)
     const itemFactory = container.get(BranchItemViewModelFactory)
     const createDialogFactory = container.get(CreateBranchDialogViewModelFactory)
-    return new BranchesPageViewModel(permissionContext, dataSource, itemFactory, createDialogFactory)
+    return new BranchesPageViewModel(projectPermissions, dataSource, itemFactory, createDialogFactory)
   },
   { scope: 'request' },
 )

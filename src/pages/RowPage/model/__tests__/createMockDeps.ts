@@ -70,7 +70,7 @@ export const createMockRouterParams = (overrides: MockDepsOverrides = {}) => {
 
 const createBaseMockDeps = (overrides: MockDepsOverrides = {}): RowStackItemBaseDeps => ({
   projectContext: createMockProjectContext(overrides) as never,
-  permissionContext: {
+  projectPermissions: {
     canCreateRow: overrides.canCreateRow ?? true,
   } as never,
   tableId: overrides.tableId ?? 'test-table',
@@ -149,7 +149,7 @@ const createMockItemFactory = (
 ): RowStackItemFactory => {
   const factoryDeps: RowStackItemFactoryDeps = {
     projectContext: projectContext as never,
-    permissionContext: {
+    projectPermissions: {
       canCreateRow: overrides.canCreateRow ?? true,
     } as never,
     mutationDataSource: {

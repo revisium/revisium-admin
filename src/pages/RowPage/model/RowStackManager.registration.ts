@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import { container } from 'src/shared/lib/DIContainer.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
@@ -53,7 +53,7 @@ const createNavigation = (): RowEditorNavigation => {
 const createItemFactory = (projectContext: ProjectContext, schemaCache: ForeignSchemaCache): RowStackItemFactory => {
   return new RowStackItemFactory({
     projectContext,
-    permissionContext: container.get(PermissionContext),
+    projectPermissions: container.get(ProjectPermissions),
     mutationDataSource: container.get(RowMutationDataSource),
     rowListRefreshService: container.get(RowListRefreshService),
     storeFactory: container.get(RowDataCardStoreFactory),

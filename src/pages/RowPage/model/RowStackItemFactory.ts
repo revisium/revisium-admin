@@ -1,4 +1,4 @@
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
@@ -12,7 +12,7 @@ import { RowData, RowEditorNavigation, RowEditorNotifications } from '../config/
 
 export interface RowStackItemFactoryDeps {
   projectContext: ProjectContext
-  permissionContext: PermissionContext
+  projectPermissions: ProjectPermissions
   mutationDataSource: RowMutationDataSource
   rowListRefreshService: RowListRefreshService
   storeFactory: RowDataCardStoreFactory
@@ -36,7 +36,7 @@ export class RowStackItemFactory {
     return new RowListItem(
       {
         projectContext: this.deps.projectContext,
-        permissionContext: this.deps.permissionContext,
+        projectPermissions: this.deps.projectPermissions,
         tableId,
         schema: this.deps.schemaCache.get(tableId),
       },
@@ -71,7 +71,7 @@ export class RowStackItemFactory {
     return new RowCreatingItem(
       {
         projectContext: this.deps.projectContext,
-        permissionContext: this.deps.permissionContext,
+        projectPermissions: this.deps.projectPermissions,
         tableId,
         schema: this.deps.schemaCache.get(tableId),
         mutationDataSource: this.deps.mutationDataSource,
@@ -105,7 +105,7 @@ export class RowStackItemFactory {
     return new RowUpdatingItem(
       {
         projectContext: this.deps.projectContext,
-        permissionContext: this.deps.permissionContext,
+        projectPermissions: this.deps.projectPermissions,
         tableId,
         schema: this.deps.schemaCache.get(tableId),
         mutationDataSource: this.deps.mutationDataSource,

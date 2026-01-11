@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { SystemPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { UserProjectRoles, UserSystemRole } from 'src/__generated__/graphql-request'
 
@@ -37,7 +37,7 @@ export class AddUserModalViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly systemPermissions: SystemPermissions,
     private readonly onUserAdded: () => void,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -52,7 +52,7 @@ export class AddUserModalViewModel {
   }
 
   public get canCreateUser(): boolean {
-    return this.permissionContext.canCreateUser
+    return this.systemPermissions.canCreateUser
   }
 
   public get searchQuery(): string {

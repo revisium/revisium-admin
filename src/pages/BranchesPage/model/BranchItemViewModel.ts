@@ -12,7 +12,7 @@ import {
   PROJECT_ROUTE,
   REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { BranchesDataSource } from '../api/BranchesDataSource.ts'
 
 export type BranchItemViewModelFactoryFn = (item: BranchItemFragment, onDeleted: () => void) => BranchItemViewModel
@@ -26,7 +26,7 @@ export class BranchItemViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly dataSource: BranchesDataSource,
     private readonly item: BranchItemFragment,
     private readonly onDeleted: () => void,
@@ -116,7 +116,7 @@ export class BranchItemViewModel {
   }
 
   public get canDelete(): boolean {
-    return !this.isRoot && this.permissionContext.canDeleteBranch
+    return !this.isRoot && this.projectPermissions.canDeleteBranch
   }
 
   public get link(): string {
@@ -141,9 +141,9 @@ container.register(
   () => {
     return new BranchItemViewModelFactory((item, onDeleted) => {
       const context = container.get(ProjectContext)
-      const permissionContext = container.get(PermissionContext)
+      const projectPermissions = container.get(ProjectPermissions)
       const dataSource = container.get(BranchesDataSource)
-      return new BranchItemViewModel(context, permissionContext, dataSource, item, onDeleted)
+      return new BranchItemViewModel(context, projectPermissions, dataSource, item, onDeleted)
     })
   },
   { scope: 'request' },

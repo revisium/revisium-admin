@@ -6,7 +6,7 @@ import { ViewMode } from 'src/pages/MigrationsPage/config/viewMode.ts'
 import { parsePatches } from 'src/pages/MigrationsPage/lib/parsePatches.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, isAborted } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import {
   ApplyFromBranchDialogViewModel,
   ApplyFromBranchDialogViewModelFactory,
@@ -34,7 +34,7 @@ export class MigrationsPageViewModel implements IViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly dataSource: MigrationsDataSource,
     private readonly applyDialogFactory: ApplyMigrationsDialogViewModelFactory,
     private readonly applyFromBranchDialogFactory: ApplyFromBranchDialogViewModelFactory,
@@ -98,7 +98,7 @@ export class MigrationsPageViewModel implements IViewModel {
   }
 
   public get canApplyMigrations(): boolean {
-    return this.permissionContext.canCreateTable
+    return this.projectPermissions.canCreateTable
   }
 
   public get branchName(): string {
@@ -187,7 +187,7 @@ container.register(
   MigrationsPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
     const dataSource = container.get(MigrationsDataSource)
     const applyDialogFactory = container.get(ApplyMigrationsDialogViewModelFactory)
     const applyFromBranchDialogFactory = container.get(ApplyFromBranchDialogViewModelFactory)
@@ -195,7 +195,7 @@ container.register(
 
     return new MigrationsPageViewModel(
       context,
-      permissionContext,
+      projectPermissions,
       dataSource,
       applyDialogFactory,
       applyFromBranchDialogFactory,

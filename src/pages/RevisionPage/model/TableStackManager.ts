@@ -4,7 +4,7 @@ import { StackManager, StackRequest } from 'src/shared/lib/Stack'
 import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor/model/StringForeignKeyNodeStore.ts'
 import { RootNodeStore } from 'src/widgets/SchemaEditor/model/RootNodeStore.ts'
 import { createSchemaNode } from 'src/widgets/SchemaEditor/lib/createSchemaNode.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonSchema } from 'src/entities/Schema'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
@@ -24,7 +24,7 @@ import { TableStackItemResult, SelectForeignKeyPayload, SelectForeignKeyResult }
 
 export interface TableStackManagerDeps {
   projectContext: ProjectContext
-  permissionContext: PermissionContext
+  projectPermissions: ProjectPermissions
   mutationDataSource: TableMutationDataSource
   tableListRefreshService: TableListRefreshService
   fetchDataSourceFactory: () => TableFetchDataSource
@@ -198,7 +198,7 @@ export class TableStackManager extends StackManager<
   private getBaseDeps(): TableStackItemBaseDeps {
     return {
       projectContext: this.deps.projectContext,
-      permissionContext: this.deps.permissionContext,
+      projectPermissions: this.deps.projectPermissions,
       fetchDataSourceFactory: this.deps.fetchDataSourceFactory,
     }
   }
@@ -217,7 +217,7 @@ container.register(
   () => {
     const deps: TableStackManagerDeps = {
       projectContext: container.get(ProjectContext),
-      permissionContext: container.get(PermissionContext),
+      projectPermissions: container.get(ProjectPermissions),
       mutationDataSource: container.get(TableMutationDataSource),
       tableListRefreshService: container.get(TableListRefreshService),
       fetchDataSourceFactory: () => container.get(TableFetchDataSource),

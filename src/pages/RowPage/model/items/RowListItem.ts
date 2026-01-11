@@ -18,7 +18,7 @@ export class RowListItem extends RowStackItemBase {
   }
 
   public get canCreateRow(): boolean {
-    return this.isEditableRevision && this.deps.permissionContext.canCreateRow
+    return this.isEditableRevision && this.deps.projectPermissions.canCreateRow
   }
 
   public toCreating(): void {

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 
 export class ProjectSidebarViewModel {
   public isBranchSectionExpanded = true
@@ -10,17 +10,17 @@ export class ProjectSidebarViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get canAccessSettings(): boolean {
-    return this.permissionContext.canAccessSettings
+    return this.projectPermissions.canAccessSettings
   }
 
   public get canManageUsers(): boolean {
-    return this.permissionContext.canManageUsers
+    return this.projectPermissions.canManageUsers
   }
 
   public get projectName() {
@@ -32,11 +32,11 @@ export class ProjectSidebarViewModel {
   }
 
   public get isProjectPublic(): boolean {
-    return this.permissionContext.isPublic
+    return this.context.isProjectPublic
   }
 
   public get roleName(): string | null {
-    return this.permissionContext.projectRoleName
+    return this.context.projectRoleName
   }
 
   public init() {}
@@ -68,8 +68,8 @@ container.register(
   ProjectSidebarViewModel,
   () => {
     const context: ProjectContext = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    return new ProjectSidebarViewModel(context, permissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
+    return new ProjectSidebarViewModel(context, projectPermissions)
   },
   { scope: 'singleton' },
 )

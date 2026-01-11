@@ -28,7 +28,7 @@ const createMockFactoryDeps = (): RowStackItemFactoryDeps => ({
     row: null,
     updateTouched: jest.fn(),
   } as never,
-  permissionContext: {
+  projectPermissions: {
     canCreateRow: true,
   } as never,
   mutationDataSource: {

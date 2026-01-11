@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { UserSystemRole } from 'src/__generated__/graphql-request'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { SystemPermissions } from 'src/shared/model/AbilityService'
 import { AdminCreateUserDataSource } from './AdminCreateUserDataSource'
 
 export class AdminCreateUserModalViewModel {
@@ -12,7 +12,7 @@ export class AdminCreateUserModalViewModel {
 
   constructor(
     private readonly dataSource: AdminCreateUserDataSource,
-    private readonly permissionContext: PermissionContext,
+    private readonly systemPermissions: SystemPermissions,
     private readonly onUserCreated: () => void,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -23,7 +23,7 @@ export class AdminCreateUserModalViewModel {
   }
 
   public get canCreateUser(): boolean {
-    return this.permissionContext.canCreateUser
+    return this.systemPermissions.canCreateUser
   }
 
   public get username(): string {

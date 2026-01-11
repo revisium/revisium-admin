@@ -3,7 +3,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, isAborted } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { GetRevisionChangesQuery } from 'src/__generated__/graphql-request'
 import { BranchMutationDataSource } from 'src/widgets/SidebarBranchWidget/model/BranchMutationDataSource.ts'
@@ -25,7 +25,7 @@ export class ChangesPageViewModel implements IViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly branchMutationDataSource: BranchMutationDataSource,
   ) {
     makeAutoObservable(this)
@@ -64,11 +64,11 @@ export class ChangesPageViewModel implements IViewModel {
   }
 
   public get showRevertButton(): boolean {
-    return this.context.isDraftRevision && this.context.touched && this.permissionContext.canRevertRevision
+    return this.context.isDraftRevision && this.context.touched && this.projectPermissions.canRevertRevision
   }
 
   public get showCommitButton(): boolean {
-    return this.context.isDraftRevision && this.context.touched && this.permissionContext.canCreateRevision
+    return this.context.isDraftRevision && this.context.touched && this.projectPermissions.canCreateRevision
   }
 
   public get isDraftRevision(): boolean {
@@ -180,9 +180,9 @@ container.register(
   ChangesPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
     const branchMutationDataSource = container.get(BranchMutationDataSource)
-    return new ChangesPageViewModel(context, permissionContext, branchMutationDataSource)
+    return new ChangesPageViewModel(context, projectPermissions, branchMutationDataSource)
   },
   { scope: 'request' },
 )

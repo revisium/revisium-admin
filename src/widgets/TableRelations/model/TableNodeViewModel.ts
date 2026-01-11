@@ -42,6 +42,14 @@ export class TableNodeViewModel {
     return this.outgoingEdges.length
   }
 
+  public get hasIncoming(): boolean {
+    return this.incomingEdges.length > 0
+  }
+
+  public get hasOutgoing(): boolean {
+    return this.outgoingEdges.length > 0
+  }
+
   public get isSelected(): boolean {
     return this._isSelected
   }

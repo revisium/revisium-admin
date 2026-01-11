@@ -11,6 +11,8 @@ export interface PermissionData {
 }
 
 export interface RoleData {
+  id?: string
+  name?: string
   permissions: PermissionData[]
 }
 
@@ -29,6 +31,7 @@ export interface ProjectPermissionData {
 export class PermissionContext {
   private _isPublic: boolean = false
   private _userRole: RoleData | null = null
+  private _projectRoleName: string | null = null
 
   constructor(private readonly abilityService: AbilityService) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -36,6 +39,10 @@ export class PermissionContext {
 
   public get isPublic(): boolean {
     return this._isPublic
+  }
+
+  public get projectRoleName(): string | null {
+    return this._projectRoleName
   }
 
   public setUserRole(role: RoleData | null): void {
@@ -60,6 +67,7 @@ export class PermissionContext {
 
   public setProject(project: ProjectPermissionData): void {
     this._isPublic = project.isPublic
+    this._projectRoleName = this.extractRoleName(project)
 
     const permissions = this.extractPermissions(project)
     this.abilityService.updateAbility(permissions)
@@ -67,7 +75,18 @@ export class PermissionContext {
 
   public clearProject(): void {
     this._isPublic = false
+    this._projectRoleName = null
     this.abilityService.clearAbility()
+  }
+
+  private extractRoleName(project: ProjectPermissionData): string | null {
+    if (project.userProject?.role?.name) {
+      return project.userProject.role.name
+    }
+    if (project.organization?.userOrganization?.role?.name) {
+      return project.organization.userOrganization.role.name
+    }
+    return null
   }
 
   public can(action: Actions, subject: Subjects, conditions?: Record<string, unknown>): boolean {
@@ -94,6 +113,10 @@ export class PermissionContext {
     return this.can('create', 'Project')
   }
 
+  public get canReadBranch(): boolean {
+    return this.can('read', 'Branch')
+  }
+
   public get canCreateBranch(): boolean {
     return this.can('create', 'Branch')
   }
@@ -102,12 +125,20 @@ export class PermissionContext {
     return this.can('delete', 'Branch')
   }
 
+  public get canReadRevision(): boolean {
+    return this.can('read', 'Revision')
+  }
+
   public get canCreateRevision(): boolean {
     return this.can('create', 'Revision')
   }
 
   public get canRevertRevision(): boolean {
     return this.can('revert', 'Revision')
+  }
+
+  public get canReadTable(): boolean {
+    return this.can('read', 'Table')
   }
 
   public get canCreateTable(): boolean {
@@ -122,6 +153,10 @@ export class PermissionContext {
     return this.can('delete', 'Table')
   }
 
+  public get canReadRow(): boolean {
+    return this.can('read', 'Row')
+  }
+
   public get canCreateRow(): boolean {
     return this.can('create', 'Row')
   }
@@ -132,6 +167,10 @@ export class PermissionContext {
 
   public get canDeleteRow(): boolean {
     return this.can('delete', 'Row')
+  }
+
+  public get canReadEndpoint(): boolean {
+    return this.can('read', 'Endpoint')
   }
 
   public get canCreateEndpoint(): boolean {
@@ -189,49 +228,61 @@ export class PermissionContext {
     const permissions: PermissionRule[] = []
     const seen = new Set<string>()
 
+    const addPermission = (p: PermissionData): void => {
+      if (seen.has(p.id)) {
+        return
+      }
+      seen.add(p.id)
+      permissions.push({
+        id: p.id,
+        action: p.action,
+        subject: p.subject,
+        condition: p.condition as Record<string, unknown> | null,
+      })
+
+      const expanded = this.expandPermission(p)
+      for (const exp of expanded) {
+        if (!seen.has(exp.id)) {
+          seen.add(exp.id)
+          permissions.push(exp)
+        }
+      }
+    }
+
     if (this._userRole?.permissions) {
       for (const p of this._userRole.permissions) {
-        if (!seen.has(p.id)) {
-          seen.add(p.id)
-          permissions.push({
-            id: p.id,
-            action: p.action,
-            subject: p.subject,
-            condition: p.condition as Record<string, unknown> | null,
-          })
-        }
+        addPermission(p)
       }
     }
 
     if (project.userProject?.role?.permissions) {
       for (const p of project.userProject.role.permissions) {
-        if (!seen.has(p.id)) {
-          seen.add(p.id)
-          permissions.push({
-            id: p.id,
-            action: p.action,
-            subject: p.subject,
-            condition: p.condition as Record<string, unknown> | null,
-          })
-        }
+        addPermission(p)
       }
     }
 
     if (project.organization?.userOrganization?.role?.permissions) {
       for (const p of project.organization.userOrganization.role.permissions) {
-        if (!seen.has(p.id)) {
-          seen.add(p.id)
-          permissions.push({
-            id: p.id,
-            action: p.action,
-            subject: p.subject,
-            condition: p.condition as Record<string, unknown> | null,
-          })
-        }
+        addPermission(p)
       }
     }
 
     return permissions
+  }
+
+  private expandPermission(permission: PermissionData): PermissionRule[] {
+    if (permission.id !== 'read-project-private' && permission.id !== 'read-project-public') {
+      return []
+    }
+
+    const subjects: Subjects[] = ['Table', 'Row', 'Branch', 'Revision', 'Endpoint']
+
+    return subjects.map((subject) => ({
+      id: `read-${subject.toLowerCase()}-from-project`,
+      action: 'read',
+      subject,
+      condition: null,
+    }))
   }
 }
 

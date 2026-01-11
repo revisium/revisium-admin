@@ -11,7 +11,7 @@ interface ProjectSidebarSkeletonProps {
 export const ProjectSidebarSkeleton: FC<ProjectSidebarSkeletonProps> = ({ projectName, organizationId }) => {
   return (
     <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
-      <ProjectHeader name={projectName} organizationName={organizationId} />
+      <ProjectHeader name={projectName} organizationName={organizationId} isPublic={true} roleName={null} />
 
       <Box width="100%" paddingY="16px">
         <Separator borderColor="newGray.100" />

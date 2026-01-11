@@ -38,6 +38,14 @@ export class ProjectSidebarViewModel {
     return this.context.organizationId
   }
 
+  public get isProjectPublic(): boolean {
+    return this.permissionContext.isPublic
+  }
+
+  public get roleName(): string | null {
+    return this.permissionContext.projectRoleName
+  }
+
   public init() {
     void this.loadChangesCount()
   }

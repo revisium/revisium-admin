@@ -63,7 +63,12 @@ export const ProjectSidebar: FC = observer(() => {
 
   return (
     <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
-      <ProjectHeader name={model.projectName} organizationName={model.organizationId} />
+      <ProjectHeader
+        name={model.projectName}
+        organizationName={model.organizationId}
+        isPublic={model.isProjectPublic}
+        roleName={model.roleName}
+      />
 
       <Box width="100%" paddingY="16px">
         <Separator borderColor="newGray.100" />

@@ -57,7 +57,6 @@ export class FullscreenService {
     }
     try {
       await this._containerRef.requestFullscreen()
-      this._isFullscreen = true
     } catch (e) {
       console.error(e)
     }
@@ -66,7 +65,6 @@ export class FullscreenService {
   private async exitFullscreen(): Promise<void> {
     try {
       await document.exitFullscreen()
-      this._isFullscreen = false
     } catch (e) {
       console.error(e)
     }

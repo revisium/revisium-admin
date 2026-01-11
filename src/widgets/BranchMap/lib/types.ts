@@ -72,9 +72,16 @@ export type ProjectGraphBranch = {
   totalRevisionsCount: number
 }
 
+export type TruncationInfo = {
+  isTruncated: boolean
+  totalCount: number
+  fetchedCount: number
+}
+
 export type ProjectGraphData = {
   projectName: string
   branches: ProjectGraphBranch[]
+  truncation: TruncationInfo
 }
 
 export type CollapsedRevisionsNodeData = {

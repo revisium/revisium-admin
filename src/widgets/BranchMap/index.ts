@@ -1,1 +1,1 @@
-export { ProjectGraph } from './ui/ProjectGraph/ProjectGraph.tsx'
+export { ProjectGraph } from './ui/ProjectGraph/ProjectGraph'

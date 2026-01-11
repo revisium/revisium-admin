@@ -56,6 +56,7 @@ const createBranch = (overrides: Partial<ProjectGraphBranch> = {}): ProjectGraph
 const createGraphData = (branches: ProjectGraphBranch[]): ProjectGraphData => ({
   projectName: 'test-project',
   branches,
+  truncation: { isTruncated: false, totalCount: branches.length, fetchedCount: branches.length },
 })
 
 describe('ProjectGraphViewModel', () => {

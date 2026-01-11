@@ -37,11 +37,18 @@ export class BranchMapDataSource {
     }
 
     const branches = result.data.branches.edges.map((edge) => this.mapBranchFull(edge.node))
+    const totalCount = result.data.branches.totalCount
+    const fetchedCount = branches.length
 
     return {
       data: {
         projectName,
         branches,
+        truncation: {
+          isTruncated: fetchedCount < totalCount,
+          totalCount,
+          fetchedCount,
+        },
       },
       aborted: false,
     }

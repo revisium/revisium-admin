@@ -10,7 +10,7 @@ export class RevisionEdgeViewModel {
   public readonly targetHandle: string | undefined
   public readonly edgeType: 'revision' | 'branch' | 'endpoint-graphql' | 'endpoint-rest' | 'parent-to-branch'
 
-  private _isHighlighted = false
+  private _isHighlighted: boolean
 
   constructor(data: RevisionMapEdge) {
     this.id = data.id
@@ -19,6 +19,7 @@ export class RevisionEdgeViewModel {
     this.sourceHandle = data.sourceHandle
     this.targetHandle = data.targetHandle
     this.edgeType = data.type
+    this._isHighlighted = data.isHighlighted ?? false
 
     makeAutoObservable(this, {
       id: false,
@@ -57,7 +58,7 @@ container.register(
           sourceHandle: edge.sourceHandle,
           targetHandle: edge.targetHandle,
           type: edge.type,
-          isHighlighted: false,
+          isHighlighted: edge.isHighlighted,
         }),
     ),
   { scope: 'singleton' },

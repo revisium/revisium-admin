@@ -130,13 +130,10 @@ export class LinkMaker {
   }
 
   public makeBranchMapLink(): string {
-    if (!this.organizationId || !this.projectName || !this.branchName) {
+    if (!this.currentBaseLink) {
       return ''
     }
-    const baseLink = getBaseLink(this.organizationId, this.projectName, this.branchName, {
-      revisionIdOrTag: this.revisionIdOrTag,
-    })
-    return `${baseLink}/${BRANCH_MAP_ROUTE}`
+    return `${this.currentBaseLink}/${BRANCH_MAP_ROUTE}`
   }
 
   public make(options: RevisionOptionType): string {

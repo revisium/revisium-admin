@@ -314,29 +314,25 @@ export class ProjectGraphLayoutService {
       const restEndpoints = endpoints.filter((e) => e.type === 'REST_API')
 
       if (graphqlEndpoints.length > 0) {
-        this.addEndpointNode(
-          nodes,
-          edges,
-          `endpoint-graphql-${revisionId}`,
-          graphqlEndpoints,
+        this.addEndpointNode(nodes, edges, {
+          nodeId: `endpoint-graphql-${revisionId}`,
+          endpoints: graphqlEndpoints,
           revisionId,
-          pos.x + graphqlOffsetX,
-          pos.y + ENDPOINT_OFFSET_Y,
-          'endpoint-graphql',
-        )
+          x: pos.x + graphqlOffsetX,
+          y: pos.y + ENDPOINT_OFFSET_Y,
+          edgeType: 'endpoint-graphql',
+        })
       }
 
       if (restEndpoints.length > 0) {
-        this.addEndpointNode(
-          nodes,
-          edges,
-          `endpoint-rest-${revisionId}`,
-          restEndpoints,
+        this.addEndpointNode(nodes, edges, {
+          nodeId: `endpoint-rest-${revisionId}`,
+          endpoints: restEndpoints,
           revisionId,
-          pos.x + restOffsetX,
-          pos.y + ENDPOINT_OFFSET_Y,
-          'endpoint-rest',
-        )
+          x: pos.x + restOffsetX,
+          y: pos.y + ENDPOINT_OFFSET_Y,
+          edgeType: 'endpoint-rest',
+        })
       }
     }
   }
@@ -367,13 +363,17 @@ export class ProjectGraphLayoutService {
   private addEndpointNode(
     nodes: ProjectGraphNode[],
     edges: ProjectGraphEdge[],
-    nodeId: string,
-    endpoints: EndpointData[],
-    revisionId: string,
-    x: number,
-    y: number,
-    edgeType: 'endpoint-graphql' | 'endpoint-rest',
+    params: {
+      nodeId: string
+      endpoints: EndpointData[]
+      revisionId: string
+      x: number
+      y: number
+      edgeType: 'endpoint-graphql' | 'endpoint-rest'
+    },
   ): void {
+    const { nodeId, endpoints, revisionId, x, y, edgeType } = params
+
     nodes.push({
       id: nodeId,
       type: 'endpoint',

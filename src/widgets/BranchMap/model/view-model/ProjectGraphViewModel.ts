@@ -11,6 +11,7 @@ import {
   ProjectBranchNodeData,
   ProjectGraphData,
   RevisionNodeData,
+  TruncationInfo,
 } from '../../lib/types.ts'
 import { BranchMapDataSource } from '../data-source/BranchMapDataSource.ts'
 import { ProjectGraphLayoutService } from '../service/ProjectGraphLayoutService.ts'
@@ -37,6 +38,7 @@ enum State {
 export class ProjectGraphViewModel {
   private _state: State = State.loading
   private _graphData: ProjectGraphData | null = null
+  private _truncation: TruncationInfo | null = null
   private _navigate: NavigateFunction | null = null
 
   private _branchNodes: ProjectBranchNodeViewModel[] = []
@@ -106,6 +108,17 @@ export class ProjectGraphViewModel {
     return this._endpointNodes.length
   }
 
+  public get isTruncated(): boolean {
+    return this._truncation?.isTruncated ?? false
+  }
+
+  public get truncationMessage(): string | null {
+    if (!this._truncation?.isTruncated) {
+      return null
+    }
+    return `Showing ${this._truncation.fetchedCount} of ${this._truncation.totalCount} branches`
+  }
+
   private get hasHighlight(): boolean {
     return this._hoveredNodeId !== null || this._selectedNodeId !== null
   }
@@ -151,7 +164,9 @@ export class ProjectGraphViewModel {
       return
     }
     const revisionIdOrTag = tag ?? revisionId
-    const path = `/${APP_ROUTE}/${this.context.organizationId}/${this.context.projectName}/${branchName}/${revisionIdOrTag}`
+    const encodedBranchName = encodeURIComponent(branchName)
+    const encodedRevisionIdOrTag = encodeURIComponent(revisionIdOrTag)
+    const path = `/${APP_ROUTE}/${this.context.organizationId}/${this.context.projectName}/${encodedBranchName}/${encodedRevisionIdOrTag}`
     this._navigate(path)
   }
 
@@ -159,7 +174,8 @@ export class ProjectGraphViewModel {
     if (!this._navigate) {
       return
     }
-    const path = `/${APP_ROUTE}/${this.context.organizationId}/${this.context.projectName}/${branchName}/${DRAFT_TAG}`
+    const encodedBranchName = encodeURIComponent(branchName)
+    const path = `/${APP_ROUTE}/${this.context.organizationId}/${this.context.projectName}/${encodedBranchName}/${DRAFT_TAG}`
     this._navigate(path)
   }
 
@@ -190,15 +206,21 @@ export class ProjectGraphViewModel {
     }
 
     runInAction(() => {
-      this._graphData = result.data
+      try {
+        this._graphData = result.data
+        this._truncation = result.data!.truncation
 
-      if (result.data!.branches.length === 0) {
-        this._state = State.empty
-        return
+        if (result.data!.branches.length === 0) {
+          this._state = State.empty
+          return
+        }
+
+        this.buildLayout()
+        this._state = State.graph
+      } catch (error) {
+        console.error('Failed to build graph layout:', error)
+        this._state = State.error
       }
-
-      this.buildLayout()
-      this._state = State.graph
     })
   }
 

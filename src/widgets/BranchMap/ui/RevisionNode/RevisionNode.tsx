@@ -15,25 +15,26 @@ interface RevisionNodeProps {
   }
 }
 
+const getBadgeColor = (model: RevisionNodeViewModel): string => {
+  if (model.isDraft) {
+    return 'orange'
+  }
+  if (model.isHead) {
+    return 'green'
+  }
+  if (model.isStart) {
+    return 'blue'
+  }
+  return 'gray'
+}
+
 const RevisionNodeInner: FC<RevisionNodeProps> = observer(({ data }) => {
   const { model, onMouseEnter, onMouseLeave, onClick, onNavigate } = data
   const { containerRef } = useBranchMapContext()
 
   const isHighlighted = model.isHighlighted
   const isDimmed = model.isDimmed
-
-  const getBadgeColor = (): string => {
-    if (model.isDraft) {
-      return 'orange'
-    }
-    if (model.isHead) {
-      return 'green'
-    }
-    if (model.isStart) {
-      return 'blue'
-    }
-    return 'gray'
-  }
+  const badgeColor = getBadgeColor(model)
 
   const handleNavigate = () => {
     if (model.branchName) {
@@ -64,7 +65,7 @@ const RevisionNodeInner: FC<RevisionNodeProps> = observer(({ data }) => {
               {model.shortId}
             </Text>
             {model.badge && (
-              <Badge size="xs" colorPalette={getBadgeColor()}>
+              <Badge size="xs" colorPalette={badgeColor}>
                 {model.badge}
               </Badge>
             )}
@@ -98,7 +99,7 @@ const RevisionNodeInner: FC<RevisionNodeProps> = observer(({ data }) => {
                         {model.shortId}
                       </Text>
                       {model.badge && (
-                        <Badge size="sm" colorPalette={getBadgeColor()}>
+                        <Badge size="sm" colorPalette={badgeColor}>
                           {model.badge}
                         </Badge>
                       )}

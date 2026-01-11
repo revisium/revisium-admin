@@ -1,1 +1,1 @@
-export * from './ui/BranchMapPage/BranchMapPage.tsx'
+export * from './ui/BranchMapPage/BranchMapPage'

@@ -33,7 +33,7 @@ const TableNodeInner: FC<TableNodeProps> = observer(({ data }) => {
 
   return (
     <>
-      <Handle type="target" position={Position.Left} style={{ background: '#94a3b8' }} />
+      {model.hasIncoming && <Handle type="target" position={Position.Left} style={{ background: '#94a3b8' }} />}
 
       <HoverCard.Root openDelay={300} closeDelay={100}>
         <HoverCard.Trigger asChild>
@@ -142,7 +142,7 @@ const TableNodeInner: FC<TableNodeProps> = observer(({ data }) => {
         </Portal>
       </HoverCard.Root>
 
-      <Handle type="source" position={Position.Right} style={{ background: '#94a3b8' }} />
+      {model.hasOutgoing && <Handle type="source" position={Position.Right} style={{ background: '#94a3b8' }} />}
     </>
   )
 })

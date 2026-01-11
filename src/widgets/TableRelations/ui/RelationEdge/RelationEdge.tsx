@@ -18,9 +18,6 @@ interface RelationEdgeProps {
   data?: RelationEdgeData
 }
 
-const ARROW_MARKER_ID = 'relation-arrow'
-const ARROW_MARKER_HIGHLIGHTED_ID = 'relation-arrow-highlighted'
-
 const RelationEdgeInner: FC<RelationEdgeProps> = observer(
   ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data }) => {
     const model = data?.model
@@ -40,31 +37,6 @@ const RelationEdgeInner: FC<RelationEdgeProps> = observer(
 
     return (
       <>
-        <defs>
-          <marker
-            id={ARROW_MARKER_ID}
-            markerWidth="12"
-            markerHeight="12"
-            refX="10"
-            refY="6"
-            orient="auto"
-            markerUnits="userSpaceOnUse"
-          >
-            <path d="M2,2 L10,6 L2,10 L4,6 Z" fill="#cbd5e1" />
-          </marker>
-          <marker
-            id={ARROW_MARKER_HIGHLIGHTED_ID}
-            markerWidth="12"
-            markerHeight="12"
-            refX="10"
-            refY="6"
-            orient="auto"
-            markerUnits="userSpaceOnUse"
-          >
-            <path d="M2,2 L10,6 L2,10 L4,6 Z" fill="#475569" />
-          </marker>
-        </defs>
-
         <BaseEdge
           id={id}
           path={edgePath}
@@ -76,7 +48,6 @@ const RelationEdgeInner: FC<RelationEdgeProps> = observer(
             filter: isHighlighted ? 'drop-shadow(0 0 2px rgba(71, 85, 105, 0.5))' : 'none',
             transition: 'stroke 0.15s, stroke-width 0.15s, filter 0.15s',
           }}
-          markerEnd={`url(#${isHighlighted ? ARROW_MARKER_HIGHLIGHTED_ID : ARROW_MARKER_ID})`}
         />
 
         {isHighlighted && fieldPath && (

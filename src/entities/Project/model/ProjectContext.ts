@@ -159,6 +159,10 @@ export class ProjectContext {
     await this.projectRequest.fetch(organizationId, projectName)
     runInAction(() => {
       this._hasLoadedOnce = true
+      const project = this.projectRequest.data?.project
+      if (project) {
+        this.permissionContext.setProject(project)
+      }
     })
   }
 

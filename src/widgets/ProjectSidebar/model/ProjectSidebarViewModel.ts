@@ -7,6 +7,7 @@ import { client } from 'src/shared/model/ApiService.ts'
 
 export class ProjectSidebarViewModel {
   public isBranchSectionExpanded = true
+  public isBranchesSectionExpanded = false
   public isProjectSectionExpanded = false
   public isOnSettingsPage = false
 
@@ -59,6 +60,14 @@ export class ProjectSidebarViewModel {
 
   public handleBranchSectionClick() {
     this.isBranchSectionExpanded = !this.isBranchSectionExpanded
+  }
+
+  public handleBranchesSectionClick() {
+    this.isBranchesSectionExpanded = !this.isBranchesSectionExpanded
+  }
+
+  public expandBranchesSection() {
+    this.isBranchesSectionExpanded = true
   }
 
   public handleProjectSectionClick() {

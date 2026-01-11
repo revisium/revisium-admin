@@ -109,7 +109,6 @@ export class ProjectContext {
     const project = this.projectRequest.data?.project
     if (project) {
       Object.assign(project, data)
-      this.permissionContext.setProject(project)
     }
   }
 

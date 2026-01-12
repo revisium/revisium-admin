@@ -49,7 +49,7 @@ export class RowUpdatingItem extends RowEditorItemBase {
   }
 
   public get canUpdateRow(): boolean {
-    return this.isEditableRevision && this.deps.permissionContext.canUpdateRow
+    return this.isEditableRevision && this.deps.projectPermissions.canUpdateRow
   }
 
   public get currentRowId(): string {

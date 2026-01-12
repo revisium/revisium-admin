@@ -7,7 +7,7 @@ import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
 import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { JsonValue } from 'src/entities/Schema/types/json.types'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { extractAvailableFields } from 'src/widgets/RowList/lib/extractAvailableFields'
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
 import { selectDefaultColumns } from 'src/widgets/RowList/lib/selectDefaultColumns'
@@ -405,7 +405,7 @@ export class ColumnsModel {
     rows: RowListItemFragment[],
     options: {
       isEdit: boolean
-      permissionContext: PermissionContext
+      projectPermissions: ProjectPermissions
       inlineEditModel: InlineEditModel
       onDelete: (rowId: string) => Promise<boolean>
     },
@@ -425,7 +425,7 @@ export class ColumnsModel {
         item: row,
         cellsMap: cachedData.cells,
         isEdit: options.isEdit,
-        permissionContext: options.permissionContext,
+        projectPermissions: options.projectPermissions,
         inlineEditModel: options.inlineEditModel,
         onDelete: options.onDelete,
       })

@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
 import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { CellViewModel } from './CellViewModel'
 import { SystemFieldId } from './filterTypes'
 import { InlineEditModel } from './InlineEditModel'
@@ -11,7 +11,7 @@ interface RowItemViewModelParams {
   item: RowListItemFragment
   cellsMap: Map<string, JsonValueStore>
   isEdit: boolean
-  permissionContext: PermissionContext
+  projectPermissions: ProjectPermissions
   inlineEditModel: InlineEditModel
   onDelete: (rowId: string) => Promise<boolean>
 }
@@ -81,11 +81,11 @@ export class RowItemViewModel {
   }
 
   public get canCreateRow(): boolean {
-    return this.params.isEdit && this.params.permissionContext.canCreateRow
+    return this.params.isEdit && this.params.projectPermissions.canCreateRow
   }
 
   public get canDeleteRow(): boolean {
-    return this.params.isEdit && this.params.permissionContext.canDeleteRow
+    return this.params.isEdit && this.params.projectPermissions.canDeleteRow
   }
 
   public get showMenu(): boolean {

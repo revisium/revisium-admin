@@ -1,17 +1,17 @@
 import { makeAutoObservable } from 'mobx'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { SystemPermissions } from 'src/shared/model/AbilityService'
 
 export class MainPageViewModel implements IViewModel {
   public isCreatingProject = false
 
-  constructor(private readonly permissionContext: PermissionContext) {
+  constructor(private readonly systemPermissions: SystemPermissions) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get canAccessAdmin(): boolean {
-    return this.permissionContext.canReadUser
+    return this.systemPermissions.canReadUser
   }
 
   public toggleCreatingProject(): void {
@@ -26,8 +26,8 @@ export class MainPageViewModel implements IViewModel {
 container.register(
   MainPageViewModel,
   () => {
-    const permissionContext = container.get(PermissionContext)
-    return new MainPageViewModel(permissionContext)
+    const systemPermissions = container.get(SystemPermissions)
+    return new MainPageViewModel(systemPermissions)
   },
   { scope: 'request' },
 )

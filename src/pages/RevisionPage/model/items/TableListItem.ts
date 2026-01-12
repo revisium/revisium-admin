@@ -18,7 +18,7 @@ export class TableListItem extends TableStackItemBase {
   }
 
   public get canCreateTable(): boolean {
-    return this.isEditableRevision && this.deps.permissionContext.canCreateTable
+    return this.isEditableRevision && this.deps.projectPermissions.canCreateTable
   }
 
   public toCreating(): void {

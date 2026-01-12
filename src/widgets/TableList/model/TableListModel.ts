@@ -2,7 +2,7 @@ import { action, computed, makeObservable, reaction } from 'mobx'
 import { TableListItemFragment } from 'src/__generated__/graphql-request.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container, PaginatedListViewModel } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { TableListDataSource } from 'src/widgets/TableList/model/TableListDataSource.ts'
 import { TableListItemViewModel } from 'src/widgets/TableList/model/TableListItemViewModel.ts'
 import { TableRemoveDataSource } from 'src/widgets/TableList/model/TableRemoveDataSource.ts'
@@ -16,7 +16,7 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
     dataSource: TableListDataSource,
     private readonly removeDataSource: TableRemoveDataSource,
     private readonly projectContext: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly refreshService: TableListRefreshService,
   ) {
     super(dataSource)
@@ -44,15 +44,15 @@ export class TableListModel extends PaginatedListViewModel<TableListItemFragment
   }
 
   public get canCreateTable(): boolean {
-    return this.isEditableRevision && this.permissionContext.canCreateTable
+    return this.isEditableRevision && this.projectPermissions.canCreateTable
   }
 
   public get canUpdateTable(): boolean {
-    return this.isEditableRevision && this.permissionContext.canUpdateTable
+    return this.isEditableRevision && this.projectPermissions.canUpdateTable
   }
 
   public get canDeleteTable(): boolean {
-    return this.isEditableRevision && this.permissionContext.canDeleteTable
+    return this.isEditableRevision && this.projectPermissions.canDeleteTable
   }
 
   public get showMenu(): boolean {
@@ -103,9 +103,9 @@ container.register(
     const dataSource = container.get(TableListDataSource)
     const removeDataSource = container.get(TableRemoveDataSource)
     const projectContext = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
     const refreshService = container.get(TableListRefreshService)
-    return new TableListModel(dataSource, removeDataSource, projectContext, permissionContext, refreshService)
+    return new TableListModel(dataSource, removeDataSource, projectContext, projectPermissions, refreshService)
   },
   { scope: 'request' },
 )

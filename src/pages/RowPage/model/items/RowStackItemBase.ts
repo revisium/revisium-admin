@@ -2,12 +2,12 @@ import { computed, makeObservable, observable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonSchema } from 'src/entities/Schema'
 import { StackItem } from 'src/shared/lib/Stack'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { RowStackItemType, RowStackItemResult } from '../../config/types.ts'
 
 export interface RowStackItemBaseDeps {
   projectContext: ProjectContext
-  permissionContext: PermissionContext
+  projectPermissions: ProjectPermissions
   tableId: string
   schema?: JsonSchema
 }

@@ -1,14 +1,14 @@
 import { computed, makeObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { StackItem } from 'src/shared/lib/Stack'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { getJsonDraftPathByNode } from 'src/widgets/SchemaEditor/lib/getJsonDraftPathByNode.ts'
 import { TableFetchDataSource } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
 import { TableStackItemType, TableStackItemResult, SelectForeignKeyPayload } from '../../config/types.ts'
 
 export interface TableStackItemBaseDeps {
   projectContext: ProjectContext
-  permissionContext: PermissionContext
+  projectPermissions: ProjectPermissions
   fetchDataSourceFactory: () => TableFetchDataSource
 }
 

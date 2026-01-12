@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { UserProjectItemFragment, UserProjectRoles } from 'src/__generated__/graphql-request'
 
@@ -11,7 +11,7 @@ export class UserItemViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly data: UserProjectItemFragment,
     private readonly onRemoved: () => void,
   ) {
@@ -48,11 +48,11 @@ export class UserItemViewModel {
   }
 
   public get canUpdateRole(): boolean {
-    return this.permissionContext.canUpdateUser
+    return this.projectPermissions.canUpdateUser
   }
 
   public get canRemove(): boolean {
-    return this.permissionContext.canDeleteUser
+    return this.projectPermissions.canDeleteUser
   }
 
   public get isUpdating(): boolean {

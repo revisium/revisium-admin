@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container, copyToClipboard } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { EndpointType } from 'src/__generated__/graphql-request'
 import { EndpointsDataSource } from '../api/EndpointsDataSource.ts'
 import { EndpointUrlBuilder, EndpointUrls } from '../lib/EndpointUrlBuilder.ts'
@@ -42,7 +42,7 @@ export class EndpointCardViewModel {
 
   constructor(
     context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly dataSource: EndpointsDataSource,
     private readonly data: EndpointCardData,
     private readonly onChanged: () => void,
@@ -104,11 +104,11 @@ export class EndpointCardViewModel {
   }
 
   public get canCreate(): boolean {
-    return this.permissionContext.canCreateEndpoint
+    return this.projectPermissions.canCreateEndpoint
   }
 
   public get canDelete(): boolean {
-    return this.permissionContext.canDeleteEndpoint
+    return this.projectPermissions.canDeleteEndpoint
   }
 
   public get graphqlUrl(): string {
@@ -205,9 +205,9 @@ container.register(
   () => {
     return new EndpointCardViewModelFactory((data, onChanged) => {
       const context = container.get(ProjectContext)
-      const permissionContext = container.get(PermissionContext)
+      const projectPermissions = container.get(ProjectPermissions)
       const dataSource = container.get(EndpointsDataSource)
-      return new EndpointCardViewModel(context, permissionContext, dataSource, data, onChanged)
+      return new EndpointCardViewModel(context, projectPermissions, dataSource, data, onChanged)
     })
   },
   { scope: 'request' },

@@ -8,7 +8,7 @@ import { container, isAborted } from 'src/shared/lib'
 import { PaginatedListState } from 'src/shared/lib/PaginatedListState'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { SearchController } from 'src/shared/lib/SearchController'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService'
 import { toaster } from 'src/shared/ui'
 import { ColumnsModel } from './ColumnsModel'
@@ -53,7 +53,7 @@ export class RowListViewModel implements IViewModel {
 
   constructor(
     private readonly projectContext: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
   ) {
     this.search = new SearchController(300, this.handleSearch)
     this.viewSettingsBadge = new ViewSettingsBadgeModel(this)
@@ -163,11 +163,11 @@ export class RowListViewModel implements IViewModel {
   }
 
   public get canCreateRow(): boolean {
-    return this.isEdit && this.permissionContext.canCreateRow
+    return this.isEdit && this.projectPermissions.canCreateRow
   }
 
   public get canDeleteRow(): boolean {
-    return this.isEdit && this.permissionContext.canDeleteRow
+    return this.isEdit && this.projectPermissions.canDeleteRow
   }
 
   public get showSelectionColumn(): boolean {
@@ -464,7 +464,7 @@ export class RowListViewModel implements IViewModel {
           const newRows = result.data.rows.edges.map((edge) => edge.node)
           const newItems = this.columnsModel.createRowViewModels(newRows, {
             isEdit: this.isEdit,
-            permissionContext: this.permissionContext,
+            projectPermissions: this.projectPermissions,
             inlineEditModel: this.inlineEdit,
             onDelete: this.deleteRow,
           })
@@ -607,7 +607,7 @@ export class RowListViewModel implements IViewModel {
       const rawData = result.data.rows.edges.map((edge) => edge.node)
       const items = this.columnsModel.createRowViewModels(rawData, {
         isEdit: this.isEdit,
-        permissionContext: this.permissionContext,
+        projectPermissions: this.projectPermissions,
         inlineEditModel: this.inlineEdit,
         onDelete: this.deleteRow,
       })
@@ -669,8 +669,8 @@ container.register(
   RowListViewModel,
   () => {
     const projectContext = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    return new RowListViewModel(projectContext, permissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
+    return new RowListViewModel(projectContext, projectPermissions)
   },
   { scope: 'request' },
 )

@@ -46,3 +46,8 @@ export interface UserOrganizationData {
   id: string
   role: RoleData
 }
+
+export type PermissionScope =
+  | { type: 'system' }
+  | { type: 'organization'; organizationId: string }
+  | { type: 'project'; projectId: string }

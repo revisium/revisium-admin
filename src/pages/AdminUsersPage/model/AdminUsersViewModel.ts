@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable, override } from 'mobx'
 import { AdminUserItemFragment } from 'src/__generated__/graphql-request'
 import { container, PaginatedListViewModel } from 'src/shared/lib'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { SystemPermissions } from 'src/shared/model/AbilityService'
 import { AdminCreateUserDataSource } from './AdminCreateUserDataSource'
 import { AdminCreateUserModalViewModel } from './AdminCreateUserModalViewModel'
 import { AdminUsersDataSource } from './AdminUsersDataSource'
@@ -15,11 +15,11 @@ export class AdminUsersViewModel extends PaginatedListViewModel<AdminUserItemFra
   constructor(
     dataSource: AdminUsersDataSource,
     createUserDataSource: AdminCreateUserDataSource,
-    permissionContext: PermissionContext,
+    systemPermissions: SystemPermissions,
   ) {
     super(dataSource)
 
-    this.createUserModal = new AdminCreateUserModalViewModel(createUserDataSource, permissionContext, () =>
+    this.createUserModal = new AdminCreateUserModalViewModel(createUserDataSource, systemPermissions, () =>
       this.reload(),
     )
 
@@ -84,8 +84,8 @@ container.register(
   () => {
     const dataSource = container.get(AdminUsersDataSource)
     const createUserDataSource = container.get(AdminCreateUserDataSource)
-    const permissionContext = container.get(PermissionContext)
-    return new AdminUsersViewModel(dataSource, createUserDataSource, permissionContext)
+    const systemPermissions = container.get(SystemPermissions)
+    return new AdminUsersViewModel(dataSource, createUserDataSource, systemPermissions)
   },
   { scope: 'request' },
 )

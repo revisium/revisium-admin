@@ -2,7 +2,7 @@ import { makeAutoObservable, reaction, IReactionDisposer, runInAction } from 'mo
 import { BranchLoaderData } from 'src/entities/Branch'
 import { container, ObservableRequest } from 'src/shared/lib'
 import { client } from 'src/shared/model/ApiService.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { IProjectContextData, PermissionService, ProjectPermissions } from 'src/shared/model/AbilityService'
 import { RouterParams } from 'src/shared/model/RouterParams.ts'
 import { DRAFT_TAG, HEAD_TAG } from 'src/shared/config/routes.ts'
 import { ProjectLoaderData } from 'src/entities/Project'
@@ -24,11 +24,23 @@ export class ProjectContext {
   private _hasLoadedOnce = false
 
   constructor(
-    private readonly permissionContext: PermissionContext,
+    private readonly permissionService: PermissionService,
+    private readonly projectPermissions: ProjectPermissions,
     private readonly routerParams: RouterParams,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+    this.projectPermissions.setContextProvider(this.getContextData)
     this.setupReactions()
+  }
+
+  private getContextData = (): IProjectContextData => {
+    const project = this.projectRequest.data?.project
+    return {
+      projectId: project?.id ?? null,
+      organizationId: project?.organization?.id ?? null,
+      isPublic: project?.isPublic ?? false,
+      projectRoleName: project ? this.extractRoleName(project) : null,
+    }
   }
 
   public get organizationId(): string {
@@ -82,6 +94,14 @@ export class ProjectContext {
     return this.data.isPublic
   }
 
+  public get projectRoleName(): string | null {
+    const project = this.projectRequest.data?.project
+    if (!project) {
+      return null
+    }
+    return this.extractRoleName(project)
+  }
+
   public get isInitLoading(): boolean {
     if (!this._hasLoadedOnce) {
       return true
@@ -116,7 +136,6 @@ export class ProjectContext {
     this.projectRequest.abort()
     this.branchRequest.abort()
     this.branchRequest.setDataDirectly(null)
-    this.permissionContext.clearProject()
     this._hasLoadedOnce = false
   }
 
@@ -161,9 +180,41 @@ export class ProjectContext {
       this._hasLoadedOnce = true
       const project = this.projectRequest.data?.project
       if (project) {
-        this.permissionContext.setProject(project)
+        this.loadProjectPermissions(project)
       }
     })
+  }
+
+  private loadProjectPermissions(project: ProjectLoaderData): void {
+    if (project.organization?.userOrganization?.role?.permissions) {
+      const permissions = project.organization.userOrganization.role.permissions.map((p) => ({
+        id: p.id,
+        action: p.action,
+        subject: p.subject,
+        condition: (p.condition as Record<string, unknown>) ?? null,
+      }))
+      this.permissionService.addOrganizationPermissions(project.organization.id, permissions)
+    }
+
+    if (project.userProject?.role?.permissions) {
+      const permissions = project.userProject.role.permissions.map((p) => ({
+        id: p.id,
+        action: p.action,
+        subject: p.subject,
+        condition: (p.condition as Record<string, unknown>) ?? null,
+      }))
+      this.permissionService.addProjectPermissions(project.id, permissions)
+    }
+  }
+
+  private extractRoleName(project: ProjectLoaderData): string | null {
+    if (project.userProject?.role?.name) {
+      return project.userProject.role.name
+    }
+    if (project.organization?.userOrganization?.role?.name) {
+      return project.organization.userOrganization.role.name
+    }
+    return null
   }
 
   private createBranchReaction(): IReactionDisposer {
@@ -215,9 +266,10 @@ export class ProjectContext {
 container.register(
   ProjectContext,
   () => {
-    const permissionContext = container.get(PermissionContext)
+    const permissionService = container.get(PermissionService)
+    const projectPermissions = container.get(ProjectPermissions)
     const routerParams = container.get(RouterParams)
-    return new ProjectContext(permissionContext, routerParams)
+    return new ProjectContext(permissionService, projectPermissions, routerParams)
   },
   { scope: 'singleton' },
 )

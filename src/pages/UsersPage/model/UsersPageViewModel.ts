@@ -3,7 +3,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ObservableRequest } from 'src/shared/lib/ObservableRequest.ts'
-import { PermissionContext } from 'src/shared/model/AbilityService'
+import { ProjectPermissions, SystemPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { UserProjectItemFragment } from 'src/__generated__/graphql-request'
 import { AddUserModalViewModel } from './AddUserModalViewModel.ts'
@@ -33,18 +33,19 @@ export class UsersPageViewModel implements IViewModel {
 
   constructor(
     private readonly context: ProjectContext,
-    private readonly permissionContext: PermissionContext,
+    private readonly projectPermissions: ProjectPermissions,
+    private readonly systemPermissions: SystemPermissions,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
-    this.addUserModal = new AddUserModalViewModel(context, permissionContext, this.handleUserAdded)
+    this.addUserModal = new AddUserModalViewModel(context, systemPermissions, this.handleUserAdded)
   }
 
   public get canAddUser(): boolean {
-    return this.permissionContext.canAddUser
+    return this.projectPermissions.canAddUser
   }
 
   public get canCreateUser(): boolean {
-    return this.permissionContext.canCreateUser
+    return this.systemPermissions.canCreateUser
   }
 
   public get showInitialLoading(): boolean {
@@ -116,7 +117,7 @@ export class UsersPageViewModel implements IViewModel {
   }
 
   private createItemViewModel(item: UserProjectItemFragment): UserItemViewModel {
-    return new UserItemViewModel(this.context, this.permissionContext, item, this.handleUserRemoved)
+    return new UserItemViewModel(this.context, this.projectPermissions, item, this.handleUserRemoved)
   }
 
   private readonly handleUserAdded = (): void => {
@@ -172,8 +173,9 @@ container.register(
   UsersPageViewModel,
   () => {
     const context = container.get(ProjectContext)
-    const permissionContext = container.get(PermissionContext)
-    return new UsersPageViewModel(context, permissionContext)
+    const projectPermissions = container.get(ProjectPermissions)
+    const systemPermissions = container.get(SystemPermissions)
+    return new UsersPageViewModel(context, projectPermissions, systemPermissions)
   },
   { scope: 'request' },
 )

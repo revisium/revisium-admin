@@ -367,6 +367,15 @@ export type GetRowsInput = {
   where?: InputMaybe<WhereInput>
 }
 
+export type GetSubSchemaItemsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  orderBy?: InputMaybe<Array<SubSchemaOrderByItemInput>>
+  revisionId: Scalars['String']['input']
+  schemaId: Scalars['String']['input']
+  where?: InputMaybe<SubSchemaWhereInput>
+}
+
 export type GetTableChangesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   compareWithRevisionId?: InputMaybe<Scalars['String']['input']>
@@ -710,6 +719,11 @@ export type MutationUpdateUserProjectRoleArgs = {
   data: UpdateUserProjectRoleInput
 }
 
+export enum NullsPosition {
+  FIRST = 'first',
+  LAST = 'last',
+}
+
 export type OrderBy = {
   aggregation?: InputMaybe<OrderDataAggregation>
   direction: SortOrder
@@ -870,6 +884,7 @@ export type Query = {
   rows: RowsConnection
   searchRows: SearchResultsConnection
   searchUsers: SearchUsersConnection
+  subSchemaItems: SubSchemaItemsConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
   tableViews: TableViewsDataModel
@@ -940,6 +955,10 @@ export type QuerySearchRowsArgs = {
 
 export type QuerySearchUsersArgs = {
   data: SearchUsersInput
+}
+
+export type QuerySubSchemaItemsArgs = {
+  data: GetSubSchemaItemsInput
 }
 
 export type QueryTableArgs = {
@@ -1373,6 +1392,81 @@ export type StringFilter = {
   not?: InputMaybe<Scalars['String']['input']>
   notIn?: InputMaybe<Array<Scalars['String']['input']>>
   startsWith?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaDataOrderByInput = {
+  nulls?: InputMaybe<NullsPosition>
+  order: SortOrder
+  path: Scalars['JSON']['input']
+}
+
+export type SubSchemaItemModel = {
+  __typename: 'SubSchemaItemModel'
+  data: Scalars['JSON']['output']
+  fieldPath: Scalars['String']['output']
+  row: RowModel
+  table: TableModel
+}
+
+export type SubSchemaItemModelEdge = {
+  __typename: 'SubSchemaItemModelEdge'
+  cursor: Scalars['String']['output']
+  node: SubSchemaItemModel
+}
+
+export type SubSchemaItemsConnection = {
+  __typename: 'SubSchemaItemsConnection'
+  edges: Array<SubSchemaItemModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type SubSchemaJsonFilterInput = {
+  equals?: InputMaybe<Scalars['JSON']['input']>
+  gt?: InputMaybe<Scalars['JSON']['input']>
+  gte?: InputMaybe<Scalars['JSON']['input']>
+  in?: InputMaybe<Array<Scalars['JSON']['input']>>
+  lt?: InputMaybe<Scalars['JSON']['input']>
+  lte?: InputMaybe<Scalars['JSON']['input']>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<Scalars['JSON']['input']>
+  notIn?: InputMaybe<Array<Scalars['JSON']['input']>>
+  path: Scalars['JSON']['input']
+  string_contains?: InputMaybe<Scalars['String']['input']>
+  string_ends_with?: InputMaybe<Scalars['String']['input']>
+  string_starts_with?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaOrderByItemInput = {
+  data?: InputMaybe<SubSchemaDataOrderByInput>
+  fieldPath?: InputMaybe<SortOrder>
+  rowId?: InputMaybe<SortOrder>
+  tableId?: InputMaybe<SortOrder>
+}
+
+export type SubSchemaStringFilterInput = {
+  contains?: InputMaybe<Scalars['String']['input']>
+  endsWith?: InputMaybe<Scalars['String']['input']>
+  equals?: InputMaybe<Scalars['String']['input']>
+  gt?: InputMaybe<Scalars['String']['input']>
+  gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
+  lt?: InputMaybe<Scalars['String']['input']>
+  lte?: InputMaybe<Scalars['String']['input']>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<Scalars['String']['input']>
+  notIn?: InputMaybe<Array<Scalars['String']['input']>>
+  startsWith?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaWhereInput = {
+  AND?: InputMaybe<Array<SubSchemaWhereInput>>
+  NOT?: InputMaybe<SubSchemaWhereInput>
+  OR?: InputMaybe<Array<SubSchemaWhereInput>>
+  data?: InputMaybe<SubSchemaJsonFilterInput>
+  fieldPath?: InputMaybe<SubSchemaStringFilterInput>
+  rowId?: InputMaybe<SubSchemaStringFilterInput>
+  tableId?: InputMaybe<SubSchemaStringFilterInput>
 }
 
 export type TableChangeModel = {

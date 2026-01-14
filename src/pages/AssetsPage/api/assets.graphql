@@ -1,0 +1,70 @@
+fragment AssetTableItem on TableModel {
+  id
+  versionId
+  count
+  schema
+}
+
+query assetsTablesData($data: GetTablesInput!) {
+  tables(data: $data) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...AssetTableItem
+      }
+    }
+  }
+}
+
+fragment AssetRowItem on RowModel {
+  id
+  versionId
+  data
+}
+
+query assetsRowsData($data: GetRowsInput!) {
+  rows(data: $data) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...AssetRowItem
+      }
+    }
+  }
+}
+
+fragment SubSchemaItem on SubSchemaItemModel {
+  table {
+    id
+    versionId
+  }
+  row {
+    id
+    versionId
+  }
+  fieldPath
+  data
+}
+
+query subSchemaItemsData($data: GetSubSchemaItemsInput!) {
+  subSchemaItems(data: $data) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        ...SubSchemaItem
+      }
+    }
+  }
+}

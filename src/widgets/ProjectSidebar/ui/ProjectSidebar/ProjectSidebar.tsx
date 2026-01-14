@@ -8,7 +8,7 @@ import {
   PiUsersLight,
   PiDatabaseLight,
   PiFileTextLight,
-  // PiFileLight,
+  PiImageLight,
   PiShuffleLight,
   PiMagnifyingGlassLight,
   PiPlugLight,
@@ -17,7 +17,13 @@ import {
   PiTreeStructureLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
-import { BRANCH_MAP_ROUTE, CHANGES_ROUTE, MIGRATIONS_ROUTE, RELATIONS_ROUTE } from 'src/shared/config/routes.ts'
+import {
+  ASSETS_ROUTE,
+  BRANCH_MAP_ROUTE,
+  CHANGES_ROUTE,
+  MIGRATIONS_ROUTE,
+  RELATIONS_ROUTE,
+} from 'src/shared/config/routes.ts'
 import { useNavigationState } from 'src/widgets/ProjectSidebar/hooks/useNavigationState.ts'
 import { ProjectSidebarViewModel } from 'src/widgets/ProjectSidebar/model/ProjectSidebarViewModel.ts'
 import { CollapsibleGroupButton } from 'src/widgets/ProjectSidebar/ui/CollapsibleGroupButton/CollapsibleGroupButton.tsx'
@@ -37,6 +43,7 @@ export const ProjectSidebar: FC = observer(() => {
   const {
     isTablesActive,
     isChangesActive,
+    isAssetsActive,
     isMigrationsActive,
     isRelationsActive,
     isBranchMapActive,
@@ -100,12 +107,12 @@ export const ProjectSidebar: FC = observer(() => {
             icon={<PiFileTextLight />}
             isActive={isChangesActive}
           />
-          {/*<NavigationButton*/}
-          {/*  to={`${linkMaker.currentBaseLink}/-/assets`}*/}
-          {/*  label="Assets"*/}
-          {/*  icon={<PiFileLight />}*/}
-          {/*  isActive={isAssetsActive}*/}
-          {/*/>*/}
+          <NavigationButton
+            to={`${linkMaker.currentBaseLink}/${ASSETS_ROUTE}`}
+            label="Assets"
+            icon={<PiImageLight />}
+            isActive={isAssetsActive}
+          />
           <NavigationButton
             to={`${linkMaker.currentBaseLink}/${RELATIONS_ROUTE}`}
             label="Table Relations"

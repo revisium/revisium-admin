@@ -38,11 +38,13 @@ import { checkLoginGoogle, LoginGooglePage } from 'src/pages/LoginGooglePage'
 import { SignUpPage } from 'src/pages/SignUpPage'
 import { TablePage } from 'src/pages/TablePage'
 import { UsernamePage } from 'src/pages/UsernamePage'
+import { AssetsPage } from 'src/pages/AssetsPage'
 import {
   ADMIN_ORGANIZATIONS_ROUTE,
   ADMIN_ROUTE,
   ADMIN_USER_DETAIL_ROUTE,
   ADMIN_USERS_ROUTE,
+  ASSETS_ROUTE,
   BRANCH_ROUTE,
   SIGN_UP_CONFIRM_ROUTE,
   LOGIN_ROUTE,
@@ -116,6 +118,12 @@ const createBranchMapRouteObject = (): RouteObject => ({
   path: BRANCH_MAP_ROUTE,
   element: <BranchMapPage />,
   id: RouteIds.BranchMap,
+})
+
+const createAssetsRouteObject = (): RouteObject => ({
+  path: ASSETS_ROUTE,
+  element: <AssetsPage />,
+  id: RouteIds.Assets,
 })
 
 const createTableRouteObject = (): RouteObject => ({
@@ -193,6 +201,7 @@ const organizationRouteObject = {
                   element: <BranchPage showTitle={false} />,
                   children: [
                     createChangesRouteObject(),
+                    createAssetsRouteObject(),
                     createMigrationsRouteObject(),
                     createRelationsRouteObject(),
                     createBranchMapRouteObject(),

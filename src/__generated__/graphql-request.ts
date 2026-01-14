@@ -357,6 +357,15 @@ export type GetRowsInput = {
   where?: InputMaybe<WhereInput>
 }
 
+export type GetSubSchemaItemsInput = {
+  after?: InputMaybe<Scalars['String']['input']>
+  first: Scalars['Int']['input']
+  orderBy?: InputMaybe<Array<SubSchemaOrderByItemInput>>
+  revisionId: Scalars['String']['input']
+  schemaId: Scalars['String']['input']
+  where?: InputMaybe<SubSchemaWhereInput>
+}
+
 export type GetTableChangesInput = {
   after?: InputMaybe<Scalars['String']['input']>
   compareWithRevisionId?: InputMaybe<Scalars['String']['input']>
@@ -692,6 +701,11 @@ export type MutationUpdateUserProjectRoleArgs = {
   data: UpdateUserProjectRoleInput
 }
 
+export enum NullsPosition {
+  First = 'first',
+  Last = 'last',
+}
+
 export type OrderBy = {
   aggregation?: InputMaybe<OrderDataAggregation>
   direction: SortOrder
@@ -841,6 +855,7 @@ export type Query = {
   rows: RowsConnection
   searchRows: SearchResultsConnection
   searchUsers: SearchUsersConnection
+  subSchemaItems: SubSchemaItemsConnection
   table?: Maybe<TableModel>
   tableChanges: TableChangesConnection
   tableViews: TableViewsDataModel
@@ -911,6 +926,10 @@ export type QuerySearchRowsArgs = {
 
 export type QuerySearchUsersArgs = {
   data: SearchUsersInput
+}
+
+export type QuerySubSchemaItemsArgs = {
+  data: GetSubSchemaItemsInput
 }
 
 export type QueryTableArgs = {
@@ -1316,6 +1335,78 @@ export type StringFilter = {
   not?: InputMaybe<Scalars['String']['input']>
   notIn?: InputMaybe<Array<Scalars['String']['input']>>
   startsWith?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaDataOrderByInput = {
+  nulls?: InputMaybe<NullsPosition>
+  order: SortOrder
+  path: Scalars['JSON']['input']
+}
+
+export type SubSchemaItemModel = {
+  data: Scalars['JSON']['output']
+  fieldPath: Scalars['String']['output']
+  row: RowModel
+  table: TableModel
+}
+
+export type SubSchemaItemModelEdge = {
+  cursor: Scalars['String']['output']
+  node: SubSchemaItemModel
+}
+
+export type SubSchemaItemsConnection = {
+  edges: Array<SubSchemaItemModelEdge>
+  pageInfo: PageInfo
+  totalCount: Scalars['Int']['output']
+}
+
+export type SubSchemaJsonFilterInput = {
+  equals?: InputMaybe<Scalars['JSON']['input']>
+  gt?: InputMaybe<Scalars['JSON']['input']>
+  gte?: InputMaybe<Scalars['JSON']['input']>
+  in?: InputMaybe<Array<Scalars['JSON']['input']>>
+  lt?: InputMaybe<Scalars['JSON']['input']>
+  lte?: InputMaybe<Scalars['JSON']['input']>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<Scalars['JSON']['input']>
+  notIn?: InputMaybe<Array<Scalars['JSON']['input']>>
+  path: Scalars['JSON']['input']
+  string_contains?: InputMaybe<Scalars['String']['input']>
+  string_ends_with?: InputMaybe<Scalars['String']['input']>
+  string_starts_with?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaOrderByItemInput = {
+  data?: InputMaybe<SubSchemaDataOrderByInput>
+  fieldPath?: InputMaybe<SortOrder>
+  rowId?: InputMaybe<SortOrder>
+  tableId?: InputMaybe<SortOrder>
+}
+
+export type SubSchemaStringFilterInput = {
+  contains?: InputMaybe<Scalars['String']['input']>
+  endsWith?: InputMaybe<Scalars['String']['input']>
+  equals?: InputMaybe<Scalars['String']['input']>
+  gt?: InputMaybe<Scalars['String']['input']>
+  gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
+  lt?: InputMaybe<Scalars['String']['input']>
+  lte?: InputMaybe<Scalars['String']['input']>
+  mode?: InputMaybe<QueryMode>
+  not?: InputMaybe<Scalars['String']['input']>
+  notIn?: InputMaybe<Array<Scalars['String']['input']>>
+  startsWith?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SubSchemaWhereInput = {
+  AND?: InputMaybe<Array<SubSchemaWhereInput>>
+  NOT?: InputMaybe<SubSchemaWhereInput>
+  OR?: InputMaybe<Array<SubSchemaWhereInput>>
+  data?: InputMaybe<SubSchemaJsonFilterInput>
+  fieldPath?: InputMaybe<SubSchemaStringFilterInput>
+  rowId?: InputMaybe<SubSchemaStringFilterInput>
+  tableId?: InputMaybe<SubSchemaStringFilterInput>
 }
 
 export type TableChangeModel = {
@@ -1976,6 +2067,78 @@ export type AdminUserQuery = {
   adminUser?: { id: string; email?: string | null; username?: string | null; role: { id: string; name: string } } | null
 }
 
+export type AssetTableItemFragment = {
+  id: string
+  versionId: string
+  count: number
+  schema: { [key: string]: any } | string | number | boolean | null
+}
+
+export type AssetsTablesDataQueryVariables = Exact<{
+  data: GetTablesInput
+}>
+
+export type AssetsTablesDataQuery = {
+  tables: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      node: {
+        id: string
+        versionId: string
+        count: number
+        schema: { [key: string]: any } | string | number | boolean | null
+      }
+    }>
+  }
+}
+
+export type AssetRowItemFragment = {
+  id: string
+  versionId: string
+  data: { [key: string]: any } | string | number | boolean | null
+}
+
+export type AssetsRowsDataQueryVariables = Exact<{
+  data: GetRowsInput
+}>
+
+export type AssetsRowsDataQuery = {
+  rows: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      node: { id: string; versionId: string; data: { [key: string]: any } | string | number | boolean | null }
+    }>
+  }
+}
+
+export type SubSchemaItemFragment = {
+  fieldPath: string
+  data: { [key: string]: any } | string | number | boolean | null
+  table: { id: string; versionId: string }
+  row: { id: string; versionId: string }
+}
+
+export type SubSchemaItemsDataQueryVariables = Exact<{
+  data: GetSubSchemaItemsInput
+}>
+
+export type SubSchemaItemsDataQuery = {
+  subSchemaItems: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      node: {
+        fieldPath: string
+        data: { [key: string]: any } | string | number | boolean | null
+        table: { id: string; versionId: string }
+        row: { id: string; versionId: string }
+      }
+    }>
+  }
+}
+
 export type BranchItemFragment = {
   id: string
   name: string
@@ -2557,89 +2720,6 @@ export type GetMeQuery = {
   }
 }
 
-export type FindBranchFragment = {
-  id: string
-  name: string
-  isRoot: boolean
-  touched: boolean
-  parent?: { revision: { branch: { id: string } } } | null
-}
-
-export type FindBranchesQueryVariables = Exact<{
-  data: GetBranchesInput
-}>
-
-export type FindBranchesQuery = {
-  branches: {
-    totalCount: number
-    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
-    edges: Array<{
-      cursor: string
-      node: {
-        id: string
-        name: string
-        isRoot: boolean
-        touched: boolean
-        parent?: { revision: { branch: { id: string } } } | null
-      }
-    }>
-  }
-}
-
-export type FindRevisionFragment = {
-  id: string
-  comment: string
-  isDraft: boolean
-  isHead: boolean
-  isStart: boolean
-  createdAt: string
-}
-
-export type FindRevisionsQueryVariables = Exact<{
-  data: GetBranchInput
-  revisionsData: GetBranchRevisionsInput
-}>
-
-export type FindRevisionsQuery = {
-  branch: {
-    revisions: {
-      totalCount: number
-      pageInfo: {
-        hasNextPage: boolean
-        hasPreviousPage: boolean
-        startCursor?: string | null
-        endCursor?: string | null
-      }
-      edges: Array<{
-        cursor: string
-        node: { id: string; comment: string; isDraft: boolean; isHead: boolean; isStart: boolean; createdAt: string }
-      }>
-    }
-  }
-}
-
-export type MeProjectListItemFragment = {
-  id: string
-  name: string
-  organizationId: string
-  rootBranch: { name: string; touched: boolean }
-}
-
-export type MeProjectsListQueryVariables = Exact<{
-  data: GetMeProjectsInput
-}>
-
-export type MeProjectsListQuery = {
-  meProjects: {
-    totalCount: number
-    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
-    edges: Array<{
-      cursor: string
-      node: { id: string; name: string; organizationId: string; rootBranch: { name: string; touched: boolean } }
-    }>
-  }
-}
-
 export type RevisionMapRevisionBaseFragment = {
   id: string
   comment: string
@@ -2771,6 +2851,89 @@ export type GetProjectGraphQuery = {
         } | null
         revisions: { totalCount: number }
       }
+    }>
+  }
+}
+
+export type FindBranchFragment = {
+  id: string
+  name: string
+  isRoot: boolean
+  touched: boolean
+  parent?: { revision: { branch: { id: string } } } | null
+}
+
+export type FindBranchesQueryVariables = Exact<{
+  data: GetBranchesInput
+}>
+
+export type FindBranchesQuery = {
+  branches: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
+    edges: Array<{
+      cursor: string
+      node: {
+        id: string
+        name: string
+        isRoot: boolean
+        touched: boolean
+        parent?: { revision: { branch: { id: string } } } | null
+      }
+    }>
+  }
+}
+
+export type FindRevisionFragment = {
+  id: string
+  comment: string
+  isDraft: boolean
+  isHead: boolean
+  isStart: boolean
+  createdAt: string
+}
+
+export type FindRevisionsQueryVariables = Exact<{
+  data: GetBranchInput
+  revisionsData: GetBranchRevisionsInput
+}>
+
+export type FindRevisionsQuery = {
+  branch: {
+    revisions: {
+      totalCount: number
+      pageInfo: {
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor?: string | null
+        endCursor?: string | null
+      }
+      edges: Array<{
+        cursor: string
+        node: { id: string; comment: string; isDraft: boolean; isHead: boolean; isStart: boolean; createdAt: string }
+      }>
+    }
+  }
+}
+
+export type MeProjectListItemFragment = {
+  id: string
+  name: string
+  organizationId: string
+  rootBranch: { name: string; touched: boolean }
+}
+
+export type MeProjectsListQueryVariables = Exact<{
+  data: GetMeProjectsInput
+}>
+
+export type MeProjectsListQuery = {
+  meProjects: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean; startCursor?: string | null; endCursor?: string | null }
+    edges: Array<{
+      cursor: string
+      node: { id: string; name: string; organizationId: string; rootBranch: { name: string; touched: boolean } }
     }>
   }
 }
@@ -3359,6 +3522,35 @@ export const AdminUserItemFragmentDoc = gql`
     }
   }
 `
+export const AssetTableItemFragmentDoc = gql`
+  fragment AssetTableItem on TableModel {
+    id
+    versionId
+    count
+    schema
+  }
+`
+export const AssetRowItemFragmentDoc = gql`
+  fragment AssetRowItem on RowModel {
+    id
+    versionId
+    data
+  }
+`
+export const SubSchemaItemFragmentDoc = gql`
+  fragment SubSchemaItem on SubSchemaItemModel {
+    table {
+      id
+      versionId
+    }
+    row {
+      id
+      versionId
+    }
+    fieldPath
+    data
+  }
+`
 export const BranchItemFragmentDoc = gql`
   fragment BranchItem on BranchModel {
     id
@@ -3501,42 +3693,6 @@ export const UserFragmentDoc = gql`
     }
   }
 `
-export const FindBranchFragmentDoc = gql`
-  fragment FindBranch on BranchModel {
-    id
-    name
-    isRoot
-    touched
-    parent {
-      revision {
-        branch {
-          id
-        }
-      }
-    }
-  }
-`
-export const FindRevisionFragmentDoc = gql`
-  fragment FindRevision on RevisionModel {
-    id
-    comment
-    isDraft
-    isHead
-    isStart
-    createdAt
-  }
-`
-export const MeProjectListItemFragmentDoc = gql`
-  fragment MeProjectListItem on ProjectModel {
-    id
-    name
-    organizationId
-    rootBranch {
-      name
-      touched
-    }
-  }
-`
 export const RevisionMapRevisionBaseFragmentDoc = gql`
   fragment RevisionMapRevisionBase on RevisionModel {
     id
@@ -3591,6 +3747,42 @@ export const RevisionMapBranchFullFragmentDoc = gql`
     }
   }
   ${RevisionMapRevisionBaseFragmentDoc}
+`
+export const FindBranchFragmentDoc = gql`
+  fragment FindBranch on BranchModel {
+    id
+    name
+    isRoot
+    touched
+    parent {
+      revision {
+        branch {
+          id
+        }
+      }
+    }
+  }
+`
+export const FindRevisionFragmentDoc = gql`
+  fragment FindRevision on RevisionModel {
+    id
+    comment
+    isDraft
+    isHead
+    isStart
+    createdAt
+  }
+`
+export const MeProjectListItemFragmentDoc = gql`
+  fragment MeProjectListItem on ProjectModel {
+    id
+    name
+    organizationId
+    rootBranch {
+      name
+      touched
+    }
+  }
 `
 export const RowChangeRowFieldsFragmentDoc = gql`
   fragment RowChangeRowFields on RowChangeRowModel {
@@ -3924,6 +4116,57 @@ export const AdminUserDocument = gql`
     }
   }
   ${AdminUserItemFragmentDoc}
+`
+export const AssetsTablesDataDocument = gql`
+  query assetsTablesData($data: GetTablesInput!) {
+    tables(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...AssetTableItem
+        }
+      }
+    }
+  }
+  ${AssetTableItemFragmentDoc}
+`
+export const AssetsRowsDataDocument = gql`
+  query assetsRowsData($data: GetRowsInput!) {
+    rows(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...AssetRowItem
+        }
+      }
+    }
+  }
+  ${AssetRowItemFragmentDoc}
+`
+export const SubSchemaItemsDataDocument = gql`
+  query subSchemaItemsData($data: GetSubSchemaItemsInput!) {
+    subSchemaItems(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...SubSchemaItem
+        }
+      }
+    }
+  }
+  ${SubSchemaItemFragmentDoc}
 `
 export const GetProjectBranchesDocument = gql`
   query getProjectBranches($data: GetBranchesInput!) {
@@ -4392,6 +4635,19 @@ export const GetMeDocument = gql`
   }
   ${UserFragmentDoc}
 `
+export const GetProjectGraphDocument = gql`
+  query getProjectGraph($data: GetBranchesInput!) {
+    branches(data: $data) {
+      totalCount
+      edges {
+        node {
+          ...RevisionMapBranchFull
+        }
+      }
+    }
+  }
+  ${RevisionMapBranchFullFragmentDoc}
+`
 export const FindBranchesDocument = gql`
   query findBranches($data: GetBranchesInput!) {
     branches(data: $data) {
@@ -4449,19 +4705,6 @@ export const MeProjectsListDocument = gql`
   }
   ${PageInfoFragmentDoc}
   ${MeProjectListItemFragmentDoc}
-`
-export const GetProjectGraphDocument = gql`
-  query getProjectGraph($data: GetBranchesInput!) {
-    branches(data: $data) {
-      totalCount
-      edges {
-        node {
-          ...RevisionMapBranchFull
-        }
-      }
-    }
-  }
-  ${RevisionMapBranchFullFragmentDoc}
 `
 export const GetRowChangesDocument = gql`
   query GetRowChanges($revisionId: String!, $first: Int!, $after: String, $filters: RowChangesFiltersInput) {
@@ -5011,6 +5254,51 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
+    assetsTablesData(
+      variables: AssetsTablesDataQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AssetsTablesDataQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AssetsTablesDataQuery>(AssetsTablesDataDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'assetsTablesData',
+        'query',
+        variables,
+      )
+    },
+    assetsRowsData(
+      variables: AssetsRowsDataQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AssetsRowsDataQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AssetsRowsDataQuery>(AssetsRowsDataDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'assetsRowsData',
+        'query',
+        variables,
+      )
+    },
+    subSchemaItemsData(
+      variables: SubSchemaItemsDataQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<SubSchemaItemsDataQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<SubSchemaItemsDataQuery>(SubSchemaItemsDataDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'subSchemaItemsData',
+        'query',
+        variables,
+      )
+    },
     getProjectBranches(
       variables: GetProjectBranchesQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -5548,6 +5836,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
+    getProjectGraph(
+      variables: GetProjectGraphQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetProjectGraphQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetProjectGraphQuery>(GetProjectGraphDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'getProjectGraph',
+        'query',
+        variables,
+      )
+    },
     findBranches(
       variables: FindBranchesQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -5589,21 +5892,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'meProjectsList',
-        'query',
-        variables,
-      )
-    },
-    getProjectGraph(
-      variables: GetProjectGraphQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<GetProjectGraphQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<GetProjectGraphQuery>(GetProjectGraphDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'getProjectGraph',
         'query',
         variables,
       )

@@ -3,8 +3,10 @@ import {
   AssetTableItemFragment,
   AssetsTablesDataQuery,
   QueryMode,
+  SortOrder,
   SubSchemaItemFragment,
   SubSchemaItemsDataQuery,
+  SubSchemaOrderByItemInput,
   SubSchemaWhereInput,
 } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
@@ -32,6 +34,11 @@ const isValidJsonSchema = (value: unknown): value is JsonSchema => {
 
 const FILE_SCHEMA_ID = 'urn:jsonschema:io:revisium:file-schema:1.0.0'
 const PAGINATION_PAGE_SIZE = 100
+
+const DEFAULT_ORDER_BY: SubSchemaOrderByItemInput[] = [
+  { rowCreatedAt: SortOrder.Desc },
+  { fieldPath: SortOrder.Asc },
+]
 
 const buildFileTypeConditions = (filter: FileTypeFilter): SubSchemaWhereInput[] => {
   if (filter === 'all') {
@@ -284,6 +291,7 @@ export class AssetsDataSource {
           first: PAGINATION_PAGE_SIZE,
           after: cursor,
           where,
+          orderBy: DEFAULT_ORDER_BY,
         },
       })
 

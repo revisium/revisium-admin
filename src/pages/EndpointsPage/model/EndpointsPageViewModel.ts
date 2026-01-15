@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
@@ -32,6 +33,7 @@ export class EndpointsPageViewModel implements IViewModel {
   constructor(
     private readonly context: ProjectContext,
     private readonly projectPermissions: ProjectPermissions,
+    private readonly linkMaker: LinkMaker,
     private readonly dataSource: EndpointsDataSource,
     private readonly branchViewModelFactory: BranchEndpointsViewModelFactory,
     private readonly customEndpointFactory: CustomEndpointCardViewModelFactory,
@@ -59,6 +61,18 @@ export class EndpointsPageViewModel implements IViewModel {
 
   public get projectName(): string {
     return this.context.projectName
+  }
+
+  public get isProjectPublic(): boolean {
+    return this.context.isProjectPublic
+  }
+
+  public get canUpdateProject(): boolean {
+    return this.projectPermissions.canUpdateProject
+  }
+
+  public get settingsLink(): string {
+    return this.linkMaker.makeProjectSettingsLink()
   }
 
   public get selectedTab(): TabType {
@@ -241,6 +255,7 @@ container.register(
   () => {
     const context = container.get(ProjectContext)
     const projectPermissions = container.get(ProjectPermissions)
+    const linkMaker = container.get(LinkMaker)
     const dataSource = container.get(EndpointsDataSource)
     const branchViewModelFactory = container.get(BranchEndpointsViewModelFactory)
     const customEndpointFactory = container.get(CustomEndpointCardViewModelFactory)
@@ -249,6 +264,7 @@ container.register(
     return new EndpointsPageViewModel(
       context,
       projectPermissions,
+      linkMaker,
       dataSource,
       branchViewModelFactory,
       customEndpointFactory,

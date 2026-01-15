@@ -5,6 +5,7 @@ import { EndpointsPageViewModel, TabType } from 'src/pages/EndpointsPage/model/E
 import { useViewModel } from 'src/shared/lib'
 import { Page, Tooltip } from 'src/shared/ui'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
+import { AccessBadge } from '../AccessBadge/AccessBadge.tsx'
 import { CreateEndpointDialog } from '../CreateEndpointDialog/CreateEndpointDialog.tsx'
 import { EndpointTabContent } from '../EndpointTabContent/EndpointTabContent.tsx'
 import { SystemApiSection } from '../SystemApiSection/SystemApiSection.tsx'
@@ -36,9 +37,16 @@ export const EndpointsPage = observer(() => {
     <Page sidebar={<ProjectSidebar />}>
       <Box mb="4rem">
         <HStack justify="space-between" align="flex-start" mb={1}>
-          <Text fontSize="20px" fontWeight="600" color="newGray.500">
-            Endpoints
-          </Text>
+          <HStack gap={2} align="center">
+            <Text fontSize="20px" fontWeight="600" color="newGray.500">
+              Endpoints
+            </Text>
+            <AccessBadge
+              isPublic={model.isProjectPublic}
+              canUpdateProject={model.canUpdateProject}
+              settingsLink={model.settingsLink}
+            />
+          </HStack>
           {model.canCreateEndpoint && (
             <Tooltip content="Create endpoint for a specific revision (not just Draft/Head)">
               <Button size="xs" variant="ghost" color="newGray.400" onClick={model.openCreateDialog}>

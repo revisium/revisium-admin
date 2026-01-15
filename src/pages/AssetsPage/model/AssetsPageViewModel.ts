@@ -13,12 +13,16 @@ enum State {
   error = 'error',
 }
 
+const SKELETON_DELAY_MS = 150
+
 export class AssetsPageViewModel implements IViewModel {
   private _state = State.loading
   private _revisionReaction: IReactionDisposer | null = null
   private _filterReaction: IReactionDisposer | null = null
   private _selectedFile: AssetItemViewModel | null = null
   private readonly _itemsCache = new Map<string, AssetItemViewModel>()
+  private _showFilesSkeleton = false
+  private _skeletonTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(
     private readonly context: ProjectContext,
@@ -46,7 +50,7 @@ export class AssetsPageViewModel implements IViewModel {
   }
 
   public get isLoadingFiles(): boolean {
-    return this.dataSource.isLoadingFiles
+    return this._showFilesSkeleton
   }
 
   public get tables(): TableWithFiles[] {
@@ -120,8 +124,26 @@ export class AssetsPageViewModel implements IViewModel {
     this._revisionReaction = null
     this._filterReaction?.()
     this._filterReaction = null
+    this.clearSkeletonTimer()
     this.filterModel.dispose()
     this.dataSource.dispose()
+  }
+
+  private startSkeletonTimer(): void {
+    this.clearSkeletonTimer()
+    this._skeletonTimer = setTimeout(() => {
+      runInAction(() => {
+        this._showFilesSkeleton = true
+      })
+    }, SKELETON_DELAY_MS)
+  }
+
+  private clearSkeletonTimer(): void {
+    if (this._skeletonTimer) {
+      clearTimeout(this._skeletonTimer)
+      this._skeletonTimer = null
+    }
+    this._showFilesSkeleton = false
   }
 
   public selectTable(tableId: string | null): void {
@@ -181,7 +203,11 @@ export class AssetsPageViewModel implements IViewModel {
   }
 
   private async loadFilesWithCurrentFilter(): Promise<boolean> {
+    this.startSkeletonTimer()
+
     const success = await this.dataSource.loadFiles(this.context.revisionId, this.filterModel.filter)
+
+    this.clearSkeletonTimer()
 
     if (!success) {
       if (this.dataSource.error) {

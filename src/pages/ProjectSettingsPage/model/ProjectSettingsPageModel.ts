@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container, ObservableRequest } from 'src/shared/lib'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
@@ -17,8 +18,13 @@ export class ProjectSettingsPageModel {
     private readonly context: ProjectContext,
     private readonly routerService: RouterService,
     private readonly projectPermissions: ProjectPermissions,
+    private readonly linkMaker: LinkMaker,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get endpointsLink(): string {
+    return this.linkMaker.makeEndpointsLink()
   }
 
   public get canUpdateProject(): boolean {
@@ -109,8 +115,9 @@ container.register(
     const context = container.get(ProjectContext)
     const router = container.get(RouterService)
     const projectPermissions = container.get(ProjectPermissions)
+    const linkMaker = container.get(LinkMaker)
 
-    return new ProjectSettingsPageModel(context, router, projectPermissions)
+    return new ProjectSettingsPageModel(context, router, projectPermissions, linkMaker)
   },
   { scope: 'request' },
 )

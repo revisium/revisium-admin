@@ -1,4 +1,16 @@
-import { Box, Button, Flex, Heading, Input, Portal, Stack, Text, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Circle,
+  HStack,
+  Icon,
+  Input,
+  Link as ChakraLink,
+  Portal,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import {
   DialogActionTrigger,
   DialogBackdrop,
@@ -12,22 +24,89 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@chakra-ui/react/dialog'
-import { Switch } from '@chakra-ui/react/switch'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
+import { PiArrowRightLight, PiCloudLight, PiLockSimpleLight } from 'react-icons/pi'
+import { Link as RouterLink } from 'react-router-dom'
 import { ProjectSettingsPageModel } from 'src/pages/ProjectSettingsPage/model/ProjectSettingsPageModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
+
+interface VisibilityCardProps {
+  isSelected: boolean
+  onClick: () => void
+  icon: React.ElementType
+  title: string
+  description: string
+  details: React.ReactNode
+  disabled?: boolean
+}
+
+const VisibilityCard: React.FC<VisibilityCardProps> = ({
+  isSelected,
+  onClick,
+  icon,
+  title,
+  description,
+  details,
+  disabled,
+}) => {
+  return (
+    <Box
+      onClick={disabled ? undefined : onClick}
+      width="100%"
+      p={4}
+      borderWidth="1px"
+      borderColor={isSelected ? 'gray.400' : 'gray.200'}
+      borderRadius="lg"
+      bg="white"
+      cursor={disabled ? 'not-allowed' : 'pointer'}
+      opacity={disabled ? 0.6 : 1}
+      textAlign="left"
+      transition="all 0.2s"
+      _hover={disabled ? {} : { borderColor: 'gray.400' }}
+    >
+      <HStack gap={3} align="flex-start">
+        <Circle size="32px" bg="gray.100" flexShrink={0}>
+          <Icon as={icon} boxSize={4} color="gray.500" />
+        </Circle>
+        <VStack align="start" gap={1} flex={1}>
+          <HStack gap={2}>
+            <Text fontSize="sm" fontWeight="600" color="gray.700">
+              {title}
+            </Text>
+            {isSelected && (
+              <Text fontSize="xs" color="gray.500" fontWeight="500">
+                Current
+              </Text>
+            )}
+          </HStack>
+          <Text fontSize="xs" color="gray.600">
+            {description}
+          </Text>
+          <Box mt={1}>{details}</Box>
+        </VStack>
+      </HStack>
+    </Box>
+  )
+}
 
 export const ProjectSettingsPage: React.FC = observer(() => {
   const store = useViewModel(ProjectSettingsPageModel)
 
   return (
     <Page sidebar={<ProjectSidebar />}>
-      <Box maxWidth="600px" width="100%">
+      <Box maxWidth="600px" width="100%" mb="4rem">
         <VStack align="stretch" gap="2rem">
-          <Heading size="lg">Project Settings</Heading>
+          <Box>
+            <Text fontSize="20px" fontWeight="600" color="newGray.500" mb={1}>
+              Settings
+            </Text>
+            <Text fontSize="xs" color="newGray.400">
+              Project configuration and access controls.
+            </Text>
+          </Box>
 
           <Stack gap="1.5rem">
             <Box>
@@ -39,30 +118,52 @@ export const ProjectSettingsPage: React.FC = observer(() => {
               </Text>
             </Box>
 
-            {store.canUpdateProject && (
-              <Box>
-                <Text fontSize="sm" fontWeight="600" color="gray.600" mb="0.5rem">
+            <Box>
+              <HStack justify="space-between" align="center" mb={3}>
+                <Text fontSize="sm" fontWeight="600" color="gray.600">
                   Visibility
                 </Text>
-                <Flex alignItems="center" gap="0.5rem">
-                  <Switch.Root
-                    checked={store.isPublic}
-                    onCheckedChange={(details) => store.setIsPublic(details.checked)}
-                    colorPalette="gray"
-                  >
-                    <Switch.HiddenInput />
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                  </Switch.Root>
-                  <Text fontSize="sm" color="gray.600">
-                    {store.isPublic
-                      ? 'Public - Anyone can view this project and query data via GraphQL and REST API'
-                      : 'Private - Only you can access this project'}
-                  </Text>
-                </Flex>
-              </Box>
-            )}
+                <ChakraLink asChild fontSize="xs" color="gray.500">
+                  <RouterLink to={store.endpointsLink}>
+                    View Endpoints
+                    <Icon as={PiArrowRightLight} ml={1} />
+                  </RouterLink>
+                </ChakraLink>
+              </HStack>
+              <VStack gap={3}>
+                <VisibilityCard
+                  isSelected={!store.isPublic}
+                  onClick={() => store.setIsPublic(false)}
+                  icon={PiLockSimpleLight}
+                  title="Private"
+                  description="Only authorized users can access this project."
+                  disabled={!store.canUpdateProject}
+                  details={
+                    <Text fontSize="xs" color="gray.500">
+                      All API operations require authentication.
+                    </Text>
+                  }
+                />
+                <VisibilityCard
+                  isSelected={store.isPublic}
+                  onClick={() => store.setIsPublic(true)}
+                  icon={PiCloudLight}
+                  title="Public"
+                  description="Anyone can view the project and read data."
+                  disabled={!store.canUpdateProject}
+                  details={
+                    <VStack align="start" gap={0}>
+                      <Text fontSize="xs" color="gray.500">
+                        UI and API read operations — no authentication required
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        API write operations — authentication required
+                      </Text>
+                    </VStack>
+                  }
+                />
+              </VStack>
+            </Box>
 
             {store.hasDeletePermission && (
               <Box>

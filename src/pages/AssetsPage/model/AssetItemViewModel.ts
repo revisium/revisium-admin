@@ -9,6 +9,7 @@ import { FileService } from 'src/shared/model/FileService'
 
 export class AssetItemViewModel {
   private _file: FileData
+  private _rowData: unknown
   private _isUpdatingFileName = false
   private _isUploading = false
 
@@ -18,6 +19,7 @@ export class AssetItemViewModel {
     private readonly fileService: FileService,
   ) {
     this._file = { ...extractedFile.file }
+    this._rowData = extractedFile.rowData
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -112,7 +114,7 @@ export class AssetItemViewModel {
   }
 
   public get rowData(): unknown {
-    return this.extractedFile.rowData
+    return this._rowData
   }
 
   public updateFileData(fileData: FileData): void {
@@ -148,6 +150,7 @@ export class AssetItemViewModel {
         if (fileData) {
           runInAction(() => {
             this._file = { ...fileData }
+            this._rowData = result.patchRow?.row?.data
           })
         }
         return true
@@ -179,6 +182,7 @@ export class AssetItemViewModel {
         if (fileData) {
           runInAction(() => {
             this._file = { ...fileData }
+            this._rowData = result.row?.data
           })
         }
         return true

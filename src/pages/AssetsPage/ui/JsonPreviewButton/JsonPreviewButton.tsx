@@ -10,7 +10,6 @@ import { toaster } from 'src/shared/ui'
 interface JsonPreviewButtonProps {
   file: FileData
   rowData?: unknown
-  fieldPath?: string
 }
 
 export const JsonPreviewButton: FC<JsonPreviewButtonProps> = ({ file, rowData }) => {

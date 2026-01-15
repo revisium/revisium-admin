@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 interface FilterSelectProps<T extends string> {
   value: T
   onChange: (value: T) => void
@@ -7,16 +5,12 @@ interface FilterSelectProps<T extends string> {
   getLabel: (value: T) => string
 }
 
-interface FilterSelectComponent {
-  <T extends string>(props: FilterSelectProps<T>): JSX.Element
-}
-
-export const FilterSelect: FilterSelectComponent & FC<FilterSelectProps<string>> = ({
+export const FilterSelect = <T extends string>({
   value,
   onChange,
   options,
   getLabel,
-}) => {
+}: FilterSelectProps<T>): JSX.Element => {
   const label = getLabel(value)
 
   return (
@@ -33,7 +27,7 @@ export const FilterSelect: FilterSelectComponent & FC<FilterSelectProps<string>>
       </span>
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value as T)}
         style={{
           position: 'absolute',
           left: 0,

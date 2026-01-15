@@ -7,7 +7,7 @@ interface DetailRowProps {
 }
 
 export const DetailRow: FC<DetailRowProps> = ({ label, value }) => {
-  if (!value) {
+  if (value === null || value === undefined) {
     return null
   }
   return (

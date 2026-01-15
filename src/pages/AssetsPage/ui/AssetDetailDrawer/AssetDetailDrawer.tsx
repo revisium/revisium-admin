@@ -164,7 +164,7 @@ export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, o
                 <VStack align="stretch" gap={3}>
                   <HStack justify="space-between">
                     <Heading size="sm">Details</Heading>
-                    <JsonPreviewButton file={item.file} rowData={item.rowData} fieldPath={item.fieldPath} />
+                    <JsonPreviewButton file={item.file} rowData={item.rowData} />
                   </HStack>
 
                   <HStack justify="space-between" width="100%">

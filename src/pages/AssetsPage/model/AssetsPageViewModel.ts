@@ -18,7 +18,7 @@ export class AssetsPageViewModel implements IViewModel {
   private _revisionReaction: IReactionDisposer | null = null
   private _filterReaction: IReactionDisposer | null = null
   private _selectedFile: AssetItemViewModel | null = null
-  private _itemsCache = new Map<string, AssetItemViewModel>()
+  private readonly _itemsCache = new Map<string, AssetItemViewModel>()
 
   constructor(
     private readonly context: ProjectContext,

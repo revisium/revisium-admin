@@ -33,7 +33,7 @@ export class ProjectContext {
     this.setupReactions()
   }
 
-  private getContextData = (): IProjectContextData => {
+  private readonly getContextData = (): IProjectContextData => {
     const project = this.projectRequest.data?.project
     return {
       projectId: project?.id ?? null,

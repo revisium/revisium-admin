@@ -1,7 +1,7 @@
 import { Badge, Box, Center, Flex, Image, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { PiCheckCircleLight, PiClockLight } from 'react-icons/pi'
+import { PiClockLight } from 'react-icons/pi'
 import { getFileIcon } from 'src/pages/AssetsPage/lib/getFileIcon'
 import { AssetItemViewModel } from 'src/pages/AssetsPage/model/AssetItemViewModel'
 
@@ -18,7 +18,7 @@ export const AssetCard: FC<AssetCardProps> = observer(({ item, onClick }) => {
       overflow="hidden"
       cursor="pointer"
       transition="all 0.2s"
-      _hover={{ borderColor: 'blue.500', shadow: 'md' }}
+      _hover={{ bg: 'gray.50' }}
       onClick={onClick}
       bg="bg.panel"
     >
@@ -30,17 +30,13 @@ export const AssetCard: FC<AssetCardProps> = observer(({ item, onClick }) => {
             {getFileIcon(item.mimeType)}
           </Center>
         )}
-        <Box position="absolute" top={2} right={2}>
-          {item.isUploaded ? (
-            <Badge colorPalette="green" size="sm">
-              <PiCheckCircleLight />
-            </Badge>
-          ) : (
+        {!item.isUploaded && (
+          <Box position="absolute" top={2} right={2}>
             <Badge colorPalette="yellow" size="sm">
               <PiClockLight />
             </Badge>
-          )}
-        </Box>
+          </Box>
+        )}
       </Box>
 
       <VStack align="stretch" padding={3} gap={1}>

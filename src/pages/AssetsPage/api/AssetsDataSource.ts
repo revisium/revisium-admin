@@ -149,6 +149,7 @@ const mapSubSchemaItemToExtractedFile = (item: SubSchemaItemFragment): Extracted
     tableId: item.table.id,
     rowId: item.row.id,
     fieldPath: item.fieldPath,
+    rowData: item.row.data,
   }
 }
 
@@ -262,9 +263,7 @@ export class AssetsDataSource {
 
     runInAction(() => {
       this._files = allFiles
-      if (this._totalFilesCount === null) {
-        this._totalFilesCount = allFiles.length
-      }
+      this._totalFilesCount ??= allFiles.length
       this._isLoadingFiles = false
     })
 

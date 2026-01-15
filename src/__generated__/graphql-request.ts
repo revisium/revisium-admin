@@ -2117,7 +2117,7 @@ export type SubSchemaItemFragment = {
   fieldPath: string
   data: { [key: string]: any } | string | number | boolean | null
   table: { id: string; versionId: string }
-  row: { id: string; versionId: string }
+  row: { id: string; versionId: string; data: { [key: string]: any } | string | number | boolean | null }
 }
 
 export type SubSchemaItemsDataQueryVariables = Exact<{
@@ -2133,7 +2133,7 @@ export type SubSchemaItemsDataQuery = {
         fieldPath: string
         data: { [key: string]: any } | string | number | boolean | null
         table: { id: string; versionId: string }
-        row: { id: string; versionId: string }
+        row: { id: string; versionId: string; data: { [key: string]: any } | string | number | boolean | null }
       }
     }>
   }
@@ -3546,6 +3546,7 @@ export const SubSchemaItemFragmentDoc = gql`
     row {
       id
       versionId
+      data
     }
     fieldPath
     data

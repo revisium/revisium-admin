@@ -6,211 +6,33 @@ import {
   CloseButton,
   Drawer,
   Heading,
-  HoverCard,
   HStack,
-  IconButton,
   Image,
   Link,
   Portal,
   Separator,
-  Text,
   VStack,
 } from '@chakra-ui/react'
-import { json } from '@codemirror/lang-json'
-import { githubLight } from '@uiw/codemirror-theme-github'
-import CodeMirror, { EditorView } from '@uiw/react-codemirror'
 import { nanoid } from 'nanoid'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  PiArrowSquareOutLight,
-  PiCheckCircleLight,
-  PiClockLight,
-  PiCodeLight,
-  PiCopy,
-  PiDownloadLight,
-  PiUploadLight,
-} from 'react-icons/pi'
+import { FC, useCallback, useRef } from 'react'
+import { PiArrowSquareOutLight, PiClockLight, PiUploadLight } from 'react-icons/pi'
 import { Link as RouterLink } from 'react-router-dom'
-import { PatchRowOp } from 'src/__generated__/graphql-request'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext'
-import { extractFileByPath, FileData } from 'src/pages/AssetsPage/lib/extractFilesFromData'
 import { getFileIcon } from 'src/pages/AssetsPage/lib/getFileIcon'
 import { AssetItemViewModel } from 'src/pages/AssetsPage/model/AssetItemViewModel'
+import { DetailRow } from 'src/pages/AssetsPage/ui/DetailRow/DetailRow'
+import { EditableFileName } from 'src/pages/AssetsPage/ui/EditableFileName/EditableFileName'
+import { JsonPreviewButton } from 'src/pages/AssetsPage/ui/JsonPreviewButton/JsonPreviewButton'
 import { container } from 'src/shared/lib'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
-import { client } from 'src/shared/model/ApiService'
-import { FileService } from 'src/shared/model/FileService'
 import { toaster } from 'src/shared/ui'
-import { ContentEditable } from 'src/shared/ui/ContentEditable/ContentEditable'
 
 interface AssetDetailDrawerProps {
   item: AssetItemViewModel | null
   onClose: () => void
 }
-
-const DetailRow: FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => {
-  if (!value) {
-    return null
-  }
-  return (
-    <HStack justify="space-between" width="100%">
-      <Text color="fg.muted" fontSize="sm">
-        {label}
-      </Text>
-      <Box fontSize="sm" fontWeight="medium">
-        {value}
-      </Box>
-    </HStack>
-  )
-}
-
-interface JsonPreviewButtonProps {
-  file: FileData
-}
-
-const JsonPreviewButton: FC<JsonPreviewButtonProps> = ({ file }) => {
-  const jsonText = useMemo(() => JSON.stringify(file, null, 2), [file])
-
-  const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(jsonText)
-    toaster.info({
-      duration: 1500,
-      description: 'Copied to clipboard',
-    })
-  }, [jsonText])
-
-  return (
-    <HoverCard.Root size="lg" openDelay={200} closeDelay={100}>
-      <HoverCard.Trigger asChild>
-        <IconButton variant="ghost" size="xs" color="fg.muted" aria-label="View JSON">
-          <PiCodeLight />
-        </IconButton>
-      </HoverCard.Trigger>
-      <HoverCard.Positioner>
-        <HoverCard.Content maxWidth="400px" p={2}>
-          <HoverCard.Arrow>
-            <HoverCard.ArrowTip />
-          </HoverCard.Arrow>
-          <VStack align="stretch" gap={2}>
-            <HStack justify="space-between" px={1}>
-              <Text fontSize="xs" color="newGray.600" fontWeight="600">
-                File JSON
-              </Text>
-              <IconButton variant="ghost" size="xs" color="fg.muted" aria-label="Copy JSON" onClick={handleCopy}>
-                <PiCopy />
-              </IconButton>
-            </HStack>
-            <Box maxHeight="300px" overflow="auto" borderRadius="md">
-              <CodeMirror
-                value={jsonText}
-                extensions={[EditorView.lineWrapping, json()]}
-                editable={false}
-                theme={githubLight}
-                basicSetup={{
-                  lineNumbers: false,
-                  foldGutter: false,
-                  highlightActiveLine: false,
-                  highlightActiveLineGutter: false,
-                }}
-              />
-            </Box>
-          </VStack>
-        </HoverCard.Content>
-      </HoverCard.Positioner>
-    </HoverCard.Root>
-  )
-}
-
-interface EditableFileNameProps {
-  item: AssetItemViewModel
-}
-
-const EditableFileName: FC<EditableFileNameProps> = observer(({ item }) => {
-  const [internalValue, setInternalValue] = useState(item.fileName)
-  const [focused, setFocused] = useState(false)
-
-  useEffect(() => {
-    setInternalValue(item.fileName)
-  }, [item.fileName])
-
-  const handleChange = useCallback((newValue: string) => {
-    setInternalValue(newValue)
-  }, [])
-
-  const handleBlur = useCallback(async () => {
-    setFocused(false)
-
-    if (internalValue === item.fileName) {
-      return
-    }
-
-    const context = container.get(ProjectContext)
-    const path = item.fieldPath ? `${item.fieldPath}.fileName` : 'fileName'
-
-    try {
-      const result = await client.PatchRowInline({
-        data: {
-          revisionId: context.revisionId,
-          tableId: item.tableId,
-          rowId: item.rowId,
-          patches: [
-            {
-              op: PatchRowOp.Replace,
-              path,
-              value: internalValue,
-            },
-          ],
-        },
-      })
-
-      if (result.patchRow?.row) {
-        const fileData = extractFileByPath(result.patchRow.row.data, item.fieldPath)
-        if (fileData) {
-          item.updateFileData(fileData)
-        }
-      } else {
-        setInternalValue(item.fileName)
-        toaster.error({ title: 'Failed to update file name', duration: 3000 })
-      }
-    } catch {
-      setInternalValue(item.fileName)
-      toaster.error({ title: 'Failed to update file name', duration: 3000 })
-    }
-  }, [internalValue, item])
-
-  const handleFocus = useCallback(() => {
-    setFocused(true)
-  }, [])
-
-  const isEmpty = !internalValue
-  const showBackground = focused || isEmpty
-
-  return (
-    <Box
-      borderRadius="4px"
-      bgColor={showBackground ? 'newGray.100' : undefined}
-      _hover={{ bgColor: 'newGray.100' }}
-      px="6px"
-      py="2px"
-      minHeight="28px"
-      minWidth={isEmpty ? '140px' : '15px'}
-      fontSize="lg"
-      fontWeight="semibold"
-      lineHeight="1.4"
-      mr={2}
-    >
-      <ContentEditable
-        initValue={internalValue}
-        placeholder="Enter file name"
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-      />
-    </Box>
-  )
-})
 
 export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, onClose }) => {
   const linkMaker = useLinkMaker()
@@ -240,26 +62,11 @@ export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, o
       const toastId = nanoid()
       toaster.loading({ id: toastId, title: 'Uploading...' })
 
-      try {
-        const fileService = container.get(FileService)
+      const success = await item.uploadFile(file)
 
-        const result = await fileService.add({
-          revisionId: context.revisionId,
-          tableId: item.tableId,
-          rowId: item.rowId,
-          fileId: item.fileId,
-          file,
-        })
-
-        if (result?.row) {
-          const fileData = extractFileByPath(result.row.data, item.fieldPath)
-          if (fileData) {
-            item.updateFileData(fileData)
-          }
-        }
-
+      if (success) {
         toaster.update(toastId, { type: 'info', title: 'Successfully uploaded!', duration: 1500 })
-      } catch {
+      } else {
         toaster.update(toastId, { type: 'error', title: 'Upload failed', duration: 3000 })
       }
 
@@ -267,7 +74,7 @@ export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, o
         fileInputRef.current.value = ''
       }
     },
-    [item, context],
+    [item],
   )
 
   if (!item) {
@@ -357,18 +164,17 @@ export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, o
                 <VStack align="stretch" gap={3}>
                   <HStack justify="space-between">
                     <Heading size="sm">Details</Heading>
-                    <JsonPreviewButton file={item.file} />
+                    <JsonPreviewButton file={item.file} rowData={item.rowData} />
                   </HStack>
 
                   <HStack justify="space-between" width="100%">
-                    <Text color="fg.muted" fontSize="sm">
+                    <Box color="fg.muted" fontSize="sm">
                       Status
-                    </Text>
+                    </Box>
                     {item.isUploaded ? (
-                      <Badge colorPalette="green">
-                        <PiCheckCircleLight />
+                      <Box fontSize="sm" fontWeight="medium">
                         Uploaded
-                      </Badge>
+                      </Box>
                     ) : (
                       <Badge colorPalette="yellow">
                         <PiClockLight />
@@ -410,18 +216,10 @@ export const AssetDetailDrawer: FC<AssetDetailDrawerProps> = observer(({ item, o
 
             {item.isUploaded && item.url && (
               <Drawer.Footer>
-                <HStack gap={3} width="100%">
-                  <Button variant="outline" flex={1} onClick={handleOpen}>
-                    <PiArrowSquareOutLight />
-                    Open
-                  </Button>
-                  <Button asChild variant="solid" flex={1}>
-                    <a href={item.url} download={item.fileName || 'file'} target="_blank" rel="noopener noreferrer">
-                      <PiDownloadLight />
-                      Download
-                    </a>
-                  </Button>
-                </HStack>
+                <Button variant="outline" width="100%" onClick={handleOpen}>
+                  <PiArrowSquareOutLight />
+                  Open
+                </Button>
               </Drawer.Footer>
             )}
           </Drawer.Content>

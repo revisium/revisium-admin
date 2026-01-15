@@ -16,6 +16,7 @@ export interface ExtractedFile {
   tableId: string
   rowId: string
   fieldPath: string
+  rowData?: unknown
 }
 
 const isFileObject = (value: unknown): value is FileData => {

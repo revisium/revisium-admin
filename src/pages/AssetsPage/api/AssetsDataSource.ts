@@ -35,10 +35,7 @@ const isValidJsonSchema = (value: unknown): value is JsonSchema => {
 const FILE_SCHEMA_ID = 'urn:jsonschema:io:revisium:file-schema:1.0.0'
 const PAGINATION_PAGE_SIZE = 100
 
-const DEFAULT_ORDER_BY: SubSchemaOrderByItemInput[] = [
-  { rowCreatedAt: SortOrder.Desc },
-  { fieldPath: SortOrder.Asc },
-]
+const DEFAULT_ORDER_BY: SubSchemaOrderByItemInput[] = [{ rowCreatedAt: SortOrder.Desc }, { fieldPath: SortOrder.Asc }]
 
 const buildFileTypeConditions = (filter: FileTypeFilter): SubSchemaWhereInput[] => {
   if (filter === 'all') {

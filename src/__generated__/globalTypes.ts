@@ -1440,6 +1440,7 @@ export type SubSchemaJsonFilterInput = {
 export type SubSchemaOrderByItemInput = {
   data?: InputMaybe<SubSchemaDataOrderByInput>
   fieldPath?: InputMaybe<SortOrder>
+  rowCreatedAt?: InputMaybe<SortOrder>
   rowId?: InputMaybe<SortOrder>
   tableId?: InputMaybe<SortOrder>
 }

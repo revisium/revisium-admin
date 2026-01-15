@@ -18,6 +18,7 @@ export class AssetsPageViewModel implements IViewModel {
   private _revisionReaction: IReactionDisposer | null = null
   private _filterReaction: IReactionDisposer | null = null
   private _selectedFile: AssetItemViewModel | null = null
+  private _itemsCache = new Map<string, AssetItemViewModel>()
 
   constructor(
     private readonly context: ProjectContext,
@@ -62,7 +63,15 @@ export class AssetsPageViewModel implements IViewModel {
 
   public get items(): AssetItemViewModel[] {
     const files = this.dataSource.files
-    return files.map((file) => this.assetItemFactory.create(file))
+    return files.map((file) => {
+      const key = `${file.tableId}:${file.rowId}:${file.fieldPath}:${file.file.fileId}`
+      let viewModel = this._itemsCache.get(key)
+      if (!viewModel) {
+        viewModel = this.assetItemFactory.create(file)
+        this._itemsCache.set(key, viewModel)
+      }
+      return viewModel
+    })
   }
 
   public get filteredCount(): number {
@@ -141,6 +150,7 @@ export class AssetsPageViewModel implements IViewModel {
     this.dataSource.reset()
     this.filterModel.clearFilters()
     this._selectedFile = null
+    this._itemsCache.clear()
   }
 
   private async load(): Promise<void> {
@@ -162,15 +172,30 @@ export class AssetsPageViewModel implements IViewModel {
       return
     }
 
-    await this.loadFilesWithCurrentFilter()
+    const filesLoaded = await this.loadFilesWithCurrentFilter()
+    if (!filesLoaded && this.dataSource.error) {
+      runInAction(() => {
+        this._state = State.error
+      })
+    }
   }
 
-  private async loadFilesWithCurrentFilter(): Promise<void> {
-    await this.dataSource.loadFiles(this.context.revisionId, this.filterModel.filter)
+  private async loadFilesWithCurrentFilter(): Promise<boolean> {
+    const success = await this.dataSource.loadFiles(this.context.revisionId, this.filterModel.filter)
+
+    if (!success) {
+      if (this.dataSource.error) {
+        runInAction(() => {
+          this._state = State.error
+        })
+      }
+      return false
+    }
 
     runInAction(() => {
       this._state = State.list
     })
+    return true
   }
 }
 

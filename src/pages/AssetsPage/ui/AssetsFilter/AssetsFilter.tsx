@@ -1,7 +1,7 @@
-import { Box, HStack, IconButton, Input, NativeSelect } from '@chakra-ui/react'
+import { Box, CloseButton, HStack, Input } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { PiMagnifyingGlassLight, PiXLight } from 'react-icons/pi'
+import { LuSearch } from 'react-icons/lu'
 import {
   FileSizeFilter,
   FileStatusFilter,
@@ -11,6 +11,7 @@ import {
   getFileTypeLabel,
 } from 'src/pages/AssetsPage/lib/fileFilters'
 import { AssetsFilterModel } from 'src/pages/AssetsPage/model/AssetsFilterModel'
+import { FilterSelect } from 'src/pages/AssetsPage/ui/FilterSelect/FilterSelect'
 
 interface AssetsFilterProps {
   model: AssetsFilterModel
@@ -21,67 +22,51 @@ const FILE_STATUS_OPTIONS: FileStatusFilter[] = ['all', 'uploaded', 'ready']
 const FILE_SIZE_OPTIONS: FileSizeFilter[] = ['all', 'small', 'medium', 'large', 'xlarge']
 
 export const AssetsFilter: FC<AssetsFilterProps> = observer(({ model }) => {
+  const hasValue = model.search.length > 0
+
   return (
-    <HStack gap={3} width="100%" flexWrap="wrap">
-      <Box position="relative" flex="1" minWidth="200px" maxWidth="400px">
-        <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" color="fg.muted" zIndex={1}>
-          <PiMagnifyingGlassLight size={18} />
+    <HStack gap={4} flexWrap="wrap">
+      <Box position="relative" display="flex" alignItems="center">
+        <Box color="gray.400" pl="2px" flexShrink={0}>
+          <LuSearch size={14} />
         </Box>
         <Input
-          placeholder="Search by filename..."
+          variant="flushed"
+          placeholder="Search..."
           value={model.search}
           onChange={(e) => model.setSearch(e.target.value)}
-          pl={10}
-          pr={model.search ? 9 : 3}
+          _placeholder={{ color: 'gray.400' }}
           size="sm"
+          pl="8px"
+          pr={hasValue ? '28px' : '8px'}
         />
-        {model.search && (
-          <IconButton
-            position="absolute"
-            right={1}
-            top="50%"
-            transform="translateY(-50%)"
-            size="xs"
-            variant="ghost"
-            color="fg.muted"
-            aria-label="Clear search"
-            onClick={() => model.setSearch('')}
-            zIndex={1}
-          >
-            <PiXLight />
-          </IconButton>
+        {hasValue && (
+          <CloseButton position="absolute" right="0" color="gray.400" size="xs" onClick={() => model.setSearch('')} />
         )}
       </Box>
 
-      <NativeSelect.Root size="sm" width="130px">
-        <NativeSelect.Field value={model.type} onChange={(e) => model.setType(e.target.value as FileTypeFilter)}>
-          {FILE_TYPE_OPTIONS.map((type) => (
-            <option key={type} value={type}>
-              {getFileTypeLabel(type)}
-            </option>
-          ))}
-        </NativeSelect.Field>
-      </NativeSelect.Root>
+      <HStack gap={3}>
+        <FilterSelect
+          value={model.type}
+          onChange={model.setType}
+          options={FILE_TYPE_OPTIONS}
+          getLabel={getFileTypeLabel}
+        />
 
-      <NativeSelect.Root size="sm" width="150px">
-        <NativeSelect.Field value={model.status} onChange={(e) => model.setStatus(e.target.value as FileStatusFilter)}>
-          {FILE_STATUS_OPTIONS.map((status) => (
-            <option key={status} value={status}>
-              {getFileStatusLabel(status)}
-            </option>
-          ))}
-        </NativeSelect.Field>
-      </NativeSelect.Root>
+        <FilterSelect
+          value={model.status}
+          onChange={model.setStatus}
+          options={FILE_STATUS_OPTIONS}
+          getLabel={getFileStatusLabel}
+        />
 
-      <NativeSelect.Root size="sm" width="140px">
-        <NativeSelect.Field value={model.size} onChange={(e) => model.setSize(e.target.value as FileSizeFilter)}>
-          {FILE_SIZE_OPTIONS.map((size) => (
-            <option key={size} value={size}>
-              {getFileSizeLabel(size)}
-            </option>
-          ))}
-        </NativeSelect.Field>
-      </NativeSelect.Root>
+        <FilterSelect
+          value={model.size}
+          onChange={model.setSize}
+          options={FILE_SIZE_OPTIONS}
+          getLabel={getFileSizeLabel}
+        />
+      </HStack>
     </HStack>
   )
 })

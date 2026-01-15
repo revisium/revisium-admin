@@ -42,7 +42,7 @@ export const extractFileFields = (schema: JsonSchemaStore): FileFieldInfo[] => {
       }
 
       Object.entries(node.properties).forEach(([key, prop]) => {
-        traverse(prop, [...path, key], false)
+        traverse(prop, [...path, key], inArray)
       })
     } else if (node.type === JsonSchemaTypeName.Array) {
       traverse(node.items, path, true)

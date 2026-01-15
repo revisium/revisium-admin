@@ -4,7 +4,7 @@ import { Actions, PermissionRule, PermissionScope, Subjects } from './types.ts'
 
 type AppAbility = MongoAbility<[Actions, Subjects]>
 
-const EXPANDABLE_PERMISSION_IDS = ['read-project-private', 'read-project-public']
+const EXPANDABLE_PERMISSION_IDS = new Set(['read-project-private', 'read-project-public'])
 const EXPANDED_SUBJECTS: Subjects[] = ['Table', 'Row', 'Branch', 'Revision', 'Endpoint']
 
 export class PermissionService {
@@ -116,10 +116,11 @@ export class PermissionService {
       return undefined
     }
 
-    return {
-      ...(permissionCondition ?? {}),
-      ...(scopeCondition ?? {}),
+    if (hasPermissionCondition && hasScopeCondition) {
+      return { ...permissionCondition, ...scopeCondition }
     }
+
+    return hasPermissionCondition ? { ...permissionCondition } : { ...scopeCondition }
   }
 
   private expandPermissions(
@@ -129,7 +130,7 @@ export class PermissionService {
     const expandedRules: RawRuleOf<AppAbility>[] = []
 
     for (const permission of permissions) {
-      if (EXPANDABLE_PERMISSION_IDS.includes(permission.id)) {
+      if (EXPANDABLE_PERMISSION_IDS.has(permission.id)) {
         for (const sub of EXPANDED_SUBJECTS) {
           const rule: RawRuleOf<AppAbility> = {
             action: 'read',

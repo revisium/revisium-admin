@@ -49,6 +49,7 @@ fragment SubSchemaItem on SubSchemaItemModel {
   row {
     id
     versionId
+    data
   }
   fieldPath
   data

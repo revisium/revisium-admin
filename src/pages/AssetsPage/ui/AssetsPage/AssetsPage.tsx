@@ -1,13 +1,13 @@
-import { Box, Button, Center, Flex, Skeleton, Text, VStack } from '@chakra-ui/react'
+import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useEffect, useState } from 'react'
-import { PiFolderOpenLight, PiMagnifyingGlassLight } from 'react-icons/pi'
+import { PiFolderOpenLight } from 'react-icons/pi'
 import { AssetsPageViewModel } from 'src/pages/AssetsPage/model/AssetsPageViewModel'
 import { AssetDetailDrawer } from 'src/pages/AssetsPage/ui/AssetDetailDrawer/AssetDetailDrawer'
-import { AssetsFilter } from 'src/pages/AssetsPage/ui/AssetsFilter/AssetsFilter'
-import { AssetsGrid } from 'src/pages/AssetsPage/ui/AssetsGrid/AssetsGrid'
+import { AssetsContent } from 'src/pages/AssetsPage/ui/AssetsContent/AssetsContent'
 import { AssetsHeader } from 'src/pages/AssetsPage/ui/AssetsHeader/AssetsHeader'
 import { AssetsPageSkeleton } from 'src/pages/AssetsPage/ui/AssetsPageSkeleton/AssetsPageSkeleton'
+import { FileOrganizationInfo } from 'src/pages/AssetsPage/ui/FileOrganizationInfo/FileOrganizationInfo'
 import { TablesOverview } from 'src/pages/AssetsPage/ui/TablesOverview/TablesOverview'
 import { useViewModel } from 'src/shared/lib'
 
@@ -50,20 +50,20 @@ export const AssetsPage: FC = observer(() => {
 
   if (model.showEmpty && !model.hasTablesWithFiles) {
     return (
-      <Box mb="4rem">
-        <AssetsHeader branchName={model.branchName} tablesCount={0} filesCount={0} />
-        <Flex justify="center" align="center" height="200px">
-          <VStack gap={4}>
-            <Box color="fg.muted">
-              <PiFolderOpenLight size={64} />
-            </Box>
-            <Text color="newGray.400">No tables with file fields in this revision</Text>
+      <Flex justify="center" align="center" height="calc(100vh - 200px)">
+        <VStack gap={4}>
+          <Box color="newGray.300">
+            <PiFolderOpenLight size={64} />
+          </Box>
+          <Text color="newGray.400">No tables with file fields in this revision</Text>
+          <HStack gap={1}>
             <Text color="newGray.400" fontSize="sm" textAlign="center" maxWidth="400px">
-              Add a File field to any table to start managing assets
+              Add a File field to any table to start managing assets.
             </Text>
-          </VStack>
-        </Flex>
-      </Box>
+            <FileOrganizationInfo />
+          </HStack>
+        </VStack>
+      </Flex>
     )
   }
 
@@ -74,54 +74,25 @@ export const AssetsPage: FC = observer(() => {
           branchName={model.branchName}
           tablesCount={model.tablesCount}
           filesCount={model.totalFilesCount}
+          filterModel={model.filterModel}
         />
 
-        <VStack alignItems="flex-start" gap={2} width="100%">
-          <TablesOverview
-            tables={model.tables}
-            selectedTableId={model.selectedTableId}
-            onSelectTable={model.selectTable}
-          />
-
-          <AssetsFilter model={model.filterModel} />
-        </VStack>
+        <TablesOverview
+          tables={model.tables}
+          selectedTableId={model.selectedTableId}
+          onSelectTable={model.selectTable}
+        />
       </Box>
 
       <VStack alignItems="flex-start" gap={3} width="100%" pt={2}>
-        {showFilesSkeleton ? (
-          <>
-            <Skeleton height="1em" width="60px" />
-            <AssetsGrid items={[]} onSelectFile={model.selectFile} isLoading />
-          </>
-        ) : model.showNoMatchesMessage ? (
-          <Center width="100%" paddingY={16}>
-            <VStack gap={4}>
-              <Box color="fg.muted">
-                <PiMagnifyingGlassLight size={48} />
-              </Box>
-              <Text color="newGray.400">No files match your filters</Text>
-              <Button variant="outline" size="sm" onClick={model.clearFilters}>
-                Clear filters
-              </Button>
-            </VStack>
-          </Center>
-        ) : model.filteredCount > 0 ? (
-          <>
-            <Text color="newGray.400" fontSize="sm">
-              {model.filteredCount} file{model.filteredCount !== 1 ? 's' : ''}
-            </Text>
-            <AssetsGrid items={model.items} onSelectFile={model.selectFile} />
-          </>
-        ) : (
-          <Center width="100%" paddingY={16}>
-            <VStack gap={4}>
-              <Box color="fg.muted">
-                <PiFolderOpenLight size={48} />
-              </Box>
-              <Text color="newGray.400">No files found</Text>
-            </VStack>
-          </Center>
-        )}
+        <AssetsContent
+          showSkeleton={showFilesSkeleton}
+          showNoMatchesMessage={model.showNoMatchesMessage}
+          filteredCount={model.filteredCount}
+          items={model.items}
+          onSelectFile={model.selectFile}
+          onClearFilters={model.clearFilters}
+        />
       </VStack>
 
       <AssetDetailDrawer item={model.selectedFile} onClose={model.closeFileDetails} />

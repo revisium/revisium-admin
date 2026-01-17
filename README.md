@@ -34,6 +34,10 @@ Administration interface for managing Revisium projects, schemas, and data.
 - **Diff viewer** — compare changes between revisions
 - **Users & Roles** — manage users and permissions
 
+## Configuration
+
+See [ENV.md](./ENV.md) for all environment variables.
+
 ## Related Packages
 
 | Package                                                                | Description                                                   |

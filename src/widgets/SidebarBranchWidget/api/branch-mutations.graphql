@@ -10,8 +10,8 @@ mutation createRevisionForSidebar($data: CreateRevisionInput!) {
   }
 }
 
-mutation createBranchByRevisionIdForSidebar($data: CreateBranchByRevisionIdInput!) {
-  createBranchByRevisionId(data: $data) {
+mutation createBranchForSidebar($data: CreateBranchInput!) {
+  createBranch(data: $data) {
     id
   }
 }

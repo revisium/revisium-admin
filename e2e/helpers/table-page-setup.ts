@@ -32,8 +32,8 @@ export type GraphQLOperationName =
   | 'UpdateTableViews'
   | 'UpdateRow'
   | 'PatchRowInline'
-  | 'RemoveRow'
-  | 'RemoveRows'
+  | 'DeleteRow'
+  | 'DeleteRows'
   | 'CreateRow'
   | 'getChanges'
   | 'GetRevisionChanges'
@@ -165,13 +165,13 @@ export async function setupTablePageMocks(page: Page, options: TablePageMockOpti
       })
     }
 
-    if (opName === 'RemoveRow' || opName === 'RemoveRows') {
+    if (opName === 'DeleteRow' || opName === 'DeleteRows') {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           data: {
-            [opName === 'RemoveRows' ? 'removeRows' : 'removeRow']: true,
+            [opName === 'DeleteRows' ? 'deleteRows' : 'deleteRow']: true,
           },
         }),
       })

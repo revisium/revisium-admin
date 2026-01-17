@@ -46,8 +46,8 @@ export class RowListViewModel implements IViewModel {
   private _virtuosoRef: TableVirtuosoHandle | null = null
 
   private readonly getRowsRequest = ObservableRequest.of(client.RowListRows, { skipResetting: true })
-  private readonly deleteRowRequest = ObservableRequest.of(client.RemoveRow)
-  private readonly removeRowsRequest = ObservableRequest.of(client.RemoveRows)
+  private readonly deleteRowRequest = ObservableRequest.of(client.DeleteRow)
+  private readonly deleteRowsRequest = ObservableRequest.of(client.DeleteRows)
   private readonly getViewsRequest = ObservableRequest.of(client.GetTableViews)
   private readonly updateViewsRequest = ObservableRequest.of(client.UpdateTableViews)
 
@@ -518,7 +518,7 @@ export class RowListViewModel implements IViewModel {
         this._isDeleting = true
       })
 
-      const result = await this.removeRowsRequest.fetch({
+      const result = await this.deleteRowsRequest.fetch({
         data: {
           revisionId: this.revisionId,
           tableId: this._tableId,

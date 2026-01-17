@@ -118,7 +118,7 @@ test.describe('Error Handling', () => {
       await setupTablePageMocks(page, {
         rows,
         onOperation: async (opName, _variables, route) => {
-          if (opName === 'RemoveRow' || opName === 'RemoveRows') {
+          if (opName === 'DeleteRow' || opName === 'DeleteRows') {
             await route.fulfill({
               status: 200,
               contentType: 'application/json',

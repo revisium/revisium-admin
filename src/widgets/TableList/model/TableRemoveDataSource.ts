@@ -9,7 +9,7 @@ export interface TableRemoveParams {
 }
 
 export class TableRemoveDataSource {
-  private readonly request = ObservableRequest.of(client.removeTableForList)
+  private readonly request = ObservableRequest.of(client.deleteTableForList)
 
   constructor() {
     makeAutoObservable(this)

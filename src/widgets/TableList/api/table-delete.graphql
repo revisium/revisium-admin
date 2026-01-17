@@ -1,5 +1,5 @@
-mutation removeTableForList($data: RemoveTableInput!) {
-  removeTable(data: $data) {
+mutation deleteTableForList($data: DeleteTableInput!) {
+  deleteTable(data: $data) {
     branch {
       id
     }

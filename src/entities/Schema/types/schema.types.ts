@@ -12,6 +12,11 @@ export type JsonSchemaSharedFields = {
   title?: string
 }
 
+export type JsonFormulaSpec = {
+  version: 1
+  expression: string
+}
+
 export type JsonStringSchema = {
   type: JsonSchemaTypeName.String
   default: string
@@ -30,6 +35,7 @@ export type JsonStringSchema = {
     | 'application/schema+json'
     | 'application/yaml'
   enum?: string[]
+  'x-formula'?: JsonFormulaSpec
 } & JsonSchemaSharedFields
 
 export type JsonNumberSchema = {
@@ -39,6 +45,7 @@ export type JsonNumberSchema = {
   title?: string
   description?: string
   deprecated?: boolean
+  'x-formula'?: JsonFormulaSpec
 } & JsonSchemaSharedFields
 
 export type JsonBooleanSchema = {
@@ -48,6 +55,7 @@ export type JsonBooleanSchema = {
   title?: string
   description?: string
   deprecated?: boolean
+  'x-formula'?: JsonFormulaSpec
 } & JsonSchemaSharedFields
 
 export type JsonSchemaPrimitives = JsonStringSchema | JsonNumberSchema | JsonBooleanSchema

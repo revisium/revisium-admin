@@ -48,6 +48,10 @@ export class JsonStringValueStore {
     return this.schema.deprecated
   }
 
+  public get formula() {
+    return this.schema['x-formula']
+  }
+
   public get foreignKey() {
     return this.schema.foreignKey
   }

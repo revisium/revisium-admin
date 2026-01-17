@@ -41,6 +41,7 @@ export const RowDataCard: React.FC<RowDataCardProps> = observer(({ store, tableI
           readonly={!isEdit}
           data={toSortedJsonValue(store.root)}
           onChange={store.updateValue}
+          onBlur={store.recalculateFormulas}
         />
       )}
       {store.viewMode === ViewerSwitcherMode.RefBy && (

@@ -49,36 +49,21 @@ export const EditableCell: FC<EditableCellProps> = observer(
     )
 
     const renderContent = () => {
-      const {
-        fieldType,
-        isReadonly,
-        isEditing,
-        supportsViewMode,
-        displayValue,
-        foreignKey,
-        stringValue,
-        numberDefault,
-        booleanValue,
-        store,
-        clickOffset,
-        cellPosition,
-      } = cellVM
-
-      if (fieldType === 'file' && store instanceof JsonObjectValueStore) {
-        return <FileCellDisplay store={store} isReadonly={cellVM.isRevisionReadonly} onUpload={onFileUpload} />
+      if (cellVM.fieldType === 'file' && cellVM.store instanceof JsonObjectValueStore) {
+        return <FileCellDisplay store={cellVM.store} isReadonly={cellVM.isRevisionReadonly} onUpload={onFileUpload} />
       }
 
-      if (fieldType === 'object' || fieldType === 'array') {
-        return <ReadonlyCell value={displayValue} type={fieldType} onClick={onNavigateToRow} />
+      if (cellVM.fieldType === 'object' || cellVM.fieldType === 'array') {
+        return <ReadonlyCell value={cellVM.displayValue} type={cellVM.fieldType} onClick={onNavigateToRow} />
       }
 
-      if (isEditing) {
-        if (fieldType === 'foreignKey' && foreignKey) {
+      if (cellVM.isEditing) {
+        if (cellVM.fieldType === 'foreignKey' && cellVM.foreignKey) {
           return (
             <ForeignKeyCellEditor
-              value={stringValue}
+              value={cellVM.stringValue}
               revisionId={revisionId}
-              foreignTableId={foreignKey}
+              foreignTableId={cellVM.foreignKey}
               rowId={cellVM.rowId}
               onSave={(v) => handleSave(v)}
               onCancel={handleCancel}
@@ -86,46 +71,46 @@ export const EditableCell: FC<EditableCellProps> = observer(
           )
         }
 
-        if (fieldType === 'string') {
+        if (cellVM.fieldType === 'string') {
           return (
             <StringCellEditor
-              value={stringValue}
+              value={cellVM.stringValue}
               onSave={(v) => handleSave(v)}
               onCancel={handleCancel}
-              onCommitAndMove={isReadonly ? undefined : handleCommitAndMove}
-              clickOffset={clickOffset}
-              initialPosition={cellPosition}
-              readOnly={isReadonly}
+              onCommitAndMove={cellVM.isReadonly ? undefined : handleCommitAndMove}
+              clickOffset={cellVM.clickOffset}
+              initialPosition={cellVM.cellPosition}
+              readOnly={cellVM.isReadonly}
             />
           )
         }
 
-        if (fieldType === 'number') {
+        if (cellVM.fieldType === 'number') {
           return (
             <StringCellEditor
-              value={stringValue}
-              defaultValue={numberDefault}
+              value={cellVM.stringValue}
+              defaultValue={cellVM.numberDefault}
               onSave={(v) => handleSave(v)}
               onCancel={handleCancel}
-              onCommitAndMove={isReadonly ? undefined : handleCommitAndMove}
-              clickOffset={clickOffset}
-              initialPosition={cellPosition}
+              onCommitAndMove={cellVM.isReadonly ? undefined : handleCommitAndMove}
+              clickOffset={cellVM.clickOffset}
+              initialPosition={cellVM.cellPosition}
               type="number"
-              readOnly={isReadonly}
+              readOnly={cellVM.isReadonly}
             />
           )
         }
 
-        if (fieldType === 'boolean') {
-          return <BooleanCellEditor value={booleanValue} onSave={(v) => handleSave(v)} onCancel={handleCancel} />
+        if (cellVM.fieldType === 'boolean') {
+          return <BooleanCellEditor value={cellVM.booleanValue} onSave={(v) => handleSave(v)} onCancel={handleCancel} />
         }
       }
 
-      if (isReadonly && !supportsViewMode) {
-        return <ReadonlyCell value={displayValue} type="readonly" />
+      if (cellVM.isReadonly && !cellVM.supportsViewMode) {
+        return <ReadonlyCell value={cellVM.displayValue} type="readonly" />
       }
 
-      return displayValue
+      return cellVM.displayValue
     }
 
     return (

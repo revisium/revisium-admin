@@ -1,6 +1,6 @@
 import { makeAutoObservable, observable } from 'mobx'
 import { nanoid } from 'nanoid'
-import { JsonNumberSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { JsonFormulaSpec, JsonNumberSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store.ts'
 
 export class JsonNumberStore implements JsonNumberSchema {
@@ -15,6 +15,7 @@ export class JsonNumberStore implements JsonNumberSchema {
   public title?: string
   public description?: string
   public deprecated?: boolean
+  public 'x-formula'?: JsonFormulaSpec
 
   private readonly valuesMap: Map<string, JsonNumberValueStore[]> = new Map<string, JsonNumberValueStore[]>()
 

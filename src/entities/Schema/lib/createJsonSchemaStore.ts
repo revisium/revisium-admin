@@ -59,14 +59,17 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
     stringStore.foreignKey = schema.foreignKey
     stringStore.contentMediaType = schema.contentMediaType
     stringStore.readOnly = schema.readOnly
+    stringStore['x-formula'] = schema['x-formula']
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {
     const numberStore = new JsonNumberStore()
     numberStore.readOnly = schema.readOnly
+    numberStore['x-formula'] = schema['x-formula']
     return numberStore
   } else if (schema.type === JsonSchemaTypeName.Boolean) {
     const booleanStore = new JsonBooleanStore()
     booleanStore.readOnly = schema.readOnly
+    booleanStore['x-formula'] = schema['x-formula']
     return booleanStore
   } else {
     throw new Error('this type is not allowed')

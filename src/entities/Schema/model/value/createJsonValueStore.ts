@@ -26,7 +26,9 @@ export const createJsonObjectValueStore = (
   rawValue: JsonObject,
 ): JsonObjectValueStore => {
   const value = createJsonObjectRecord(schema, rowId, rawValue)
-  return new JsonObjectValueStore(schema, rowId, value)
+  const store = new JsonObjectValueStore(schema, rowId, value)
+  setParentForChildren(store)
+  return store
 }
 
 export const createJsonObjectRecord = (schema: JsonObjectStore, rowId: string, rawValue: JsonObject) => {
@@ -37,7 +39,9 @@ export const createJsonObjectRecord = (schema: JsonObjectStore, rowId: string, r
       throw new Error('Invalid item')
     }
 
-    reduceValue[key] = createJsonValueStore(itemSchema, rowId, itemValue)
+    const childStore = createJsonValueStore(itemSchema, rowId, itemValue)
+    childStore.id = key
+    reduceValue[key] = childStore
 
     return reduceValue
   }, {})
@@ -49,7 +53,9 @@ export const createJsonArrayValueStore = (
   rawValue: JsonArray,
 ): JsonArrayValueStore => {
   const value = createJsonArrayValueItems(schema, rowId, rawValue)
-  return new JsonArrayValueStore(schema, rowId, value)
+  const store = new JsonArrayValueStore(schema, rowId, value)
+  setParentForChildren(store)
+  return store
 }
 
 export const createJsonArrayValueItems = (
@@ -57,7 +63,23 @@ export const createJsonArrayValueItems = (
   rowId: string,
   rawValue: JsonArray,
 ): JsonValueStore[] => {
-  return rawValue.map((value) => createJsonValueStore(schema.items, rowId, value))
+  return rawValue.map((value, index) => {
+    const childStore = createJsonValueStore(schema.items, rowId, value)
+    childStore.id = String(index)
+    return childStore
+  })
+}
+
+const setParentForChildren = (store: JsonValueStore): void => {
+  if (store.type === JsonSchemaTypeName.Object) {
+    for (const child of Object.values(store.value)) {
+      child.parent = store
+    }
+  } else if (store.type === JsonSchemaTypeName.Array) {
+    for (const child of store.value) {
+      child.parent = store
+    }
+  }
 }
 
 export const createPrimitiveValueStore = (

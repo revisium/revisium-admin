@@ -1,6 +1,6 @@
 import { makeAutoObservable, observable } from 'mobx'
 import { RowListItemFragment, TableViewsDataFragment } from 'src/__generated__/graphql-request'
-import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { FormulaEngine, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
 import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
@@ -53,6 +53,7 @@ interface CachedRowData {
   versionId: string
   rootValue: JsonValueStore
   cells: Map<string, JsonValueStore>
+  formulaEngine: FormulaEngine | null
 }
 
 export class ColumnsModel {
@@ -100,6 +101,7 @@ export class ColumnsModel {
     const schemaTitle = field.schemaStore?.title
     const schemaDeprecated = field.schemaStore?.deprecated
     const schemaDescription = field.schemaStore?.description
+    const schemaFormula = this.getFormulaExpression(field)
 
     const column: ColumnType = {
       id: field.nodeId,
@@ -113,9 +115,25 @@ export class ColumnsModel {
       isFileObject: field.isFileObject,
       isDeprecated: schemaDeprecated,
       deprecatedReason: schemaDeprecated ? schemaDescription : undefined,
+      formula: schemaFormula,
     }
     this._columnCache.set(field.nodeId, column)
     return column
+  }
+
+  private getFormulaExpression(field: AvailableField): string | undefined {
+    const schema = field.schemaStore
+    if (!schema) {
+      return undefined
+    }
+    if (
+      schema.type === JsonSchemaTypeName.String ||
+      schema.type === JsonSchemaTypeName.Number ||
+      schema.type === JsonSchemaTypeName.Boolean
+    ) {
+      return schema['x-formula']?.expression
+    }
+    return undefined
   }
 
   public get showHeader(): boolean {
@@ -240,6 +258,7 @@ export class ColumnsModel {
 
   public init(schema: JsonSchema, options?: { showAllColumns?: boolean }): void {
     this._schemaStore = createJsonSchemaStore(schema)
+    this.disposeAllFormulaEngines()
     this._rowCache.clear()
     this._columnCache.clear()
     this._columnWidths.clear()
@@ -441,7 +460,19 @@ export class ColumnsModel {
   private cleanupStaleCache(currentRowIds: Set<string>): void {
     for (const cachedRowId of this._rowCache.keys()) {
       if (!currentRowIds.has(cachedRowId)) {
+        const cached = this._rowCache.get(cachedRowId)
+        if (cached?.formulaEngine) {
+          cached.formulaEngine.dispose()
+        }
         this._rowCache.delete(cachedRowId)
+      }
+    }
+  }
+
+  private disposeAllFormulaEngines(): void {
+    for (const cached of this._rowCache.values()) {
+      if (cached.formulaEngine) {
+        cached.formulaEngine.dispose()
       }
     }
   }
@@ -454,6 +485,10 @@ export class ColumnsModel {
 
     if (cached && cached.versionId === row.versionId) {
       return cached
+    }
+
+    if (cached?.formulaEngine) {
+      cached.formulaEngine.dispose()
     }
 
     const rootValue = createJsonValueStore(schemaStore, row.id, (row.data ?? {}) as JsonValue)
@@ -470,7 +505,8 @@ export class ColumnsModel {
       }
     })
 
-    const newCachedData: CachedRowData = { versionId: row.versionId, rootValue, cells }
+    const formulaEngine = new FormulaEngine(rootValue)
+    const newCachedData: CachedRowData = { versionId: row.versionId, rootValue, cells, formulaEngine }
     this._rowCache.set(row.id, newCachedData)
 
     return newCachedData

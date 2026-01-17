@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { JsonSchemaTypeName, ViewerSwitcherMode } from 'src/entities/Schema'
 import { createJsonValuePathByStore } from 'src/entities/Schema/lib/createJsonValuePathByStore.ts'
+import { FormulaEngine } from 'src/entities/Schema/lib/FormulaEngine.ts'
 import { traverseValue } from 'src/entities/Schema/lib/traverseValue.ts'
 import { JsonSchemaStore } from 'src/entities/Schema/model/json-schema.store.ts'
 import { JsonStringStore } from 'src/entities/Schema/model/json-string.store.ts'
@@ -26,6 +27,7 @@ export class RowDataCardStore {
   public scrollPosition: number | null = null
 
   private originData: JsonValue | null = null
+  private formulaEngine: FormulaEngine | null = null
 
   public constructor(
     public readonly schemaStore: JsonSchemaStore,
@@ -47,6 +49,28 @@ export class RowDataCardStore {
     this.node = new RootValueNode(this)
 
     makeAutoObservable(this, {}, { autoBind: true })
+
+    this.initFormulaEngine()
+  }
+
+  private initFormulaEngine(): void {
+    this.disposeFormulaEngine()
+    this.formulaEngine = new FormulaEngine(this.root, {
+      onError: (path, error) => {
+        console.warn(`Formula error at ${path}:`, error.message)
+      },
+    })
+  }
+
+  private disposeFormulaEngine(): void {
+    if (this.formulaEngine) {
+      this.formulaEngine.dispose()
+      this.formulaEngine = null
+    }
+  }
+
+  public dispose(): void {
+    this.disposeFormulaEngine()
   }
 
   public get touched() {
@@ -95,6 +119,8 @@ export class RowDataCardStore {
 
       this.node = new RootValueNode(this)
       this.node.restoreExpandedState(expandedState)
+
+      this.initFormulaEngine()
     }
   }
 
@@ -131,5 +157,11 @@ export class RowDataCardStore {
 
   public updateValue(value: JsonValue) {
     this.root.updateValue(value)
+  }
+
+  public recalculateFormulas(): void {
+    if (this.formulaEngine) {
+      this.formulaEngine.reinitialize()
+    }
   }
 }

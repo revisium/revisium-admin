@@ -38,7 +38,9 @@ type ApplyMigrationResultModel {
   status: ApplyMigrationStatus!
 }
 
-"""Status of migration application"""
+"""
+Status of migration application
+"""
 enum ApplyMigrationStatus {
   applied
   failed
@@ -273,6 +275,13 @@ type FieldChangeModel {
   oldValue: JSON
 }
 
+type FormulaFieldErrorModel {
+  defaultUsed: Boolean!
+  error: String!
+  expression: String!
+  field: String!
+}
+
 input GetBranchInput {
   branchName: String!
   organizationId: String!
@@ -285,7 +294,9 @@ input GetBranchRevisionsInput {
   comment: String
   first: Int!
   inclusive: Boolean
-  """Sort order: asc (default) or desc"""
+  """
+  Sort order: asc (default) or desc
+  """
   sort: SortOrder
 }
 
@@ -465,7 +476,9 @@ input JsonFilter {
   path: [String!]
   search: String
   searchIn: SearchIn
-  """Default: simple"""
+  """
+  Default: simple
+  """
   searchLanguage: SearchLanguage
   searchType: SearchType
   string_contains: String
@@ -678,6 +691,7 @@ type PermissionModel {
 
 type PluginsModel {
   file: Boolean!
+  formula: Boolean!
 }
 
 type ProjectModel {
@@ -709,7 +723,8 @@ type Query {
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int! @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
+    @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
   me: MeModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
   project(data: GetProjectInput!): ProjectModel!
@@ -898,6 +913,7 @@ type RowModel {
   createdAt: DateTime!
   createdId: String!
   data: JSON!
+  formulaErrors: [FormulaFieldErrorModel!]
   id: String!
   publishedAt: DateTime!
   readonly: Boolean!
@@ -946,7 +962,9 @@ enum SearchIn {
   values
 }
 
-"""Language for full-text search. Default: simple"""
+"""
+Language for full-text search. Default: simple
+"""
 enum SearchLanguage {
   arabic
   armenian
@@ -986,6 +1004,7 @@ type SearchMatch {
 }
 
 type SearchResult {
+  formulaErrors: [FormulaFieldErrorModel!]
   matches: [SearchMatch!]!
   row: RowModel!
   table: TableModel!

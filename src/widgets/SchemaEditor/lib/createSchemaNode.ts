@@ -1,4 +1,10 @@
-import { JsonSchema, JsonSchemaTypeName, JsonSchemaWithoutRef, schemaRefsMapper } from 'src/entities/Schema'
+import {
+  JsonSchema,
+  JsonSchemaPrimitives,
+  JsonSchemaTypeName,
+  JsonSchemaWithoutRef,
+  schemaRefsMapper,
+} from 'src/entities/Schema'
 import { forEachDraftNode } from 'src/widgets/SchemaEditor/lib/traverseNode.ts'
 import { ArrayNodeStore } from 'src/widgets/SchemaEditor/model/ArrayNodeStore.ts'
 import { BooleanNodeStore } from 'src/widgets/SchemaEditor/model/BooleanNodeStore.ts'
@@ -85,6 +91,16 @@ export const saveSharedFields = (node: SchemaNode, schema: JsonSchemaWithoutRef)
   if (schema.deprecated) {
     node.setDeprecated(schema.deprecated)
   }
+
+  if (isPrimitiveSchema(schema) && schema['x-formula']?.expression) {
+    if ('setFormula' in node && typeof node.setFormula === 'function') {
+      node.setFormula(schema['x-formula'].expression)
+    }
+  }
+}
+
+function isPrimitiveSchema(schema: JsonSchemaWithoutRef): schema is JsonSchemaPrimitives {
+  return ['string', 'number', 'boolean'].includes(schema.type)
 }
 
 export const createSchemaNode = (

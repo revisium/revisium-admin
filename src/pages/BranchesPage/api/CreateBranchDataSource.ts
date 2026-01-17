@@ -21,7 +21,7 @@ export interface RevisionForSelect {
 export class CreateBranchDataSource {
   private readonly getBranchesRequest = ObservableRequest.of(client.getBranchesForSelect)
   private readonly getRevisionsRequest = ObservableRequest.of(client.getBranchRevisionsForCreate)
-  private readonly createBranchRequest = ObservableRequest.of(client.createBranch)
+  private readonly createBranchRequest = ObservableRequest.of(client.createBranchByRevisionId)
 
   constructor(private readonly context: ProjectContext) {
     makeAutoObservable(this, {}, { autoBind: true })

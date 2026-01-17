@@ -79,7 +79,7 @@ query getBranchRevisionsForCreate($data: GetBranchInput!, $revisionsData: GetBra
   }
 }
 
-mutation createBranch($data: CreateBranchByRevisionIdInput!) {
+mutation createBranchByRevisionId($data: CreateBranchByRevisionIdInput!) {
   createBranchByRevisionId(data: $data) {
     id
     name

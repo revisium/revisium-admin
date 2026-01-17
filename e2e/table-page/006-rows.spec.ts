@@ -72,25 +72,25 @@ async function setupMocks(
       })
     }
 
-    if (opName === 'RemoveRow') {
+    if (opName === 'DeleteRow') {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           data: {
-            removeRow: true,
+            deleteRow: true,
           },
         }),
       })
     }
 
-    if (opName === 'RemoveRows') {
+    if (opName === 'DeleteRows') {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           data: {
-            removeRows: true,
+            deleteRows: true,
           },
         }),
       })
@@ -621,13 +621,13 @@ test.describe('Row Operations', () => {
         const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
         const branchResponse = createFullBranchResponse(PROJECT_NAME)
 
-        if (opName === 'RemoveRows') {
+        if (opName === 'DeleteRows') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
               data: {
-                removeRows: {
+                deleteRows: {
                   branch: { id: 'branch-1' },
                 },
               },
@@ -724,7 +724,7 @@ test.describe('Row Operations', () => {
         const projectResponse = createFullProjectResponse(PROJECT_NAME, ORG_ID)
         const branchResponse = createFullBranchResponse(PROJECT_NAME)
 
-        if (opName === 'RemoveRows') {
+        if (opName === 'DeleteRows') {
           return route.fulfill({
             status: 200,
             contentType: 'application/json',

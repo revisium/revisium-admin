@@ -2221,11 +2221,11 @@ export type GetBranchRevisionsForCreateQuery = {
   }
 }
 
-export type CreateBranchMutationVariables = Exact<{
+export type CreateBranchByRevisionIdMutationVariables = Exact<{
   data: CreateBranchByRevisionIdInput
 }>
 
-export type CreateBranchMutation = { createBranchByRevisionId: { id: string; name: string } }
+export type CreateBranchByRevisionIdMutation = { createBranchByRevisionId: { id: string; name: string } }
 
 export type GetRevisionChangesQueryVariables = Exact<{
   revisionId: Scalars['String']['input']
@@ -4226,8 +4226,8 @@ export const GetBranchRevisionsForCreateDocument = gql`
   }
   ${RevisionForSelectFragmentDoc}
 `
-export const CreateBranchDocument = gql`
-  mutation createBranch($data: CreateBranchByRevisionIdInput!) {
+export const CreateBranchByRevisionIdDocument = gql`
+  mutation createBranchByRevisionId($data: CreateBranchByRevisionIdInput!) {
     createBranchByRevisionId(data: $data) {
       id
       name
@@ -5361,17 +5361,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
-    createBranch(
-      variables: CreateBranchMutationVariables,
+    createBranchByRevisionId(
+      variables: CreateBranchByRevisionIdMutationVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateBranchMutation> {
+    ): Promise<CreateBranchByRevisionIdMutation> {
       return withWrapper(
         (wrappedRequestHeaders) =>
-          client.request<CreateBranchMutation>(CreateBranchDocument, variables, {
+          client.request<CreateBranchByRevisionIdMutation>(CreateBranchByRevisionIdDocument, variables, {
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'createBranch',
+        'createBranchByRevisionId',
         'mutation',
         variables,
       )

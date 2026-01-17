@@ -22,7 +22,7 @@ export interface CreateBranchParams {
 export class BranchMutationDataSource {
   private readonly revertRequest = ObservableRequest.of(client.revertChangesForSidebar)
   private readonly createRevisionRequest = ObservableRequest.of(client.createRevisionForSidebar)
-  private readonly createBranchRequest = ObservableRequest.of(client.createBranchByRevisionIdForSidebar)
+  private readonly createBranchRequest = ObservableRequest.of(client.createBranchForSidebar)
 
   public async revertChanges(params: RevertChangesParams): Promise<boolean> {
     const result = await this.revertRequest.fetch({

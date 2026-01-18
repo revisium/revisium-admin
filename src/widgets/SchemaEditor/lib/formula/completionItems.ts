@@ -140,30 +140,22 @@ let _keywordCompletions: FormulaCompletionItem[] | null = null
 let _contextCompletions: FormulaCompletionItem[] | null = null
 
 export function getFunctionCompletions(): FormulaCompletionItem[] {
-  if (!_functionCompletions) {
-    _functionCompletions = buildFunctionCompletions()
-  }
+  _functionCompletions ??= buildFunctionCompletions()
   return _functionCompletions
 }
 
 export function getOperatorCompletions(): FormulaCompletionItem[] {
-  if (!_operatorCompletions) {
-    _operatorCompletions = buildOperatorCompletions()
-  }
+  _operatorCompletions ??= buildOperatorCompletions()
   return _operatorCompletions
 }
 
 export function getKeywordCompletions(): FormulaCompletionItem[] {
-  if (!_keywordCompletions) {
-    _keywordCompletions = buildKeywordCompletions()
-  }
+  _keywordCompletions ??= buildKeywordCompletions()
   return _keywordCompletions
 }
 
 export function getContextCompletions(): FormulaCompletionItem[] {
-  if (!_contextCompletions) {
-    _contextCompletions = buildContextCompletions()
-  }
+  _contextCompletions ??= buildContextCompletions()
   return _contextCompletions
 }
 

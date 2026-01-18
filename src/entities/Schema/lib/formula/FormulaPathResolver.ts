@@ -94,7 +94,7 @@ export class FormulaPathResolver {
           position++
         } else {
           const indexStr = path.slice(position + 1, endBracket)
-          segments.push({ type: 'index', index: parseInt(indexStr, 10) })
+          segments.push({ type: 'index', index: Number.parseInt(indexStr, 10) })
           position = endBracket + 1
         }
       } else {

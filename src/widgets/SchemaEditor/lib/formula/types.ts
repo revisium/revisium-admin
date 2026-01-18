@@ -1,5 +1,3 @@
-import type { FunctionSpec } from '@revisium/formula/spec'
-
 /** Target field type for formula */
 export type FormulaTargetType = 'string' | 'number' | 'boolean'
 
@@ -79,4 +77,4 @@ export interface CompletionResult {
 }
 
 /** Re-export FunctionSpec for convenience */
-export type { FunctionSpec }
+export type { FunctionSpec } from '@revisium/formula/spec'

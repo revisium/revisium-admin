@@ -26,7 +26,7 @@ export class FormulaEditorViewModel {
   private _showCompletions = false
   private _cursorPosition = 0
   private _prefix = ''
-  private _schemaPaths: SchemaPath[] = []
+  private readonly _schemaPaths: SchemaPath[] = []
   private _selectedCompletionIndex = 0
   private _onFormulaChange: (() => void) | null = null
 

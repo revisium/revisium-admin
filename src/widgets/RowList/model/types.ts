@@ -13,6 +13,7 @@ export type ColumnType = {
   isFileObject?: boolean
   isDeprecated?: boolean
   deprecatedReason?: string
+  formula?: string
 }
 
 export interface AvailableField {

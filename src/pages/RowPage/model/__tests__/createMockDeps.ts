@@ -216,6 +216,7 @@ export interface MockRowDataCardStore {
   save: jest.Mock
   reset: jest.Mock
   syncReadOnlyStores: jest.Mock
+  dispose: jest.Mock
 }
 
 export const createMockRowDataCardStore = (): MockRowDataCardStore => {
@@ -234,5 +235,6 @@ export const createMockRowDataCardStore = (): MockRowDataCardStore => {
     save: jest.fn(),
     reset: jest.fn(),
     syncReadOnlyStores: jest.fn(),
+    dispose: jest.fn(),
   }
 }

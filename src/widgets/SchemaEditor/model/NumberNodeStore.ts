@@ -15,6 +15,7 @@ type NumberNodeStoreState = {
   title: string
   description: string
   deprecated: boolean
+  formula: string
 }
 
 export class NumberNodeStore {
@@ -40,6 +41,7 @@ export class NumberNodeStore {
         title: '',
         description: '',
         deprecated: false,
+        formula: '',
       }),
     )
   }
@@ -86,6 +88,18 @@ export class NumberNodeStore {
 
   public get draftDeprecated() {
     return this.state.deprecated
+  }
+
+  public get formula() {
+    return this.state.model.formula
+  }
+
+  public get draftFormula() {
+    return this.state.formula
+  }
+
+  public get canHaveFormula(): boolean {
+    return true
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -152,6 +166,10 @@ export class NumberNodeStore {
 
   public setDeprecated(value: boolean): void {
     this.state.deprecated = value
+  }
+
+  public setFormula(value: string): void {
+    this.state.formula = value
   }
 
   public setParent(value: ParentSchemaNode | null): void {

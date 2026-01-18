@@ -15,6 +15,7 @@ type BooleanNodeStoreState = {
   title: string
   description: string
   deprecated: boolean
+  formula: string
 }
 
 export class BooleanNodeStore {
@@ -40,6 +41,7 @@ export class BooleanNodeStore {
         title: '',
         description: '',
         deprecated: false,
+        formula: '',
       }),
     )
   }
@@ -85,6 +87,18 @@ export class BooleanNodeStore {
 
   public get draftDeprecated() {
     return this.state.deprecated
+  }
+
+  public get formula() {
+    return this.state.model.formula
+  }
+
+  public get draftFormula() {
+    return this.state.formula
+  }
+
+  public get canHaveFormula(): boolean {
+    return true
   }
 
   public get parent(): ParentSchemaNode | null {
@@ -151,6 +165,10 @@ export class BooleanNodeStore {
 
   public setDeprecated(value: boolean): void {
     this.state.deprecated = value
+  }
+
+  public setFormula(value: string): void {
+    this.state.formula = value
   }
 
   public setParent(value: ParentSchemaNode | null): void {

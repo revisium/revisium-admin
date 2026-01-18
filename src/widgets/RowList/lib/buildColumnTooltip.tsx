@@ -7,6 +7,10 @@ export function buildColumnTooltip(column: ColumnType): ReactNode {
 
   lines.push(column.path)
 
+  if (column.formula) {
+    lines.push(`ƒ ${column.formula}`)
+  }
+
   if (column.isDeprecated) {
     if (column.deprecatedReason) {
       lines.push(`Deprecated: ${column.deprecatedReason}`)

@@ -48,6 +48,10 @@ export class JsonBooleanValueStore {
     return this.schema.deprecated
   }
 
+  public get formula() {
+    return this.schema['x-formula']
+  }
+
   public get touched(): boolean {
     return this.baseValue !== this.value
   }

@@ -19,10 +19,14 @@ export class FormulaPathResolver {
 
   public getParentPath(path: string): string {
     const lastDot = path.lastIndexOf('.')
-    if (lastDot === -1) {
+    const lastBracket = path.lastIndexOf('[')
+    const lastSeparator = Math.max(lastDot, lastBracket)
+
+    if (lastSeparator === -1) {
       return ''
     }
-    return path.slice(0, lastDot)
+
+    return path.slice(0, lastSeparator)
   }
 
   public getValueByPath(obj: Record<string, unknown>, path: string): unknown {

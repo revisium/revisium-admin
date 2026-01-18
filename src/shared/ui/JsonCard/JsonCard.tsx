@@ -71,8 +71,9 @@ export const JsonCard: React.FC<JsonCardProps> = ({ data, readonly, onChange, sc
 
   const handleBlur = useCallback(() => {
     isFocusedRef.current = false
+    setInternalText(externalText)
     onBlur?.()
-  }, [onBlur])
+  }, [onBlur, externalText])
 
   return (
     <Flex position="relative" width="100%" flex={1} className={styles.JsonCard} direction="column" gap="1rem">

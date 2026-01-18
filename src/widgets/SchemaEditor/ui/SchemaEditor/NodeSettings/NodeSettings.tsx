@@ -51,7 +51,7 @@ export const NodeSettings: FC<NodeSettingsProps> = observer(({ node, dataTestId 
       return vm
     }
     return null
-  }, [node, root, configurationService.formulaEnabled, handleFormulaChange])
+  }, [node, root.node, configurationService.formulaEnabled, handleFormulaChange])
 
   const handleTitleChange = useCallback(
     (value: string) => {

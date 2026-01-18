@@ -19,16 +19,18 @@ export function findTokenAtPosition(text: string, position: number): string {
     return ''
   }
 
-  // Check for operators at position
+  // Check for operators at position (ordered by length, longest first)
   const operatorPatterns = ['==', '!=', '>=', '<=', '&&', '||', '>', '<', '+', '-', '*', '/', '%', '!']
 
   for (const op of operatorPatterns) {
-    const start = position - op.length + 1
-    if (start >= 0) {
-      const slice = text.slice(Math.max(0, start), position + 1)
-      if (slice.includes(op)) {
-        return op
-      }
+    // Check if operator ends at position
+    const startPos = position - op.length + 1
+    if (startPos >= 0 && text.slice(startPos, startPos + op.length) === op) {
+      return op
+    }
+    // Check if operator starts at position
+    if (position + op.length <= text.length && text.slice(position, position + op.length) === op) {
+      return op
     }
   }
 

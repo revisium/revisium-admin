@@ -215,6 +215,7 @@ export class StringNodeStore {
 
     if (value) {
       value.setParent(this)
+      this.state.formula = ''
     }
   }
 

@@ -43,13 +43,15 @@ export class FormulaEngine {
   }
 
   public reinitialize(): void {
-    this.disposeValueReactions()
+    this.disposeAllReactions()
 
-    const { formulaFields, storeByPath } = this.collector.collectFieldsOnly(this.root)
+    const { formulaFields, storeByPath, arrays } = this.collector.collect(this.root)
     this.formulaFields = formulaFields
     this.storeByPath = storeByPath
+    this.arrays = arrays
     this.evaluationOrder = this.dependencyResolver.buildEvaluationOrder(this.formulaFields)
 
+    this.setupStructureReactions()
     this.setupValueReactions()
     this.evaluateAll()
   }

@@ -98,6 +98,7 @@ export abstract class RowEditorItemBase extends RowStackItemBase {
   }
 
   public override dispose(): void {
+    this.store.dispose()
     this.deps.mutationDataSource.dispose()
   }
 }

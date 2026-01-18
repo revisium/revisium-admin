@@ -50,7 +50,7 @@ export class ConfigurationService {
   }
 
   public get formulaEnabled(): boolean {
-    return this.data?.plugins.formula ?? false
+    return this.data?.plugins?.formula ?? false
   }
 
   private async init() {

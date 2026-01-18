@@ -33,18 +33,6 @@ export class FormulaFieldCollector {
     return { formulaFields, storeByPath, arrays }
   }
 
-  public collectFieldsOnly(root: JsonValueStore): {
-    formulaFields: Map<string, FormulaField>
-    storeByPath: Map<string, JsonValueStorePrimitives>
-  } {
-    const formulaFields = new Map<string, FormulaField>()
-    const storeByPath = new Map<string, JsonValueStorePrimitives>()
-
-    this.traverseAndCollect(root, formulaFields, storeByPath)
-
-    return { formulaFields, storeByPath }
-  }
-
   private traverseAndCollect(
     store: JsonValueStore,
     formulaFields: Map<string, FormulaField>,

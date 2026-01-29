@@ -377,4 +377,222 @@ describe('FormulaEngine', () => {
       engine.dispose()
     })
   })
+
+  describe('array context tokens', () => {
+    it('should compute #index in array items', () => {
+      const schema = createSchema({
+        items: {
+          type: JsonSchemaTypeName.Array,
+          items: {
+            type: JsonSchemaTypeName.Object,
+            additionalProperties: false,
+            required: ['name', 'position'],
+            properties: {
+              name: { type: JsonSchemaTypeName.String, default: '' },
+              position: {
+                type: JsonSchemaTypeName.Number,
+                default: 0,
+                readOnly: true,
+                'x-formula': createFormula('#index + 1'),
+              },
+            },
+          },
+        },
+      })
+
+      const store = createValueStore(schema, {
+        items: [
+          { name: 'First', position: 0 },
+          { name: 'Second', position: 0 },
+          { name: 'Third', position: 0 },
+        ],
+      })
+      const engine = new FormulaEngine(store)
+
+      const itemsStore = store.value['items'] as JsonArrayValueStore
+      const item0 = itemsStore.value[0] as JsonObjectValueStore
+      const item1 = itemsStore.value[1] as JsonObjectValueStore
+      const item2 = itemsStore.value[2] as JsonObjectValueStore
+
+      expect((item0.value['position'] as JsonNumberValueStore).value).toBe(1)
+      expect((item1.value['position'] as JsonNumberValueStore).value).toBe(2)
+      expect((item2.value['position'] as JsonNumberValueStore).value).toBe(3)
+
+      engine.dispose()
+    })
+
+    it('should compute #length in array items', () => {
+      const schema = createSchema({
+        items: {
+          type: JsonSchemaTypeName.Array,
+          items: {
+            type: JsonSchemaTypeName.Object,
+            additionalProperties: false,
+            required: ['value', 'total'],
+            properties: {
+              value: { type: JsonSchemaTypeName.Number, default: 0 },
+              total: {
+                type: JsonSchemaTypeName.Number,
+                default: 0,
+                readOnly: true,
+                'x-formula': createFormula('#length'),
+              },
+            },
+          },
+        },
+      })
+
+      const store = createValueStore(schema, {
+        items: [
+          { value: 10, total: 0 },
+          { value: 20, total: 0 },
+          { value: 30, total: 0 },
+        ],
+      })
+      const engine = new FormulaEngine(store)
+
+      const itemsStore = store.value['items'] as JsonArrayValueStore
+      const item0 = itemsStore.value[0] as JsonObjectValueStore
+      const item1 = itemsStore.value[1] as JsonObjectValueStore
+      const item2 = itemsStore.value[2] as JsonObjectValueStore
+
+      expect((item0.value['total'] as JsonNumberValueStore).value).toBe(3)
+      expect((item1.value['total'] as JsonNumberValueStore).value).toBe(3)
+      expect((item2.value['total'] as JsonNumberValueStore).value).toBe(3)
+
+      engine.dispose()
+    })
+
+    it('should compute @prev neighbor reference', () => {
+      const schema = createSchema({
+        items: {
+          type: JsonSchemaTypeName.Array,
+          items: {
+            type: JsonSchemaTypeName.Object,
+            additionalProperties: false,
+            required: ['value', 'prevValue'],
+            properties: {
+              value: { type: JsonSchemaTypeName.Number, default: 0 },
+              prevValue: {
+                type: JsonSchemaTypeName.Number,
+                default: 0,
+                readOnly: true,
+                'x-formula': createFormula('if(isnull(@prev), 0, @prev.value)'),
+              },
+            },
+          },
+        },
+      })
+
+      const store = createValueStore(schema, {
+        items: [
+          { value: 10, prevValue: 0 },
+          { value: 20, prevValue: 0 },
+          { value: 30, prevValue: 0 },
+        ],
+      })
+      const engine = new FormulaEngine(store)
+
+      const itemsStore = store.value['items'] as JsonArrayValueStore
+      const item0 = itemsStore.value[0] as JsonObjectValueStore
+      const item1 = itemsStore.value[1] as JsonObjectValueStore
+      const item2 = itemsStore.value[2] as JsonObjectValueStore
+
+      expect((item0.value['prevValue'] as JsonNumberValueStore).value).toBe(0)
+      expect((item1.value['prevValue'] as JsonNumberValueStore).value).toBe(10)
+      expect((item2.value['prevValue'] as JsonNumberValueStore).value).toBe(20)
+
+      engine.dispose()
+    })
+
+    it('should compute #first and #last in array items', () => {
+      const schema = createSchema({
+        items: {
+          type: JsonSchemaTypeName.Array,
+          items: {
+            type: JsonSchemaTypeName.Object,
+            additionalProperties: false,
+            required: ['value', 'isFirst', 'isLast'],
+            properties: {
+              value: { type: JsonSchemaTypeName.Number, default: 0 },
+              isFirst: {
+                type: JsonSchemaTypeName.Boolean,
+                default: false,
+                readOnly: true,
+                'x-formula': createFormula('#first'),
+              },
+              isLast: {
+                type: JsonSchemaTypeName.Boolean,
+                default: false,
+                readOnly: true,
+                'x-formula': createFormula('#last'),
+              },
+            },
+          },
+        },
+      })
+
+      const store = createValueStore(schema, {
+        items: [
+          { value: 1, isFirst: false, isLast: false },
+          { value: 2, isFirst: false, isLast: false },
+          { value: 3, isFirst: false, isLast: false },
+        ],
+      })
+      const engine = new FormulaEngine(store)
+
+      const itemsStore = store.value['items'] as JsonArrayValueStore
+      const item0 = itemsStore.value[0] as JsonObjectValueStore
+      const item1 = itemsStore.value[1] as JsonObjectValueStore
+      const item2 = itemsStore.value[2] as JsonObjectValueStore
+
+      expect(item0.value['isFirst'].value).toBe(true)
+      expect(item0.value['isLast'].value).toBe(false)
+      expect(item1.value['isFirst'].value).toBe(false)
+      expect(item1.value['isLast'].value).toBe(false)
+      expect(item2.value['isFirst'].value).toBe(false)
+      expect(item2.value['isLast'].value).toBe(true)
+
+      engine.dispose()
+    })
+
+    it('should compute formula with root path and array context', () => {
+      const schema = createSchema({
+        baseValue: { type: JsonSchemaTypeName.Number, default: 0 },
+        items: {
+          type: JsonSchemaTypeName.Array,
+          items: {
+            type: JsonSchemaTypeName.Object,
+            additionalProperties: false,
+            required: ['exp'],
+            properties: {
+              exp: {
+                type: JsonSchemaTypeName.Number,
+                default: 0,
+                readOnly: true,
+                'x-formula': createFormula('/baseValue + #index * 10'),
+              },
+            },
+          },
+        },
+      })
+
+      const store = createValueStore(schema, {
+        baseValue: 100,
+        items: [{ exp: 0 }, { exp: 0 }, { exp: 0 }],
+      })
+      const engine = new FormulaEngine(store)
+
+      const itemsStore = store.value['items'] as JsonArrayValueStore
+      const item0 = itemsStore.value[0] as JsonObjectValueStore
+      const item1 = itemsStore.value[1] as JsonObjectValueStore
+      const item2 = itemsStore.value[2] as JsonObjectValueStore
+
+      expect((item0.value['exp'] as JsonNumberValueStore).value).toBe(100)
+      expect((item1.value['exp'] as JsonNumberValueStore).value).toBe(110)
+      expect((item2.value['exp'] as JsonNumberValueStore).value).toBe(120)
+
+      engine.dispose()
+    })
+  })
 })

@@ -56,6 +56,7 @@ export const createJsonObjectSchemaStore = (value: JsonObjectSchema): JsonObject
 export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): JsonSchemaStorePrimitives => {
   if (schema.type === JsonSchemaTypeName.String) {
     const stringStore = new JsonStringStore()
+    stringStore.default = schema.default
     stringStore.foreignKey = schema.foreignKey
     stringStore.contentMediaType = schema.contentMediaType
     stringStore.readOnly = schema.readOnly
@@ -63,11 +64,13 @@ export const createPrimitiveStoreBySchema = (schema: JsonSchemaPrimitives): Json
     return stringStore
   } else if (schema.type === JsonSchemaTypeName.Number) {
     const numberStore = new JsonNumberStore()
+    numberStore.default = schema.default
     numberStore.readOnly = schema.readOnly
     numberStore['x-formula'] = schema['x-formula']
     return numberStore
   } else if (schema.type === JsonSchemaTypeName.Boolean) {
     const booleanStore = new JsonBooleanStore()
+    booleanStore.default = schema.default
     booleanStore.readOnly = schema.readOnly
     booleanStore['x-formula'] = schema['x-formula']
     return booleanStore

@@ -1,4 +1,4 @@
-import { evaluateWithContext } from '@revisium/formula'
+import { evaluateWithContext, EvaluateContextOptions } from '@revisium/formula'
 import { JsonSchemaTypeName } from 'src/entities/Schema'
 import { JsonValueStore, JsonValueStorePrimitives } from 'src/entities/Schema/model/value/json-value.store'
 import { FormulaField } from './FormulaFieldCollector'
@@ -28,23 +28,25 @@ export class FormulaEvaluator {
     }
   }
 
-  private buildContext(field: FormulaField): {
-    rootData: Record<string, unknown>
-    itemData?: Record<string, unknown>
-    currentPath?: string
-  } {
+  private buildContext(field: FormulaField): EvaluateContextOptions {
     const rootData = this.collectRootData()
+    const context: EvaluateContextOptions = { rootData }
 
     if (field.parentPath) {
       const itemData = this.pathResolver.getValueByPath(rootData, field.parentPath) as
         | Record<string, unknown>
         | undefined
       if (itemData && typeof itemData === 'object') {
-        return { rootData, itemData, currentPath: field.parentPath }
+        context.itemData = itemData
+        context.currentPath = field.parentPath
       }
     }
 
-    return { rootData }
+    if (field.arrayContext) {
+      context.arrayContext = field.arrayContext
+    }
+
+    return context
   }
 
   private collectRootData(): Record<string, unknown> {

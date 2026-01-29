@@ -26,4 +26,18 @@ describe('createJsonSchemaStore', () => {
     expect((store.properties['number'] as JsonNumberStore).readOnly).toEqual(true)
     expect((store.properties['boolean'] as JsonBooleanStore).readOnly).toEqual(true)
   })
+
+  it('should copy default values from schema', () => {
+    const store: JsonObjectStore = createJsonSchemaStore(
+      getObjectSchema({
+        string: getStringSchema({ defaultValue: 'hello' }),
+        number: getNumberSchema(42),
+        boolean: getBooleanSchema(true),
+      }),
+    ) as JsonObjectStore
+
+    expect((store.properties['string'] as JsonStringStore).default).toEqual('hello')
+    expect((store.properties['number'] as JsonNumberStore).default).toEqual(42)
+    expect((store.properties['boolean'] as JsonBooleanStore).default).toEqual(true)
+  })
 })

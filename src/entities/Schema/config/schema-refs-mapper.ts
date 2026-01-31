@@ -1,6 +1,7 @@
-import { JsonSchema } from 'src/entities/Schema'
-import { SystemSchemaIds } from 'src/entities/Schema/config/consts.ts'
 import {
+  type JsonSchema,
+  SystemSchemaIds,
+  fileSchema,
   rowCreatedAtSchema,
   rowCreatedIdSchema,
   rowHashSchema,
@@ -9,8 +10,7 @@ import {
   rowSchemaHashSchema,
   rowUpdatedAtSchema,
   rowVersionIdSchema,
-} from 'src/shared/schema/plugins'
-import { fileSchema } from 'src/shared/schema/plugins/file-schema.ts'
+} from '@revisium/schema-toolkit-ui'
 
 export const schemaRefsMapper: Record<string, JsonSchema> = {
   [SystemSchemaIds.RowId]: rowIdSchema,

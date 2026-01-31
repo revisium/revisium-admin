@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
+import { type ObjectValueNodeInterface as ObjectValueNode } from '@revisium/schema-toolkit-ui'
 import { ColumnsModel } from 'src/widgets/RowList/model/ColumnsModel'
 import { RowItemViewModel } from 'src/widgets/RowList/model/RowItemViewModel'
 import { EditableCell } from 'src/widgets/RowList/ui/EditableCell'
@@ -11,7 +11,7 @@ interface CellsRowProps {
   row: RowItemViewModel
   columnsModel: ColumnsModel
   revisionId: string
-  onFileUpload?: (fileId: string, file: File, store: JsonObjectValueStore) => void
+  onFileUpload?: (fileId: string, file: File, node: ObjectValueNode) => void
 }
 
 export const CellsRow: FC<CellsRowProps> = observer(({ row, columnsModel, revisionId, onFileUpload }) => {

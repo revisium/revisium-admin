@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
-import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
+import { type ObjectValueNodeInterface as ObjectValueNode } from '@revisium/schema-toolkit-ui'
 import { CellViewModel } from '../../model/CellViewModel'
 import { BooleanCellEditor } from './BooleanCellEditor'
 import { CellWrapper } from './CellWrapper'
@@ -14,7 +14,7 @@ interface EditableCellProps {
   fieldName: string
   revisionId: string
   onNavigateToRow?: () => void
-  onFileUpload?: (fileId: string, file: File, store: JsonObjectValueStore) => void
+  onFileUpload?: (fileId: string, file: File, node: ObjectValueNode) => void
 }
 
 export const EditableCell: FC<EditableCellProps> = observer(
@@ -49,8 +49,14 @@ export const EditableCell: FC<EditableCellProps> = observer(
     )
 
     const renderContent = () => {
-      if (cellVM.fieldType === 'file' && cellVM.store instanceof JsonObjectValueStore) {
-        return <FileCellDisplay store={cellVM.store} isReadonly={cellVM.isRevisionReadonly} onUpload={onFileUpload} />
+      if (cellVM.fieldType === 'file' && cellVM.node.isObject()) {
+        return (
+          <FileCellDisplay
+            node={cellVM.node as unknown as ObjectValueNode}
+            isReadonly={cellVM.isRevisionReadonly}
+            onUpload={onFileUpload}
+          />
+        )
       }
 
       if (cellVM.fieldType === 'object' || cellVM.fieldType === 'array') {

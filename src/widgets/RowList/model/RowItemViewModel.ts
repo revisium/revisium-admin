@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
+import { type RowModel } from '@revisium/schema-toolkit-ui'
 import { RowListItemFragment } from 'src/__generated__/graphql-request'
-import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { CellViewModel } from './CellViewModel'
@@ -9,7 +9,8 @@ import { InlineEditModel } from './InlineEditModel'
 
 interface RowItemViewModelParams {
   item: RowListItemFragment
-  cellsMap: Map<string, JsonValueStore>
+  rowModel: RowModel
+  getPathForColumn: (columnId: string) => string | undefined
   isEdit: boolean
   projectPermissions: ProjectPermissions
   inlineEditModel: InlineEditModel
@@ -24,14 +25,19 @@ export class RowItemViewModel {
   }
 
   public getCellViewModel(columnId: string): CellViewModel | undefined {
-    const store = this.params.cellsMap.get(columnId)
-    if (!store) {
+    const path = this.params.getPathForColumn(columnId)
+    if (path === undefined) {
+      return undefined
+    }
+
+    const node = this.params.rowModel.get(path)
+    if (!node) {
       return undefined
     }
 
     let cellVM = this._cellViewModels.get(columnId)
     if (!cellVM) {
-      cellVM = new CellViewModel(this.id, columnId, store, this.params.inlineEditModel, !this.params.isEdit)
+      cellVM = new CellViewModel(this.id, columnId, node, this.params.inlineEditModel, !this.params.isEdit)
       this._cellViewModels.set(columnId, cellVM)
     }
     return cellVM
@@ -72,8 +78,8 @@ export class RowItemViewModel {
     return this.params.item.data as JsonValue
   }
 
-  public get cellsMap(): Map<string, JsonValueStore> {
-    return this.params.cellsMap
+  public get rowModel(): RowModel {
+    return this.params.rowModel
   }
 
   public get isEdit(): boolean {

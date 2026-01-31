@@ -1,9 +1,11 @@
 import { observable, runInAction } from 'mobx'
+import { type PrimitiveValueNode } from '@revisium/schema-toolkit-ui'
 import { PatchRowOp } from 'src/__generated__/graphql-request'
-import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
 import { JsonValue } from 'src/entities/Schema/types/json.types'
 import { AbortError, ObservableRequest } from 'src/shared/lib/ObservableRequest'
 import { client } from 'src/shared/model/ApiService'
+
+type PrimitiveValue = string | number | boolean
 
 const SAVING_INDICATOR_DELAY = 1000
 
@@ -12,15 +14,6 @@ const makeCellKey = (rowId: string, field: string): string => `${rowId}:${field}
 interface SaveContext {
   revisionId: string
   tableId: string
-}
-
-interface CellStoreAccessor {
-  getPlainValue(): JsonValue
-  updateBaseValue(value: JsonValue): void
-}
-
-const isCellStoreAccessor = (store: JsonValueStore): store is JsonValueStore & CellStoreAccessor => {
-  return 'getPlainValue' in store && 'updateBaseValue' in store
 }
 
 export class CellSaveService {
@@ -59,13 +52,13 @@ export class CellSaveService {
     rowId: string,
     columnId: string,
     fieldName: string,
-    value: string | number | boolean,
-    store: JsonValueStore | undefined,
+    value: PrimitiveValue,
+    node: PrimitiveValueNode | undefined,
     onSuccess?: () => void,
   ): Promise<boolean> {
     const key = makeCellKey(rowId, columnId)
 
-    const oldValue = this.applyOptimisticUpdate(store, value)
+    const oldValue = this.applyOptimisticUpdate(node, value)
     this.startSavingIndicator(key)
     this._errorCells.delete(key)
 
@@ -75,6 +68,7 @@ export class CellSaveService {
       if (result.isRight) {
         runInAction(() => {
           this._errorCells.delete(key)
+          node?.commit()
           onSuccess?.()
         })
         return true
@@ -84,32 +78,35 @@ export class CellSaveService {
         return false
       }
 
-      this.handleError(key, store, oldValue, 'Failed to save')
+      this.handleError(key, node, oldValue, 'Failed to save')
       return false
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Unknown error'
-      this.handleError(key, store, oldValue, message)
+      this.handleError(key, node, oldValue, message)
       return false
     } finally {
       this.stopSavingIndicator(key)
     }
   }
 
-  private applyOptimisticUpdate(store: JsonValueStore | undefined, value: JsonValue): JsonValue | undefined {
-    if (!store || !isCellStoreAccessor(store)) {
+  private applyOptimisticUpdate(
+    node: PrimitiveValueNode | undefined,
+    value: PrimitiveValue,
+  ): PrimitiveValue | undefined {
+    if (!node) {
       return undefined
     }
 
-    const oldValue = store.getPlainValue()
-    store.updateBaseValue(value)
+    const oldValue = node.value
+    node.setValue(value)
     return oldValue
   }
 
-  private rollbackOptimisticUpdate(store: JsonValueStore | undefined, oldValue: JsonValue | undefined): void {
-    if (!store || !isCellStoreAccessor(store) || oldValue === undefined) {
+  private rollbackOptimisticUpdate(node: PrimitiveValueNode | undefined, oldValue: PrimitiveValue | undefined): void {
+    if (!node || oldValue === undefined) {
       return
     }
-    store.updateBaseValue(oldValue)
+    node.setValue(oldValue)
   }
 
   private startSavingIndicator(key: string): void {
@@ -157,12 +154,12 @@ export class CellSaveService {
 
   private handleError(
     key: string,
-    store: JsonValueStore | undefined,
-    oldValue: JsonValue | undefined,
+    node: PrimitiveValueNode | undefined,
+    oldValue: PrimitiveValue | undefined,
     message: string,
   ): void {
     runInAction(() => {
-      this.rollbackOptimisticUpdate(store, oldValue)
+      this.rollbackOptimisticUpdate(node, oldValue)
       this._errorCells.set(key, message)
     })
   }

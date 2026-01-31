@@ -2,24 +2,22 @@ import { Box, HoverCard, IconButton, Image, Portal } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
 import { PiFile, PiUploadSimple } from 'react-icons/pi'
-import { JsonNumberValueStore } from 'src/entities/Schema/model/value/json-number-value.store'
-import { JsonObjectValueStore } from 'src/entities/Schema/model/value/json-object-value.store'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store'
+import { type ObjectValueNodeInterface as ObjectValueNode } from '@revisium/schema-toolkit-ui'
 import { Tooltip } from 'src/shared/ui'
 
 interface FileCellDisplayProps {
-  store: JsonObjectValueStore
+  node: ObjectValueNode
   isReadonly?: boolean
-  onUpload?: (fileId: string, file: File, store: JsonObjectValueStore) => void
+  onUpload?: (fileId: string, file: File, node: ObjectValueNode) => void
 }
 
-export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isReadonly, onUpload }) => {
-  const status = (store.value['status'] as JsonStringValueStore)?.getPlainValue() ?? ''
-  const fileId = (store.value['fileId'] as JsonStringValueStore)?.getPlainValue() ?? ''
-  const url = (store.value['url'] as JsonStringValueStore)?.getPlainValue() ?? ''
-  const mimeType = (store.value['mimeType'] as JsonStringValueStore)?.getPlainValue() ?? ''
-  const width = (store.value['width'] as JsonNumberValueStore)?.getPlainValue() ?? 0
-  const height = (store.value['height'] as JsonNumberValueStore)?.getPlainValue() ?? 0
+export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ node, isReadonly, onUpload }) => {
+  const status = node.child('status')?.value as string ?? ''
+  const fileId = node.child('fileId')?.value as string ?? ''
+  const url = node.child('url')?.value as string ?? ''
+  const mimeType = node.child('mimeType')?.value as string ?? ''
+  const width = node.child('width')?.value as number ?? 0
+  const height = node.child('height')?.value as number ?? 0
 
   const isImage = mimeType.startsWith('image/')
   const hasUrl = Boolean(url)
@@ -35,10 +33,10 @@ export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ store, isRe
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       if (!file) return
-      onUpload?.(fileId, file, store)
+      onUpload?.(fileId, file, node)
       event.target.value = ''
     },
-    [fileId, onUpload, store],
+    [fileId, onUpload, node],
   )
 
   const inputId = `file-cell-${fileId}`

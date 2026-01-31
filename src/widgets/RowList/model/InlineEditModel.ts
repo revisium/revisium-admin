@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
+import { type PrimitiveValueNode } from '@revisium/schema-toolkit-ui'
 import { CellPosition } from '../lib/getClickOffset'
 import { CellSaveService } from './CellSaveService'
 
@@ -15,7 +15,7 @@ export interface InlineEditContext {
   tableId: string
   getVisibleFields: () => string[]
   getVisibleRowIds: () => string[]
-  getCellStore: (rowId: string, field: string) => JsonValueStore | undefined
+  getCellNode: (rowId: string, field: string) => PrimitiveValueNode | undefined
   isCellReadonly: (rowId: string, field: string) => boolean
   onCellUpdated?: (rowId: string, field: string, value: string | number | boolean) => void
 }
@@ -249,7 +249,7 @@ export class InlineEditModel {
       return false
     }
 
-    const store = this._context.getCellStore(rowId, columnId)
+    const node = this._context.getCellNode(rowId, columnId)
     const context = this._context
 
     return this._saveService.save(
@@ -258,7 +258,7 @@ export class InlineEditModel {
       columnId,
       fieldName,
       value,
-      store,
+      node,
       () => context.onCellUpdated?.(rowId, columnId, value),
     )
   }

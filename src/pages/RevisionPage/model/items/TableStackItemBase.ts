@@ -2,9 +2,8 @@ import { computed, makeObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { StackItem } from 'src/shared/lib/Stack'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
-import { getJsonDraftPathByNode } from 'src/widgets/SchemaEditor/lib/getJsonDraftPathByNode.ts'
 import { TableFetchDataSource } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
-import { TableStackItemType, TableStackItemResult, SelectForeignKeyPayload } from '../../config/types.ts'
+import { TableStackItemType, TableStackItemResult } from '../../config/types.ts'
 
 export interface TableStackItemBaseDeps {
   projectContext: ProjectContext
@@ -27,7 +26,7 @@ export abstract class TableStackItemBase extends StackItem<TableStackItemResult>
       isEditableRevision: computed,
       revisionId: computed,
       isRevisionLoading: computed,
-      pendingForeignKeyPath: computed,
+      hasPendingForeignKeySelection: computed,
     })
   }
 
@@ -43,12 +42,7 @@ export abstract class TableStackItemBase extends StackItem<TableStackItemResult>
     return this.deps.projectContext.isLoading || this.deps.projectContext.revisionId === null
   }
 
-  public get pendingForeignKeyPath(): string {
-    const payload = this.pendingRequest?.payload as SelectForeignKeyPayload | undefined
-    const foreignKeyNode = payload?.foreignKeyNode
-    if (foreignKeyNode?.draftParent) {
-      return getJsonDraftPathByNode(foreignKeyNode.draftParent)
-    }
-    return ''
+  public get hasPendingForeignKeySelection(): boolean {
+    return this.pendingRequest !== null
   }
 }

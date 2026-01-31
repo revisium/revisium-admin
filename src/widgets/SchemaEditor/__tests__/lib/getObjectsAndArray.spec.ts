@@ -1,3 +1,0 @@
-describe('getObjectsAndArray', () => {
-  xit('getObjectsAndArray', () => {})
-})

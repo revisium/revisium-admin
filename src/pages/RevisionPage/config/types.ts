@@ -1,5 +1,3 @@
-import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor'
-
 export enum TableStackItemType {
   List = 'List',
   Creating = 'Creating',
@@ -7,7 +5,7 @@ export enum TableStackItemType {
 }
 
 export interface SelectForeignKeyPayload {
-  foreignKeyNode: StringForeignKeyNodeStore
+  resolve: (tableId: string | null) => void
 }
 
 export type SelectForeignKeyResult = string
@@ -22,12 +20,12 @@ export type TableCreatingItemResult =
   | { type: 'toList' }
   | { type: 'creatingToUpdating' }
   | { type: 'selectTable'; tableId: string }
-  | { type: 'startForeignKeySelection'; foreignKeyNode: StringForeignKeyNodeStore }
+  | { type: 'startForeignKeySelection'; resolve: (tableId: string | null) => void }
   | { type: 'cancelForeignKeySelection' }
 
 export type TableUpdatingItemResult =
   | { type: 'toList' }
-  | { type: 'startForeignKeySelection'; foreignKeyNode: StringForeignKeyNodeStore }
+  | { type: 'startForeignKeySelection'; resolve: (tableId: string | null) => void }
   | { type: 'cancelForeignKeySelection' }
 
 export type TableStackItemResult = TableListItemResult | TableCreatingItemResult | TableUpdatingItemResult

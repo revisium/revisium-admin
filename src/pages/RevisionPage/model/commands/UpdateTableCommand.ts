@@ -1,7 +1,8 @@
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { JsonPatch } from 'src/entities/Schema/types/json-patch.types.ts'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
-import { RootNodeStore } from 'src/widgets/SchemaEditor/model/RootNodeStore.ts'
+import type { SchemaEditorVM } from '@revisium/schema-toolkit-ui'
 
 export interface UpdateTableCommandDeps {
   mutationDataSource: TableMutationDataSource
@@ -12,19 +13,19 @@ export interface UpdateTableCommandDeps {
 export class UpdateTableCommand {
   constructor(private readonly deps: UpdateTableCommandDeps) {}
 
-  public async execute(store: RootNodeStore): Promise<boolean> {
+  public async execute(viewModel: SchemaEditorVM): Promise<boolean> {
     const { mutationDataSource, tableListRefreshService, projectContext } = this.deps
 
     try {
-      const needRename = store.tableId !== store.draftTableId
+      const needRename = viewModel.isTableIdChanged
       let wasRenamed = false
       let wasUpdated = false
 
       if (needRename) {
         const renameResult = await mutationDataSource.renameTable({
           revisionId: projectContext.revisionId,
-          tableId: store.tableId,
-          nextTableId: store.draftTableId,
+          tableId: viewModel.initialTableId,
+          nextTableId: viewModel.tableId,
         })
 
         if (!renameResult) {
@@ -34,12 +35,12 @@ export class UpdateTableCommand {
         wasRenamed = true
       }
 
-      const patches = store.getPatches()
+      const patches = viewModel.getJsonPatches() as unknown as JsonPatch[]
 
       if (patches.length) {
         const updateResult = await mutationDataSource.updateTable({
           revisionId: projectContext.revisionId,
-          tableId: store.draftTableId,
+          tableId: viewModel.tableId,
           patches,
         })
 

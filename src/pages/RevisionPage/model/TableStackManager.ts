@@ -1,15 +1,15 @@
 import { action, makeObservable } from 'mobx'
 import { container } from 'src/shared/lib/DIContainer.ts'
 import { StackManager, StackRequest } from 'src/shared/lib/Stack'
-import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor/model/StringForeignKeyNodeStore.ts'
-import { RootNodeStore } from 'src/widgets/SchemaEditor/model/RootNodeStore.ts'
-import { createSchemaNode } from 'src/widgets/SchemaEditor/lib/createSchemaNode.ts'
+import type { JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { JsonSchema } from 'src/entities/Schema'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 import { TableFetchDataSource, TableFetchResult } from 'src/pages/RevisionPage/model/TableFetchDataSource.ts'
+import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
+import { RouterService } from 'src/shared/model/RouterService.ts'
+import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 import { toaster } from 'src/shared/ui'
 import {
   TableStackItem,
@@ -28,6 +28,8 @@ export interface TableStackManagerDeps {
   mutationDataSource: TableMutationDataSource
   tableListRefreshService: TableListRefreshService
   fetchDataSourceFactory: () => TableFetchDataSource
+  linkMaker: LinkMaker
+  routerService: RouterService
 }
 
 export class TableStackManager extends StackManager<
@@ -74,7 +76,7 @@ export class TableStackManager extends StackManager<
         this.resolveToParent(item, result.tableId)
         break
       case 'startForeignKeySelection':
-        this.handleStartForeignKeySelection(item as TableCreatingItem | TableUpdatingItem, result.foreignKeyNode)
+        this.handleStartForeignKeySelection(item as TableCreatingItem | TableUpdatingItem, result.resolve)
         break
       case 'cancelForeignKeySelection':
         this.cancelFromItem(item)
@@ -96,10 +98,9 @@ export class TableStackManager extends StackManager<
   private async handleToCloning(item: TableListItem, tableId: string): Promise<void> {
     try {
       const table = await this.fetchTable(tableId)
-      const node = createSchemaNode(table.schema as JsonSchema, { collapse: true })
-      const store = new RootNodeStore(node, table.id)
+      const schema = table.schema as JsonObjectSchema
 
-      const newItem = new TableCreatingItem(this.getMutationDeps(), item.isSelectingForeignKey, store)
+      const newItem = new TableCreatingItem(this.getMutationDeps(), item.isSelectingForeignKey, schema, '')
       this.replaceItem(item, newItem)
     } catch {
       toaster.error({ title: 'Failed to clone table' })
@@ -109,12 +110,9 @@ export class TableStackManager extends StackManager<
   private async handleListToUpdating(item: TableListItem, tableId: string): Promise<void> {
     try {
       const table = await this.fetchTable(tableId)
-      const node = createSchemaNode(table.schema as JsonSchema, { collapse: true })
-      node.setId(table.id)
-      node.submitChanges()
+      const schema = table.schema as JsonObjectSchema
 
-      const store = new RootNodeStore(node, table.id)
-      const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, store)
+      const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, schema, table.id)
       this.replaceItem(item, newItem)
     } catch {
       toaster.error({ title: 'Failed to load table' })
@@ -127,25 +125,34 @@ export class TableStackManager extends StackManager<
   }
 
   private handleCreatingToUpdating(item: TableCreatingItem): void {
-    const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, item.store)
+    const schema = item.viewModel.getPlainSchema()
+    const tableId = item.viewModel.tableId
+    const newItem = new TableUpdatingItem(this.getMutationDeps(), item.isSelectingForeignKey, schema, tableId)
     this.replaceItem(item, newItem, false)
+    this.navigateToTable(tableId)
+  }
+
+  private navigateToTable(tableId: string): void {
+    const path = this.deps.linkMaker.make({ revisionIdOrTag: DRAFT_TAG, tableId })
+    this.deps.routerService.navigate(path)
   }
 
   private handleStartForeignKeySelection(
     item: TableCreatingItem | TableUpdatingItem,
-    foreignKeyNode: StringForeignKeyNodeStore,
+    resolve: (tableId: string | null) => void,
   ): void {
     const savedItem = item
-    const payload: SelectForeignKeyPayload = { foreignKeyNode }
+    const payload: SelectForeignKeyPayload = { resolve }
 
     this.pushRequest(
       item,
       payload,
       (result: SelectForeignKeyResult) => {
-        savedItem.store.setForeignKeyValue(foreignKeyNode, result)
+        resolve(result)
         this.restoreAfterForeignKeySelection(savedItem)
       },
       () => {
+        resolve(null)
         this.restoreAfterForeignKeySelection(savedItem)
       },
     )
@@ -221,6 +228,8 @@ container.register(
       mutationDataSource: container.get(TableMutationDataSource),
       tableListRefreshService: container.get(TableListRefreshService),
       fetchDataSourceFactory: () => container.get(TableFetchDataSource),
+      linkMaker: container.get(LinkMaker),
+      routerService: container.get(RouterService),
     }
     return new TableStackManager(deps)
   },

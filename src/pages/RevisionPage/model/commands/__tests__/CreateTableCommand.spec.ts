@@ -1,3 +1,4 @@
+import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { CreateTableCommand, CreateTableCommandDeps } from '../CreateTableCommand.ts'
 
 const createMockDeps = (
@@ -38,14 +39,27 @@ const createMocks = (
   },
 })
 
+const createSchema = (): JsonObjectSchema => ({
+  type: 'object',
+  properties: {},
+  additionalProperties: false,
+  required: [],
+})
+
+const createViewModel = (tableId: string, schema: JsonObjectSchema = createSchema()): SchemaEditorVM => {
+  return new SchemaEditorVM(schema, { tableId })
+}
+
 describe('CreateTableCommand', () => {
   describe('execute', () => {
     it('should create table with correct params', async () => {
       const { deps, mocks } = createMockDeps()
       const command = new CreateTableCommand(deps)
 
-      const schema = { type: 'object', properties: {}, additionalProperties: false, required: [] }
-      await command.execute('users', schema as never)
+      const schema = createSchema()
+      const viewModel = createViewModel('users', schema)
+
+      await command.execute(viewModel)
 
       expect(mocks.mutationDataSource.createTable).toHaveBeenCalledWith({
         revisionId: 'draft-1',
@@ -58,7 +72,9 @@ describe('CreateTableCommand', () => {
       const { deps } = createMockDeps()
       const command = new CreateTableCommand(deps)
 
-      const result = await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      const result = await command.execute(viewModel)
 
       expect(result).toBe(true)
     })
@@ -67,7 +83,9 @@ describe('CreateTableCommand', () => {
       const { deps, mocks } = createMockDeps({ touched: false })
       const command = new CreateTableCommand(deps)
 
-      await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      await command.execute(viewModel)
 
       expect(mocks.projectContext.updateTouched).toHaveBeenCalledWith(true)
     })
@@ -76,7 +94,9 @@ describe('CreateTableCommand', () => {
       const { deps, mocks } = createMockDeps({ touched: true })
       const command = new CreateTableCommand(deps)
 
-      await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      await command.execute(viewModel)
 
       expect(mocks.projectContext.updateTouched).not.toHaveBeenCalled()
     })
@@ -85,7 +105,9 @@ describe('CreateTableCommand', () => {
       const { deps, mocks } = createMockDeps()
       const command = new CreateTableCommand(deps)
 
-      await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      await command.execute(viewModel)
 
       expect(mocks.tableListRefreshService.refresh).toHaveBeenCalled()
     })
@@ -94,7 +116,9 @@ describe('CreateTableCommand', () => {
       const { deps, mocks } = createMockDeps({ createTableResult: null })
       const command = new CreateTableCommand(deps)
 
-      const result = await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      const result = await command.execute(viewModel)
 
       expect(result).toBe(false)
       expect(mocks.projectContext.updateTouched).not.toHaveBeenCalled()
@@ -106,7 +130,9 @@ describe('CreateTableCommand', () => {
       mocks.mutationDataSource.createTable.mockRejectedValue(new Error('API error'))
       const command = new CreateTableCommand(deps)
 
-      const result = await command.execute('users', {} as never)
+      const viewModel = createViewModel('users')
+
+      const result = await command.execute(viewModel)
 
       expect(result).toBe(false)
     })

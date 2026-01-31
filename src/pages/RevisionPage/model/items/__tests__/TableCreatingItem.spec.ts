@@ -11,11 +11,25 @@ describe('TableCreatingItem', () => {
       expect(item.type).toBe(TableStackItemType.Creating)
     })
 
-    it('should create with new RootNodeStore by default', () => {
+    it('should create with new SchemaEditorVM by default', () => {
       const deps = createMockCreatingDeps()
       const item = new TableCreatingItem(deps, false)
 
-      expect(item.store).toBeDefined()
+      expect(item.viewModel).toBeDefined()
+      expect(item.viewModel.tableId).toBe('')
+    })
+
+    it('should use provided tableId', () => {
+      const deps = createMockCreatingDeps()
+      const schema = {
+        type: 'object' as const,
+        properties: {},
+        additionalProperties: false as const,
+        required: [] as string[],
+      }
+      const item = new TableCreatingItem(deps, false, schema, 'my-table')
+
+      expect(item.viewModel.tableId).toBe('my-table')
     })
 
     it('should set isSelectingForeignKey', () => {
@@ -37,51 +51,42 @@ describe('TableCreatingItem', () => {
     })
   })
 
-  describe('approve', () => {
-    it('should call createTable command on success', async () => {
+  describe('toUpdating', () => {
+    it('should resolve with creatingToUpdating type', () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createTable as jest.Mock).mockResolvedValue({ id: 'new-table' })
-
       const item = new TableCreatingItem(deps, false)
-      item.store.node.setId('new-table')
 
       const resolver = jest.fn()
       item.setResolver(resolver)
 
-      await item.approve()
+      item.toUpdating()
 
-      expect(deps.mutationDataSource.createTable).toHaveBeenCalled()
       expect(resolver).toHaveBeenCalledWith({ type: 'creatingToUpdating' })
     })
+  })
 
-    it('should call selectTable when isSelectingForeignKey', async () => {
+  describe('selectTable', () => {
+    it('should resolve with selectTable type and tableId', () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createTable as jest.Mock).mockResolvedValue({ id: 'new-table' })
-
       const item = new TableCreatingItem(deps, true)
-      item.store.node.setId('new-table')
 
       const resolver = jest.fn()
       item.setResolver(resolver)
 
-      await item.approve()
+      item.selectTable('selected-table')
 
-      expect(resolver).toHaveBeenCalledWith({ type: 'selectTable', tableId: 'new-table' })
+      expect(resolver).toHaveBeenCalledWith({ type: 'selectTable', tableId: 'selected-table' })
     })
+  })
 
-    it('should not resolve on failure', async () => {
+  describe('dispose', () => {
+    it('should dispose mutation data source', () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createTable as jest.Mock).mockResolvedValue(null)
-
       const item = new TableCreatingItem(deps, false)
-      item.store.node.setId('new-table')
 
-      const resolver = jest.fn()
-      item.setResolver(resolver)
+      item.dispose()
 
-      await item.approve()
-
-      expect(resolver).not.toHaveBeenCalled()
+      expect(deps.mutationDataSource.dispose).toHaveBeenCalled()
     })
   })
 })

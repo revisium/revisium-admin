@@ -1,5 +1,4 @@
-import { action, makeObservable } from 'mobx'
-import { RootNodeStore } from 'src/widgets/SchemaEditor/model/RootNodeStore.ts'
+import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 import { UpdateTableCommand } from '../commands'
@@ -14,17 +13,17 @@ export interface TableUpdatingItemDeps extends TableStackItemBaseDeps {
 
 export class TableUpdatingItem extends TableEditorItemBase {
   public readonly type = TableStackItemType.Updating
-  public readonly store: RootNodeStore
+  public readonly viewModel: SchemaEditorVM
 
   private readonly updateTableCommand: UpdateTableCommand
 
   constructor(
     protected override readonly deps: TableUpdatingItemDeps,
     isSelectingForeignKey: boolean,
-    store: RootNodeStore,
+    schema: JsonObjectSchema,
+    tableId: string,
   ) {
     super(deps, isSelectingForeignKey)
-    this.store = store
 
     this.updateTableCommand = new UpdateTableCommand({
       mutationDataSource: deps.mutationDataSource,
@@ -32,20 +31,28 @@ export class TableUpdatingItem extends TableEditorItemBase {
       projectContext: deps.projectContext,
     })
 
-    makeObservable(this, {
-      approve: action.bound,
+    this.viewModel = new SchemaEditorVM(schema, {
+      tableId,
+      mode: 'updating',
+      collapseComplexSchemas: true,
+      onApprove: this.handleApprove,
+      onCancel: this.toList,
+      onSelectForeignKey: this.handleSelectForeignKey,
     })
   }
 
-  public async approve(): Promise<void> {
-    const result = await this.updateTableCommand.execute(this.store)
+  private handleApprove = async (): Promise<boolean> => {
+    return this.updateTableCommand.execute(this.viewModel)
+  }
 
-    if (result) {
-      this.store.submitChanges()
-    }
+  private handleSelectForeignKey = (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      this.startForeignKeySelection(resolve)
+    })
   }
 
   public override dispose(): void {
+    this.viewModel.dispose()
     this.deps.mutationDataSource.dispose()
   }
 }

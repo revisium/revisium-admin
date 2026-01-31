@@ -1,10 +1,9 @@
 import { action, makeObservable } from 'mobx'
-import { RootNodeStore } from 'src/widgets/SchemaEditor/model/RootNodeStore.ts'
-import { StringForeignKeyNodeStore } from 'src/widgets/SchemaEditor/model/StringForeignKeyNodeStore.ts'
+import type { SchemaEditorVM } from '@revisium/schema-toolkit-ui'
 import { TableStackItemBase, TableStackItemBaseDeps } from './TableStackItemBase.ts'
 
 export abstract class TableEditorItemBase extends TableStackItemBase {
-  public abstract readonly store: RootNodeStore
+  public abstract readonly viewModel: SchemaEditorVM
 
   protected constructor(deps: TableStackItemBaseDeps, isSelectingForeignKey: boolean) {
     super(deps, isSelectingForeignKey)
@@ -20,8 +19,8 @@ export abstract class TableEditorItemBase extends TableStackItemBase {
     this.resolve({ type: 'toList' })
   }
 
-  public startForeignKeySelection(foreignKeyNode: StringForeignKeyNodeStore): void {
-    this.resolve({ type: 'startForeignKeySelection', foreignKeyNode })
+  public startForeignKeySelection(resolve: (tableId: string | null) => void): void {
+    this.resolve({ type: 'startForeignKeySelection', resolve })
   }
 
   public cancelForeignKeySelection(): void {

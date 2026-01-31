@@ -85,4 +85,10 @@ export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): TableS
   tableListRefreshService: {
     refresh: jest.fn(),
   } as never,
+  linkMaker: {
+    make: jest.fn().mockReturnValue('/mock/path'),
+  } as never,
+  routerService: {
+    navigate: jest.fn(),
+  } as never,
 })

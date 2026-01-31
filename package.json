@@ -45,6 +45,7 @@
     "@codemirror/lang-markdown": "6.3.2",
     "@emotion/react": "11.14.0",
     "@revisium/formula": "0.9.0",
+    "@revisium/schema-toolkit-ui": "0.1.0",
     "@uiw/codemirror-theme-github": "4.25.4",
     "@uiw/react-codemirror": "4.23.12",
     "@xyflow/react": "12.10.0",
@@ -135,7 +136,8 @@
       "^src/shared/lib/DIContainer\\.ts$": "<rootDir>/__mocks__/DIContainerMock.ts",
       "^src/shared/lib$": "<rootDir>/__mocks__/sharedLibMock.ts",
       "^src/shared/model$": "<rootDir>/__mocks__/sharedModelMock.ts",
-      "^src/shared/model/EnvironmentService\\.ts$": "<rootDir>/__mocks__/EnvironmentServiceMock.ts"
+      "^src/shared/model/EnvironmentService\\.ts$": "<rootDir>/__mocks__/EnvironmentServiceMock.ts",
+      "^nanoid$": "<rootDir>/node_modules/nanoid"
     },
     "setupFilesAfterEnv": [
       "<rootDir>/setup-jest.ts"

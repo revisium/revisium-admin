@@ -25,10 +25,7 @@ export const ShortSchemaEditor: React.FC<ShortSchemaEditorProps> = observer(({ i
           Back
         </Text>
         <Text whiteSpace="nowrap">
-          - {getPrefix(item.type)} "{item.store.draftTableId}" -
-        </Text>
-        <Text minWidth={0} dir="rtl" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          path: {item.pendingForeignKeyPath}
+          - {getPrefix(item.type)} "{item.viewModel.tableId}" -
         </Text>
       </Flex>
     </Box>

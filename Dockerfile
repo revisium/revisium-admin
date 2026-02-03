@@ -4,7 +4,6 @@ WORKDIR /home/app
 
 COPY package.json ./
 COPY package-lock.json ./
-COPY patches ./patches
 
 RUN npm ci --ignore-scripts
 RUN npx patch-package

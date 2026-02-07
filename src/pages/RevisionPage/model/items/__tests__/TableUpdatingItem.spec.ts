@@ -1,10 +1,10 @@
 import { TableUpdatingItem } from '../TableUpdatingItem.ts'
 import { TableStackItemType } from '../../../config/types.ts'
 import { createMockUpdatingDeps } from '../../__tests__/createMockDeps.ts'
-import type { JsonObjectSchema } from '@revisium/schema-toolkit-ui'
+import { JsonSchemaTypeName, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 
 const createSchema = (): JsonObjectSchema => ({
-  type: 'object',
+  type: JsonSchemaTypeName.Object,
   properties: {},
   additionalProperties: false,
   required: [],

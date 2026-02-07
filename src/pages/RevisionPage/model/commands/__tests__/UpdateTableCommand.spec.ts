@@ -1,4 +1,4 @@
-import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
+import { UpdatingEditorVM, JsonSchemaTypeName, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { UpdateTableCommand, UpdateTableCommandDeps } from '../UpdateTableCommand.ts'
 
 interface MockDepsOptions {
@@ -40,21 +40,20 @@ const createMocks = (options: MockDepsOptions = {}) => ({
 })
 
 const createSchema = (properties: Record<string, unknown> = {}): JsonObjectSchema => ({
-  type: 'object',
+  type: JsonSchemaTypeName.Object,
   properties: properties as Record<string, JsonObjectSchema>,
   additionalProperties: false,
   required: Object.keys(properties),
 })
 
-const createViewModel = (tableId: string, schema: JsonObjectSchema = createSchema()): SchemaEditorVM => {
-  const viewModel = new SchemaEditorVM(schema, { tableId, mode: 'updating' })
+const createViewModel = (tableId: string, schema: JsonObjectSchema = createSchema()): UpdatingEditorVM => {
+  const viewModel = new UpdatingEditorVM(schema, { tableId })
   viewModel.markAsSaved()
   return viewModel
 }
 
-const addStringField = (viewModel: SchemaEditorVM, fieldName: string): void => {
-  const rootId = viewModel.engine.root().id()
-  viewModel.engine.addChild(rootId, fieldName)
+const addStringField = (viewModel: UpdatingEditorVM, fieldName: string): void => {
+  viewModel.tree.rootAccessor.actions.addProperty(fieldName)
 }
 
 describe('UpdateTableCommand', () => {

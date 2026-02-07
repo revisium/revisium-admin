@@ -2,7 +2,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonSchema } from 'src/entities/Schema'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
-import type { SchemaEditorVM } from '@revisium/schema-toolkit-ui'
+import type { CreatingEditorVM } from '@revisium/schema-toolkit-ui'
 
 export interface CreateTableCommandDeps {
   mutationDataSource: TableMutationDataSource
@@ -13,7 +13,7 @@ export interface CreateTableCommandDeps {
 export class CreateTableCommand {
   constructor(private readonly deps: CreateTableCommandDeps) {}
 
-  public async execute(viewModel: SchemaEditorVM): Promise<boolean> {
+  public async execute(viewModel: CreatingEditorVM): Promise<boolean> {
     const { mutationDataSource, tableListRefreshService, projectContext } = this.deps
     try {
       const result = await mutationDataSource.createTable({

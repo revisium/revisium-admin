@@ -1,4 +1,4 @@
-import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
+import { UpdatingEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 import { UpdateTableCommand } from '../commands'
@@ -13,7 +13,7 @@ export interface TableUpdatingItemDeps extends TableStackItemBaseDeps {
 
 export class TableUpdatingItem extends TableEditorItemBase {
   public readonly type = TableStackItemType.Updating
-  public readonly viewModel: SchemaEditorVM
+  public readonly viewModel: UpdatingEditorVM
 
   private readonly updateTableCommand: UpdateTableCommand
 
@@ -31,9 +31,8 @@ export class TableUpdatingItem extends TableEditorItemBase {
       projectContext: deps.projectContext,
     })
 
-    this.viewModel = new SchemaEditorVM(schema, {
+    this.viewModel = new UpdatingEditorVM(schema, {
       tableId,
-      mode: 'updating',
       collapseComplexSchemas: true,
       onApprove: this.handleApprove,
       onCancel: this.toList,

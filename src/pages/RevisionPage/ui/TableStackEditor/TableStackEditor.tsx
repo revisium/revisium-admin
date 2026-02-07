@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { SchemaEditor } from '@revisium/schema-toolkit-ui'
+import { CreatingSchemaEditor, UpdatingSchemaEditor } from '@revisium/schema-toolkit-ui'
 import { TableEditorItem } from 'src/pages/RevisionPage/model/items'
+import { TableCreatingItem } from 'src/pages/RevisionPage/model/items'
 import { SelectingForeignKeyDivider } from 'src/pages/RevisionPage/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 
 interface Props {
@@ -12,7 +13,11 @@ export const TableStackEditor: React.FC<Props> = observer(({ item }) => {
   return (
     <>
       {item.isSelectingForeignKey && <SelectingForeignKeyDivider />}
-      <SchemaEditor model={item.viewModel} />
+      {item instanceof TableCreatingItem ? (
+        <CreatingSchemaEditor vm={item.viewModel} />
+      ) : (
+        <UpdatingSchemaEditor vm={item.viewModel} />
+      )}
     </>
   )
 })

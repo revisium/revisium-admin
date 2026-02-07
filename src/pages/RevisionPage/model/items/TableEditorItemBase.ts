@@ -1,9 +1,9 @@
 import { action, makeObservable } from 'mobx'
-import type { SchemaEditorVM } from '@revisium/schema-toolkit-ui'
+import type { CreatingEditorVM, UpdatingEditorVM } from '@revisium/schema-toolkit-ui'
 import { TableStackItemBase, TableStackItemBaseDeps } from './TableStackItemBase.ts'
 
 export abstract class TableEditorItemBase extends TableStackItemBase {
-  public abstract readonly viewModel: SchemaEditorVM
+  public abstract readonly viewModel: CreatingEditorVM | UpdatingEditorVM
 
   protected constructor(deps: TableStackItemBaseDeps, isSelectingForeignKey: boolean) {
     super(deps, isSelectingForeignKey)

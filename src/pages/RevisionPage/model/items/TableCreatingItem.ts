@@ -1,5 +1,5 @@
 import { action, makeObservable } from 'mobx'
-import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
+import { CreatingEditorVM, JsonSchemaTypeName, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
 import { CreateTableCommand } from '../commands'
@@ -8,7 +8,7 @@ import { TableStackItemBaseDeps } from './TableStackItemBase.ts'
 import { TableEditorItemBase } from './TableEditorItemBase.ts'
 
 const DEFAULT_SCHEMA: JsonObjectSchema = {
-  type: 'object',
+  type: JsonSchemaTypeName.Object,
   properties: {},
   additionalProperties: false,
   required: [],
@@ -21,7 +21,7 @@ export interface TableCreatingItemDeps extends TableStackItemBaseDeps {
 
 export class TableCreatingItem extends TableEditorItemBase {
   public readonly type = TableStackItemType.Creating
-  public readonly viewModel: SchemaEditorVM
+  public readonly viewModel: CreatingEditorVM
 
   private readonly createTableCommand: CreateTableCommand
 
@@ -39,9 +39,8 @@ export class TableCreatingItem extends TableEditorItemBase {
       projectContext: deps.projectContext,
     })
 
-    this.viewModel = new SchemaEditorVM(schema, {
+    this.viewModel = new CreatingEditorVM(schema, {
       tableId,
-      mode: 'creating',
       collapseComplexSchemas: true,
       onApprove: this.handleApprove,
       onCancel: this.toList,

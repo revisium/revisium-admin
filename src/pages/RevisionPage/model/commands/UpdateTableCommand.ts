@@ -2,7 +2,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonPatch } from 'src/entities/Schema/types/json-patch.types.ts'
 import { TableMutationDataSource } from 'src/pages/RevisionPage/model/TableMutationDataSource.ts'
 import { TableListRefreshService } from 'src/widgets/TableList/model/TableListRefreshService.ts'
-import type { SchemaEditorVM } from '@revisium/schema-toolkit-ui'
+import type { UpdatingEditorVM } from '@revisium/schema-toolkit-ui'
 
 export interface UpdateTableCommandDeps {
   mutationDataSource: TableMutationDataSource
@@ -13,7 +13,7 @@ export interface UpdateTableCommandDeps {
 export class UpdateTableCommand {
   constructor(private readonly deps: UpdateTableCommandDeps) {}
 
-  public async execute(viewModel: SchemaEditorVM): Promise<boolean> {
+  public async execute(viewModel: UpdatingEditorVM): Promise<boolean> {
     const { mutationDataSource, tableListRefreshService, projectContext } = this.deps
 
     try {

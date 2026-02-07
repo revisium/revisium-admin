@@ -1,4 +1,4 @@
-import { SchemaEditorVM, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
+import { CreatingEditorVM, JsonSchemaTypeName, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { CreateTableCommand, CreateTableCommandDeps } from '../CreateTableCommand.ts'
 
 const createMockDeps = (
@@ -40,14 +40,14 @@ const createMocks = (
 })
 
 const createSchema = (): JsonObjectSchema => ({
-  type: 'object',
+  type: JsonSchemaTypeName.Object,
   properties: {},
   additionalProperties: false,
   required: [],
 })
 
-const createViewModel = (tableId: string, schema: JsonObjectSchema = createSchema()): SchemaEditorVM => {
-  return new SchemaEditorVM(schema, { tableId })
+const createViewModel = (tableId: string, schema: JsonObjectSchema = createSchema()): CreatingEditorVM => {
+  return new CreatingEditorVM(schema, { tableId })
 }
 
 describe('CreateTableCommand', () => {

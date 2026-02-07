@@ -1,3 +1,4 @@
+import { JsonSchemaTypeName, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { TableCreatingItem } from '../TableCreatingItem.ts'
 import { TableStackItemType } from '../../../config/types.ts'
 import { createMockCreatingDeps } from '../../__tests__/createMockDeps.ts'
@@ -21,11 +22,11 @@ describe('TableCreatingItem', () => {
 
     it('should use provided tableId', () => {
       const deps = createMockCreatingDeps()
-      const schema = {
-        type: 'object' as const,
+      const schema: JsonObjectSchema = {
+        type: JsonSchemaTypeName.Object,
         properties: {},
-        additionalProperties: false as const,
-        required: [] as string[],
+        additionalProperties: false,
+        required: [],
       }
       const item = new TableCreatingItem(deps, false, schema, 'my-table')
 

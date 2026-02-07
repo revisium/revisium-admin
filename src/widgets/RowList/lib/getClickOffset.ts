@@ -15,7 +15,7 @@ export const getClickOffset = (
   }
 
   const textNode = textElement.firstChild
-  if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+  if (textNode?.nodeType !== Node.TEXT_NODE) {
     return undefined
   }
 

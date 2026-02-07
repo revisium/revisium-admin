@@ -53,7 +53,7 @@ export class TableCreatingItem extends TableEditorItemBase {
     })
   }
 
-  private handleApprove = async (): Promise<boolean> => {
+  private readonly handleApprove = async (): Promise<boolean> => {
     const result = await this.createTableCommand.execute(this.viewModel)
 
     if (result) {
@@ -67,7 +67,7 @@ export class TableCreatingItem extends TableEditorItemBase {
     return result
   }
 
-  private handleSelectForeignKey = (): Promise<string | null> => {
+  private readonly handleSelectForeignKey = (): Promise<string | null> => {
     return new Promise((resolve) => {
       this.startForeignKeySelection(resolve)
     })

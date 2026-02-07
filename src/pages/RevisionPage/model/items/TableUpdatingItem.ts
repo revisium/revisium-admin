@@ -40,11 +40,11 @@ export class TableUpdatingItem extends TableEditorItemBase {
     })
   }
 
-  private handleApprove = async (): Promise<boolean> => {
+  private readonly handleApprove = async (): Promise<boolean> => {
     return this.updateTableCommand.execute(this.viewModel)
   }
 
-  private handleSelectForeignKey = (): Promise<string | null> => {
+  private readonly handleSelectForeignKey = (): Promise<string | null> => {
     return new Promise((resolve) => {
       this.startForeignKeySelection(resolve)
     })

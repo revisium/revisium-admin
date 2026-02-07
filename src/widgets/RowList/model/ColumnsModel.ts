@@ -483,7 +483,7 @@ export class ColumnsModel {
   ): CachedRowData {
     const cached = this._rowCache.get(row.id)
 
-    if (cached && cached.versionId === row.versionId) {
+    if (cached?.versionId === row.versionId) {
       return cached
     }
 

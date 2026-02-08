@@ -12,12 +12,12 @@ interface FileCellDisplayProps {
 }
 
 export const FileCellDisplay: FC<FileCellDisplayProps> = observer(({ node, isReadonly, onUpload }) => {
-  const status = node.child('status')?.value as string ?? ''
-  const fileId = node.child('fileId')?.value as string ?? ''
-  const url = node.child('url')?.value as string ?? ''
-  const mimeType = node.child('mimeType')?.value as string ?? ''
-  const width = node.child('width')?.value as number ?? 0
-  const height = node.child('height')?.value as number ?? 0
+  const status = (node.child('status')?.value as string) ?? ''
+  const fileId = (node.child('fileId')?.value as string) ?? ''
+  const url = (node.child('url')?.value as string) ?? ''
+  const mimeType = (node.child('mimeType')?.value as string) ?? ''
+  const width = (node.child('width')?.value as number) ?? 0
+  const height = (node.child('height')?.value as number) ?? 0
 
   const isImage = mimeType.startsWith('image/')
   const hasUrl = Boolean(url)

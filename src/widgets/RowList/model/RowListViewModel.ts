@@ -473,11 +473,13 @@ export class RowListViewModel implements IViewModel {
       runInAction(() => {
         if (result.isRight) {
           const newRows = result.data.rows.edges.map((edge) => edge.node)
+          const retainRowIds = new Set(this.items.map((item) => item.id))
           const newItems = this.columnsModel.createRowViewModels(newRows, {
             isEdit: this.isEdit,
             projectPermissions: this.projectPermissions,
             inlineEditModel: this.inlineEdit,
             onDelete: this.deleteRow,
+            retainRowIds,
           })
           this.listState.appendItems(newItems, {
             hasNextPage: result.data.rows.pageInfo.hasNextPage,

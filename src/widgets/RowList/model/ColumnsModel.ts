@@ -430,6 +430,7 @@ export class ColumnsModel {
       projectPermissions: ProjectPermissions
       inlineEditModel: InlineEditModel
       onDelete: (rowId: string) => Promise<boolean>
+      retainRowIds?: Set<string>
     },
   ): RowItemViewModel[] {
     if (!this._schema) {
@@ -437,6 +438,11 @@ export class ColumnsModel {
     }
 
     const currentRowIds = new Set(rows.map((r) => r.id))
+    if (options.retainRowIds) {
+      for (const id of options.retainRowIds) {
+        currentRowIds.add(id)
+      }
+    }
     this.cleanupStaleRows(currentRowIds)
 
     return rows.map((row) => {

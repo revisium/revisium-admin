@@ -103,7 +103,7 @@ export class CellSaveService {
   }
 
   private rollbackOptimisticUpdate(node: PrimitiveValueNode | undefined, oldValue: PrimitiveValue | undefined): void {
-    if (!node || oldValue === undefined) {
+    if (!node || oldValue == null) {
       return
     }
     node.setValue(oldValue)

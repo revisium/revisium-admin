@@ -1,12 +1,9 @@
 import { makeAutoObservable, observable } from 'mobx'
+import { createTableModel, type TableModel, type RowModel, type JsonObjectSchema } from '@revisium/schema-toolkit-ui'
 import { RowListItemFragment, TableViewsDataFragment } from 'src/__generated__/graphql-request'
-import { FormulaEngine, JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
-import { SystemSchemaIds } from 'src/entities/Schema/config/consts'
+import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
+import { schemaRefsMapper } from 'src/entities/Schema/config/schema-refs-mapper'
 import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
-import { traverseValue } from 'src/entities/Schema/lib/traverseValue'
-import { createJsonValueStore } from 'src/entities/Schema/model/value/createJsonValueStore'
-import { JsonValueStore } from 'src/entities/Schema/model/value/json-value.store'
-import { JsonValue } from 'src/entities/Schema/types/json.types'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { extractAvailableFields } from 'src/widgets/RowList/lib/extractAvailableFields'
 import { getColumnBySchema } from 'src/widgets/RowList/lib/getColumnBySchema'
@@ -39,6 +36,7 @@ function buildSystemColumns(): AvailableField[] {
       nodeId: id,
       name: config.name,
       path: [],
+      valuePath: '',
       fieldType: config.fieldType,
       isSystemField: true,
       systemFieldId: id,
@@ -49,30 +47,29 @@ function buildSystemColumns(): AvailableField[] {
 
 const SYSTEM_COLUMNS = buildSystemColumns()
 
-interface CachedRowData {
-  versionId: string
-  rootValue: JsonValueStore
-  cells: Map<string, JsonValueStore>
-  formulaEngine: FormulaEngine | null
-}
-
 export class ColumnsModel {
   private _visibleColumnIds: string[] = []
   private _availableFields: AvailableField[] = []
   private readonly _availableFieldsMap = new Map<string, AvailableField>()
   private _availableSystemFields: AvailableField[] = []
   private _schemaStore: ReturnType<typeof createJsonSchemaStore> | null = null
-  private readonly _rowCache = new Map<string, CachedRowData>()
+  private _schema: JsonSchema | null = null
+  private _tableModel: TableModel | null = null
+  private readonly _rowVersions = new Map<string, string>()
   private readonly _columnCache = new Map<string, ColumnType>()
   private readonly _columnWidths = observable.map<string, number>()
   private _idColumnWidth = DEFAULT_ID_COLUMN_WIDTH
   private _onColumnsChange: (() => void) | null = null
 
   constructor() {
-    makeAutoObservable<ColumnsModel, '_rowCache' | '_columnCache' | '_columnWidths' | '_availableFieldsMap'>(
+    makeAutoObservable<
+      ColumnsModel,
+      '_tableModel' | '_rowVersions' | '_columnCache' | '_columnWidths' | '_availableFieldsMap'
+    >(
       this,
       {
-        _rowCache: false,
+        _tableModel: false,
+        _rowVersions: false,
         _columnCache: false,
         _columnWidths: false,
         _availableFieldsMap: false,
@@ -257,9 +254,15 @@ export class ColumnsModel {
   }
 
   public init(schema: JsonSchema, options?: { showAllColumns?: boolean }): void {
+    this._schema = schema
     this._schemaStore = createJsonSchemaStore(schema)
-    this.disposeAllFormulaEngines()
-    this._rowCache.clear()
+    this._tableModel?.dispose()
+    this._tableModel = createTableModel({
+      tableId: 'rowList',
+      schema: schema as unknown as JsonObjectSchema,
+      refSchemas: schemaRefsMapper as unknown as Record<string, JsonObjectSchema>,
+    })
+    this._rowVersions.clear()
     this._columnCache.clear()
     this._columnWidths.clear()
     this._availableFieldsMap.clear()
@@ -427,22 +430,28 @@ export class ColumnsModel {
       projectPermissions: ProjectPermissions
       inlineEditModel: InlineEditModel
       onDelete: (rowId: string) => Promise<boolean>
+      retainRowIds?: Set<string>
     },
   ): RowItemViewModel[] {
-    const schemaStore = this._schemaStore
-    if (!schemaStore) {
+    if (!this._schema) {
       return []
     }
 
     const currentRowIds = new Set(rows.map((r) => r.id))
-    this.cleanupStaleCache(currentRowIds)
+    if (options.retainRowIds) {
+      for (const id of options.retainRowIds) {
+        currentRowIds.add(id)
+      }
+    }
+    this.cleanupStaleRows(currentRowIds)
 
     return rows.map((row) => {
-      const cachedData = this.getOrCreateCachedRowData(schemaStore, row)
+      const rowModel = this.getOrCreateRowModel(row)
 
       return new RowItemViewModel({
         item: row,
-        cellsMap: cachedData.cells,
+        rowModel,
+        getPathForColumn: this.getPathForColumn,
         isEdit: options.isEdit,
         projectPermissions: options.projectPermissions,
         inlineEditModel: options.inlineEditModel,
@@ -451,65 +460,36 @@ export class ColumnsModel {
     })
   }
 
-  public getVisibleCells(cellsMap: Map<string, JsonValueStore>): JsonValueStore[] {
-    return this._visibleColumnIds
-      .map((nodeId) => cellsMap.get(nodeId))
-      .filter((cell): cell is JsonValueStore => cell !== undefined)
+  public getPathForColumn(columnId: string): string | undefined {
+    const field = this._availableFieldsMap.get(columnId)
+    if (!field) {
+      return undefined
+    }
+    return field.valuePath || undefined
   }
 
-  private cleanupStaleCache(currentRowIds: Set<string>): void {
-    for (const cachedRowId of this._rowCache.keys()) {
-      if (!currentRowIds.has(cachedRowId)) {
-        const cached = this._rowCache.get(cachedRowId)
-        if (cached?.formulaEngine) {
-          cached.formulaEngine.dispose()
-        }
-        this._rowCache.delete(cachedRowId)
+  private cleanupStaleRows(currentRowIds: Set<string>): void {
+    for (const rowId of this._rowVersions.keys()) {
+      if (!currentRowIds.has(rowId)) {
+        this._tableModel?.removeRow(rowId)
+        this._rowVersions.delete(rowId)
       }
     }
   }
 
-  private disposeAllFormulaEngines(): void {
-    for (const cached of this._rowCache.values()) {
-      if (cached.formulaEngine) {
-        cached.formulaEngine.dispose()
+  private getOrCreateRowModel(row: RowListItemFragment): RowModel {
+    if (this._rowVersions.get(row.id) === row.versionId) {
+      const existing = this._tableModel!.getRow(row.id)
+      if (existing) {
+        return existing
       }
     }
-  }
 
-  private getOrCreateCachedRowData(
-    schemaStore: ReturnType<typeof createJsonSchemaStore>,
-    row: RowListItemFragment,
-  ): CachedRowData {
-    const cached = this._rowCache.get(row.id)
+    this._tableModel!.removeRow(row.id)
+    const rowModel = this._tableModel!.addRow(row.id, row.data ?? {})
+    this._rowVersions.set(row.id, row.versionId)
 
-    if (cached?.versionId === row.versionId) {
-      return cached
-    }
-
-    if (cached?.formulaEngine) {
-      cached.formulaEngine.dispose()
-    }
-
-    const rootValue = createJsonValueStore(schemaStore, row.id, (row.data ?? {}) as JsonValue)
-    const cells = new Map<string, JsonValueStore>()
-
-    traverseValue(rootValue, (node) => {
-      cells.set(node.schema.nodeId, node)
-
-      if (node.type === JsonSchemaTypeName.Object && node.$ref === SystemSchemaIds.File) {
-        for (const [propName, propValue] of Object.entries(node.value)) {
-          const syntheticNodeId = `${node.schema.nodeId}:${propName}`
-          cells.set(syntheticNodeId, propValue)
-        }
-      }
-    })
-
-    const formulaEngine = new FormulaEngine(rootValue)
-    const newCachedData: CachedRowData = { versionId: row.versionId, rootValue, cells, formulaEngine }
-    this._rowCache.set(row.id, newCachedData)
-
-    return newCachedData
+    return rowModel
   }
 
   public restoreFromView(view: TableViewsDataFragment['views'][0] | undefined): void {

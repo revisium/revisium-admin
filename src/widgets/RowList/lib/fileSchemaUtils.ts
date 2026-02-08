@@ -1,11 +1,11 @@
-import { JsonSchemaTypeName } from 'src/entities/Schema'
-import { fileSchema } from 'src/shared/schema/plugins/file-schema'
+import { JsonSchemaTypeName, fileSchema } from '@revisium/schema-toolkit-ui'
 import { FilterFieldType } from '../model/filterTypes'
 
 export interface FileNestedFieldInfo {
   nodeId: string
   name: string
   path: string[]
+  valuePath: string
   fieldType: FilterFieldType | null
 }
 
@@ -18,6 +18,7 @@ export function iterateFileSchemaProperties(
 
   for (const [propName, propSchema] of Object.entries(fileSchema.properties)) {
     const path = [...parentPath, propName]
+    const valuePath = path.join('.')
     const name = `${parentName}.${propName}`
     const nodeId = `${parentNodeId}:${propName}`
 
@@ -30,7 +31,7 @@ export function iterateFileSchemaProperties(
       }
     }
 
-    result.push({ nodeId, name, path, fieldType })
+    result.push({ nodeId, name, path, valuePath, fieldType })
   }
 
   return result

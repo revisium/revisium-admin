@@ -228,7 +228,7 @@ export class RowListViewModel implements IViewModel {
       tableId: this._tableId,
       getVisibleFields: this.getVisibleFields,
       getVisibleRowIds: this.getVisibleRowIds,
-      getCellStore: this.getCellStore,
+      getCellNode: this.getCellNode,
       isCellReadonly: this.isCellReadonly,
     })
     void this.loadViewsAndData()
@@ -404,22 +404,33 @@ export class RowListViewModel implements IViewModel {
     return this.items.map((item) => item.id)
   }
 
-  private readonly getCellStore = (rowId: string, field: string) => {
+  private readonly getCellNode = (rowId: string, columnId: string) => {
     const row = this.items.find((item) => item.id === rowId)
-    return row?.cellsMap.get(field)
+    if (!row) {
+      return undefined
+    }
+    const path = this.columnsModel.getPathForColumn(columnId)
+    if (!path) {
+      return undefined
+    }
+    const node = row.rowModel.get(path)
+    if (node?.isPrimitive()) {
+      return node
+    }
+    return undefined
   }
 
-  private readonly isCellReadonly = (rowId: string, field: string): boolean => {
+  private readonly isCellReadonly = (rowId: string, columnId: string): boolean => {
     if (!this.isEdit) {
       return true
     }
 
-    const store = this.getCellStore(rowId, field)
-    if (!store) {
+    const node = this.getCellNode(rowId, columnId)
+    if (!node) {
       return true
     }
 
-    return 'readOnly' in store && store.readOnly === true
+    return node.isReadOnly
   }
 
   public dispose(): void {
@@ -462,11 +473,13 @@ export class RowListViewModel implements IViewModel {
       runInAction(() => {
         if (result.isRight) {
           const newRows = result.data.rows.edges.map((edge) => edge.node)
+          const retainRowIds = new Set(this.items.map((item) => item.id))
           const newItems = this.columnsModel.createRowViewModels(newRows, {
             isEdit: this.isEdit,
             projectPermissions: this.projectPermissions,
             inlineEditModel: this.inlineEdit,
             onDelete: this.deleteRow,
+            retainRowIds,
           })
           this.listState.appendItems(newItems, {
             hasNextPage: result.data.rows.pageInfo.hasNextPage,

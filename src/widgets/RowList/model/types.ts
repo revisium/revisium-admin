@@ -20,6 +20,7 @@ export interface AvailableField {
   nodeId: string
   name: string
   path: string[]
+  valuePath: string
   fieldType: FilterFieldType | null
   schemaStore?: JsonSchemaStore
   isSystemField?: boolean

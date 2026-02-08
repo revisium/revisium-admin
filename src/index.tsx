@@ -1,3 +1,4 @@
+import { ensureReactivityProvider } from '@revisium/schema-toolkit-ui'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { getEnv } from 'src/shared/env/getEnv.ts'
@@ -10,6 +11,8 @@ declare global {
     __env__: Record<string, string | number> | undefined
   }
 }
+
+ensureReactivityProvider()
 
 const container = document.getElementById('root')
 

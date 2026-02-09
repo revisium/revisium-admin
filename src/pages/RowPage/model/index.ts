@@ -2,7 +2,7 @@ export { RowStackManager, type RowStackManagerDeps, type RowStackItem } from './
 export { RowFetchDataSource, type RowFetchParams, type RowFetchResult } from './RowFetchDataSource.ts'
 export { RowStackItemFactory, type RowStackItemFactoryDeps } from './RowStackItemFactory.ts'
 export { ForeignSchemaCache } from './ForeignSchemaCache.ts'
-export { RowDataCardStoreFactory } from './RowDataCardStoreFactory.ts'
+export { RowEditorState } from './RowEditorState.ts'
 import './RowStackManager.registration.ts'
 export * from './items'
 export * from './commands'

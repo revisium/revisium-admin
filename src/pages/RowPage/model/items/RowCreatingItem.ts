@@ -1,22 +1,23 @@
 import { action, computed, makeObservable, observable } from 'mobx'
-import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { CreateRowCommand } from '../commands'
 import { RowStackItemType } from '../../config/types.ts'
+import { RowEditorState } from '../RowEditorState.ts'
 import { RowEditorItemBase, RowEditorItemBaseDeps } from './RowEditorItemBase.ts'
 
 export type RowCreatingItemDeps = RowEditorItemBaseDeps
 
 export class RowCreatingItem extends RowEditorItemBase {
   public readonly type = RowStackItemType.Creating
-  public readonly store: RowDataCardStore
+  public readonly state: RowEditorState
 
   private _isLoading = false
 
   private readonly createRowCommand: CreateRowCommand
 
-  constructor(deps: RowCreatingItemDeps, isSelectingForeignKey: boolean, store: RowDataCardStore) {
+  constructor(deps: RowCreatingItemDeps, isSelectingForeignKey: boolean, state: RowEditorState) {
     super(deps, isSelectingForeignKey)
-    this.store = store
+    this.state = state
 
     this.createRowCommand = new CreateRowCommand({
       mutationDataSource: deps.mutationDataSource,
@@ -40,12 +41,12 @@ export class RowCreatingItem extends RowEditorItemBase {
   }
 
   public get rowId(): string {
-    return this.store.name.getPlainValue()
+    return this.state.editor.rowId
   }
 
   public async approve(): Promise<string | null> {
-    const rowId = this.store.name.getPlainValue()
-    const data = this.store.root.getPlainValue()
+    const rowId = this.state.editor.rowId
+    const data = this.state.editor.getValue() as JsonValue
 
     this._isLoading = true
 
@@ -53,7 +54,7 @@ export class RowCreatingItem extends RowEditorItemBase {
       const result = await this.createRowCommand.execute(rowId, data)
 
       if (result) {
-        this.store.save()
+        this.state.editor.markAsSaved()
         if (this.isSelectingForeignKey) {
           this.selectForeignKeyRow(rowId)
         } else {

@@ -5,7 +5,7 @@ jest.mock('src/widgets/TreeDataCard', () => ({
 import { RowStackItemFactory, RowStackItemFactoryDeps } from '../RowStackItemFactory.ts'
 import { RowStackItemType } from '../../config/types.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'
-import { createMockRowDataCardStore, createMockNotifications, createMockNavigation } from './createMockDeps.ts'
+import { createMockNotifications, createMockNavigation } from './createMockDeps.ts'
 
 const createTestSchema = (): JsonObjectSchema =>
   ({
@@ -40,16 +40,15 @@ const createMockFactoryDeps = (): RowStackItemFactoryDeps => ({
   rowListRefreshService: {
     refresh: jest.fn(),
   } as never,
-  storeFactory: {
-    createEmpty: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-    createFromClone: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-    createForUpdating: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-  } as never,
   schemaCache: {
     get: jest.fn().mockReturnValue(createTestSchema()),
+    getOrThrow: jest.fn().mockReturnValue(createTestSchema()),
   } as never,
   notifications: createMockNotifications(),
   navigation: createMockNavigation(),
+  searchForeignKey: jest.fn().mockResolvedValue({ ids: [], hasMore: false }),
+  requestForeignKeySelection: jest.fn().mockResolvedValue(null),
+  requestForeignKeyCreation: jest.fn().mockResolvedValue(null),
 })
 
 describe('RowStackItemFactory', () => {
@@ -97,14 +96,15 @@ describe('RowStackItemFactory', () => {
       expect(item.isSelectingForeignKey).toBe(false)
     })
 
-    it('should use storeFactory.createEmpty', () => {
+    it('should create RowEditorState with creating mode', () => {
       const deps = createMockFactoryDeps()
       const factory = new RowStackItemFactory(deps)
       const schema = createTestSchema()
 
-      factory.createCreatingItem('users', schema, false)
+      const item = factory.createCreatingItem('users', schema, false)
 
-      expect(deps.storeFactory.createEmpty).toHaveBeenCalledWith(schema, 'users')
+      expect(item.state).toBeDefined()
+      expect(item.state.editor).toBeDefined()
     })
   })
 
@@ -120,28 +120,16 @@ describe('RowStackItemFactory', () => {
       expect(item.type).toBe(RowStackItemType.Creating)
     })
 
-    it('should use storeFactory.createFromClone', () => {
+    it('should create RowEditorState with initial value', () => {
       const deps = createMockFactoryDeps()
       const factory = new RowStackItemFactory(deps)
       const schema = createTestSchema()
       const sourceData = { name: 'Original' }
 
-      factory.createCreatingItemFromClone('users', schema, sourceData, false)
+      const item = factory.createCreatingItemFromClone('users', schema, sourceData, false)
 
-      expect(deps.storeFactory.createFromClone).toHaveBeenCalledWith(schema, 'users', sourceData)
-    })
-  })
-
-  describe('createCreatingItemWithStore', () => {
-    it('should create RowCreatingItem with provided store', () => {
-      const deps = createMockFactoryDeps()
-      const factory = new RowStackItemFactory(deps)
-      const store = createMockRowDataCardStore()
-
-      const item = factory.createCreatingItemWithStore('users', store as never, false)
-
-      expect(item.type).toBe(RowStackItemType.Creating)
-      expect(item.store).toBe(store)
+      expect(item.state).toBeDefined()
+      expect(item.state.editor).toBeDefined()
     })
   })
 
@@ -159,28 +147,32 @@ describe('RowStackItemFactory', () => {
       expect(item.isSelectingForeignKey).toBe(false)
     })
 
-    it('should use storeFactory.createForUpdating', () => {
+    it('should create RowEditorState with editing mode', () => {
       const deps = createMockFactoryDeps()
       const factory = new RowStackItemFactory(deps)
       const schema = createTestSchema()
       const data = { name: 'Test' }
 
-      factory.createUpdatingItem('users', schema, 'row-123', data, 2, false)
+      const item = factory.createUpdatingItem('users', schema, 'row-123', data, 2, false)
 
-      expect(deps.storeFactory.createForUpdating).toHaveBeenCalledWith(schema, 'row-123', data, 2)
+      expect(item.state).toBeDefined()
+      expect(item.state.editor).toBeDefined()
     })
   })
 
-  describe('createUpdatingItemWithStore', () => {
-    it('should create RowUpdatingItem with provided store', () => {
+  describe('createUpdatingItemWithState', () => {
+    it('should create RowUpdatingItem with provided state', () => {
       const deps = createMockFactoryDeps()
       const factory = new RowStackItemFactory(deps)
-      const store = createMockRowDataCardStore()
+      const schema = createTestSchema()
 
-      const item = factory.createUpdatingItemWithStore('users', store as never, 'row-123', false)
+      const existingItem = factory.createUpdatingItem('users', schema, 'row-123', { name: 'Test' }, 0, false)
+      const state = existingItem.state
+
+      const item = factory.createUpdatingItemWithState('users', state, 'row-123', false)
 
       expect(item.type).toBe(RowStackItemType.Updating)
-      expect(item.store).toBe(store)
+      expect(item.state).toBe(state)
       expect(item.originalRowId).toBe('row-123')
     })
   })

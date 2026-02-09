@@ -1,29 +1,24 @@
 import { action, computed, makeObservable, observable } from 'mobx'
-import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { UpdateRowCommand } from '../commands'
 import { RowStackItemType } from '../../config/types.ts'
+import { RowEditorState } from '../RowEditorState.ts'
 import { RowEditorItemBase, RowEditorItemBaseDeps } from './RowEditorItemBase.ts'
 
 export type RowUpdatingItemDeps = RowEditorItemBaseDeps
 
 export class RowUpdatingItem extends RowEditorItemBase {
   public readonly type = RowStackItemType.Updating
-  public readonly store: RowDataCardStore
+  public readonly state: RowEditorState
   public readonly originalRowId: string
 
   private _isLoading = false
 
   private readonly updateRowCommand: UpdateRowCommand
 
-  constructor(
-    deps: RowUpdatingItemDeps,
-    isSelectingForeignKey: boolean,
-    store: RowDataCardStore,
-    originalRowId: string,
-  ) {
+  constructor(deps: RowUpdatingItemDeps, isSelectingForeignKey: boolean, state: RowEditorState, originalRowId: string) {
     super(deps, isSelectingForeignKey)
-    this.store = store
+    this.state = state
     this.originalRowId = originalRowId
 
     this.updateRowCommand = new UpdateRowCommand({
@@ -53,18 +48,23 @@ export class RowUpdatingItem extends RowEditorItemBase {
   }
 
   public get currentRowId(): string {
-    return this.store.name.getPlainValue()
+    return this.state.editor.rowId
   }
 
   public async approve(): Promise<boolean> {
     this._isLoading = true
 
     try {
-      const result = await this.updateRowCommand.execute(this.store, this.originalRowId)
+      const result = await this.updateRowCommand.execute({
+        currentRowId: this.state.editor.rowId,
+        originalRowId: this.originalRowId,
+        data: this.state.editor.getValue() as JsonValue,
+        isRowIdChanged: this.state.editor.isRowIdChanged,
+        isDirty: this.state.editor.isDirty,
+      })
 
       if (result) {
-        this.store.save()
-        this.store.syncReadOnlyStores()
+        this.state.editor.markAsSaved()
         return true
       }
 
@@ -83,14 +83,14 @@ export class RowUpdatingItem extends RowEditorItemBase {
   }
 
   public revert(): void {
-    this.store.reset()
+    this.state.editor.revert()
   }
 
   public async uploadFile(fileId: string, file: File): Promise<JsonValue | null> {
     const result = await this.deps.mutationDataSource.uploadFile({
       revisionId: this.deps.projectContext.revisionId,
       tableId: this.tableId,
-      rowId: this.store.name.getPlainValue(),
+      rowId: this.state.editor.rowId,
       fileId,
       file,
     })
@@ -105,21 +105,31 @@ export class RowUpdatingItem extends RowEditorItemBase {
     return null
   }
 
-  public async uploadFileWithNotification(fileId: string, file: File): Promise<void> {
+  public async uploadFileWithNotification(fileId: string, file: File): Promise<Record<string, unknown> | null> {
     const toastId = this.deps.notifications.onUploadStart()
 
-    const freshData = await this.uploadFile(fileId, file)
+    const freshRowData = await this.uploadFile(fileId, file)
 
-    if (freshData) {
+    if (freshRowData) {
       this.deps.notifications.onUploadSuccess(toastId)
-      this.syncReadOnlyStores(freshData)
-      this.deps.navigation.navigateToRow(this.tableId, this.currentRowId)
-    } else {
-      this.deps.notifications.onUploadError(toastId)
+      return this.extractFileFieldData(fileId, freshRowData)
     }
+
+    this.deps.notifications.onUploadError(toastId)
+    return null
   }
 
-  public syncReadOnlyStores(freshData?: JsonValue): void {
-    this.store.syncReadOnlyStores(freshData)
+  private extractFileFieldData(fileId: string, rowData: JsonValue): Record<string, unknown> | null {
+    if (typeof rowData !== 'object' || rowData === null || Array.isArray(rowData)) {
+      return null
+    }
+
+    for (const value of Object.values(rowData as Record<string, unknown>)) {
+      if (typeof value === 'object' && value !== null && (value as Record<string, unknown>).fileId === fileId) {
+        return value as Record<string, unknown>
+      }
+    }
+
+    return null
   }
 }

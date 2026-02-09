@@ -3,7 +3,6 @@ import { StackManager, StackRequest } from 'src/shared/lib/Stack'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'
-import { JsonStringValueStore } from 'src/entities/Schema/model/value/json-string-value.store.ts'
 import { RouterParams } from 'src/shared/model/RouterParams.ts'
 import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
 import { RowStackItemFactory } from './RowStackItemFactory.ts'
@@ -117,6 +116,69 @@ export class RowStackManager
     }
   }
 
+  public async requestForeignKeySelection(
+    item: RowCreatingItem | RowUpdatingItem,
+    foreignTableId: string,
+  ): Promise<string | null> {
+    try {
+      await this.deps.schemaCache.load(this.revisionId, foreignTableId)
+    } catch {
+      this.deps.onError?.('Failed to load foreign table')
+      return null
+    }
+
+    return new Promise((resolve) => {
+      const savedItem = item
+      const payload: SelectForeignKeyRowPayload = { foreignTableId }
+
+      this.pushRequest(
+        item,
+        payload,
+        (result: SelectForeignKeyRowResult) => {
+          this.restoreAfterForeignKeySelection(savedItem)
+          resolve(result)
+        },
+        () => {
+          this.restoreAfterForeignKeySelection(savedItem)
+          resolve(null)
+        },
+      )
+    })
+  }
+
+  public async requestForeignKeyCreation(
+    item: RowCreatingItem | RowUpdatingItem,
+    foreignTableId: string,
+  ): Promise<string | null> {
+    try {
+      await this.deps.schemaCache.load(this.revisionId, foreignTableId)
+    } catch {
+      this.deps.onError?.('Failed to load foreign table')
+      return null
+    }
+
+    return new Promise((resolve) => {
+      const savedItem = item
+      const payload: SelectForeignKeyRowPayload = { foreignTableId }
+
+      this.pushRequest(
+        item,
+        payload,
+        (result: SelectForeignKeyRowResult) => {
+          this.restoreAfterForeignKeySelection(savedItem)
+          resolve(result)
+        },
+        () => {
+          this.restoreAfterForeignKeySelection(savedItem)
+          resolve(null)
+        },
+      )
+
+      const lastItem = this.stack[this.stack.length - 1] as RowListItem
+      lastItem.toCreating()
+    })
+  }
+
   protected handleItemResult(item: RowStackItem, result: RowStackItemResult): void {
     switch (result.type) {
       case 'toCreating':
@@ -138,18 +200,10 @@ export class RowStackManager
         this.resolveToParent(item, result.rowId)
         break
       case 'startForeignKeySelection':
-        this.handleStartForeignKeySelection(
-          item as RowCreatingItem | RowUpdatingItem,
-          result.foreignKeyNode,
-          result.foreignTableId,
-        )
+        this.handleStartForeignKeySelection(item as RowCreatingItem | RowUpdatingItem, result.foreignTableId)
         break
       case 'startForeignKeyCreation':
-        this.handleStartForeignKeyCreation(
-          item as RowCreatingItem | RowUpdatingItem,
-          result.foreignKeyNode,
-          result.foreignTableId,
-        )
+        this.handleStartForeignKeyCreation(item as RowCreatingItem | RowUpdatingItem, result.foreignTableId)
         break
       case 'cancelForeignKeySelection':
         this.cancelFromItem(item)
@@ -213,64 +267,22 @@ export class RowStackManager
   }
 
   private handleCreatingToUpdating(item: RowCreatingItem): void {
-    const rowId = item.store.name.getPlainValue()
-    const newItem = this.deps.itemFactory.createUpdatingItemWithStore(
+    const rowId = item.state.editor.rowId
+    const newItem = this.deps.itemFactory.createUpdatingItemWithState(
       item.tableId,
-      item.store,
+      item.state,
       rowId,
       item.isSelectingForeignKey,
     )
     this.replaceItem(item, newItem, false)
   }
 
-  private async handleStartForeignKeySelection(
-    item: RowCreatingItem | RowUpdatingItem,
-    foreignKeyNode: JsonStringValueStore,
-    foreignTableId: string,
-  ): Promise<void> {
-    await this.pushForeignKeyRequest(item, foreignKeyNode, foreignTableId)
+  private handleStartForeignKeySelection(item: RowCreatingItem | RowUpdatingItem, foreignTableId: string): void {
+    void this.requestForeignKeySelection(item, foreignTableId)
   }
 
-  private async handleStartForeignKeyCreation(
-    item: RowCreatingItem | RowUpdatingItem,
-    foreignKeyNode: JsonStringValueStore,
-    foreignTableId: string,
-  ): Promise<void> {
-    const success = await this.pushForeignKeyRequest(item, foreignKeyNode, foreignTableId)
-    if (success) {
-      const lastItem = this.stack[this.stack.length - 1] as RowListItem
-      lastItem.toCreating()
-    }
-  }
-
-  private async pushForeignKeyRequest(
-    item: RowCreatingItem | RowUpdatingItem,
-    foreignKeyNode: JsonStringValueStore,
-    foreignTableId: string,
-  ): Promise<boolean> {
-    try {
-      await this.deps.schemaCache.load(this.revisionId, foreignTableId)
-    } catch {
-      this.deps.onError?.('Failed to load foreign table')
-      return false
-    }
-
-    const savedItem = item
-    const payload: SelectForeignKeyRowPayload = { foreignKeyNode, foreignTableId }
-
-    this.pushRequest(
-      item,
-      payload,
-      (result: SelectForeignKeyRowResult) => {
-        foreignKeyNode.setValue(result)
-        this.restoreAfterForeignKeySelection(savedItem)
-      },
-      () => {
-        this.restoreAfterForeignKeySelection(savedItem)
-      },
-    )
-
-    return true
+  private handleStartForeignKeyCreation(item: RowCreatingItem | RowUpdatingItem, foreignTableId: string): void {
+    void this.requestForeignKeyCreation(item, foreignTableId)
   }
 
   private restoreAfterForeignKeySelection(savedItem: RowCreatingItem | RowUpdatingItem): void {

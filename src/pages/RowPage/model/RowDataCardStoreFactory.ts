@@ -42,7 +42,7 @@ export class RowDataCardStoreFactory {
       if (item.$ref) {
         const refSchema = schemaRefsMapper[item.$ref]
         if (refSchema) {
-          const valueStore = createEmptyJsonValueStore(createJsonSchemaStore(refSchema))
+          const valueStore = createEmptyJsonValueStore(createJsonSchemaStore(refSchema as never))
           item.updateBaseValue(valueStore.getPlainValue())
         }
       }

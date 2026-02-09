@@ -19,7 +19,7 @@ export const ShortRowEditor: React.FC<Props> = observer(({ item }) => {
     return ''
   }, [item.type])
 
-  const rowId = item.type === RowStackItemType.Creating ? item.rowId : (item as RowUpdatingItem).currentRowId
+  const rowId = item.state.editor.rowId
 
   return (
     <Box width="100%" borderStyle="solid" borderLeftWidth={2} borderColor="gray.200" pl="1rem" mb="1rem">

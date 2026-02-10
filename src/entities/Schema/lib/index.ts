@@ -1,5 +1,0 @@
-export * from 'src/entities/Schema/lib/isPrimitive'
-export * from 'src/entities/Schema/lib/isObject'
-export * from 'src/entities/Schema/lib/isArray'
-export * from 'src/entities/Schema/lib/isArrayItemPrimitive'
-export * from 'src/entities/Schema/lib/isDeprecated'

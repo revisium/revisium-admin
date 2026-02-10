@@ -1,7 +1,7 @@
 import { Box, Popover, Portal } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
-import { FocusPopoverItem } from 'src/widgets/TreeDataCard/ui/components/FocusPopoverItem'
+import { FocusPopoverItem } from 'src/shared/ui/FocusPopoverItem/FocusPopoverItem'
 
 interface BooleanCellEditorProps {
   value: boolean

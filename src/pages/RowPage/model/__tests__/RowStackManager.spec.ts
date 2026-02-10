@@ -1,7 +1,3 @@
-jest.mock('src/widgets/TreeDataCard', () => ({
-  RootValueNode: jest.fn(),
-}))
-
 import { RowStackManager } from '../RowStackManager.ts'
 import { RowListItem, RowCreatingItem, RowUpdatingItem } from '../items'
 import { RowStackItemType } from '../../config/types.ts'

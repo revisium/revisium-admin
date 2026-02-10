@@ -1,7 +1,3 @@
-jest.mock('src/widgets/TreeDataCard', () => ({
-  RootValueNode: jest.fn(),
-}))
-
 import { RowStackItemFactory, RowStackItemFactoryDeps } from '../RowStackItemFactory.ts'
 import { RowStackItemType } from '../../config/types.ts'
 import { JsonObjectSchema } from 'src/entities/Schema'

@@ -131,7 +131,7 @@ describe('RowStackManager', () => {
   })
 
   describe('item.toUpdating (from Creating)', () => {
-    it('should replace RowCreatingItem with RowUpdatingItem preserving store', async () => {
+    it('should replace RowCreatingItem with RowUpdatingItem preserving state', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
@@ -141,7 +141,7 @@ describe('RowStackManager', () => {
       listItem.toCreating()
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
-      const store = creatingItem.store
+      const state = creatingItem.state
 
       creatingItem.toUpdating()
 
@@ -149,7 +149,7 @@ describe('RowStackManager', () => {
       expect(manager.stack[0].type).toBe(RowStackItemType.Updating)
 
       const updatingItem = manager.stack[0] as RowUpdatingItem
-      expect(updatingItem.store).toBe(store)
+      expect(updatingItem.state).toBe(state)
     })
   })
 
@@ -165,8 +165,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -185,8 +184,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(creatingItem.hasPendingRequest).toBe(true)
@@ -203,8 +201,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'foreign-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
+      creatingItem.startForeignKeySelection('foreign-table')
       await flushPromises()
 
       expect(manager.stack[1].tableId).toBe('foreign-table')
@@ -223,8 +220,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeyCreation(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeyCreation('fk-table')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -243,8 +239,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeyCreation(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeyCreation('fk-table')
       await flushPromises()
 
       expect(creatingItem.hasPendingRequest).toBe(true)
@@ -261,14 +256,13 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'foreign-table' } as never
-      creatingItem.startForeignKeyCreation(mockForeignKeyNode, 'foreign-table')
+      creatingItem.startForeignKeyCreation('foreign-table')
       await flushPromises()
 
       expect(manager.stack[1].tableId).toBe('foreign-table')
     })
 
-    it('should call setValue and restore parent after row is created and selected', async () => {
+    it('should restore parent after row is created and selected', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
@@ -279,15 +273,12 @@ describe('RowStackManager', () => {
       await flushPromises()
       const parentCreatingItem = manager.stack[0] as RowCreatingItem
 
-      const setValueMock = jest.fn()
-      const mockForeignKeyNode = { setValue: setValueMock, foreignKey: 'fk-table' } as never
-      parentCreatingItem.startForeignKeyCreation(mockForeignKeyNode, 'fk-table')
+      parentCreatingItem.startForeignKeyCreation('fk-table')
       await flushPromises()
 
       const childCreatingItem = manager.stack[1] as RowCreatingItem
       childCreatingItem.selectForeignKeyRow('new-created-row-id')
 
-      expect(setValueMock).toHaveBeenCalledWith('new-created-row-id')
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(RowStackItemType.Creating)
     })
@@ -304,10 +295,9 @@ describe('RowStackManager', () => {
       listItem.toCreating()
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
-      const store = creatingItem.store
+      const state = creatingItem.state
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -317,7 +307,7 @@ describe('RowStackManager', () => {
 
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].type).toBe(RowStackItemType.Creating)
-      expect((manager.stack[0] as RowCreatingItem).store).toBe(store)
+      expect((manager.stack[0] as RowCreatingItem).state).toBe(state)
     })
 
     it('should clear pending request on parent', async () => {
@@ -331,8 +321,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(creatingItem.hasPendingRequest).toBe(true)
@@ -341,28 +330,6 @@ describe('RowStackManager', () => {
       selectingListItem.selectForeignKeyRow('selected-row-id')
 
       expect(manager.stack[0].hasPendingRequest).toBe(false)
-    })
-
-    it('should call setValue on foreignKeyNode with selected rowId', async () => {
-      const deps = createMockDeps()
-      const manager = new RowStackManager(deps)
-      manager.init()
-      await flushPromises()
-      const listItem = manager.stack[0] as RowListItem
-
-      listItem.toCreating()
-      await flushPromises()
-      const creatingItem = manager.stack[0] as RowCreatingItem
-
-      const setValueMock = jest.fn()
-      const mockForeignKeyNode = { setValue: setValueMock, foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
-      await flushPromises()
-
-      const selectingListItem = manager.stack[1] as RowListItem
-      selectingListItem.selectForeignKeyRow('selected-row-id')
-
-      expect(setValueMock).toHaveBeenCalledWith('selected-row-id')
     })
   })
 
@@ -377,10 +344,9 @@ describe('RowStackManager', () => {
       listItem.toCreating()
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
-      const store = creatingItem.store
+      const state = creatingItem.state
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -390,7 +356,7 @@ describe('RowStackManager', () => {
       expect(manager.stack).toHaveLength(1)
       expect(manager.stack[0].hasPendingRequest).toBe(false)
       expect(manager.stack[0].type).toBe(RowStackItemType.Creating)
-      expect((manager.stack[0] as RowCreatingItem).store).toBe(store)
+      expect((manager.stack[0] as RowCreatingItem).state).toBe(state)
     })
   })
 
@@ -406,8 +372,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem0 = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode1 = { setValue: jest.fn(), foreignKey: 'fk-table-1' } as never
-      creatingItem0.startForeignKeySelection(mockForeignKeyNode1, 'fk-table-1')
+      creatingItem0.startForeignKeySelection('fk-table-1')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -429,16 +394,13 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem0 = manager.stack[0] as RowCreatingItem
 
-      const setValue0 = jest.fn()
-      const mockForeignKeyNode0 = { setValue: setValue0, foreignKey: 'fk-table-0' } as never
-      creatingItem0.startForeignKeySelection(mockForeignKeyNode0, 'fk-table-0')
+      creatingItem0.startForeignKeySelection('fk-table-0')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
 
       const selectingList1 = manager.stack[1] as RowListItem
       selectingList1.selectForeignKeyRow('row-1')
-      expect(setValue0).toHaveBeenCalledWith('row-1')
       expect(manager.stack).toHaveLength(1)
     })
   })
@@ -471,8 +433,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.currentItem).toBe(manager.stack[1])
@@ -501,8 +462,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.stack[1].isFirstLevel).toBe(false)
@@ -577,8 +537,7 @@ describe('RowStackManager', () => {
 
       expect(creatingItem.isConnectingForeignKey).toBe(false)
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(creatingItem.isConnectingForeignKey).toBe(true)
@@ -595,8 +554,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn(), foreignKey: 'fk-table' } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       const selectingListItem = manager.stack[1] as RowListItem
@@ -635,8 +593,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'fk-table')
+      creatingItem.startForeignKeySelection('fk-table')
       await flushPromises()
 
       expect(manager.stack).toHaveLength(2)
@@ -679,8 +636,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
+      creatingItem.startForeignKeySelection('foreign-table')
       await flushPromises()
 
       expect(loadTableWithRowsMock).toHaveBeenCalledWith('draft-1', 'foreign-table', 0)
@@ -716,8 +672,7 @@ describe('RowStackManager', () => {
       await flushPromises()
       const creatingItem = manager.stack[0] as RowCreatingItem
 
-      const mockForeignKeyNode = { setValue: jest.fn() } as never
-      creatingItem.startForeignKeySelection(mockForeignKeyNode, 'foreign-table')
+      creatingItem.startForeignKeySelection('foreign-table')
       await flushPromises()
 
       expect(loadTableWithRowsMock).toHaveBeenCalledTimes(1)

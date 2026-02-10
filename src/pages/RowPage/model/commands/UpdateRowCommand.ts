@@ -1,5 +1,5 @@
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
-import { RowDataCardStore } from 'src/entities/Schema/model/row-data-card.store.ts'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 
@@ -10,18 +10,23 @@ export interface UpdateRowCommandDeps {
   tableId: string
 }
 
+export interface UpdateRowCommandParams {
+  currentRowId: string
+  originalRowId: string
+  data: JsonValue
+  isRowIdChanged: boolean
+  isDirty: boolean
+}
+
 export class UpdateRowCommand {
   constructor(private readonly deps: UpdateRowCommandDeps) {}
 
-  public async execute(store: RowDataCardStore, originalRowId: string): Promise<boolean> {
+  public async execute(params: UpdateRowCommandParams): Promise<boolean> {
     const { mutationDataSource, rowListRefreshService, projectContext, tableId } = this.deps
+    const { currentRowId, originalRowId, data, isRowIdChanged, isDirty } = params
 
     try {
-      const currentRowId = store.name.getPlainValue()
-      const needsRename = currentRowId !== originalRowId
-      const needsUpdate = store.root.touched
-
-      if (needsRename) {
+      if (isRowIdChanged) {
         const renameResult = await mutationDataSource.renameRow({
           revisionId: projectContext.revisionId,
           tableId,
@@ -34,12 +39,12 @@ export class UpdateRowCommand {
         }
       }
 
-      if (needsUpdate) {
+      if (isDirty) {
         const updateResult = await mutationDataSource.updateRow({
           revisionId: projectContext.revisionId,
           tableId,
           rowId: currentRowId,
-          data: store.root.getPlainValue(),
+          data,
         })
 
         if (!updateResult) {
@@ -47,7 +52,7 @@ export class UpdateRowCommand {
         }
       }
 
-      if (needsRename || needsUpdate) {
+      if (isRowIdChanged || isDirty) {
         if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }

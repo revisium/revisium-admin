@@ -25,36 +25,20 @@ const createMockDeps = (
   }
 }
 
-const createMockStore = (
-  overrides: Partial<{
-    currentRowId: string
-    originalRowId: string
-    rootTouched: boolean
-    data: unknown
-  }> = {},
-) => {
-  const { currentRowId = 'test-row', rootTouched = false, data = { name: 'Test' } } = overrides
-
-  return {
-    name: {
-      getPlainValue: jest.fn().mockReturnValue(currentRowId),
-    },
-    root: {
-      getPlainValue: jest.fn().mockReturnValue(data),
-      touched: rootTouched,
-    },
-  } as never
-}
-
 describe('UpdateRowCommand', () => {
   describe('execute', () => {
     describe('rename only', () => {
       it('should call renameRow when row id changed', async () => {
         const deps = createMockDeps()
-        const store = createMockStore({ currentRowId: 'new-row' })
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'original-row')
+        const result = await command.execute({
+          currentRowId: 'new-row',
+          originalRowId: 'original-row',
+          data: { name: 'Test' },
+          isRowIdChanged: true,
+          isDirty: false,
+        })
 
         expect(result).toBe(true)
         expect(deps.mutationDataSource.renameRow).toHaveBeenCalledWith({
@@ -69,10 +53,15 @@ describe('UpdateRowCommand', () => {
       it('should return false when renameRow fails', async () => {
         const deps = createMockDeps()
         ;(deps.mutationDataSource.renameRow as jest.Mock).mockResolvedValue(null)
-        const store = createMockStore({ currentRowId: 'new-row' })
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'original-row')
+        const result = await command.execute({
+          currentRowId: 'new-row',
+          originalRowId: 'original-row',
+          data: { name: 'Test' },
+          isRowIdChanged: true,
+          isDirty: false,
+        })
 
         expect(result).toBe(false)
       })
@@ -81,10 +70,15 @@ describe('UpdateRowCommand', () => {
     describe('update only', () => {
       it('should call updateRow when data changed', async () => {
         const deps = createMockDeps()
-        const store = createMockStore({ rootTouched: true, data: { name: 'Updated' } })
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'test-row')
+        const result = await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Updated' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(result).toBe(true)
         expect(deps.mutationDataSource.updateRow).toHaveBeenCalledWith({
@@ -99,10 +93,15 @@ describe('UpdateRowCommand', () => {
       it('should return false when updateRow fails', async () => {
         const deps = createMockDeps()
         ;(deps.mutationDataSource.updateRow as jest.Mock).mockResolvedValue(null)
-        const store = createMockStore({ rootTouched: true })
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'test-row')
+        const result = await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Test' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(result).toBe(false)
       })
@@ -111,14 +110,15 @@ describe('UpdateRowCommand', () => {
     describe('rename and update', () => {
       it('should call both renameRow and updateRow', async () => {
         const deps = createMockDeps()
-        const store = createMockStore({
-          currentRowId: 'new-row',
-          rootTouched: true,
-          data: { name: 'Updated' },
-        })
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'original-row')
+        const result = await command.execute({
+          currentRowId: 'new-row',
+          originalRowId: 'original-row',
+          data: { name: 'Updated' },
+          isRowIdChanged: true,
+          isDirty: true,
+        })
 
         expect(result).toBe(true)
         expect(deps.mutationDataSource.renameRow).toHaveBeenCalledWith({
@@ -138,13 +138,15 @@ describe('UpdateRowCommand', () => {
       it('should not call updateRow if renameRow fails', async () => {
         const deps = createMockDeps()
         ;(deps.mutationDataSource.renameRow as jest.Mock).mockResolvedValue(null)
-        const store = createMockStore({
-          currentRowId: 'new-row',
-          rootTouched: true,
-        })
         const command = new UpdateRowCommand(deps)
 
-        await command.execute(store, 'original-row')
+        await command.execute({
+          currentRowId: 'new-row',
+          originalRowId: 'original-row',
+          data: { name: 'Test' },
+          isRowIdChanged: true,
+          isDirty: true,
+        })
 
         expect(deps.mutationDataSource.updateRow).not.toHaveBeenCalled()
       })
@@ -153,10 +155,15 @@ describe('UpdateRowCommand', () => {
     describe('no changes', () => {
       it('should not call any mutation when no changes', async () => {
         const deps = createMockDeps()
-        const store = createMockStore()
         const command = new UpdateRowCommand(deps)
 
-        const result = await command.execute(store, 'test-row')
+        const result = await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Test' },
+          isRowIdChanged: false,
+          isDirty: false,
+        })
 
         expect(result).toBe(true)
         expect(deps.mutationDataSource.renameRow).not.toHaveBeenCalled()
@@ -165,10 +172,15 @@ describe('UpdateRowCommand', () => {
 
       it('should not refresh list when no changes', async () => {
         const deps = createMockDeps()
-        const store = createMockStore()
         const command = new UpdateRowCommand(deps)
 
-        await command.execute(store, 'test-row')
+        await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Test' },
+          isRowIdChanged: false,
+          isDirty: false,
+        })
 
         expect(deps.rowListRefreshService.refresh).not.toHaveBeenCalled()
       })
@@ -177,30 +189,45 @@ describe('UpdateRowCommand', () => {
     describe('side effects', () => {
       it('should update touched state when changes made and branch not touched', async () => {
         const deps = createMockDeps({ touched: false })
-        const store = createMockStore({ rootTouched: true })
         const command = new UpdateRowCommand(deps)
 
-        await command.execute(store, 'test-row')
+        await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Updated' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(deps.projectContext.updateTouched).toHaveBeenCalledWith(true)
       })
 
       it('should not update touched state when branch already touched', async () => {
         const deps = createMockDeps({ touched: true })
-        const store = createMockStore({ rootTouched: true })
         const command = new UpdateRowCommand(deps)
 
-        await command.execute(store, 'test-row')
+        await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Updated' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(deps.projectContext.updateTouched).not.toHaveBeenCalled()
       })
 
       it('should refresh row list when changes made', async () => {
         const deps = createMockDeps()
-        const store = createMockStore({ rootTouched: true })
         const command = new UpdateRowCommand(deps)
 
-        await command.execute(store, 'test-row')
+        await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Updated' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(deps.rowListRefreshService.refresh).toHaveBeenCalled()
       })
@@ -210,11 +237,16 @@ describe('UpdateRowCommand', () => {
       it('should return false when exception thrown', async () => {
         const deps = createMockDeps()
         ;(deps.mutationDataSource.updateRow as jest.Mock).mockRejectedValue(new Error('Network error'))
-        const store = createMockStore({ rootTouched: true })
         const command = new UpdateRowCommand(deps)
 
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-        const result = await command.execute(store, 'test-row')
+        const result = await command.execute({
+          currentRowId: 'test-row',
+          originalRowId: 'test-row',
+          data: { name: 'Test' },
+          isRowIdChanged: false,
+          isDirty: true,
+        })
 
         expect(result).toBe(false)
         expect(consoleSpy).toHaveBeenCalled()

@@ -119,12 +119,6 @@ export const createMockUpdatingDeps = (overrides: MockDepsOverrides = {}): RowUp
   navigation: createMockNavigation(),
 })
 
-const createMockStoreFactory = () => ({
-  createEmpty: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-  createFromClone: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-  createForUpdating: jest.fn().mockReturnValue(createMockRowDataCardStore()),
-})
-
 export const createMockSchemaCache = (
   dataSourceFactory?: () => { loadTableWithRows: jest.Mock; dispose: jest.Mock },
 ) => {
@@ -161,10 +155,12 @@ const createMockItemFactory = (
     rowListRefreshService: {
       refresh: jest.fn(),
     } as never,
-    storeFactory: createMockStoreFactory() as never,
     schemaCache,
     notifications: createMockNotifications(),
     navigation: createMockNavigation(),
+    searchForeignKey: jest.fn().mockResolvedValue({ ids: [], hasMore: false }),
+    requestForeignKeySelection: jest.fn().mockResolvedValue(null),
+    requestForeignKeyCreation: jest.fn().mockResolvedValue(null),
   }
 
   return new RowStackItemFactory(factoryDeps)
@@ -201,40 +197,56 @@ export const createMockManagerDeps = (overrides: MockDepsOverrides = {}): RowSta
   }
 }
 
-export interface MockRowDataCardStore {
-  name: {
-    getPlainValue: jest.Mock
+export interface MockRowEditorState {
+  editor: {
+    rowId: string
+    getValue: jest.Mock
     setValue: jest.Mock
-    baseValue: string
-    value: string
-    touched: boolean
+    setRowId: jest.Mock
+    markAsSaved: jest.Mock
+    revert: jest.Mock
+    hasChanges: boolean
+    isDirty: boolean
+    isRowIdChanged: boolean
+    isValid: boolean
+    dispose: jest.Mock
   }
-  root: {
-    getPlainValue: jest.Mock
-    touched: boolean
-  }
-  save: jest.Mock
-  reset: jest.Mock
-  syncReadOnlyStores: jest.Mock
+  viewMode: string
+  scrollPosition: number | null
+  areThereForeignKeysBy: boolean
+  hasChanges: boolean
+  isValid: boolean
+  rowId: string
+  setViewMode: jest.Mock
+  setScrollPosition: jest.Mock
   dispose: jest.Mock
 }
 
-export const createMockRowDataCardStore = (): MockRowDataCardStore => {
+export const createMockRowEditorState = (): MockRowEditorState => {
+  const editor = {
+    rowId: 'test-row',
+    getValue: jest.fn().mockReturnValue({ name: 'Test' }),
+    setValue: jest.fn(),
+    setRowId: jest.fn(),
+    markAsSaved: jest.fn(),
+    revert: jest.fn(),
+    hasChanges: false,
+    isDirty: false,
+    isRowIdChanged: false,
+    isValid: true,
+    dispose: jest.fn(),
+  }
+
   return {
-    name: {
-      getPlainValue: jest.fn().mockReturnValue('test-row'),
-      setValue: jest.fn(),
-      baseValue: 'test-row',
-      value: 'test-row',
-      touched: false,
-    },
-    root: {
-      getPlainValue: jest.fn().mockReturnValue({ name: 'Test' }),
-      touched: false,
-    },
-    save: jest.fn(),
-    reset: jest.fn(),
-    syncReadOnlyStores: jest.fn(),
+    editor,
+    viewMode: 'tree',
+    scrollPosition: null,
+    areThereForeignKeysBy: false,
+    hasChanges: false,
+    isValid: true,
+    rowId: 'test-row',
+    setViewMode: jest.fn(),
+    setScrollPosition: jest.fn(),
     dispose: jest.fn(),
   }
 }

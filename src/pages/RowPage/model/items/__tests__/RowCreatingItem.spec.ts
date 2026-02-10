@@ -1,45 +1,41 @@
 import { RowCreatingItem } from '../RowCreatingItem.ts'
 import { RowStackItemType } from '../../../config/types.ts'
-import {
-  createMockCreatingDeps,
-  createMockRowDataCardStore,
-  MockRowDataCardStore,
-} from '../../__tests__/createMockDeps.ts'
+import { createMockCreatingDeps, createMockRowEditorState, MockRowEditorState } from '../../__tests__/createMockDeps.ts'
 
 describe('RowCreatingItem', () => {
   describe('initialization', () => {
     it('should create with Creating type', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       expect(item.type).toBe(RowStackItemType.Creating)
     })
 
-    it('should use provided store', () => {
+    it('should use provided state', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
-      expect(item.store).toBe(store)
+      expect(item.state).toBe(state)
     })
 
     it('should set isSelectingForeignKey', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
+      const state = createMockRowEditorState()
 
-      const item1 = new RowCreatingItem(deps, false, store as never)
+      const item1 = new RowCreatingItem(deps, false, state as never)
       expect(item1.isSelectingForeignKey).toBe(false)
 
-      const item2 = new RowCreatingItem(deps, true, store as never)
+      const item2 = new RowCreatingItem(deps, true, state as never)
       expect(item2.isSelectingForeignKey).toBe(true)
     })
 
     it('should have unique id', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
-      const item1 = new RowCreatingItem(deps, false, store as never)
-      const item2 = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item1 = new RowCreatingItem(deps, false, state as never)
+      const item2 = new RowCreatingItem(deps, false, state as never)
 
       expect(item1.id).not.toEqual(item2.id)
     })
@@ -50,8 +46,8 @@ describe('RowCreatingItem', () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
 
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       const resolver = jest.fn()
       item.setResolver(resolver)
@@ -66,8 +62,8 @@ describe('RowCreatingItem', () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
 
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, true, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, true, state as never)
 
       const resolver = jest.fn()
       item.setResolver(resolver)
@@ -81,8 +77,8 @@ describe('RowCreatingItem', () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue(null)
 
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       const resolver = jest.fn()
       item.setResolver(resolver)
@@ -92,34 +88,25 @@ describe('RowCreatingItem', () => {
       expect(resolver).not.toHaveBeenCalled()
     })
 
-    it('should call store.save on success', async () => {
+    it('should call editor.markAsSaved on success', async () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
 
-      const saveMock = jest.fn()
-      const store = {
-        name: {
-          getPlainValue: jest.fn().mockReturnValue('test-row'),
-        },
-        root: {
-          getPlainValue: jest.fn().mockReturnValue({ name: 'Test' }),
-        },
-        save: saveMock,
-      } as never
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
       item.setResolver(jest.fn())
 
       await item.approve()
 
-      expect(saveMock).toHaveBeenCalled()
+      expect(state.editor.markAsSaved).toHaveBeenCalled()
     })
   })
 
   describe('dispose', () => {
     it('should dispose mutation data source', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       item.dispose()
 
@@ -134,8 +121,8 @@ describe('RowCreatingItem', () => {
         () => new Promise((resolve) => setTimeout(() => resolve({ row: { id: 'new-row' } }), 10)),
       )
 
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
       item.setResolver(jest.fn())
 
       expect(item.isLoading).toBe(false)
@@ -147,11 +134,11 @@ describe('RowCreatingItem', () => {
       expect(item.isLoading).toBe(false)
     })
 
-    it('should return rowId from store', () => {
+    it('should return rowId from state', () => {
       const deps = createMockCreatingDeps()
-      const store: MockRowDataCardStore = createMockRowDataCardStore()
-      store.name.getPlainValue.mockReturnValue('custom-row-id')
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state: MockRowEditorState = createMockRowEditorState()
+      state.editor.rowId = 'custom-row-id'
+      const item = new RowCreatingItem(deps, false, state as never)
 
       expect(item.rowId).toBe('custom-row-id')
     })
@@ -160,19 +147,19 @@ describe('RowCreatingItem', () => {
   describe('methods', () => {
     it('should set row name', () => {
       const deps = createMockCreatingDeps()
-      const store: MockRowDataCardStore = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state: MockRowEditorState = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       item.setRowName('new-name')
 
-      expect(store.name.setValue).toHaveBeenCalledWith('new-name')
+      expect(state.editor.setRowId).toHaveBeenCalledWith('new-name')
     })
 
     it('should return JSON string', () => {
       const deps = createMockCreatingDeps()
-      const store: MockRowDataCardStore = createMockRowDataCardStore()
-      store.root.getPlainValue.mockReturnValue({ name: 'Test', count: 42 })
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state: MockRowEditorState = createMockRowEditorState()
+      state.editor.getValue.mockReturnValue({ name: 'Test', count: 42 })
+      const item = new RowCreatingItem(deps, false, state as never)
 
       const jsonString = item.getJsonString()
 
@@ -183,8 +170,8 @@ describe('RowCreatingItem', () => {
   describe('isConnectingForeignKey', () => {
     it('should return false when no pending request', () => {
       const deps = createMockCreatingDeps()
-      const store = createMockRowDataCardStore()
-      const item = new RowCreatingItem(deps, false, store as never)
+      const state = createMockRowEditorState()
+      const item = new RowCreatingItem(deps, false, state as never)
 
       expect(item.isConnectingForeignKey).toBe(false)
     })

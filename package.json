@@ -44,7 +44,7 @@
     "@codemirror/lang-markdown": "6.3.2",
     "@emotion/react": "11.14.0",
     "@revisium/formula": "0.10.0",
-    "@revisium/schema-toolkit-ui": "0.2.3",
+    "@revisium/schema-toolkit-ui": "0.3.3",
     "@uiw/codemirror-theme-github": "4.25.4",
     "@uiw/react-codemirror": "4.23.12",
     "@xyflow/react": "12.10.0",

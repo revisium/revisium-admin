@@ -56,7 +56,7 @@ export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
       <Flex flexDirection="column" paddingTop="60px">
         {isTreeMode && <RowEditor viewModel={state.editor} />}
         {effectiveViewMode === ViewerSwitcherMode.Json && (
-          <JsonCard data={state.editor.getValue() as JsonValue} readonly />
+          <JsonCard data={state.editor.getValue() as JsonValue} onChange={state.setJsonValue} />
         )}
       </Flex>
     </Flex>

@@ -64,6 +64,11 @@ export class RowEditorState {
     this.scrollPosition = value
   }
 
+  public setJsonValue(data: unknown): void {
+    const node = this.editor.root.node as unknown as { setValue(v: unknown): void }
+    node.setValue(data)
+  }
+
   public dispose(): void {
     this.editor.dispose()
   }

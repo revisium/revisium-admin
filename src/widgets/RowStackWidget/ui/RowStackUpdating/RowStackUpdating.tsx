@@ -69,7 +69,11 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
       <Flex flexDirection="column" paddingTop="60px">
         {effectiveViewMode === ViewerSwitcherMode.Tree && <RowEditor viewModel={state.editor} />}
         {effectiveViewMode === ViewerSwitcherMode.Json && (
-          <JsonCard data={state.editor.getValue() as JsonValue} readonly={!item.canUpdateRow} />
+          <JsonCard
+            data={state.editor.getValue() as JsonValue}
+            readonly={!item.canUpdateRow}
+            onChange={state.setJsonValue}
+          />
         )}
         {effectiveViewMode === ViewerSwitcherMode.RefBy && (
           <ForeignKeysByDataCard tableId={item.tableId} rowId={item.currentRowId} />

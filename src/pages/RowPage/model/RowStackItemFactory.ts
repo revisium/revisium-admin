@@ -112,10 +112,11 @@ export class RowStackItemFactory {
   ): RowUpdatingItem {
     const itemRef: ItemRef = { item: null }
     const callbacks = this.createCallbacks(itemRef, true)
+    const mode = this.deps.projectContext.isDraftRevision ? 'editing' : 'reading'
     const state = new RowEditorState({
       schema: schema as ToolkitJsonSchema,
       initialValue: data,
-      mode: 'editing',
+      mode,
       rowId,
       refSchemas: schemaRefsMapper as Record<string, ToolkitJsonSchema>,
       callbacks,

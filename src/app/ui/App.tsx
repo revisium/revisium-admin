@@ -15,7 +15,7 @@ export const App: FC = observer(() => {
   if (!model.isLoaded || !model.router) {
     return (
       <ChakraProvider value={system}>
-        <ThemeProvider attribute="class" disableTransitionOnChange>
+        <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
           <Center w="100%" h="100%">
             <Spinner />
           </Center>
@@ -27,7 +27,7 @@ export const App: FC = observer(() => {
 
   return (
     <ChakraProvider value={system}>
-      <ThemeProvider attribute="class" disableTransitionOnChange>
+      <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
         <RouterProvider router={model.router} />
         <ToasterProvider />
       </ThemeProvider>

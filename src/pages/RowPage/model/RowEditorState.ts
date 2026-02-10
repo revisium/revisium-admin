@@ -7,8 +7,13 @@ import {
 } from '@revisium/schema-toolkit-ui'
 import { ViewerSwitcherMode } from 'src/entities/Schema'
 
+export interface RowEditorStateItemRef {
+  item: unknown | null
+}
+
 export class RowEditorState {
   public readonly editor: RowEditorVM
+  public readonly itemRef: RowEditorStateItemRef
   public viewMode: ViewerSwitcherMode = ViewerSwitcherMode.Tree
   public scrollPosition: number | null = null
 
@@ -22,6 +27,7 @@ export class RowEditorState {
     refSchemas?: Record<string, ToolkitJsonSchema>
     callbacks?: RowEditorCallbacks
     foreignKeysCount?: number
+    itemRef?: RowEditorStateItemRef
   }) {
     this.editor = new RowEditorVM(params.schema, params.initialValue, {
       mode: params.mode,
@@ -30,7 +36,8 @@ export class RowEditorState {
       callbacks: params.callbacks,
     })
     this._foreignKeysCount = params.foreignKeysCount ?? 0
-    makeAutoObservable(this, {}, { autoBind: true })
+    this.itemRef = params.itemRef ?? { item: null }
+    makeAutoObservable(this, { itemRef: false }, { autoBind: true })
   }
 
   public get areThereForeignKeysBy(): boolean {

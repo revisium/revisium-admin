@@ -120,35 +120,23 @@ export class RowStackManager
     item: RowCreatingItem | RowUpdatingItem,
     foreignTableId: string,
   ): Promise<string | null> {
-    try {
-      await this.deps.schemaCache.load(this.revisionId, foreignTableId)
-    } catch {
-      this.deps.onError?.('Failed to load foreign table')
-      return null
-    }
-
-    return new Promise((resolve) => {
-      const savedItem = item
-      const payload: SelectForeignKeyRowPayload = { foreignTableId }
-
-      this.pushRequest(
-        item,
-        payload,
-        (result: SelectForeignKeyRowResult) => {
-          this.restoreAfterForeignKeySelection(savedItem)
-          resolve(result)
-        },
-        () => {
-          this.restoreAfterForeignKeySelection(savedItem)
-          resolve(null)
-        },
-      )
-    })
+    return this.requestForeignKey(item, foreignTableId)
   }
 
   public async requestForeignKeyCreation(
     item: RowCreatingItem | RowUpdatingItem,
     foreignTableId: string,
+  ): Promise<string | null> {
+    return this.requestForeignKey(item, foreignTableId, () => {
+      const lastItem = this.stack[this.stack.length - 1] as RowListItem
+      lastItem.toCreating()
+    })
+  }
+
+  private async requestForeignKey(
+    item: RowCreatingItem | RowUpdatingItem,
+    foreignTableId: string,
+    afterPush?: () => void,
   ): Promise<string | null> {
     try {
       await this.deps.schemaCache.load(this.revisionId, foreignTableId)
@@ -174,8 +162,7 @@ export class RowStackManager
         },
       )
 
-      const lastItem = this.stack[this.stack.length - 1] as RowListItem
-      lastItem.toCreating()
+      afterPush?.()
     })
   }
 

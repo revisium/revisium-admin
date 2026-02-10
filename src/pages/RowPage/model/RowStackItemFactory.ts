@@ -72,6 +72,7 @@ export class RowStackItemFactory {
       rowId,
       refSchemas: schemaRefsMapper as Record<string, ToolkitJsonSchema>,
       callbacks,
+      itemRef,
     })
     const item = new RowCreatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state)
     itemRef.item = item
@@ -88,12 +89,13 @@ export class RowStackItemFactory {
     const itemRef: ItemRef = { item: null }
     const callbacks = this.createCallbacks(itemRef, false)
     const state = new RowEditorState({
-      schema,
+      schema: schema as ToolkitJsonSchema,
       initialValue: data,
       mode: 'creating',
       rowId,
       refSchemas: schemaRefsMapper as Record<string, ToolkitJsonSchema>,
       callbacks,
+      itemRef,
     })
     const item = new RowCreatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state)
     itemRef.item = item
@@ -118,6 +120,7 @@ export class RowStackItemFactory {
       refSchemas: schemaRefsMapper as Record<string, ToolkitJsonSchema>,
       callbacks,
       foreignKeysCount,
+      itemRef,
     })
     const item = new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state, rowId)
     itemRef.item = item
@@ -130,7 +133,9 @@ export class RowStackItemFactory {
     rowId: string,
     isSelectingForeignKey: boolean,
   ): RowUpdatingItem {
-    return new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state, rowId)
+    const item = new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state, rowId)
+    state.itemRef.item = item
+    return item
   }
 
   private createEditorDeps(tableId: string) {

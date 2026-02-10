@@ -3,9 +3,11 @@ import { RowEditor } from '@revisium/schema-toolkit-ui'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ViewerSwitcherMode } from 'src/entities/Schema'
+import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowViewerSwitcher } from 'src/entities/Schema/ui/RowViewerSwitcher/RowViewerSwitcher.tsx'
 import { RowCreatingItem } from 'src/pages/RowPage/model/items'
 import { ApproveButton, CloseButton } from 'src/shared/ui'
+import { JsonCard } from 'src/shared/ui/JsonCard/JsonCard.tsx'
 import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
 import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
@@ -53,6 +55,9 @@ export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
       />
       <Flex flexDirection="column" paddingTop="60px">
         {isTreeMode && <RowEditor viewModel={state.editor} />}
+        {effectiveViewMode === ViewerSwitcherMode.Json && (
+          <JsonCard data={state.editor.getValue() as JsonValue} readonly={false} />
+        )}
       </Flex>
     </Flex>
   )

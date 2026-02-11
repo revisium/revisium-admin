@@ -1,7 +1,7 @@
 import { Box, Flex, Separator, Spacer, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { PiGearLight } from 'react-icons/pi'
+import { PiGearLight, PiGithubLogoLight, PiGlobeLight } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { ADMIN_ROUTE } from 'src/shared/config/routes'
 import { useViewModel } from 'src/shared/lib'
@@ -11,10 +11,34 @@ import { MainPageViewModel } from '../../model/MainPageViewModel'
 const SidebarHeader: FC = () => {
   return (
     <Flex flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
-      <Flex alignItems="baseline" gap="8px" padding="4px">
+      <Flex alignItems="center" gap="8px" padding="4px" width="100%">
         <Text color="newGray.400" fontWeight="600" fontSize="18px" lineHeight="26px">
           Revisium
         </Text>
+        <Flex gap="4px">
+          <a href="https://revisium.io" target="_blank" rel="noopener noreferrer">
+            <Flex
+              fontSize="16px"
+              color="newGray.400"
+              _hover={{ color: 'newGray.600' }}
+              cursor="pointer"
+              alignItems="center"
+            >
+              <PiGlobeLight />
+            </Flex>
+          </a>
+          <a href="https://github.com/revisium/revisium" target="_blank" rel="noopener noreferrer">
+            <Flex
+              fontSize="16px"
+              color="newGray.400"
+              _hover={{ color: 'newGray.600' }}
+              cursor="pointer"
+              alignItems="center"
+            >
+              <PiGithubLogoLight />
+            </Flex>
+          </a>
+        </Flex>
       </Flex>
     </Flex>
   )

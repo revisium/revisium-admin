@@ -49,6 +49,10 @@ export class ConfigurationService {
     return this.data?.github.clientId
   }
 
+  public get noAuth(): boolean {
+    return this.data?.noAuth ?? false
+  }
+
   public get formulaEnabled(): boolean {
     return this.data?.plugins?.formula ?? false
   }

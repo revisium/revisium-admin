@@ -1,6 +1,7 @@
 query configuration {
   configuration {
     availableEmailSignUp
+    noAuth
     google {
       available
       clientId

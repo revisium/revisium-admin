@@ -2685,6 +2685,7 @@ export type ConfigurationQueryVariables = Exact<{ [key: string]: never }>
 export type ConfigurationQuery = {
   configuration: {
     availableEmailSignUp: boolean
+    noAuth: boolean
     google: { available: boolean; clientId?: string | null }
     github: { available: boolean; clientId?: string | null }
     plugins: { file: boolean; formula: boolean }
@@ -4625,6 +4626,7 @@ export const ConfigurationDocument = gql`
   query configuration {
     configuration {
       availableEmailSignUp
+      noAuth
       google {
         available
         clientId

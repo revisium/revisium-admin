@@ -128,6 +128,11 @@ export class AuthorizePageViewModel implements IViewModel {
     const state = params.get('state')
 
     if (clientId && clientName && redirectUri && codeChallenge && state) {
+      try {
+        new URL(redirectUri)
+      } catch {
+        return
+      }
       this._oauthParams = { clientId, clientName, redirectUri, codeChallenge, state }
     }
   }

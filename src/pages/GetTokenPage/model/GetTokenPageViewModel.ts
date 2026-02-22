@@ -3,7 +3,7 @@ import { IViewModel } from 'src/shared/config/types.ts'
 import { container, copyToClipboard } from 'src/shared/lib'
 import { AuthService } from 'src/shared/model'
 
-export class McpTokenPageViewModel implements IViewModel {
+export class GetTokenPageViewModel implements IViewModel {
   constructor(private readonly authService: AuthService) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -38,10 +38,10 @@ export class McpTokenPageViewModel implements IViewModel {
 }
 
 container.register(
-  McpTokenPageViewModel,
+  GetTokenPageViewModel,
   () => {
     const authService = container.get(AuthService)
-    return new McpTokenPageViewModel(authService)
+    return new GetTokenPageViewModel(authService)
   },
   { scope: 'request' },
 )

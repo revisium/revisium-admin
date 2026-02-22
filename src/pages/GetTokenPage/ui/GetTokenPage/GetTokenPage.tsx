@@ -3,13 +3,13 @@ import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { PiCopyLight } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
-import { McpTokenPageViewModel } from 'src/pages/McpTokenPage/model/McpTokenPageViewModel.ts'
+import { GetTokenPageViewModel } from 'src/pages/GetTokenPage/model/GetTokenPageViewModel.ts'
 import { ROOT_ROUTE } from 'src/shared/config/routes.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page, toaster } from 'src/shared/ui'
 
-export const McpTokenPage = observer(() => {
-  const model = useViewModel(McpTokenPageViewModel)
+export const GetTokenPage = observer(() => {
+  const model = useViewModel(GetTokenPageViewModel)
   const navigate = useNavigate()
 
   const handleCopyToken = useCallback(async () => {
@@ -40,12 +40,12 @@ export const McpTokenPage = observer(() => {
       <Flex alignItems="center" justifyContent="center" flex={1}>
         <VStack gap={6} maxWidth="500px" textAlign="center">
           <Text fontSize="lg" fontWeight="500" color="newGray.500">
-            MCP Access Token
+            Access Token
           </Text>
 
           <Box width="100%">
             <Text fontSize="xs" color="newGray.400" mb={2}>
-              Copy this token and use it with the <Code fontSize="xs">loginWithToken</Code> MCP tool:
+              Copy this token to use with Revisium API or MCP tools:
             </Text>
             <Flex
               align="center"
@@ -81,7 +81,7 @@ export const McpTokenPage = observer(() => {
 
           <Box p={4} bg="newGray.50" borderRadius="md" borderWidth="1px" borderColor="newGray.100" width="100%">
             <Text fontSize="xs" color="newGray.400">
-              You can now close this page and paste the token in your AI assistant.
+              You can now close this page and paste the token in your application.
             </Text>
           </Box>
 

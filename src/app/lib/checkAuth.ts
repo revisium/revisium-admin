@@ -17,7 +17,7 @@ export const checkAuth = async ({ request }: LoaderFunctionArgs) => {
     }
 
     const url = new URL(request.url)
-    const redirectParam = buildRedirectParam(url.pathname)
+    const redirectParam = buildRedirectParam(`${url.pathname}${url.search}`)
     const basePath = configurationService.availableSignUp ? `/${SIGN_UP_ROUTE}` : `/${LOGIN_ROUTE}`
     return redirect(`${basePath}${redirectParam}`)
   }

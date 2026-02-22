@@ -60,6 +60,18 @@ export default function viteConfig({ mode }) {
           target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
           changeOrigin: true,
         },
+        '/.well-known/oauth-authorization-server': {
+          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          changeOrigin: true,
+        },
+        '/.well-known/oauth-protected-resource': {
+          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          changeOrigin: true,
+        },
+        '/oauth': {
+          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          changeOrigin: true,
+        },
       },
     },
     envDir: ENV_DIR,

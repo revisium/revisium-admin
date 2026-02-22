@@ -3,12 +3,12 @@ import { observer } from 'mobx-react-lite'
 import { useCallback } from 'react'
 import { PiCopyLight } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
-import { McpTokenPageViewModel } from 'src/pages/McpTokenPage/model/McpTokenPageViewModel.ts'
+import { AuthorizePageViewModel } from 'src/pages/AuthorizePage/model/AuthorizePageViewModel.ts'
 import { ROOT_ROUTE } from 'src/shared/config/routes.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page, toaster } from 'src/shared/ui'
 
-const OAuthSuccessView = observer(({ model }: { model: McpTokenPageViewModel }) => {
+const OAuthSuccessView = observer(({ model }: { model: AuthorizePageViewModel }) => {
   const handleRedirect = useCallback(() => {
     model.redirectNow()
   }, [model])
@@ -34,9 +34,13 @@ const OAuthSuccessView = observer(({ model }: { model: McpTokenPageViewModel }) 
   )
 })
 
-const OAuthAuthorizeView = observer(({ model }: { model: McpTokenPageViewModel }) => {
+const OAuthAuthorizeView = observer(({ model }: { model: AuthorizePageViewModel }) => {
   const handleApprove = useCallback(async () => {
     await model.approve()
+  }, [model])
+
+  const handleDeny = useCallback(() => {
+    model.deny()
   }, [model])
 
   if (model.isAuthorized) {
@@ -69,6 +73,16 @@ const OAuthAuthorizeView = observer(({ model }: { model: McpTokenPageViewModel }
           )}
 
           <Flex gap={3} width="100%">
+            <Button
+              flex={1}
+              variant="outline"
+              colorPalette="gray"
+              size="sm"
+              onClick={handleDeny}
+              disabled={model.isAuthorizing}
+            >
+              Deny
+            </Button>
             <Button flex={1} colorPalette="blue" size="sm" onClick={handleApprove} loading={model.isAuthorizing}>
               Authorize
             </Button>
@@ -83,7 +97,7 @@ const OAuthAuthorizeView = observer(({ model }: { model: McpTokenPageViewModel }
   )
 })
 
-const TokenView = observer(({ model }: { model: McpTokenPageViewModel }) => {
+const TokenView = observer(({ model }: { model: AuthorizePageViewModel }) => {
   const navigate = useNavigate()
 
   const handleCopyToken = useCallback(async () => {
@@ -168,8 +182,8 @@ const TokenView = observer(({ model }: { model: McpTokenPageViewModel }) => {
   )
 })
 
-export const McpTokenPage = observer(() => {
-  const model = useViewModel(McpTokenPageViewModel)
+export const AuthorizePage = observer(() => {
+  const model = useViewModel(AuthorizePageViewModel)
 
   if (model.isOAuthFlow) {
     return <OAuthAuthorizeView model={model} />

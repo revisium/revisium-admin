@@ -16,7 +16,7 @@ import { AllRowsChangesPage } from 'src/pages/AllRowsChangesPage'
 import { BranchesPage } from 'src/pages/BranchesPage'
 import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { McpPage } from 'src/pages/McpPage'
-import { McpTokenPage } from 'src/pages/McpTokenPage'
+import { AuthorizePage } from 'src/pages/AuthorizePage'
 import { ProjectLayout } from 'src/pages/ProjectLayout'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
@@ -72,7 +72,7 @@ import {
   BRANCHES_ROUTE,
   RELATIONS_ROUTE,
   BRANCH_MAP_ROUTE,
-  MCP_TOKEN_ROUTE,
+  AUTHORIZE_ROUTE,
 } from 'src/shared/config/routes'
 import { ErrorWidget } from 'src/widgets/ErrorWidget/ui/ErrorWidget/ErrorWidget.tsx'
 import { RevisionPageErrorWidget } from 'src/widgets/RevisionPageErrorWidget/ui/RevisionPageErrorWidget/RevisionPageErrorWidget.tsx'
@@ -236,8 +236,8 @@ export const ROOT_ROUTES: RouteObject[] = [
         element: <UsernamePage />,
       },
       {
-        path: MCP_TOKEN_ROUTE,
-        element: <McpTokenPage />,
+        path: AUTHORIZE_ROUTE,
+        element: <AuthorizePage />,
         loader: checkAuth,
       },
       {

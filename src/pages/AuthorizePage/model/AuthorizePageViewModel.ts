@@ -13,7 +13,7 @@ interface OAuthParams {
 
 const REDIRECT_DELAY_MS = 3000
 
-export class McpTokenPageViewModel implements IViewModel {
+export class AuthorizePageViewModel implements IViewModel {
   private _oauthParams: OAuthParams | null = null
   private _isAuthorizing = false
   private _authorizeError: string | null = null
@@ -69,8 +69,23 @@ export class McpTokenPageViewModel implements IViewModel {
     }
   }
 
+  public deny(): void {
+    if (!this._oauthParams) return
+
+    const redirectUrl = new URL(this._oauthParams.redirectUri)
+    redirectUrl.searchParams.set('error', 'access_denied')
+    redirectUrl.searchParams.set('state', this._oauthParams.state)
+    window.location.href = redirectUrl.toString()
+  }
+
   public async approve(): Promise<void> {
-    if (!this._oauthParams || !this.authService.token) return
+    if (!this._oauthParams) return
+    if (this._isAuthorizing || this._isAuthorized) return
+
+    if (!this.authService.token) {
+      this._authorizeError = 'Please sign in to authorize'
+      return
+    }
 
     this._isAuthorizing = true
     this._authorizeError = null
@@ -103,6 +118,9 @@ export class McpTokenPageViewModel implements IViewModel {
         this._isAuthorizing = false
       })
 
+      if (this._redirectTimer) {
+        clearTimeout(this._redirectTimer)
+      }
       this._redirectTimer = setTimeout(() => {
         if (this._redirectUri) {
           window.location.href = this._redirectUri
@@ -146,10 +164,10 @@ export class McpTokenPageViewModel implements IViewModel {
 }
 
 container.register(
-  McpTokenPageViewModel,
+  AuthorizePageViewModel,
   () => {
     const authService = container.get(AuthService)
-    return new McpTokenPageViewModel(authService)
+    return new AuthorizePageViewModel(authService)
   },
   { scope: 'request' },
 )

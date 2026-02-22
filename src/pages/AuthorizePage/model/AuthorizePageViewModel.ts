@@ -9,6 +9,7 @@ interface OAuthParams {
   redirectUri: string
   codeChallenge: string
   state: string
+  scope?: string
 }
 
 const REDIRECT_DELAY_MS = 3000
@@ -78,6 +79,7 @@ export class AuthorizePageViewModel implements IViewModel {
           redirect_uri: this._oauthParams.redirectUri,
           code_challenge: this._oauthParams.codeChallenge,
           state: this._oauthParams.state,
+          ...(this._oauthParams.scope ? { scope: this._oauthParams.scope } : {}),
         }),
       })
 
@@ -133,7 +135,8 @@ export class AuthorizePageViewModel implements IViewModel {
       } catch {
         return
       }
-      this._oauthParams = { clientId, clientName, redirectUri, codeChallenge, state }
+      const scope = params.get('scope') ?? undefined
+      this._oauthParams = { clientId, clientName, redirectUri, codeChallenge, state, scope }
     }
   }
 

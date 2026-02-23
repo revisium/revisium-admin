@@ -100,6 +100,7 @@ type ConfigurationModel {
   availableEmailSignUp: Boolean!
   github: GithubOauth!
   google: GoogleOauth!
+  noAuth: Boolean!
   plugins: PluginsModel!
 }
 
@@ -1383,11 +1384,13 @@ type ViewChangeModel {
 
 input ViewColumnInput {
   field: String!
+  pinned: String
   width: Float
 }
 
 type ViewColumnModel {
   field: String!
+  pinned: String
   width: Float
 }
 

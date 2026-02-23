@@ -175,10 +175,10 @@ export class RowStackItemFactory {
     }
 
     if (withUpload) {
-      callbacks.onUploadFile = async (fileId: string, file: File) => {
+      callbacks.onUploadFile = async (params: { rowId: string; fileId: string; file: File }) => {
         const updatingItem = itemRef.item as RowUpdatingItem | null
         if (updatingItem) {
-          return updatingItem.uploadFileWithNotification(fileId, file)
+          return updatingItem.uploadFileWithNotification(params.fileId, params.file)
         }
         return null
       }

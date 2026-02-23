@@ -117,6 +117,7 @@ export type ConfigurationModel = {
   availableEmailSignUp: Scalars['Boolean']['output']
   github: GithubOauth
   google: GoogleOauth
+  noAuth: Scalars['Boolean']['output']
   plugins: PluginsModel
 }
 
@@ -1656,11 +1657,13 @@ export type ViewChangeModel = {
 
 export type ViewColumnInput = {
   field: Scalars['String']['input']
+  pinned?: InputMaybe<Scalars['String']['input']>
   width?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type ViewColumnModel = {
   field: Scalars['String']['output']
+  pinned?: Maybe<Scalars['String']['output']>
   width?: Maybe<Scalars['Float']['output']>
 }
 
@@ -3110,7 +3113,7 @@ export type TableViewsDataFragment = {
     description?: string | null
     filters?: { [key: string]: any } | string | number | boolean | null | null
     search?: string | null
-    columns?: Array<{ field: string; width?: number | null }> | null
+    columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
     sorts?: Array<{ field: string; direction: string }> | null
   }>
 }
@@ -3131,7 +3134,7 @@ export type GetTableViewsQuery = {
         description?: string | null
         filters?: { [key: string]: any } | string | number | boolean | null | null
         search?: string | null
-        columns?: Array<{ field: string; width?: number | null }> | null
+        columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
         sorts?: Array<{ field: string; direction: string }> | null
       }>
     }
@@ -3152,7 +3155,7 @@ export type UpdateTableViewsMutation = {
       description?: string | null
       filters?: { [key: string]: any } | string | number | boolean | null | null
       search?: string | null
-      columns?: Array<{ field: string; width?: number | null }> | null
+      columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
       sorts?: Array<{ field: string; direction: string }> | null
     }>
   }
@@ -3839,6 +3842,7 @@ export const TableViewsDataFragmentDoc = gql`
       columns {
         field
         width
+        pinned
       }
       filters
       sorts {

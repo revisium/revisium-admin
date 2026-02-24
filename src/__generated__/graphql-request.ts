@@ -3039,128 +3039,6 @@ export type GetTableChangesForFilterQuery = {
   }
 }
 
-export type RowListItemFragment = {
-  id: string
-  versionId: string
-  readonly: boolean
-  data: { [key: string]: any } | string | number | boolean | null
-  createdAt: string
-  updatedAt: string
-  publishedAt: string
-  createdId: string
-}
-
-export type RowListRowsQueryVariables = Exact<{
-  data: GetRowsInput
-}>
-
-export type RowListRowsQuery = {
-  rows: {
-    totalCount: number
-    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
-    edges: Array<{
-      node: {
-        id: string
-        versionId: string
-        readonly: boolean
-        data: { [key: string]: any } | string | number | boolean | null
-        createdAt: string
-        updatedAt: string
-        publishedAt: string
-        createdId: string
-      }
-    }>
-  }
-}
-
-export type DeleteRowMutationVariables = Exact<{
-  data: DeleteRowInput
-}>
-
-export type DeleteRowMutation = { deleteRow: { branch: { id: string } } }
-
-export type DeleteRowsMutationVariables = Exact<{
-  data: DeleteRowsInput
-}>
-
-export type DeleteRowsMutation = { deleteRows: { branch: { id: string } } }
-
-export type PatchRowInlineMutationVariables = Exact<{
-  data: PatchRowInput
-}>
-
-export type PatchRowInlineMutation = {
-  patchRow: {
-    row: {
-      id: string
-      versionId: string
-      readonly: boolean
-      data: { [key: string]: any } | string | number | boolean | null
-      createdAt: string
-      updatedAt: string
-      publishedAt: string
-      createdId: string
-    }
-  }
-}
-
-export type TableViewsDataFragment = {
-  version: number
-  defaultViewId: string
-  views: Array<{
-    id: string
-    name: string
-    description?: string | null
-    filters?: { [key: string]: any } | string | number | boolean | null | null
-    search?: string | null
-    columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
-    sorts?: Array<{ field: string; direction: string }> | null
-  }>
-}
-
-export type GetTableViewsQueryVariables = Exact<{
-  data: GetTableInput
-}>
-
-export type GetTableViewsQuery = {
-  table?: {
-    id: string
-    views: {
-      version: number
-      defaultViewId: string
-      views: Array<{
-        id: string
-        name: string
-        description?: string | null
-        filters?: { [key: string]: any } | string | number | boolean | null | null
-        search?: string | null
-        columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
-        sorts?: Array<{ field: string; direction: string }> | null
-      }>
-    }
-  } | null
-}
-
-export type UpdateTableViewsMutationVariables = Exact<{
-  data: UpdateTableViewsInput
-}>
-
-export type UpdateTableViewsMutation = {
-  updateTableViews: {
-    version: number
-    defaultViewId: string
-    views: Array<{
-      id: string
-      name: string
-      description?: string | null
-      filters?: { [key: string]: any } | string | number | boolean | null | null
-      search?: string | null
-      columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
-      sorts?: Array<{ field: string; direction: string }> | null
-    }>
-  }
-}
-
 export type ForeignKeyTableItemFragment = {
   id: string
   versionId: string
@@ -3322,6 +3200,128 @@ export type RenameRowForStackMutation = {
       readonly: boolean
       data: { [key: string]: any } | string | number | boolean | null
     }
+  }
+}
+
+export type RowListItemFragment = {
+  id: string
+  versionId: string
+  readonly: boolean
+  data: { [key: string]: any } | string | number | boolean | null
+  createdAt: string
+  updatedAt: string
+  publishedAt: string
+  createdId: string
+}
+
+export type RowListRowsQueryVariables = Exact<{
+  data: GetRowsInput
+}>
+
+export type RowListRowsQuery = {
+  rows: {
+    totalCount: number
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+    edges: Array<{
+      node: {
+        id: string
+        versionId: string
+        readonly: boolean
+        data: { [key: string]: any } | string | number | boolean | null
+        createdAt: string
+        updatedAt: string
+        publishedAt: string
+        createdId: string
+      }
+    }>
+  }
+}
+
+export type DeleteRowMutationVariables = Exact<{
+  data: DeleteRowInput
+}>
+
+export type DeleteRowMutation = { deleteRow: { branch: { id: string } } }
+
+export type DeleteRowsMutationVariables = Exact<{
+  data: DeleteRowsInput
+}>
+
+export type DeleteRowsMutation = { deleteRows: { branch: { id: string } } }
+
+export type PatchRowInlineMutationVariables = Exact<{
+  data: PatchRowInput
+}>
+
+export type PatchRowInlineMutation = {
+  patchRow: {
+    row: {
+      id: string
+      versionId: string
+      readonly: boolean
+      data: { [key: string]: any } | string | number | boolean | null
+      createdAt: string
+      updatedAt: string
+      publishedAt: string
+      createdId: string
+    }
+  }
+}
+
+export type TableViewsDataFragment = {
+  version: number
+  defaultViewId: string
+  views: Array<{
+    id: string
+    name: string
+    description?: string | null
+    filters?: { [key: string]: any } | string | number | boolean | null | null
+    search?: string | null
+    columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
+    sorts?: Array<{ field: string; direction: string }> | null
+  }>
+}
+
+export type GetTableViewsQueryVariables = Exact<{
+  data: GetTableInput
+}>
+
+export type GetTableViewsQuery = {
+  table?: {
+    id: string
+    views: {
+      version: number
+      defaultViewId: string
+      views: Array<{
+        id: string
+        name: string
+        description?: string | null
+        filters?: { [key: string]: any } | string | number | boolean | null | null
+        search?: string | null
+        columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
+        sorts?: Array<{ field: string; direction: string }> | null
+      }>
+    }
+  } | null
+}
+
+export type UpdateTableViewsMutationVariables = Exact<{
+  data: UpdateTableViewsInput
+}>
+
+export type UpdateTableViewsMutation = {
+  updateTableViews: {
+    version: number
+    defaultViewId: string
+    views: Array<{
+      id: string
+      name: string
+      description?: string | null
+      filters?: { [key: string]: any } | string | number | boolean | null | null
+      search?: string | null
+      columns?: Array<{ field: string; width?: number | null; pinned?: string | null }> | null
+      sorts?: Array<{ field: string; direction: string }> | null
+    }>
   }
 }
 
@@ -3819,40 +3819,6 @@ export const FieldChangeFieldsFragmentDoc = gql`
     movedFrom
   }
 `
-export const RowListItemFragmentDoc = gql`
-  fragment RowListItem on RowModel {
-    id
-    versionId
-    readonly
-    data
-    createdAt
-    updatedAt
-    publishedAt
-    createdId
-  }
-`
-export const TableViewsDataFragmentDoc = gql`
-  fragment TableViewsData on TableViewsDataModel {
-    version
-    defaultViewId
-    views {
-      id
-      name
-      description
-      columns {
-        field
-        width
-        pinned
-      }
-      filters
-      sorts {
-        field
-        direction
-      }
-      search
-    }
-  }
-`
 export const ForeignKeyTableItemFragmentDoc = gql`
   fragment ForeignKeyTableItem on TableModel {
     id
@@ -3897,6 +3863,40 @@ export const TableMutationItemFragmentDoc = gql`
     readonly
     count
     schema
+  }
+`
+export const RowListItemFragmentDoc = gql`
+  fragment RowListItem on RowModel {
+    id
+    versionId
+    readonly
+    data
+    createdAt
+    updatedAt
+    publishedAt
+    createdId
+  }
+`
+export const TableViewsDataFragmentDoc = gql`
+  fragment TableViewsData on TableViewsDataModel {
+    version
+    defaultViewId
+    views {
+      id
+      name
+      description
+      columns {
+        field
+        width
+        pinned
+      }
+      filters
+      sorts {
+        field
+        direction
+      }
+      search
+    }
   }
 `
 export const SearchResultFragmentDoc = gql`
@@ -4803,70 +4803,6 @@ export const GetTableChangesForFilterDocument = gql`
     }
   }
 `
-export const RowListRowsDocument = gql`
-  query RowListRows($data: GetRowsInput!) {
-    rows(data: $data) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          ...RowListItem
-        }
-      }
-    }
-  }
-  ${RowListItemFragmentDoc}
-`
-export const DeleteRowDocument = gql`
-  mutation DeleteRow($data: DeleteRowInput!) {
-    deleteRow(data: $data) {
-      branch {
-        id
-      }
-    }
-  }
-`
-export const DeleteRowsDocument = gql`
-  mutation DeleteRows($data: DeleteRowsInput!) {
-    deleteRows(data: $data) {
-      branch {
-        id
-      }
-    }
-  }
-`
-export const PatchRowInlineDocument = gql`
-  mutation PatchRowInline($data: PatchRowInput!) {
-    patchRow(data: $data) {
-      row {
-        ...RowListItem
-      }
-    }
-  }
-  ${RowListItemFragmentDoc}
-`
-export const GetTableViewsDocument = gql`
-  query GetTableViews($data: GetTableInput!) {
-    table(data: $data) {
-      id
-      views {
-        ...TableViewsData
-      }
-    }
-  }
-  ${TableViewsDataFragmentDoc}
-`
-export const UpdateTableViewsDocument = gql`
-  mutation UpdateTableViews($data: UpdateTableViewsInput!) {
-    updateTableViews(data: $data) {
-      ...TableViewsData
-    }
-  }
-  ${TableViewsDataFragmentDoc}
-`
 export const ForeignKeyTableWithRowsDocument = gql`
   query foreignKeyTableWithRows($tableData: GetTableInput!, $rowsData: GetRowsInput!) {
     table(data: $tableData) {
@@ -4934,6 +4870,70 @@ export const RenameRowForStackDocument = gql`
   }
   ${TableMutationItemFragmentDoc}
   ${RowMutationItemFragmentDoc}
+`
+export const RowListRowsDocument = gql`
+  query RowListRows($data: GetRowsInput!) {
+    rows(data: $data) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...RowListItem
+        }
+      }
+    }
+  }
+  ${RowListItemFragmentDoc}
+`
+export const DeleteRowDocument = gql`
+  mutation DeleteRow($data: DeleteRowInput!) {
+    deleteRow(data: $data) {
+      branch {
+        id
+      }
+    }
+  }
+`
+export const DeleteRowsDocument = gql`
+  mutation DeleteRows($data: DeleteRowsInput!) {
+    deleteRows(data: $data) {
+      branch {
+        id
+      }
+    }
+  }
+`
+export const PatchRowInlineDocument = gql`
+  mutation PatchRowInline($data: PatchRowInput!) {
+    patchRow(data: $data) {
+      row {
+        ...RowListItem
+      }
+    }
+  }
+  ${RowListItemFragmentDoc}
+`
+export const GetTableViewsDocument = gql`
+  query GetTableViews($data: GetTableInput!) {
+    table(data: $data) {
+      id
+      views {
+        ...TableViewsData
+      }
+    }
+  }
+  ${TableViewsDataFragmentDoc}
+`
+export const UpdateTableViewsDocument = gql`
+  mutation UpdateTableViews($data: UpdateTableViewsInput!) {
+    updateTableViews(data: $data) {
+      ...TableViewsData
+    }
+  }
+  ${TableViewsDataFragmentDoc}
 `
 export const SearchRowsDocument = gql`
   query searchRows($data: SearchRowsInput!) {
@@ -5945,6 +5945,66 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
         variables,
       )
     },
+    foreignKeyTableWithRows(
+      variables: ForeignKeyTableWithRowsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<ForeignKeyTableWithRowsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<ForeignKeyTableWithRowsQuery>(ForeignKeyTableWithRowsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'foreignKeyTableWithRows',
+        'query',
+        variables,
+      )
+    },
+    createRowForStack(
+      variables: CreateRowForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateRowForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateRowForStackMutation>(CreateRowForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'createRowForStack',
+        'mutation',
+        variables,
+      )
+    },
+    updateRowForStack(
+      variables: UpdateRowForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateRowForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateRowForStackMutation>(UpdateRowForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'updateRowForStack',
+        'mutation',
+        variables,
+      )
+    },
+    renameRowForStack(
+      variables: RenameRowForStackMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<RenameRowForStackMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<RenameRowForStackMutation>(RenameRowForStackDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'renameRowForStack',
+        'mutation',
+        variables,
+      )
+    },
     RowListRows(
       variables: RowListRowsQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,
@@ -6031,66 +6091,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'UpdateTableViews',
-        'mutation',
-        variables,
-      )
-    },
-    foreignKeyTableWithRows(
-      variables: ForeignKeyTableWithRowsQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<ForeignKeyTableWithRowsQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<ForeignKeyTableWithRowsQuery>(ForeignKeyTableWithRowsDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'foreignKeyTableWithRows',
-        'query',
-        variables,
-      )
-    },
-    createRowForStack(
-      variables: CreateRowForStackMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<CreateRowForStackMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<CreateRowForStackMutation>(CreateRowForStackDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'createRowForStack',
-        'mutation',
-        variables,
-      )
-    },
-    updateRowForStack(
-      variables: UpdateRowForStackMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<UpdateRowForStackMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<UpdateRowForStackMutation>(UpdateRowForStackDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'updateRowForStack',
-        'mutation',
-        variables,
-      )
-    },
-    renameRowForStack(
-      variables: RenameRowForStackMutationVariables,
-      requestHeaders?: GraphQLClientRequestHeaders,
-    ): Promise<RenameRowForStackMutation> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<RenameRowForStackMutation>(RenameRowForStackDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'renameRowForStack',
         'mutation',
         variables,
       )

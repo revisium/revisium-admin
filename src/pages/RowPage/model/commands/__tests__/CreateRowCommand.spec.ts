@@ -12,9 +12,6 @@ const createMockDeps = (
       createRow: jest.fn().mockResolvedValue({ row: { id: 'new-row' } }),
       dispose: jest.fn(),
     } as never,
-    rowListRefreshService: {
-      refresh: jest.fn(),
-    } as never,
     projectContext: {
       revisionId: 'draft-1',
       touched,
@@ -69,25 +66,6 @@ describe('CreateRowCommand', () => {
         await command.execute('new-row', { name: 'Test' })
 
         expect(deps.projectContext.updateTouched).not.toHaveBeenCalled()
-      })
-
-      it('should refresh row list on success', async () => {
-        const deps = createMockDeps()
-        const command = new CreateRowCommand(deps)
-
-        await command.execute('new-row', { name: 'Test' })
-
-        expect(deps.rowListRefreshService.refresh).toHaveBeenCalled()
-      })
-
-      it('should not refresh row list on failure', async () => {
-        const deps = createMockDeps()
-        ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue(null)
-        const command = new CreateRowCommand(deps)
-
-        await command.execute('new-row', { name: 'Test' })
-
-        expect(deps.rowListRefreshService.refresh).not.toHaveBeenCalled()
       })
 
       it('should not update touched on failure', async () => {

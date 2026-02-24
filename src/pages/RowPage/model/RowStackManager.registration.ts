@@ -5,7 +5,6 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 import { createSearchForeignKey } from 'src/widgets/RowStackWidget/model/createSearchForeignKey.ts'
-import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 import { ForeignKeyTableDataSource } from 'src/widgets/RowStackWidget/model/ForeignKeyTableDataSource.ts'
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
 import { toaster } from 'src/shared/ui'
@@ -61,7 +60,6 @@ const createRowStackManager = (): RowStackManager => {
     projectContext,
     projectPermissions: container.get(ProjectPermissions),
     mutationDataSource: container.get(RowMutationDataSource),
-    rowListRefreshService: container.get(RowListRefreshService),
     schemaCache,
     notifications: createNotifications(),
     navigation: createNavigation(),

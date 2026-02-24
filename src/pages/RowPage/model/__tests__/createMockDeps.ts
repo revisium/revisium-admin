@@ -98,9 +98,6 @@ export const createMockCreatingDeps = (overrides: MockDepsOverrides = {}): RowCr
     createRow: jest.fn(),
     dispose: jest.fn(),
   } as never,
-  rowListRefreshService: {
-    refresh: jest.fn(),
-  } as never,
   notifications: createMockNotifications(),
   navigation: createMockNavigation(),
 })
@@ -111,9 +108,6 @@ export const createMockUpdatingDeps = (overrides: MockDepsOverrides = {}): RowUp
     updateRow: jest.fn(),
     renameRow: jest.fn(),
     dispose: jest.fn(),
-  } as never,
-  rowListRefreshService: {
-    refresh: jest.fn(),
   } as never,
   notifications: createMockNotifications(),
   navigation: createMockNavigation(),
@@ -151,9 +145,6 @@ const createMockItemFactory = (
       updateRow: jest.fn(),
       renameRow: jest.fn(),
       dispose: jest.fn(),
-    } as never,
-    rowListRefreshService: {
-      refresh: jest.fn(),
     } as never,
     schemaCache,
     notifications: createMockNotifications(),

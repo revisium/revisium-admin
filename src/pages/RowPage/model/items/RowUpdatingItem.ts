@@ -23,7 +23,6 @@ export class RowUpdatingItem extends RowEditorItemBase {
 
     this.updateRowCommand = new UpdateRowCommand({
       mutationDataSource: deps.mutationDataSource,
-      rowListRefreshService: deps.rowListRefreshService,
       projectContext: deps.projectContext,
       tableId: deps.tableId,
     })

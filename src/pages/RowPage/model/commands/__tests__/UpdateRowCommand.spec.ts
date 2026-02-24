@@ -13,9 +13,6 @@ const createMockDeps = (
       updateRow: jest.fn().mockResolvedValue({ row: { id: 'test-row' } }),
       dispose: jest.fn(),
     } as never,
-    rowListRefreshService: {
-      refresh: jest.fn(),
-    } as never,
     projectContext: {
       revisionId: 'draft-1',
       touched,
@@ -170,7 +167,7 @@ describe('UpdateRowCommand', () => {
         expect(deps.mutationDataSource.updateRow).not.toHaveBeenCalled()
       })
 
-      it('should not refresh list when no changes', async () => {
+      it('should not update touched when no changes', async () => {
         const deps = createMockDeps()
         const command = new UpdateRowCommand(deps)
 
@@ -182,7 +179,7 @@ describe('UpdateRowCommand', () => {
           isDirty: false,
         })
 
-        expect(deps.rowListRefreshService.refresh).not.toHaveBeenCalled()
+        expect(deps.projectContext.updateTouched).not.toHaveBeenCalled()
       })
     })
 
@@ -215,21 +212,6 @@ describe('UpdateRowCommand', () => {
         })
 
         expect(deps.projectContext.updateTouched).not.toHaveBeenCalled()
-      })
-
-      it('should refresh row list when changes made', async () => {
-        const deps = createMockDeps()
-        const command = new UpdateRowCommand(deps)
-
-        await command.execute({
-          currentRowId: 'test-row',
-          originalRowId: 'test-row',
-          data: { name: 'Updated' },
-          isRowIdChanged: false,
-          isDirty: true,
-        })
-
-        expect(deps.rowListRefreshService.refresh).toHaveBeenCalled()
       })
     })
 

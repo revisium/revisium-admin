@@ -21,7 +21,6 @@ export class RowCreatingItem extends RowEditorItemBase {
 
     this.createRowCommand = new CreateRowCommand({
       mutationDataSource: deps.mutationDataSource,
-      rowListRefreshService: deps.rowListRefreshService,
       projectContext: deps.projectContext,
       tableId: deps.tableId,
     })

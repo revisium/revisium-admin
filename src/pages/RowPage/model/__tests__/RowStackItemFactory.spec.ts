@@ -33,9 +33,6 @@ const createMockFactoryDeps = (): RowStackItemFactoryDeps => ({
     renameRow: jest.fn(),
     dispose: jest.fn(),
   } as never,
-  rowListRefreshService: {
-    refresh: jest.fn(),
-  } as never,
   schemaCache: {
     get: jest.fn().mockReturnValue(createTestSchema()),
     getOrThrow: jest.fn().mockReturnValue(createTestSchema()),

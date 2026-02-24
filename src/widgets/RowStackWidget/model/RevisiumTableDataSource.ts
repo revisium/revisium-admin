@@ -141,6 +141,9 @@ export class RevisiumTableDataSource implements ITableDataSource {
   }
 
   public async deleteRows(rowIds: string[]): Promise<DeleteRowsResult> {
+    if (rowIds.length === 0) {
+      return { ok: true }
+    }
     try {
       if (rowIds.length === 1) {
         await client.DeleteRow({
@@ -203,15 +206,19 @@ export class RevisiumTableDataSource implements ITableDataSource {
     fileId: string
     file: File
   }): Promise<Record<string, unknown> | null> {
-    const response = await this._fileService.add({
-      revisionId: this._revisionId,
-      tableId: this._tableId,
-      rowId: params.rowId,
-      fileId: params.fileId,
-      file: params.file,
-    })
+    try {
+      const response = await this._fileService.add({
+        revisionId: this._revisionId,
+        tableId: this._tableId,
+        rowId: params.rowId,
+        fileId: params.fileId,
+        file: params.file,
+      })
 
-    return response ? (response.row?.data as Record<string, unknown>) : null
+      return response ? (response.row?.data as Record<string, unknown>) : null
+    } catch {
+      return null
+    }
   }
 
   private async _loadViewState(): Promise<ViewState | null> {
@@ -341,7 +348,7 @@ export class RevisiumTableDataSource implements ITableDataSource {
       return {
         id: v.id,
         name: v.name,
-        ...(v.columns && { columns: v.columns.map((c) => ({ field: c.field, width: c.width })) }),
+        ...(v.columns && { columns: v.columns.map((c) => ({ field: c.field, width: c.width, pinned: c.pinned })) }),
         ...(v.filters && { filters: v.filters }),
         ...(v.sorts && {
           sorts: v.sorts.map((s) => ({

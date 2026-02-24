@@ -64,7 +64,7 @@ export class TableEditorViewModel implements IViewModel {
       onDuplicateRow: callbacks.onDuplicateRow,
       onSearchForeignKey: this._searchForeignKey,
       onUploadFile: (params) => this._handleUploadFile(params),
-      onOpenFile: (url) => window.open(url, '_blank'),
+      onOpenFile: (url) => window.open(url, '_blank', 'noopener,noreferrer'),
       onReadonlyEditAttempt: () => toaster.info({ title: 'This cell is read-only', duration: 2000 }),
     }
 
@@ -88,15 +88,20 @@ export class TableEditorViewModel implements IViewModel {
     const toastId = nanoid()
     toaster.loading({ id: toastId, title: 'Uploading...' })
 
-    const rowData = await this._dataSource.uploadFile(params)
+    try {
+      const rowData = await this._dataSource.uploadFile(params)
 
-    if (rowData) {
-      toaster.update(toastId, { type: 'info', title: 'Successfully uploaded!', duration: 1500 })
-      return this._extractFileFieldData(params.fileId, rowData)
+      if (rowData) {
+        toaster.update(toastId, { type: 'info', title: 'Successfully uploaded!', duration: 1500 })
+        return this._extractFileFieldData(params.fileId, rowData)
+      }
+
+      toaster.update(toastId, { type: 'error', title: 'Upload failed', duration: 3000 })
+      return null
+    } catch {
+      toaster.update(toastId, { type: 'error', title: 'Upload failed', duration: 3000 })
+      return null
     }
-
-    toaster.update(toastId, { type: 'error', title: 'Upload failed', duration: 3000 })
-    return null
   }
 
   private _extractFileFieldData(fileId: string, rowData: Record<string, unknown>): Record<string, unknown> | null {
@@ -122,8 +127,9 @@ export class TableEditorViewModel implements IViewModel {
         void this._routerService.navigate(href)
       }
     } else if (index === 1) {
-      const href = generatePath(`${this._linkMaker.currentBaseLink}/${TABLE_ROUTE}`, { tableId })
-      if (href) {
+      const baseLink = this._linkMaker.currentBaseLink
+      if (baseLink) {
+        const href = generatePath(`${baseLink}/${TABLE_ROUTE}`, { tableId })
         void this._routerService.navigate(href)
       }
     }

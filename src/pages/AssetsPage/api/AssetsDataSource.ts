@@ -10,7 +10,6 @@ import {
   SubSchemaWhereInput,
 } from 'src/__generated__/graphql-request'
 import { JsonSchema } from 'src/entities/Schema'
-import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { hasFileFields } from 'src/pages/AssetsPage/lib/extractFilesFromSchema'
 import { ExtractedFile, FileData } from 'src/pages/AssetsPage/lib/extractFilesFromData'
 import {
@@ -337,21 +336,16 @@ export class AssetsDataSource {
     const result: TableWithFiles[] = []
 
     for (const table of tables) {
-      try {
-        if (!isValidJsonSchema(table.schema)) {
-          continue
-        }
-        const schemaStore = createJsonSchemaStore(table.schema)
-        if (hasFileFields(schemaStore)) {
-          result.push({
-            id: table.id,
-            versionId: table.versionId,
-            count: table.count,
-            fileCount: 0,
-          })
-        }
-      } catch {
+      if (!isValidJsonSchema(table.schema)) {
         continue
+      }
+      if (hasFileFields(table.schema)) {
+        result.push({
+          id: table.id,
+          versionId: table.versionId,
+          count: table.count,
+          fileCount: 0,
+        })
       }
     }
 

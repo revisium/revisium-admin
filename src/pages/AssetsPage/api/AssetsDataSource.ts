@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+import { type JsonSchema, SystemSchemaIds } from '@revisium/schema-toolkit-ui'
 import {
   AssetTableItemFragment,
   AssetsTablesDataQuery,
@@ -9,8 +10,6 @@ import {
   SubSchemaOrderByItemInput,
   SubSchemaWhereInput,
 } from 'src/__generated__/graphql-request'
-import { JsonSchema } from 'src/entities/Schema'
-import { createJsonSchemaStore } from 'src/entities/Schema/lib/createJsonSchemaStore'
 import { hasFileFields } from 'src/pages/AssetsPage/lib/extractFilesFromSchema'
 import { ExtractedFile, FileData } from 'src/pages/AssetsPage/lib/extractFilesFromData'
 import {
@@ -32,7 +31,6 @@ const isValidJsonSchema = (value: unknown): value is JsonSchema => {
   return typeof obj.type === 'string' || typeof obj.$ref === 'string'
 }
 
-const FILE_SCHEMA_ID = 'urn:jsonschema:io:revisium:file-schema:1.0.0'
 const PAGINATION_PAGE_SIZE = 100
 
 const DEFAULT_ORDER_BY: SubSchemaOrderByItemInput[] = [{ rowCreatedAt: SortOrder.Desc }, { fieldPath: SortOrder.Asc }]
@@ -284,7 +282,7 @@ export class AssetsDataSource {
       const result = await this.subSchemaRequest.fetch({
         data: {
           revisionId,
-          schemaId: FILE_SCHEMA_ID,
+          schemaId: SystemSchemaIds.File,
           first: PAGINATION_PAGE_SIZE,
           after: cursor,
           where,
@@ -341,8 +339,7 @@ export class AssetsDataSource {
         if (!isValidJsonSchema(table.schema)) {
           continue
         }
-        const schemaStore = createJsonSchemaStore(table.schema)
-        if (hasFileFields(schemaStore)) {
+        if (hasFileFields(table.schema)) {
           result.push({
             id: table.id,
             versionId: table.versionId,

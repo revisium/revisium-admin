@@ -8,6 +8,7 @@ fragment TableViewsData on TableViewsDataModel {
     columns {
       field
       width
+      pinned
     }
     filters
     sorts {

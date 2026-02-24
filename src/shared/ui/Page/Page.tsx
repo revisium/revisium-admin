@@ -42,7 +42,7 @@ export const Page: React.FC<PageProps & React.PropsWithChildren> = ({
         </Flex>
       )}
 
-      <Flex alignItems="center" flex={1} flexDirection="column" width="100%">
+      <Flex flex={1} minWidth={0} flexDirection="column" alignItems="center">
         {(title || actions) && (
           <Flex
             alignItems="center"

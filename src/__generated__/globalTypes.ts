@@ -120,6 +120,7 @@ export type ConfigurationModel = {
   availableEmailSignUp: Scalars['Boolean']['output']
   github: GithubOauth
   google: GoogleOauth
+  noAuth: Scalars['Boolean']['output']
   plugins: PluginsModel
 }
 
@@ -1737,12 +1738,14 @@ export type ViewChangeModel = {
 
 export type ViewColumnInput = {
   field: Scalars['String']['input']
+  pinned?: InputMaybe<Scalars['String']['input']>
   width?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type ViewColumnModel = {
   __typename: 'ViewColumnModel'
   field: Scalars['String']['output']
+  pinned?: Maybe<Scalars['String']['output']>
   width?: Maybe<Scalars['Float']['output']>
 }
 

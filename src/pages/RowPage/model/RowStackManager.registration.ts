@@ -1,12 +1,10 @@
 import { nanoid } from 'nanoid'
-import { type ForeignKeySearchResult } from '@revisium/schema-toolkit-ui'
 import { container } from 'src/shared/lib/DIContainer.ts'
-import { SearchIn, SearchType } from 'src/__generated__/graphql-request.ts'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
-import { client } from 'src/shared/model/ApiService.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
+import { createSearchForeignKey } from 'src/widgets/RowStackWidget/model/createSearchForeignKey.ts'
 import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 import { ForeignKeyTableDataSource } from 'src/widgets/RowStackWidget/model/ForeignKeyTableDataSource.ts'
 import { DRAFT_TAG } from 'src/shared/config/routes.ts'
@@ -49,31 +47,6 @@ const createNavigation = (): RowEditorNavigation => {
       const path = linkMaker.make({ revisionIdOrTag: DRAFT_TAG, tableId, rowId })
       routerService.navigate(path)
     },
-  }
-}
-
-const createSearchForeignKey = (projectContext: ProjectContext) => {
-  return async (tableId: string, search: string): Promise<ForeignKeySearchResult> => {
-    const result = await client.findForeignKey({
-      data: {
-        first: 100,
-        revisionId: projectContext.revisionId,
-        tableId,
-        where: search
-          ? {
-              OR: [
-                { id: { contains: search } },
-                { data: { path: [], search, searchType: SearchType.Plain, searchIn: SearchIn.Values } },
-              ],
-            }
-          : undefined,
-      },
-    })
-
-    return {
-      ids: result.rows.edges.map((edge) => edge.node.id),
-      hasMore: result.rows.pageInfo.hasNextPage,
-    }
   }
 }
 

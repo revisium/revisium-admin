@@ -1,6 +1,4 @@
-import { JsonSchema, JsonSchemaTypeName } from 'src/entities/Schema'
-
-const FILE_SCHEMA_REF = 'urn:jsonschema:io:revisium:file-schema:1.0.0'
+import { SystemSchemaIds } from '@revisium/schema-toolkit-ui'
 
 export interface FileFieldInfo {
   fieldPath: string
@@ -8,46 +6,47 @@ export interface FileFieldInfo {
   isArray: boolean
 }
 
-const isRefSchema = (schema: JsonSchema): schema is { $ref: string } => {
-  return '$ref' in schema
+interface SchemaLike {
+  type?: string
+  $ref?: string
+  properties?: Record<string, SchemaLike>
+  items?: SchemaLike
 }
 
-export const hasFileFields = (schema: JsonSchema): boolean => {
-  if (isRefSchema(schema)) {
-    return schema.$ref === FILE_SCHEMA_REF
+export const hasFileFields = (schema: SchemaLike): boolean => {
+  if (schema.$ref === SystemSchemaIds.File) {
+    return true
   }
 
-  if (schema.type === JsonSchemaTypeName.Object) {
-    return Object.values(schema.properties).some((prop) => hasFileFields(prop))
+  if (schema.type === 'object' && schema.properties) {
+    return Object.values(schema.properties).some(hasFileFields)
   }
 
-  if (schema.type === JsonSchemaTypeName.Array) {
+  if (schema.type === 'array' && schema.items) {
     return hasFileFields(schema.items)
   }
 
   return false
 }
 
-export const extractFileFields = (schema: JsonSchema): FileFieldInfo[] => {
+export const extractFileFields = (schema: SchemaLike): FileFieldInfo[] => {
   const fileFields: FileFieldInfo[] = []
 
-  const traverse = (node: JsonSchema, path: string[], inArray: boolean): void => {
-    if (isRefSchema(node)) {
-      if (node.$ref === FILE_SCHEMA_REF) {
-        fileFields.push({
-          fieldPath: path.join('.'),
-          fieldName: path[path.length - 1] || 'root',
-          isArray: inArray,
-        })
-      }
+  const traverse = (node: SchemaLike, path: string[], inArray: boolean): void => {
+    if (node.$ref === SystemSchemaIds.File) {
+      fileFields.push({
+        fieldPath: path.join('.'),
+        fieldName: path[path.length - 1] || 'root',
+        isArray: inArray,
+      })
       return
     }
 
-    if (node.type === JsonSchemaTypeName.Object) {
+    if (node.type === 'object' && node.properties) {
       Object.entries(node.properties).forEach(([key, prop]) => {
         traverse(prop, [...path, key], inArray)
       })
-    } else if (node.type === JsonSchemaTypeName.Array) {
+    } else if (node.type === 'array' && node.items) {
       traverse(node.items, path, true)
     }
   }
@@ -56,6 +55,6 @@ export const extractFileFields = (schema: JsonSchema): FileFieldInfo[] => {
   return fileFields
 }
 
-export const countFileFields = (schema: JsonSchema): number => {
+export const countFileFields = (schema: SchemaLike): number => {
   return extractFileFields(schema).length
 }

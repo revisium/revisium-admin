@@ -9,7 +9,6 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonObjectSchema, schemaRefsMapper } from 'src/entities/Schema'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
-import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 import { ForeignSchemaCache } from './ForeignSchemaCache.ts'
 import { RowEditorState } from './RowEditorState.ts'
 import { RowListItem, RowCreatingItem, RowUpdatingItem } from './items'
@@ -19,7 +18,6 @@ export interface RowStackItemFactoryDeps {
   projectContext: ProjectContext
   projectPermissions: ProjectPermissions
   mutationDataSource: RowMutationDataSource
-  rowListRefreshService: RowListRefreshService
   schemaCache: ForeignSchemaCache
   notifications: RowEditorNotifications
   navigation: RowEditorNavigation
@@ -146,7 +144,6 @@ export class RowStackItemFactory {
       tableId,
       schema: this.deps.schemaCache.get(tableId),
       mutationDataSource: this.deps.mutationDataSource,
-      rowListRefreshService: this.deps.rowListRefreshService,
       notifications: this.deps.notifications,
       navigation: this.deps.navigation,
     }

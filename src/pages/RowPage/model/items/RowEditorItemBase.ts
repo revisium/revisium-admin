@@ -1,13 +1,11 @@
 import { action, computed, makeObservable } from 'mobx'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
-import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 import { RowEditorNavigation, RowEditorNotifications, SelectForeignKeyRowPayload } from '../../config/types.ts'
 import { RowEditorState } from '../RowEditorState.ts'
 import { RowStackItemBase, RowStackItemBaseDeps } from './RowStackItemBase.ts'
 
 export interface RowEditorItemBaseDeps extends RowStackItemBaseDeps {
   mutationDataSource: RowMutationDataSource
-  rowListRefreshService: RowListRefreshService
   notifications: RowEditorNotifications
   navigation: RowEditorNavigation
 }

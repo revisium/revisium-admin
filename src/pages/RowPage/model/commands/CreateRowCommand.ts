@@ -1,11 +1,9 @@
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
 import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
-import { RowListRefreshService } from 'src/widgets/RowList/model/RowListRefreshService.ts'
 
 export interface CreateRowCommandDeps {
   mutationDataSource: RowMutationDataSource
-  rowListRefreshService: RowListRefreshService
   projectContext: ProjectContext
   tableId: string
 }
@@ -14,7 +12,7 @@ export class CreateRowCommand {
   constructor(private readonly deps: CreateRowCommandDeps) {}
 
   public async execute(rowId: string, data: JsonValue): Promise<boolean> {
-    const { mutationDataSource, rowListRefreshService, projectContext, tableId } = this.deps
+    const { mutationDataSource, projectContext, tableId } = this.deps
 
     try {
       const result = await mutationDataSource.createRow({
@@ -28,7 +26,6 @@ export class CreateRowCommand {
         if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }
-        rowListRefreshService.refresh()
         return true
       }
 

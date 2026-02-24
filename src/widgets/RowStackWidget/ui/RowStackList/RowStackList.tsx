@@ -55,7 +55,7 @@ export const RowStackList: React.FC<Props> = observer(({ item }) => {
     [item, isSelectMode, handleOpenRow],
   )
 
-  const model = useViewModel(TableEditorViewModel, tableId, (schema as JsonObjectSchema) ?? EMPTY_SCHEMA, callbacks)
+  const model = useViewModel(TableEditorViewModel, tableId, (schema ?? EMPTY_SCHEMA) as JsonObjectSchema, callbacks)
 
   if (!schema || !model.core) {
     return <RowListSkeleton />

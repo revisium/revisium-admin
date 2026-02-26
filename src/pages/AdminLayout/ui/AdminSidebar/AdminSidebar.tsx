@@ -4,6 +4,7 @@ import { FC, useCallback } from 'react'
 import { PiBuildingsLight, PiCaretCircleLeftLight, PiHouseLight, PiUsersLight } from 'react-icons/pi'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ADMIN_ORGANIZATIONS_ROUTE, ADMIN_ROUTE, ADMIN_USERS_ROUTE } from 'src/shared/config/routes'
+import { SidebarToggleButton } from 'src/shared/ui'
 import { AccountButton } from 'src/widgets/AccountButton'
 
 interface AdminHeaderProps {
@@ -12,8 +13,8 @@ interface AdminHeaderProps {
 
 const AdminHeader: FC<AdminHeaderProps> = ({ onBack }) => {
   return (
-    <Flex flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
-      <Flex alignItems="center" gap="8px" padding="4px">
+    <Flex className="group" flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
+      <Flex alignItems="center" gap="8px" padding="4px" width="100%">
         <Box
           fontSize="20px"
           color="newGray.400"
@@ -37,6 +38,8 @@ const AdminHeader: FC<AdminHeaderProps> = ({ onBack }) => {
         >
           Admin
         </Box>
+        <Spacer />
+        <SidebarToggleButton />
       </Flex>
     </Flex>
   )

@@ -2,8 +2,8 @@ import { Box } from '@chakra-ui/react'
 import React from 'react'
 
 interface SidebarPanelProps {
-  sidebar?: React.ReactElement
-  footer?: React.ReactElement
+  sidebar?: React.ReactNode
+  footer?: React.ReactNode
 }
 
 export const SidebarPanel: React.FC<SidebarPanelProps> = ({ sidebar, footer }) => {

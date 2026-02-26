@@ -71,6 +71,9 @@ export class SidebarStateViewModel {
   }
 
   public initKeyboard(): void {
+    if (this._keyboardHandler) {
+      return
+    }
     this._keyboardHandler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
         e.preventDefault()

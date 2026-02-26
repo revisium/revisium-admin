@@ -16,6 +16,7 @@ export const SidebarToggleButton: FC = observer(() => {
   return (
     <Tooltip content={label}>
       <Box
+        as="button"
         fontSize="20px"
         color="newGray.400"
         cursor="pointer"
@@ -27,6 +28,7 @@ export const SidebarToggleButton: FC = observer(() => {
         opacity={isOverlay ? 1 : 0}
         _groupHover={{ opacity: 1 }}
         transition="opacity 0.15s ease"
+        aria-label={label}
       >
         <Icon />
       </Box>

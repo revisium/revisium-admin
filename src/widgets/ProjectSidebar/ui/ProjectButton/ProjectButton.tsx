@@ -1,8 +1,9 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Spacer } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { PiCaretCircleLeftLight } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
+import { SidebarToggleButton } from 'src/shared/ui'
 import { VisibilityBadge } from 'src/widgets/ProjectSidebar/ui/VisibilityBadge/VisibilityBadge.tsx'
 
 interface ProjectHeaderProps {
@@ -20,7 +21,7 @@ export const ProjectHeader: FC<ProjectHeaderProps> = observer(({ name, organizat
   }
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
+    <Flex className="group" flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
       <Flex alignItems="center" gap="8px" padding="4px" width="100%" minWidth={0}>
         <Box
           fontSize="20px"
@@ -48,6 +49,8 @@ export const ProjectHeader: FC<ProjectHeaderProps> = observer(({ name, organizat
           </Box>
           {isPublic !== undefined && <VisibilityBadge isPublic={isPublic} roleName={roleName} />}
         </Flex>
+        <Spacer />
+        <SidebarToggleButton />
       </Flex>
       <Flex
         color="newGray.400"

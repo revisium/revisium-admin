@@ -5,12 +5,13 @@ import { PiGearLight, PiGithubLogoLight, PiGlobeLight } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { ADMIN_ROUTE } from 'src/shared/config/routes'
 import { useViewModel } from 'src/shared/lib'
+import { SidebarToggleButton } from 'src/shared/ui'
 import { AccountButton } from 'src/widgets/AccountButton'
 import { MainPageViewModel } from '../../model/MainPageViewModel'
 
 const SidebarHeader: FC = () => {
   return (
-    <Flex flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
+    <Flex className="group" flexDirection="column" alignItems="flex-start" width="100%" minWidth="0">
       <Flex alignItems="center" gap="8px" padding="4px" width="100%">
         <Text color="newGray.400" fontWeight="600" fontSize="18px" lineHeight="26px">
           Revisium
@@ -39,6 +40,8 @@ const SidebarHeader: FC = () => {
             </Flex>
           </a>
         </Flex>
+        <Spacer />
+        <SidebarToggleButton />
       </Flex>
     </Flex>
   )

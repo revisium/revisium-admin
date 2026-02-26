@@ -48,6 +48,7 @@ export class TableEditorViewModel implements IViewModel {
     callbacks: {
       onCreateRow?: () => void
       onOpenRow?: (rowId: string) => void
+      onPickRow?: (rowId: string) => void
       onDuplicateRow?: (rowId: string) => void
     },
   ): void {
@@ -55,12 +56,16 @@ export class TableEditorViewModel implements IViewModel {
 
     this._dataSource.init(tableId, schema, schemaRefsMapper as RefSchemas)
 
-    const breadcrumbs = this._buildBreadcrumbs(tableId)
+    const isPickMode = Boolean(callbacks.onPickRow)
+    const breadcrumbs = isPickMode
+      ? [{ label: tableId, dataTestId: `breadcrumb-table-${tableId}` }]
+      : this._buildBreadcrumbs(tableId)
 
     const editorCallbacks: TableEditorCallbacks = {
-      onBreadcrumbClick: (_segment, index) => this._handleBreadcrumbClick(tableId, index),
+      onBreadcrumbClick: isPickMode ? undefined : (_segment, index) => this._handleBreadcrumbClick(tableId, index),
       onCreateRow: callbacks.onCreateRow,
       onOpenRow: callbacks.onOpenRow,
+      onPickRow: callbacks.onPickRow,
       onDuplicateRow: callbacks.onDuplicateRow,
       onSearchForeignKey: this._searchForeignKey,
       onUploadFile: (params) => this._handleUploadFile(params),
@@ -70,6 +75,7 @@ export class TableEditorViewModel implements IViewModel {
 
     this._core = new TableEditorCore(this._dataSource, {
       tableId,
+      readonly: isPickMode,
       breadcrumbs,
       callbacks: editorCallbacks,
     })

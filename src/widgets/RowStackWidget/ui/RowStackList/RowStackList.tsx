@@ -49,7 +49,8 @@ export const RowStackList: React.FC<Props> = observer(({ item }) => {
   const callbacks = useMemo(
     () => ({
       onCreateRow: item.canCreateRow ? item.toCreating : undefined,
-      onOpenRow: isSelectMode ? item.selectForeignKeyRow : handleOpenRow,
+      onOpenRow: isSelectMode ? undefined : handleOpenRow,
+      onPickRow: isSelectMode ? item.selectForeignKeyRow : undefined,
       onDuplicateRow: isSelectMode ? undefined : item.canCreateRow ? item.toCloning : undefined,
     }),
     [item, isSelectMode, handleOpenRow],

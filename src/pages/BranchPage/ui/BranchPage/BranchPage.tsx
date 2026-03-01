@@ -21,11 +21,10 @@ export const BranchPage: React.FC<BranchPageProps> = observer(({ showTitle = tru
   return (
     <Page sidebar={<ProjectSidebar />} title={showTitle ? <BranchPageTitleWidget /> : undefined}>
       <Flex flex={1} flexDirection="column" gap="1rem" position="relative">
+        {showReadonlyBanner && <ReadonlyBanner />}
         <Flex flexDirection="column" gap="0.5rem" flex={1}>
           <Outlet />
         </Flex>
-
-        {showReadonlyBanner && <ReadonlyBanner />}
       </Flex>
     </Page>
   )

@@ -12,15 +12,16 @@ export const RevisionPage: React.FC = observer(() => {
   return (
     <Flex flexDirection="column" gap="0.5rem" flex={1}>
       <Flex
-        alignItems="center"
+        alignItems="flex-start"
         backgroundColor="white"
-        borderBottom="1px solid"
-        borderBottomColor="gray.50"
         justifyContent="space-between"
         width="100%"
         position="sticky"
-        zIndex={1}
+        zIndex={3}
         top={0}
+        px={3}
+        pt="32px"
+        pb="48px"
       >
         <BranchPageTitleWidget />
       </Flex>

@@ -23,16 +23,16 @@ export class BranchPageTitleWidgetModel implements IViewModel {
   public get breadcrumbs(): BreadCrumb[] {
     const result: BreadCrumb[] = []
 
-    if (!this._tableId) {
-      return result
-    }
-
     result.push({
       title: 'Database',
       href: this.linkMaker.currentBaseLink,
-      isCurrentPage: false,
+      isCurrentPage: !this._tableId,
       dataTestId: 'breadcrumb-branch-tables',
     })
+
+    if (!this._tableId) {
+      return result
+    }
 
     result.push({
       title: this._tableId,

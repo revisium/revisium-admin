@@ -45,12 +45,16 @@ export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
       {item.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.tableId} />}
       <RowStackHeader
         showBreadcrumbs={item.showBreadcrumbs}
-        rowIdEditable={item.showBreadcrumbs ? {
-          value: state.rowId,
-          onChange: item.setRowName,
-          placeholder: 'row id',
-          dataTestId: 'row-id-input',
-        } : undefined}
+        rowIdEditable={
+          item.showBreadcrumbs
+            ? {
+                value: state.rowId,
+                onChange: item.setRowName,
+                placeholder: 'row id',
+                dataTestId: 'row-id-input',
+              }
+            : undefined
+        }
         actions={actions}
         actionsMenu={actionsMenu}
         switcher={switcher}

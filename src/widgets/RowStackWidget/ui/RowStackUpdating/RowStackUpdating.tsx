@@ -51,12 +51,16 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
       {item.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.tableId} />}
       <RowStackHeader
         showBreadcrumbs={item.showBreadcrumbs}
-        rowIdEditable={item.showBreadcrumbs && item.canUpdateRow ? {
-          value: state.rowId,
-          onChange: item.setRowName,
-          tooltip: 'Rename row',
-          dataTestId: 'row-id-input',
-        } : undefined}
+        rowIdEditable={
+          item.showBreadcrumbs && item.canUpdateRow
+            ? {
+                value: state.rowId,
+                onChange: item.setRowName,
+                tooltip: 'Rename row',
+                dataTestId: 'row-id-input',
+              }
+            : undefined
+        }
         rowIdReadonly={item.showBreadcrumbs && !item.canUpdateRow ? state.rowId : undefined}
         actions={actions}
         actionsMenu={actionsMenu}

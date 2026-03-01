@@ -1,45 +1,40 @@
-import { Flex, Text } from '@chakra-ui/react'
-import { Breadcrumb } from '@chakra-ui/react/breadcrumb'
+import { Breadcrumbs, BreadcrumbEditableProps, BreadcrumbSegment } from '@revisium/schema-toolkit-ui'
 import { observer } from 'mobx-react-lite'
-import { Fragment } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useViewModel } from 'src/shared/lib/hooks/useViewModel.ts'
 import { BranchPageTitleWidgetModel } from 'src/widgets/BranchPageTitleWidget/model/BranchPageTitleWidgetModel.ts'
 
-import styles from './BranchPageTitleWidget.module.scss'
+interface BranchPageTitleWidgetProps {
+  rowIdEditable?: BreadcrumbEditableProps
+  rowIdReadonly?: string
+}
 
-export const BranchPageTitleWidget = observer(() => {
+export const BranchPageTitleWidget = observer(({ rowIdEditable, rowIdReadonly }: BranchPageTitleWidgetProps) => {
   const { tableId, rowId } = useParams()
+  const navigate = useNavigate()
   const model = useViewModel(BranchPageTitleWidgetModel, tableId, rowId)
 
+  const segments: BreadcrumbSegment[] = model.breadcrumbs.map((breadcrumb) => ({
+    label: breadcrumb.title,
+    dataTestId: breadcrumb.dataTestId,
+  }))
+
+  if (rowIdReadonly) {
+    segments.push({ label: rowIdReadonly })
+  }
+
+  const handleSegmentClick = (_segment: BreadcrumbSegment, index: number) => {
+    if (index < model.breadcrumbs.length) {
+      navigate(model.breadcrumbs[index].href)
+    }
+  }
+
   return (
-    <Flex alignItems="center" gap="4px" height="40px" className={styles.Root}>
-      <Breadcrumb.Root color="gray" fontWeight="600" fontSize="16px">
-        <Breadcrumb.List fontSize="16px">
-          {model.breadcrumbs.map((breadcrumb, index) => (
-            <Fragment key={breadcrumb.href}>
-              <Breadcrumb.Item>
-                {breadcrumb.isCurrentPage ? (
-                  <Breadcrumb.CurrentLink color="gray" data-testid={breadcrumb.dataTestId}>
-                    {breadcrumb.title}
-                  </Breadcrumb.CurrentLink>
-                ) : (
-                  <Breadcrumb.Link asChild color="gray">
-                    <Link to={breadcrumb.href} data-testid={breadcrumb.dataTestId}>
-                      {breadcrumb.title}
-                    </Link>
-                  </Breadcrumb.Link>
-                )}
-              </Breadcrumb.Item>
-              {index !== model.breadcrumbs.length - 1 && (
-                <Breadcrumb.Separator>
-                  <Text color="gray">/</Text>
-                </Breadcrumb.Separator>
-              )}
-            </Fragment>
-          ))}
-        </Breadcrumb.List>
-      </Breadcrumb.Root>
-    </Flex>
+    <Breadcrumbs
+      segments={segments}
+      highlightLast={false}
+      onSegmentClick={handleSegmentClick}
+      editable={rowIdEditable}
+    />
   )
 })

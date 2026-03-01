@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { Link } from 'react-router-dom'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
@@ -9,22 +9,26 @@ export const ReadonlyBanner = observer(() => {
   const draftLink = linkMaker.make({ revisionIdOrTag: DRAFT_TAG })
 
   return (
-    <Box
-      borderTop="1px solid"
-      borderTopColor="gray.100"
-      position="sticky"
-      bottom="0"
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      gap="4px"
+      paddingY="8px"
       paddingX="4px"
-      paddingY="4px"
-      marginTop="auto"
-      backgroundColor="white"
+      backgroundColor="newGray.50"
+      borderRadius="6px"
+      position="sticky"
+      top={0}
+      zIndex={4}
     >
-      <Flex alignItems="center" justifyContent="center" gap="16px">
-        <Text color="newGray.600">You are viewing a read-only revision</Text>
-        <Text color="newGray.400" textDecoration="underline">
-          <Link to={draftLink}>Go to draft revision</Link>
+      <Text color="newGray.400" fontSize="16px" fontWeight="400">
+        You are viewing a read-only revision
+      </Text>
+      <Link to={draftLink}>
+        <Text color="newGray.500" fontSize="16px" fontWeight="500" textDecoration="underline">
+          Go to draft revision
         </Text>
-      </Flex>
-    </Box>
+      </Link>
+    </Flex>
   )
 })

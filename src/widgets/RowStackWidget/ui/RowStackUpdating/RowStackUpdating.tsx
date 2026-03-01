@@ -11,7 +11,6 @@ import { ApproveButton } from 'src/shared/ui'
 import { JsonCard } from 'src/shared/ui/JsonCard/JsonCard.tsx'
 import { RevertButton } from 'src/shared/ui/RevertButton/RevertButton.tsx'
 import { RowActionsMenu } from 'src/widgets/RowStackWidget/ui/RowActionsMenu/RowActionsMenu.tsx'
-import { RowIdInput } from 'src/widgets/RowStackWidget/ui/RowIdInput/RowIdInput.tsx'
 import { RowStackHeader } from 'src/widgets/RowStackWidget/ui/RowStackHeader/RowStackHeader.tsx'
 import { SelectingForeignKeyDivider } from 'src/widgets/RowStackWidget/ui/SelectingForeignKeyDivider/SelectingForeignKeyDivider.tsx'
 
@@ -43,15 +42,6 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
     />
   )
 
-  const rowIdInput = (
-    <RowIdInput
-      value={state.rowId}
-      setValue={item.setRowName}
-      readonly={!item.canUpdateRow}
-      dataTestId="row-id-input"
-    />
-  )
-
   const isTreeMode = effectiveViewMode === ViewerSwitcherMode.Tree
 
   const actionsMenu = isTreeMode ? <RowActionsMenu onCopyJson={item.copyJsonToClipboard} /> : null
@@ -61,12 +51,22 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
       {item.isSelectingForeignKey && <SelectingForeignKeyDivider tableId={item.tableId} />}
       <RowStackHeader
         showBreadcrumbs={item.showBreadcrumbs}
-        rowIdInput={rowIdInput}
+        rowIdEditable={
+          item.showBreadcrumbs && item.canUpdateRow
+            ? {
+                value: state.rowId,
+                onChange: item.setRowName,
+                tooltip: 'Rename row',
+                dataTestId: 'row-id-input',
+              }
+            : undefined
+        }
+        rowIdReadonly={item.showBreadcrumbs && !item.canUpdateRow ? state.rowId : undefined}
         actions={actions}
         actionsMenu={actionsMenu}
         switcher={switcher}
       />
-      <Flex flexDirection="column" paddingTop="60px">
+      <Flex flexDirection="column">
         {effectiveViewMode === ViewerSwitcherMode.Tree && <RowEditor viewModel={state.editor} />}
         {effectiveViewMode === ViewerSwitcherMode.Json && (
           <JsonCard

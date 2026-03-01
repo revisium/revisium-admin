@@ -1,11 +1,13 @@
 import { Flex, Text } from '@chakra-ui/react'
+import { BreadcrumbEditableProps } from '@revisium/schema-toolkit-ui'
 import React from 'react'
 import { BranchPageTitleWidget } from 'src/widgets/BranchPageTitleWidget'
 
 interface RowStackHeaderProps {
   showBreadcrumbs?: boolean
   tableTitle?: string
-  rowIdInput?: React.ReactNode
+  rowIdEditable?: BreadcrumbEditableProps
+  rowIdReadonly?: string
   actions?: React.ReactNode
   actionsMenu?: React.ReactNode
   switcher?: React.ReactNode
@@ -15,7 +17,8 @@ interface RowStackHeaderProps {
 export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
   showBreadcrumbs,
   tableTitle,
-  rowIdInput,
+  rowIdEditable,
+  rowIdReadonly,
   actions,
   actionsMenu,
   switcher,
@@ -23,28 +26,24 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
 }) => {
   return (
     <Flex
-      alignItems="center"
+      alignItems="flex-start"
       backgroundColor="white"
       justifyContent="space-between"
       width="100%"
       position="sticky"
-      zIndex={1}
+      zIndex={3}
       top={0}
-      padding="8px"
+      px={3}
+      pt="32px"
+      pb="48px"
     >
       <Flex alignItems="center" gap="8px">
-        {showBreadcrumbs && <BranchPageTitleWidget />}
+        {showBreadcrumbs && <BranchPageTitleWidget rowIdEditable={rowIdEditable} rowIdReadonly={rowIdReadonly} />}
         {tableTitle && (
           <Text fontWeight="500" fontSize="14px" color="gray.700">
             {tableTitle}
           </Text>
         )}
-        {showBreadcrumbs && rowIdInput && (
-          <Text color="gray" fontWeight="600" fontSize="16px">
-            /
-          </Text>
-        )}
-        {rowIdInput}
         {actions}
       </Flex>
       <Flex alignItems="center" gap="8px">

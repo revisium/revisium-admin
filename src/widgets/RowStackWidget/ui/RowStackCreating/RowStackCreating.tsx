@@ -22,12 +22,13 @@ export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
 
   const actions = (
     <Flex gap="4px">
-      <CloseButton dataTestId="close-create-row-button" onClick={item.toList} />
+      <CloseButton dataTestId="close-create-row-button" onClick={item.toList} height="32px" />
       <ApproveButton
         dataTestId="approve-create-row-button"
         loading={item.isLoading}
         onClick={item.approveAndNavigate}
         isDisabled={!state.isValid}
+        height="32px"
       />
     </Flex>
   )
@@ -55,6 +56,7 @@ export const RowStackCreating: React.FC<Props> = observer(({ item }) => {
               }
             : undefined
         }
+        onLastBreadcrumbClick={item.toList}
         actions={actions}
         actionsMenu={actionsMenu}
         switcher={switcher}

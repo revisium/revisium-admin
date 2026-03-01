@@ -29,8 +29,9 @@ export const RowStackUpdating: React.FC<Props> = observer(({ item }) => {
         isDisabled={!state.isValid}
         loading={item.isLoading}
         onClick={item.approveAndNavigate}
+        height="32px"
       />
-      <RevertButton dataTestId="row-editor-revert-button" onClick={item.revert} />
+      <RevertButton dataTestId="row-editor-revert-button" onClick={item.revert} height="32px" />
     </Flex>
   ) : null
 

@@ -8,6 +8,7 @@ interface RowStackHeaderProps {
   tableTitle?: string
   rowIdEditable?: BreadcrumbEditableProps
   rowIdReadonly?: string
+  onLastBreadcrumbClick?: () => void
   actions?: React.ReactNode
   actionsMenu?: React.ReactNode
   switcher?: React.ReactNode
@@ -19,6 +20,7 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
   tableTitle,
   rowIdEditable,
   rowIdReadonly,
+  onLastBreadcrumbClick,
   actions,
   actionsMenu,
   switcher,
@@ -38,7 +40,13 @@ export const RowStackHeader: React.FC<RowStackHeaderProps> = ({
       pb="48px"
     >
       <Flex alignItems="center" gap="8px">
-        {showBreadcrumbs && <BranchPageTitleWidget rowIdEditable={rowIdEditable} rowIdReadonly={rowIdReadonly} />}
+        {showBreadcrumbs && (
+          <BranchPageTitleWidget
+            rowIdEditable={rowIdEditable}
+            rowIdReadonly={rowIdReadonly}
+            onLastSegmentClick={onLastBreadcrumbClick}
+          />
+        )}
         {tableTitle && (
           <Text fontWeight="500" fontSize="14px" color="gray.700">
             {tableTitle}

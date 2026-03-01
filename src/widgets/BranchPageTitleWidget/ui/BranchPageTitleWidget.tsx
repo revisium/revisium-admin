@@ -7,34 +7,40 @@ import { BranchPageTitleWidgetModel } from 'src/widgets/BranchPageTitleWidget/mo
 interface BranchPageTitleWidgetProps {
   rowIdEditable?: BreadcrumbEditableProps
   rowIdReadonly?: string
+  onLastSegmentClick?: () => void
 }
 
-export const BranchPageTitleWidget = observer(({ rowIdEditable, rowIdReadonly }: BranchPageTitleWidgetProps) => {
-  const { tableId, rowId } = useParams()
-  const navigate = useNavigate()
-  const model = useViewModel(BranchPageTitleWidgetModel, tableId, rowId)
+export const BranchPageTitleWidget = observer(
+  ({ rowIdEditable, rowIdReadonly, onLastSegmentClick }: BranchPageTitleWidgetProps) => {
+    const { tableId, rowId } = useParams()
+    const navigate = useNavigate()
+    const model = useViewModel(BranchPageTitleWidgetModel, tableId, rowId)
 
-  const segments: BreadcrumbSegment[] = model.breadcrumbs.map((breadcrumb) => ({
-    label: breadcrumb.title,
-    dataTestId: breadcrumb.dataTestId,
-  }))
+    const segments: BreadcrumbSegment[] = model.breadcrumbs.map((breadcrumb) => ({
+      label: breadcrumb.title,
+      dataTestId: breadcrumb.dataTestId,
+    }))
 
-  if (rowIdReadonly) {
-    segments.push({ label: rowIdReadonly })
-  }
-
-  const handleSegmentClick = (_segment: BreadcrumbSegment, index: number) => {
-    if (index < model.breadcrumbs.length) {
-      navigate(model.breadcrumbs[index].href)
+    if (rowIdReadonly) {
+      segments.push({ label: rowIdReadonly })
     }
-  }
 
-  return (
-    <Breadcrumbs
-      segments={segments}
-      highlightLast={false}
-      onSegmentClick={handleSegmentClick}
-      editable={rowIdEditable}
-    />
-  )
-})
+    const handleSegmentClick = (_segment: BreadcrumbSegment, index: number) => {
+      const isLast = index === model.breadcrumbs.length - 1
+      if (isLast && onLastSegmentClick) {
+        onLastSegmentClick()
+      } else if (index < model.breadcrumbs.length) {
+        navigate(model.breadcrumbs[index].href)
+      }
+    }
+
+    return (
+      <Breadcrumbs
+        segments={segments}
+        highlightLast={false}
+        onSegmentClick={handleSegmentClick}
+        editable={rowIdEditable}
+      />
+    )
+  },
+)

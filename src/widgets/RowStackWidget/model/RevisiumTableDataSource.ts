@@ -284,7 +284,13 @@ export class RevisiumTableDataSource implements ITableDataSource {
     return { AND: conditions }
   }
 
-  private _mapOrderBy(orderBy: Array<{ field: string; direction: string }>): OrderBy[] | undefined {
+  private static readonly FIELD_TYPE_TO_ORDER_DATA_TYPE: Record<string, OrderDataType> = {
+    Number: OrderDataType.Float,
+    Boolean: OrderDataType.Boolean,
+    DateTime: OrderDataType.Timestamp,
+  }
+
+  private _mapOrderBy(orderBy: Array<{ field: string; direction: string; type?: string }>): OrderBy[] | undefined {
     if (orderBy.length === 0) {
       return undefined
     }
@@ -302,25 +308,9 @@ export class RevisiumTableDataSource implements ITableDataSource {
         field: OrderByField.Data,
         path,
         direction,
-        type: this._getOrderDataType(path),
+        type: RevisiumTableDataSource.FIELD_TYPE_TO_ORDER_DATA_TYPE[o.type ?? ''] ?? OrderDataType.Text,
       }
     })
-  }
-
-  private _getOrderDataType(fieldPath: string): OrderDataType {
-    const prop = this._schema.properties?.[fieldPath]
-    if (!prop) {
-      return OrderDataType.Text
-    }
-    if ('type' in prop) {
-      if (prop.type === 'number') {
-        return OrderDataType.Float
-      }
-      if (prop.type === 'boolean') {
-        return OrderDataType.Boolean
-      }
-    }
-    return OrderDataType.Text
   }
 
   private async _getOrCreateViewsData(): Promise<ViewsData> {

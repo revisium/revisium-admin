@@ -2,7 +2,9 @@
 
 # @revisium/admin
 
-Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform for hierarchical structures.
+Web UI for [Revisium](https://github.com/revisium/revisium) — unopinionated data platform with referential integrity.
+
+**Your schema. Your data. Full control.**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=revisium_revisium-admin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=revisium_revisium-admin)

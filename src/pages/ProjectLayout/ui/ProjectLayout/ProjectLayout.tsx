@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite'
 import { FC, useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { NotFoundProjectPage } from 'src/pages/NotFoundProjectPage'
 import { container } from 'src/shared/lib'
 import { RouterParams } from 'src/shared/model/RouterParams.ts'
 import { Page } from 'src/shared/ui'
@@ -42,6 +43,10 @@ export const ProjectLayout: FC = observer(() => {
         }
       />
     )
+  }
+
+  if (projectContext.isProjectLoadFailed) {
+    return <NotFoundProjectPage />
   }
 
   return <Outlet />

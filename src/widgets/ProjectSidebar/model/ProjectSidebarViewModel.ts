@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { container } from 'src/shared/lib'
+import { AuthService } from 'src/shared/model'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
 
 export class ProjectSidebarViewModel {
@@ -11,8 +12,13 @@ export class ProjectSidebarViewModel {
   constructor(
     private readonly context: ProjectContext,
     private readonly projectPermissions: ProjectPermissions,
+    private readonly authService: AuthService,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+  }
+
+  public get isAuthenticated(): boolean {
+    return !!this.authService.user
   }
 
   public get canAccessSettings(): boolean {
@@ -69,7 +75,8 @@ container.register(
   () => {
     const context: ProjectContext = container.get(ProjectContext)
     const projectPermissions = container.get(ProjectPermissions)
-    return new ProjectSidebarViewModel(context, projectPermissions)
+    const authService = container.get(AuthService)
+    return new ProjectSidebarViewModel(context, projectPermissions, authService)
   },
   { scope: 'singleton' },
 )

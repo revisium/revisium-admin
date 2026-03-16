@@ -52,6 +52,29 @@ export class PermissionService {
     this.loadedScopes.add(scopeKey)
   }
 
+  public addPublicReadPermissions(projectId: string): void {
+    const scopeKey = `public:${projectId}`
+    if (this.loadedScopes.has(scopeKey)) {
+      return
+    }
+
+    const scopeCondition = { projectId }
+    const readProjectRule: RawRuleOf<AppAbility> = {
+      action: 'read',
+      subject: 'Project',
+      conditions: { ...scopeCondition, isPublic: true },
+    }
+
+    const expandedRules: RawRuleOf<AppAbility>[] = EXPANDED_SUBJECTS.map((sub) => ({
+      action: 'read' as Actions,
+      subject: sub,
+      conditions: { ...scopeCondition },
+    }))
+
+    this.ability.update([...this.ability.rules, readProjectRule, ...expandedRules])
+    this.loadedScopes.add(scopeKey)
+  }
+
   public can(action: Actions, sub: Subjects, context?: Record<string, unknown>): boolean {
     const subjectWithContext = subject(sub, context ?? {}) as unknown as Subjects
     return this.ability.can(action, subjectWithContext)

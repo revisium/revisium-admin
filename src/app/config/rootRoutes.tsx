@@ -1,6 +1,7 @@
 import { Navigate, Outlet, RouteObject } from 'react-router-dom'
 import { checkAdmin } from 'src/app/lib/checkAdmin.ts'
 import { checkAuth } from 'src/app/lib/checkAuth.ts'
+import { checkAuthOrPublic } from 'src/app/lib/checkAuthOrPublic.ts'
 import { checkGuest } from 'src/app/lib/checkGuest.ts'
 import { checkSignUp } from 'src/app/lib/checkSignUp.ts'
 import { composeLoaders } from 'src/app/lib/composeLoaders.ts'
@@ -148,13 +149,13 @@ const createTableRouteObject = (): RouteObject => ({
 const organizationRouteObject = {
   path: ORGANIZATION_ROUTE,
   element: <Outlet />,
-  loader: checkAuth,
+  loader: checkAuthOrPublic,
   id: RouteIds.Organization,
   children: [
     {
       path: PROJECT_ROUTE,
       element: <ProjectLayout />,
-      loader: checkAuth,
+      loader: checkAuthOrPublic,
       id: RouteIds.Project,
       children: [
         {

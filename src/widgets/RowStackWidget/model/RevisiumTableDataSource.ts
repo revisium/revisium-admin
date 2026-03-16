@@ -26,6 +26,7 @@ import { container } from 'src/shared/lib'
 import { client } from 'src/shared/model/ApiService.ts'
 import { FileService } from 'src/shared/model/FileService.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { ProjectPermissions } from 'src/shared/model/AbilityService'
 
 type ViewsData = NonNullable<GetTableViewsQuery['table']>['views']
 
@@ -45,6 +46,7 @@ export class RevisiumTableDataSource implements ITableDataSource {
   constructor(
     private readonly _projectContext: ProjectContext,
     private readonly _fileService: FileService,
+    private readonly _projectPermissions: ProjectPermissions,
   ) {}
 
   private get _revisionId(): string {
@@ -63,7 +65,7 @@ export class RevisiumTableDataSource implements ITableDataSource {
     return {
       dataSchema: this._schema,
       viewState,
-      readonly: !this._projectContext.isDraftRevision,
+      readonly: !this._projectContext.isDraftRevision || this._projectPermissions.isReadOnly,
       refSchemas: this._refSchemas,
     }
   }
@@ -364,7 +366,8 @@ container.register(
   () => {
     const projectContext = container.get(ProjectContext)
     const fileService = container.get(FileService)
-    return new RevisiumTableDataSource(projectContext, fileService)
+    const projectPermissions = container.get(ProjectPermissions)
+    return new RevisiumTableDataSource(projectContext, fileService, projectPermissions)
   },
   { scope: 'request' },
 )

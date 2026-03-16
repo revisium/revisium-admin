@@ -102,9 +102,17 @@ export class ProjectContext {
     return this.extractRoleName(project)
   }
 
+  public get isProjectLoadFailed(): boolean {
+    return this._hasLoadedOnce && this.projectRequest.error !== null
+  }
+
   public get isInitLoading(): boolean {
     if (!this._hasLoadedOnce) {
       return true
+    }
+
+    if (this.projectRequest.error !== null) {
+      return false
     }
 
     if (!this.branchRequest.data) {
@@ -204,6 +212,10 @@ export class ProjectContext {
         condition: (p.condition as Record<string, unknown>) ?? null,
       }))
       this.permissionService.addProjectPermissions(project.id, permissions)
+    }
+
+    if (!project.organization?.userOrganization && !project.userProject && project.isPublic) {
+      this.permissionService.addPublicReadPermissions(project.id)
     }
   }
 

@@ -15,12 +15,14 @@ import {
   PiRobotLight,
   PiGraphLight,
   PiTreeStructureLight,
+  PiSignInLight,
 } from 'react-icons/pi'
 import { useLinkMaker } from 'src/entities/Navigation/hooks/useLinkMaker.ts'
 import {
   ASSETS_ROUTE,
   BRANCH_MAP_ROUTE,
   CHANGES_ROUTE,
+  LOGIN_ROUTE,
   MIGRATIONS_ROUTE,
   RELATIONS_ROUTE,
 } from 'src/shared/config/routes.ts'
@@ -157,12 +159,14 @@ export const ProjectSidebar: FC = observer(() => {
             icon={<PiPlugLight />}
             isActive={isEndpointsActive}
           />
-          <NavigationButton
-            to={linkMaker.makeMcpLink()}
-            label="MCP Server"
-            icon={<PiRobotLight />}
-            isActive={isMcpActive}
-          />
+          {model.isAuthenticated && (
+            <NavigationButton
+              to={linkMaker.makeMcpLink()}
+              label="MCP Server"
+              icon={<PiRobotLight />}
+              isActive={isMcpActive}
+            />
+          )}
           {model.canManageUsers && (
             <NavigationButton
               to={linkMaker.makeProjectUsersLink()}
@@ -185,7 +189,11 @@ export const ProjectSidebar: FC = observer(() => {
       <Spacer />
 
       <Flex flexDirection="column" width="100%" gap={1}>
-        <AccountButton />
+        {model.isAuthenticated ? (
+          <AccountButton />
+        ) : (
+          <NavigationButton to={`/${LOGIN_ROUTE}`} label="Sign in" icon={<PiSignInLight />} isActive={false} />
+        )}
       </Flex>
 
       <SearchModal model={searchModel} />

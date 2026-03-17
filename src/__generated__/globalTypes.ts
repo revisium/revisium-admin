@@ -876,7 +876,6 @@ export type PermissionModel = {
 export type PluginsModel = {
   __typename: 'PluginsModel'
   file: Scalars['Boolean']['output']
-  formula: Scalars['Boolean']['output']
 }
 
 export type ProjectModel = {
@@ -1396,8 +1395,10 @@ export enum SortOrder {
 export type StringFilter = {
   contains?: InputMaybe<Scalars['String']['input']>
   endsWith?: InputMaybe<Scalars['String']['input']>
+  equals?: InputMaybe<Scalars['String']['input']>
   gt?: InputMaybe<Scalars['String']['input']>
   gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
   lt?: InputMaybe<Scalars['String']['input']>
   lte?: InputMaybe<Scalars['String']['input']>
   mode?: InputMaybe<QueryMode>

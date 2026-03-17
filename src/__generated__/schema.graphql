@@ -692,7 +692,6 @@ type PermissionModel {
 
 type PluginsModel {
   file: Boolean!
-  formula: Boolean!
 }
 
 type ProjectModel {
@@ -1077,8 +1076,10 @@ enum SortOrder {
 input StringFilter {
   contains: String
   endsWith: String
+  equals: String
   gt: String
   gte: String
+  in: [String!]
   lt: String
   lte: String
   mode: QueryMode

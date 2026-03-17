@@ -847,7 +847,6 @@ export type PermissionModel = {
 
 export type PluginsModel = {
   file: Scalars['Boolean']['output']
-  formula: Scalars['Boolean']['output']
 }
 
 export type ProjectModel = {
@@ -1338,8 +1337,10 @@ export enum SortOrder {
 export type StringFilter = {
   contains?: InputMaybe<Scalars['String']['input']>
   endsWith?: InputMaybe<Scalars['String']['input']>
+  equals?: InputMaybe<Scalars['String']['input']>
   gt?: InputMaybe<Scalars['String']['input']>
   gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
   lt?: InputMaybe<Scalars['String']['input']>
   lte?: InputMaybe<Scalars['String']['input']>
   mode?: InputMaybe<QueryMode>
@@ -2691,7 +2692,7 @@ export type ConfigurationQuery = {
     noAuth: boolean
     google: { available: boolean; clientId?: string | null }
     github: { available: boolean; clientId?: string | null }
-    plugins: { file: boolean; formula: boolean }
+    plugins: { file: boolean }
   }
 }
 
@@ -4641,7 +4642,6 @@ export const ConfigurationDocument = gql`
       }
       plugins {
         file
-        formula
       }
     }
   }

@@ -53,10 +53,6 @@ export class ConfigurationService {
     return this.data?.noAuth ?? false
   }
 
-  public get formulaEnabled(): boolean {
-    return this.data?.plugins?.formula ?? false
-  }
-
   private async init() {
     await this.request()
   }

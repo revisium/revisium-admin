@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { UserFragment } from 'src/__generated__/graphql-request.ts'
 import { container } from 'src/shared/lib'
-import { SystemPermissions } from 'src/shared/model/AbilityService'
+import { PermissionService, SystemPermissions } from 'src/shared/model/AbilityService'
 import { ApiService } from 'src/shared/model/ApiService.ts'
 
 const TOKEN_KEY = 'token'
@@ -16,6 +16,7 @@ export class AuthService {
     private readonly storage: Storage,
     private readonly apiService: ApiService,
     private readonly systemPermissions: SystemPermissions,
+    private readonly permissionService: PermissionService,
   ) {
     makeAutoObservable(this)
   }
@@ -50,6 +51,7 @@ export class AuthService {
       this.user = result.me
 
       this.systemPermissions.setUserRole(result.me.role ?? null)
+      this.loadOrganizationPermissions(result.me)
     } catch (e) {
       console.error(e)
 
@@ -76,6 +78,21 @@ export class AuthService {
     )
   }
 
+  private loadOrganizationPermissions(me: UserFragment): void {
+    const orgPermissions = me.organization?.userOrganization?.role?.permissions
+    const organizationId = me.organization?.id
+
+    if (orgPermissions && organizationId) {
+      const permissions = orgPermissions.map((p) => ({
+        id: p.id,
+        action: p.action,
+        subject: p.subject,
+        condition: (p.condition as Record<string, unknown>) ?? null,
+      }))
+      this.permissionService.addOrganizationPermissions(organizationId, permissions)
+    }
+  }
+
   logout() {
     this.token = null
     this.user = null
@@ -89,7 +106,8 @@ container.register(
   () => {
     const apiService = container.get(ApiService)
     const systemPermissions = container.get(SystemPermissions)
-    const authService = new AuthService(localStorage, apiService, systemPermissions)
+    const permissionService = container.get(PermissionService)
+    const authService = new AuthService(localStorage, apiService, systemPermissions, permissionService)
     void authService.initialize()
     return authService
   },

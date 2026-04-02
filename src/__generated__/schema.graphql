@@ -8,6 +8,11 @@ Indicates exactly one field must be supplied and this field must not be `null`.
 """
 directive @oneOf on INPUT_OBJECT
 
+input ActivateEarlyAccessInput {
+  organizationId: ID!
+  planId: ID!
+}
+
 input AddUserToOrganizationInput {
   organizationId: String!
   roleId: UserOrganizationRoles!
@@ -38,9 +43,7 @@ type ApplyMigrationResultModel {
   status: ApplyMigrationStatus!
 }
 
-"""
-Status of migration application
-"""
+"""Status of migration application"""
 enum ApplyMigrationStatus {
   applied
   failed
@@ -50,6 +53,18 @@ enum ApplyMigrationStatus {
 input ApplyMigrationsInput {
   migrations: [JSON!]!
   revisionId: String!
+}
+
+type BillingConfigurationModel {
+  enabled: Boolean!
+}
+
+enum BillingStatus {
+  active
+  cancelled
+  early_adopter
+  free
+  past_due
 }
 
 input BooleanFilter {
@@ -83,12 +98,21 @@ type BranchesConnection {
   totalCount: Int!
 }
 
+input CancelSubscriptionInput {
+  cancelAtPeriodEnd: Boolean
+  organizationId: ID!
+}
+
 enum ChangeType {
   ADDED
   MODIFIED
   REMOVED
   RENAMED
   RENAMED_AND_MODIFIED
+}
+
+type CheckoutResultModel {
+  checkoutUrl: String!
 }
 
 type ChildBranchModel {
@@ -98,6 +122,7 @@ type ChildBranchModel {
 
 type ConfigurationModel {
   availableEmailSignUp: Boolean!
+  billing: BillingConfigurationModel!
   github: GithubOauth!
   google: GoogleOauth!
   noAuth: Boolean!
@@ -111,6 +136,17 @@ input ConfirmEmailCodeInput {
 input CreateBranchInput {
   branchName: String!
   revisionId: String!
+}
+
+input CreateCheckoutInput {
+  cancelUrl: String!
+  country: String
+  interval: String
+  method: String
+  organizationId: ID!
+  planId: ID!
+  providerId: String
+  successUrl: String!
 }
 
 input CreateEndpointInput {
@@ -295,9 +331,7 @@ input GetBranchRevisionsInput {
   comment: String
   first: Int!
   inclusive: Boolean
-  """
-  Sort order: asc (default) or desc
-  """
+  """Sort order: asc (default) or desc"""
   sort: SortOrder
 }
 
@@ -477,9 +511,7 @@ input JsonFilter {
   path: [String!]
   search: String
   searchIn: SearchIn
-  """
-  Default: simple
-  """
+  """Default: simple"""
   searchLanguage: SearchLanguage
   searchType: SearchType
   string_contains: String
@@ -547,11 +579,14 @@ type ModifiedRowChangeModel {
 }
 
 type Mutation {
+  activateEarlyAccess(data: ActivateEarlyAccessInput!): SubscriptionModel!
   addUserToOrganization(data: AddUserToOrganizationInput!): Boolean!
   addUserToProject(data: AddUserToProjectInput!): Boolean!
   applyMigrations(data: ApplyMigrationsInput!): [ApplyMigrationResultModel!]!
+  cancelSubscription(data: CancelSubscriptionInput!): Boolean!
   confirmEmailCode(data: ConfirmEmailCodeInput!): LoginModel!
   createBranch(data: CreateBranchInput!): BranchModel!
+  createCheckout(data: CreateCheckoutInput!): CheckoutResultModel!
   createEndpoint(data: CreateEndpointInput!): EndpointModel!
   createProject(data: CreateProjectInput!): ProjectModel!
   createRevision(data: CreateRevisionInput!): RevisionModel!
@@ -627,6 +662,8 @@ enum OrderDataType {
 type OrganizationModel {
   createdId: String!
   id: String!
+  subscription: SubscriptionModel
+  usage: UsageSummaryModel
   userOrganization: UsersOrganizationModel
 }
 
@@ -683,11 +720,36 @@ input PatchRowsRowInput {
   rowId: String!
 }
 
+type PaymentProviderModel {
+  id: ID!
+  methods: [String!]!
+  name: String!
+  supportsRecurring: Boolean!
+}
+
 type PermissionModel {
   action: String!
   condition: JSON
   id: String!
   subject: String!
+}
+
+type PlanLimitsModel {
+  apiCallsPerDay: Int
+  projects: Int
+  rowVersions: Int
+  seats: Int
+  storageBytes: Float
+}
+
+type PlanModel {
+  features: JSON!
+  id: ID!
+  isPublic: Boolean!
+  limits: PlanLimitsModel!
+  monthlyPriceUsd: Float!
+  name: String!
+  yearlyPriceUsd: Float!
 }
 
 type PluginsModel {
@@ -720,13 +782,14 @@ type ProjectsConnection {
 type Query {
   adminUser(data: AdminUserInput!): UserModel
   adminUsers(data: SearchUsersInput!): UsersConnection!
+  availableProviders(country: String, method: String): [PaymentProviderModel!]!
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
-    @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int! @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
   me: MeModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
+  plans: [PlanModel!]!
   project(data: GetProjectInput!): ProjectModel!
   projectEndpoints(data: GetProjectEndpointsInput!): EndpointsConnection!
   projects(data: GetProjectsInput!): ProjectsConnection!
@@ -962,9 +1025,7 @@ enum SearchIn {
   values
 }
 
-"""
-Language for full-text search. Default: simple
-"""
+"""Language for full-text search. Default: simple"""
 enum SearchLanguage {
   arabic
   armenian
@@ -1161,6 +1222,16 @@ input SubSchemaWhereInput {
   tableId: SubSchemaStringFilterInput
 }
 
+type SubscriptionModel {
+  cancelAt: DateTime
+  currentPeriodEnd: DateTime
+  currentPeriodStart: DateTime
+  interval: String
+  planId: String!
+  provider: String
+  status: BillingStatus!
+}
+
 type TableChangeModel {
   addedRowsCount: Int!
   changeType: ChangeType!
@@ -1300,6 +1371,19 @@ input UpdateUserProjectRoleInput {
   projectName: String!
   roleId: UserProjectRoles!
   userId: String!
+}
+
+type UsageMetricModel {
+  current: Float!
+  limit: Float
+  percentage: Float
+}
+
+type UsageSummaryModel {
+  projects: UsageMetricModel!
+  rowVersions: UsageMetricModel!
+  seats: UsageMetricModel!
+  storageBytes: UsageMetricModel!
 }
 
 type UserModel {

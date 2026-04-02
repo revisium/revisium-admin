@@ -19,6 +19,10 @@ import { EndpointsPage } from 'src/pages/EndpointsPage'
 import { McpPage } from 'src/pages/McpPage'
 import { AuthorizePage } from 'src/pages/AuthorizePage'
 import { GetTokenPage } from 'src/pages/GetTokenPage'
+import { OrganizationPage } from 'src/pages/OrganizationPage'
+import { OrganizationSettingsPage } from 'src/pages/OrganizationSettingsPage'
+import { OrganizationMembersPage } from 'src/pages/OrganizationMembersPage'
+import { OrganizationBillingPage } from 'src/pages/OrganizationBillingPage'
 import { ProjectLayout } from 'src/pages/ProjectLayout'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
@@ -52,6 +56,9 @@ import {
   LOGIN_ROUTE,
   LOGOUT_ROUTE,
   ORGANIZATION_ROUTE,
+  ORGANIZATION_SETTINGS_ROUTE,
+  ORGANIZATION_MEMBERS_ROUTE,
+  ORGANIZATION_BILLING_ROUTE,
   PROJECT_ROUTE,
   REVISION_ROUTE,
   RouteIds,
@@ -152,6 +159,30 @@ const organizationRouteObject = {
   loader: checkAuthOrPublic,
   id: RouteIds.Organization,
   children: [
+    {
+      index: true,
+      element: <OrganizationPage />,
+      loader: checkAuth,
+      id: RouteIds.OrganizationOverview,
+    },
+    {
+      path: ORGANIZATION_SETTINGS_ROUTE,
+      element: <OrganizationSettingsPage />,
+      loader: checkAuth,
+      id: RouteIds.OrganizationSettings,
+    },
+    {
+      path: ORGANIZATION_MEMBERS_ROUTE,
+      element: <OrganizationMembersPage />,
+      loader: checkAuth,
+      id: RouteIds.OrganizationMembers,
+    },
+    {
+      path: ORGANIZATION_BILLING_ROUTE,
+      element: <OrganizationBillingPage />,
+      loader: checkAuth,
+      id: RouteIds.OrganizationBilling,
+    },
     {
       path: PROJECT_ROUTE,
       element: <ProjectLayout />,

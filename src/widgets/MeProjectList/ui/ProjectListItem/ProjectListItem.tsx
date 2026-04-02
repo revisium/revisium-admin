@@ -21,7 +21,9 @@ export const ProjectListItem: FC<ProjectListItemProps> = observer(({ model }) =>
         <Flex alignItems="center" flex={1} justifyContent="space-between" minHeight="40px">
           <Flex minWidth="150px">
             <Flex gap="4px">
-              <Text color="gray.300">{model.organizationId}</Text>
+              <Text color="gray.300" _hover={{ textDecoration: 'underline' }}>
+                <Link to={model.organizationLink}>{model.organizationId}</Link>
+              </Text>
               <Text color="gray.300">/</Text>
               <Text _hover={{ textDecoration: 'underline' }}>
                 <Link to={model.link} data-testid={`project-${model.organizationId}-${model.name}-link`}>

@@ -14,6 +14,10 @@ export const SIGN_UP_CONFIRM_ROUTE = 'confirm'
 export const APP_ROUTE = 'app'
 export const ORGANIZATION_ROUTE = ':organizationId'
 
+export const ORGANIZATION_SETTINGS_ROUTE = '-/settings'
+export const ORGANIZATION_MEMBERS_ROUTE = '-/members'
+export const ORGANIZATION_BILLING_ROUTE = '-/billing'
+
 export const PROJECT_ROUTE = ':projectName'
 export const PROJECT_SETTINGS_ROUTE = '-/settings'
 export const PROJECT_USERS_ROUTE = '-/users'
@@ -55,6 +59,11 @@ export enum RouteIds {
   Branches = 'branches',
   Relations = 'relations',
   BranchMap = 'branchMap',
+
+  OrganizationOverview = 'organizationOverview',
+  OrganizationSettings = 'organizationSettings',
+  OrganizationMembers = 'organizationMembers',
+  OrganizationBilling = 'organizationBilling',
 
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',

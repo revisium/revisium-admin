@@ -76,7 +76,8 @@ export class PermissionService {
   }
 
   public can(action: Actions, sub: Subjects, context?: Record<string, unknown>): boolean {
-    const subjectWithContext = subject(sub, context ?? {}) as unknown as Subjects
+    const ctx = context ? { ...context } : {}
+    const subjectWithContext = subject(sub, ctx) as unknown as Subjects
     return this.ability.can(action, subjectWithContext)
   }
 

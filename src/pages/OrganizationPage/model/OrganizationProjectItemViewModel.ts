@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { generatePath } from 'react-router-dom'
-import { MeProjectListItemFragment } from 'src/__generated__/graphql-request.ts'
+import { OrganizationProjectItemFragment } from 'src/__generated__/graphql-request.ts'
 import {
   APP_ROUTE,
   BRANCH_ROUTE,
@@ -10,12 +10,8 @@ import {
   REVISION_ROUTE,
 } from 'src/shared/config/routes.ts'
 
-const makeOrganizationLink = (organizationId: string): string => {
-  return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}`, { organizationId })
-}
-
-export class MeProjectListItemViewModel {
-  constructor(private readonly project: MeProjectListItemFragment) {
+export class OrganizationProjectItemViewModel {
+  constructor(private readonly project: OrganizationProjectItemFragment) {
     makeAutoObservable(this)
   }
 
@@ -27,16 +23,12 @@ export class MeProjectListItemViewModel {
     return this.project.name
   }
 
-  public get organizationId(): string {
-    return this.project.organizationId
+  public get isPublic(): boolean {
+    return this.project.isPublic
   }
 
   public get touched(): boolean {
     return this.project.rootBranch.touched
-  }
-
-  public get organizationLink(): string {
-    return makeOrganizationLink(this.project.organizationId)
   }
 
   public get link(): string {

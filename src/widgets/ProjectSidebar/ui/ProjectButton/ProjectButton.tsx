@@ -2,7 +2,8 @@ import { Box, Flex, Spacer } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { PiCaretCircleLeftLight } from 'react-icons/pi'
-import { useNavigate } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
+import { APP_ROUTE, ORGANIZATION_ROUTE } from 'src/shared/config/routes.ts'
 import { SidebarToggleButton } from 'src/shared/ui'
 import { VisibilityBadge } from 'src/widgets/ProjectSidebar/ui/VisibilityBadge/VisibilityBadge.tsx'
 
@@ -15,6 +16,10 @@ interface ProjectHeaderProps {
 
 export const ProjectHeader: FC<ProjectHeaderProps> = observer(({ name, organizationName, isPublic, roleName }) => {
   const navigate = useNavigate()
+
+  const organizationLink = generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}`, {
+    organizationId: organizationName,
+  })
 
   const handleBackClick = () => {
     navigate('/')
@@ -52,20 +57,23 @@ export const ProjectHeader: FC<ProjectHeaderProps> = observer(({ name, organizat
         <Spacer />
         <SidebarToggleButton />
       </Flex>
-      <Flex
-        color="newGray.400"
-        fontWeight="500"
-        fontSize="14px"
-        lineHeight="20px"
-        padding="4px"
-        alignItems="center"
-        width="100%"
-        minWidth={0}
-      >
-        <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
-          {organizationName}
-        </Box>
-      </Flex>
+      <Link to={organizationLink} style={{ textDecoration: 'none', width: '100%' }}>
+        <Flex
+          color="newGray.400"
+          fontWeight="500"
+          fontSize="14px"
+          lineHeight="20px"
+          padding="4px"
+          alignItems="center"
+          width="100%"
+          minWidth={0}
+          _hover={{ color: 'newGray.600' }}
+        >
+          <Box textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+            {organizationName}
+          </Box>
+        </Flex>
+      </Link>
     </Flex>
   )
 })

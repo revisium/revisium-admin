@@ -49,6 +49,10 @@ export class ConfigurationService {
     return this.data?.github.clientId
   }
 
+  public get billingEnabled(): boolean {
+    return this.data?.billing.enabled ?? false
+  }
+
   public get noAuth(): boolean {
     return this.data?.noAuth ?? false
   }

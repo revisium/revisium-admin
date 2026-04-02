@@ -14,6 +14,20 @@ fragment User on MeModel {
       condition
     }
   }
+  organization {
+    id
+    userOrganization {
+      role {
+        name
+        permissions {
+          id
+          action
+          subject
+          condition
+        }
+      }
+    }
+  }
 }
 
 query getMe {

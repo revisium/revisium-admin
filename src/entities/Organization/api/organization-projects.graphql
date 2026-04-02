@@ -1,0 +1,25 @@
+fragment OrganizationProjectItem on ProjectModel {
+  id
+  name
+  organizationId
+  isPublic
+  rootBranch {
+    name
+    touched
+  }
+}
+
+query organizationProjects($data: GetProjectsInput!) {
+  projects(data: $data) {
+    totalCount
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      cursor
+      node {
+        ...OrganizationProjectItem
+      }
+    }
+  }
+}

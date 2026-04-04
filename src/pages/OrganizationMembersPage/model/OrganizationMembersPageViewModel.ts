@@ -81,7 +81,9 @@ export class OrganizationMembersPageViewModel implements IViewModel {
     void this.loadInitial()
   }
 
-  public dispose(): void {}
+  public dispose(): void {
+    this.addMemberModal.dispose()
+  }
 
   public async tryToFetchNextPage(): Promise<void> {
     if (!this._hasNextPage || this.isLoading || !this._endCursor) {

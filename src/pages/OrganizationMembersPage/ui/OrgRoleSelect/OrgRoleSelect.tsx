@@ -27,7 +27,7 @@ const ROLE_LABELS: Record<UserOrganizationRoles, string> = {
 export const OrgRoleSelect: FC<OrgRoleSelectProps> = observer(({ value, onChange, disabled }) => {
   return (
     <NativeSelect.Root size="sm" width="120px" {...(disabled && { opacity: 0.5, pointerEvents: 'none' })}>
-      <NativeSelect.Field value={value} onChange={(e) => onChange(e.target.value as UserOrganizationRoles)} disabled={disabled}>
+      <NativeSelect.Field value={value} onChange={(e) => onChange(e.target.value as UserOrganizationRoles)}>
         {ASSIGNABLE_ROLES.map((role) => (
           <option key={role} value={role}>
             {ROLE_LABELS[role]}

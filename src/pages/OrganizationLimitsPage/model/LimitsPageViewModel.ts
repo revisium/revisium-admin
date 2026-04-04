@@ -78,6 +78,7 @@ const mapUsageItem = (
 export class LimitsPageViewModel implements IViewModel {
   private readonly dataRequest = ObservableRequest.of(
     fetchWithPartialData((organizationId: string) => client.getLimitsPageData({ data: { organizationId } })),
+    { skipResetting: true },
   )
   private readonly plansRequest = ObservableRequest.of(fetchWithPartialData(() => client.getLimitsPagePlans()))
   private readonly earlyAccessRequest = ObservableRequest.of(client.activateEarlyAccess)

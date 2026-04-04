@@ -24,9 +24,10 @@ export class PlanItemViewModel {
   }
 
   public get price(): string {
-    const price = this.parent.billingInterval === 'yearly' ? this.plan.yearlyPriceUsd : this.plan.monthlyPriceUsd
+    const isYearly = this.parent.billingInterval === 'yearly'
+    const price = isYearly ? this.plan.yearlyPriceUsd : this.plan.monthlyPriceUsd
     if (price === 0) return 'Free'
-    return `$${price}/mo`
+    return `$${price}/${isYearly ? 'yr' : 'mo'}`
   }
 
   public get isCurrent(): boolean {

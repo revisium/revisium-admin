@@ -13,6 +13,7 @@ export const UserCard: FC<UserCardProps> = observer(({ model }) => {
   return (
     <MemberCard
       model={model}
+      disableRemove={model.isUpdating}
       roleSlot={
         <>
           {model.isUpdating && <Spinner size="sm" />}

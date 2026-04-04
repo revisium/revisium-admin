@@ -16,9 +16,10 @@ export interface IMemberCardModel {
 interface MemberCardProps {
   model: IMemberCardModel
   roleSlot: ReactNode
+  disableRemove?: boolean
 }
 
-export const MemberCard: FC<MemberCardProps> = observer(({ model, roleSlot }) => {
+export const MemberCard: FC<MemberCardProps> = observer(({ model, roleSlot, disableRemove }) => {
   return (
     <Box
       borderWidth="1px"
@@ -50,7 +51,14 @@ export const MemberCard: FC<MemberCardProps> = observer(({ model, roleSlot }) =>
           {roleSlot}
 
           {model.canRemove && (
-            <Button variant="ghost" size="sm" color="red.500" onClick={() => model.remove()} loading={model.isRemoving}>
+            <Button
+              variant="ghost"
+              size="sm"
+              color="red.500"
+              onClick={() => model.remove()}
+              loading={model.isRemoving}
+              disabled={disableRemove}
+            >
               <PiTrashLight />
             </Button>
           )}

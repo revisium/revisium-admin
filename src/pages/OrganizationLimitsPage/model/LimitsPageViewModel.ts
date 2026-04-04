@@ -1,86 +1,21 @@
-import { ClientError } from 'graphql-request'
 import { makeAutoObservable, runInAction } from 'mobx'
-import {
-  BillingStatus,
-  GetLimitsPageDataQuery,
-  GetLimitsPagePlansQuery,
-  LimitsPagePlanFragment,
-  UsageMetricFragment,
-} from 'src/__generated__/graphql-request.ts'
+import { BillingStatus, GetLimitsPageDataQuery, GetLimitsPagePlansQuery } from 'src/__generated__/graphql-request.ts'
 import { OrganizationContext } from 'src/entities/Organization/model/OrganizationContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, ObservableRequest } from 'src/shared/lib'
 import { client } from 'src/shared/model/ApiService.ts'
+import { PlanItemViewModel } from './PlanItemViewModel.ts'
+import { UsageItemViewModel } from './UsageItemViewModel.ts'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const fetchWithPartialData = <T>(fn: (...args: any[]) => Promise<T>) => {
-  return async (...args: any[]): Promise<T> => {
-    try {
-      return await fn(...args)
-    } catch (e) {
-      if (e instanceof ClientError && e.response.data) {
-        return e.response.data as T
-      }
-      throw e
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
-export interface UsageItem {
-  label: string
-  tooltip: string | null
-  current: string
-  limit: string
-  percentage: number | null
-  progressColor: string
-}
-
-type PlanFeatures = {
-  earlyAccessAvailable?: boolean
-}
-
-const formatNumber = (value: number): string => {
-  return value.toLocaleString('en-US')
-}
-
-const formatStorage = (bytes: number): string => {
-  if (bytes >= 1_073_741_824) {
-    return `${(bytes / 1_073_741_824).toFixed(1)} GB`
-  }
-  if (bytes >= 1_048_576) {
-    return `${(bytes / 1_048_576).toFixed(1)} MB`
-  }
-  return `${(bytes / 1024).toFixed(1)} KB`
-}
-
-const getProgressColor = (percentage: number | null): string => {
-  if (percentage === null) return 'green'
-  if (percentage > 90) return 'red'
-  if (percentage > 70) return 'yellow'
-  return 'green'
-}
-
-const mapUsageItem = (
-  label: string,
-  metric: UsageMetricFragment,
-  formatValue: (v: number) => string,
-  tooltip: string | null = null,
-): UsageItem => ({
-  label,
-  tooltip,
-  current: formatValue(metric.current),
-  limit: metric.limit !== null && metric.limit !== undefined ? formatValue(metric.limit) : 'Unlimited',
-  percentage: metric.percentage ?? null,
-  progressColor: getProgressColor(metric.percentage ?? null),
-})
+const ROW_VERSIONS_TOOLTIP =
+  'Total row versions across all projects. Each row change in a new revision creates a version. Unchanged rows in a new revision do not count.'
 
 export class LimitsPageViewModel implements IViewModel {
   private readonly dataRequest = ObservableRequest.of(
-    fetchWithPartialData((organizationId: string) => client.getLimitsPageData({ data: { organizationId } })),
+    (organizationId: string) => client.getLimitsPageData({ data: { organizationId } }),
     { skipResetting: true },
   )
-  private readonly plansRequest = ObservableRequest.of(fetchWithPartialData(() => client.getLimitsPagePlans()))
+  private readonly plansRequest = ObservableRequest.of(() => client.getLimitsPagePlans())
   private readonly earlyAccessRequest = ObservableRequest.of(client.activateEarlyAccess)
   private readonly checkoutRequest = ObservableRequest.of(client.createCheckout)
   private readonly cancelRequest = ObservableRequest.of(client.cancelSubscription)
@@ -112,16 +47,20 @@ export class LimitsPageViewModel implements IViewModel {
     return this.data?.configuration.billing.enabled ?? false
   }
 
+  public get pageTitle(): string {
+    return this.billingEnabled ? 'Billing' : 'Usage'
+  }
+
+  public get pageSubtitle(): string {
+    return this.billingEnabled ? 'Plan, usage, and payment management.' : 'Resource usage overview.'
+  }
+
   private get subscription() {
     return this.data?.organization.subscription ?? null
   }
 
   private get usage() {
     return this.data?.organization.usage ?? null
-  }
-
-  public get plans(): LimitsPagePlanFragment[] {
-    return (this.plansData?.plans ?? []).filter((p) => p.isPublic)
   }
 
   public get currentPlanId(): string {
@@ -168,66 +107,54 @@ export class LimitsPageViewModel implements IViewModel {
     return this.isActive || this.isPastDue
   }
 
-  // Usage
+  public get statusTitle(): string {
+    if (this.isFree) return 'Free Plan'
+    if (this.isEarlyAdopter) return 'Pro Plan — Early Access'
+    if (this.isActive) return 'Pro Plan'
+    if (this.isPastDue) return 'Payment failed'
+    if (this.isCancelled) return 'Plan cancelled'
+    return ''
+  }
 
-  public get usageItems(): UsageItem[] {
+  public get statusSubtitle(): string | null {
+    if (this.isEarlyAdopter) return 'Free while in Early Access'
+    if (this.isActive && this.currentPeriodEnd) {
+      return `Renews ${new Date(this.currentPeriodEnd).toLocaleDateString()}`
+    }
+    if (this.isPastDue) return 'Please update your payment method'
+    if (this.isCancelled && this.cancelAt) {
+      return `Downgrades on ${new Date(this.cancelAt).toLocaleDateString()}`
+    }
+    return null
+  }
+
+  public get statusColor(): string {
+    if (this.isEarlyAdopter) return 'purple'
+    if (this.isActive) return 'green'
+    if (this.isPastDue) return 'orange'
+    if (this.isCancelled) return 'red'
+    return 'gray'
+  }
+
+  public get usageItems(): UsageItemViewModel[] {
     const u = this.usage
     if (!u) return []
 
     return [
-      mapUsageItem(
-        'Row Versions',
-        u.rowVersions,
-        formatNumber,
-        'Total row versions across all projects. Each row change in a new revision creates a version. Unchanged rows in a new revision do not count.',
-      ),
-      mapUsageItem('Projects', u.projects, formatNumber),
-      mapUsageItem('Members', u.seats, formatNumber),
-      mapUsageItem('Storage', u.storageBytes, formatStorage),
+      new UsageItemViewModel(u.rowVersions, 'Row Versions', 'number', ROW_VERSIONS_TOOLTIP),
+      new UsageItemViewModel(u.projects, 'Projects', 'number'),
+      new UsageItemViewModel(u.seats, 'Members', 'number'),
+      new UsageItemViewModel(u.storageBytes, 'Storage', 'storage'),
     ]
   }
 
-  // Plan helpers
-
-  public getPlanPrice(plan: LimitsPagePlanFragment): string {
-    const price = this.billingInterval === 'yearly' ? plan.yearlyPriceUsd : plan.monthlyPriceUsd
-    if (price === 0) return 'Free'
-    return `$${price}/mo`
+  public get planItems(): PlanItemViewModel[] {
+    return (this.plansData?.plans ?? []).filter((p) => p.isPublic).map((p) => new PlanItemViewModel(p, this))
   }
-
-  public isPlanCurrent(plan: LimitsPagePlanFragment): boolean {
-    if (plan.id === this.currentPlanId) return true
-    if (this.isFree && plan.monthlyPriceUsd === 0) return true
-    return false
-  }
-
-  public canUpgradeTo(plan: LimitsPagePlanFragment): boolean {
-    return !this.isPlanCurrent(plan) && plan.monthlyPriceUsd > 0
-  }
-
-  public canDowngradeTo(plan: LimitsPagePlanFragment): boolean {
-    return !this.isPlanCurrent(plan) && plan.monthlyPriceUsd === 0 && !this.isFree
-  }
-
-  public getPlanFeatures(plan: LimitsPagePlanFragment): PlanFeatures {
-    const features = plan.features
-    if (typeof features === 'object' && features !== null && !Array.isArray(features)) {
-      return features as PlanFeatures
-    }
-    return {}
-  }
-
-  public isEarlyAccessAvailable(plan: LimitsPagePlanFragment): boolean {
-    return this.getPlanFeatures(plan).earlyAccessAvailable === true
-  }
-
-  // Interval
 
   public setBillingInterval(interval: 'monthly' | 'yearly'): void {
     this.billingInterval = interval
   }
-
-  // Actions
 
   public async activateEarlyAccess(planId: string): Promise<void> {
     const result = await this.earlyAccessRequest.fetch({
@@ -276,8 +203,6 @@ export class LimitsPageViewModel implements IViewModel {
   public get isActionLoading(): boolean {
     return this.earlyAccessRequest.isLoading || this.checkoutRequest.isLoading || this.cancelRequest.isLoading
   }
-
-  // Lifecycle
 
   public init(): void {
     void this.dataRequest.fetch(this.context.organizationId)

@@ -1,0 +1,38 @@
+fragment UserOrganizationItem on UsersOrganizationModel {
+  id
+  user {
+    id
+    email
+    username
+  }
+  role {
+    id
+    name
+  }
+}
+
+query getUsersOrganization($organizationId: String!, $first: Int!, $after: String) {
+  usersOrganization(data: { organizationId: $organizationId, first: $first, after: $after }) {
+    edges {
+      node {
+        ...UserOrganizationItem
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+mutation addUserToOrganization($organizationId: String!, $userId: String!, $roleId: UserOrganizationRoles!) {
+  addUserToOrganization(data: { organizationId: $organizationId, userId: $userId, roleId: $roleId })
+}
+
+mutation removeUserFromOrganization($organizationId: String!, $userId: String!) {
+  removeUserFromOrganization(data: { organizationId: $organizationId, userId: $userId })
+}

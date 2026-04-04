@@ -44,6 +44,10 @@ export class UsersPageViewModel implements IViewModel {
     return this.projectPermissions.canAddUser
   }
 
+  public get canAddMember(): boolean {
+    return this.canAddUser
+  }
+
   public get canCreateUser(): boolean {
     return this.systemPermissions.canCreateUser
   }
@@ -58,6 +62,10 @@ export class UsersPageViewModel implements IViewModel {
 
   public get showNoUsers(): boolean {
     return this.state === State.empty && this._totalCount === 0
+  }
+
+  public get showNoMembers(): boolean {
+    return this.showNoUsers
   }
 
   public get showList(): boolean {

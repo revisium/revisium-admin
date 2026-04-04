@@ -105,7 +105,7 @@ export class LimitsPageViewModel implements IViewModel {
   }
 
   public get isError(): boolean {
-    return this.dataRequest.error !== null
+    return this.dataRequest.error !== null && this.dataRequest.data === null
   }
 
   public get billingEnabled(): boolean {

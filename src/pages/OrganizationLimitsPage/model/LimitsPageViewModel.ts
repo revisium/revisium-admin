@@ -171,12 +171,12 @@ export class LimitsPageViewModel implements IViewModel {
         organizationId: this.context.organizationId,
         planId,
         interval: this.billingInterval,
-        successUrl: window.location.href,
-        cancelUrl: window.location.href,
+        successUrl: globalThis.location.href,
+        cancelUrl: globalThis.location.href,
       },
     })
     if (result.isRight) {
-      window.location.href = result.data.createCheckout.checkoutUrl
+      globalThis.location.href = result.data.createCheckout.checkoutUrl
     }
   }
 

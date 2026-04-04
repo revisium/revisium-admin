@@ -359,6 +359,10 @@ export type GetMeProjectsInput = {
   first: Scalars['Int']['input'];
 };
 
+export type GetOrganizationInput = {
+  organizationId: Scalars['String']['input'];
+};
+
 export type GetProjectBranchesInput = {
   after?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
@@ -1007,6 +1011,7 @@ export type Query = {
   getRowCountForeignKeysTo: Scalars['Int']['output'];
   me: MeModel;
   meProjects: ProjectsConnection;
+  organization: OrganizationModel;
   plans: Array<PlanModel>;
   project: ProjectModel;
   projectEndpoints: EndpointsConnection;
@@ -1061,6 +1066,11 @@ export type QueryGetRowCountForeignKeysToArgs = {
 
 export type QueryMeProjectsArgs = {
   data: GetMeProjectsInput;
+};
+
+
+export type QueryOrganizationArgs = {
+  data: GetOrganizationInput;
 };
 
 
@@ -2239,6 +2249,45 @@ export type GetMigrationsQueryVariables = Exact<{
 
 export type GetMigrationsQuery = { revision: { id: string, migrations: Array<{ [key: string]: any } | string | number | boolean | null> } };
 
+export type ActivateEarlyAccessMutationVariables = Exact<{
+  data: ActivateEarlyAccessInput;
+}>;
+
+
+export type ActivateEarlyAccessMutation = { activateEarlyAccess: { planId: string, status: BillingStatus, provider?: string | null, interval?: string | null, currentPeriodStart?: string | null, currentPeriodEnd?: string | null, cancelAt?: string | null } };
+
+export type CreateCheckoutMutationVariables = Exact<{
+  data: CreateCheckoutInput;
+}>;
+
+
+export type CreateCheckoutMutation = { createCheckout: { checkoutUrl: string } };
+
+export type CancelSubscriptionMutationVariables = Exact<{
+  data: CancelSubscriptionInput;
+}>;
+
+
+export type CancelSubscriptionMutation = { cancelSubscription: boolean };
+
+export type UsageMetricFragment = { current: number, limit?: number | null, percentage?: number | null };
+
+export type LimitsPageSubscriptionFragment = { planId: string, status: BillingStatus, provider?: string | null, interval?: string | null, currentPeriodStart?: string | null, currentPeriodEnd?: string | null, cancelAt?: string | null };
+
+export type LimitsPagePlanFragment = { id: string, name: string, isPublic: boolean, monthlyPriceUsd: number, yearlyPriceUsd: number, features: { [key: string]: any } | string | number | boolean | null, limits: { rowVersions?: number | null, projects?: number | null, seats?: number | null, storageBytes?: number | null } };
+
+export type GetLimitsPageDataQueryVariables = Exact<{
+  data: GetOrganizationInput;
+}>;
+
+
+export type GetLimitsPageDataQuery = { configuration: { billing: { enabled: boolean } }, organization: { id: string, subscription?: { planId: string, status: BillingStatus, provider?: string | null, interval?: string | null, currentPeriodStart?: string | null, currentPeriodEnd?: string | null, cancelAt?: string | null } | null, usage?: { rowVersions: { current: number, limit?: number | null, percentage?: number | null }, projects: { current: number, limit?: number | null, percentage?: number | null }, seats: { current: number, limit?: number | null, percentage?: number | null }, storageBytes: { current: number, limit?: number | null, percentage?: number | null } } | null } };
+
+export type GetLimitsPagePlansQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetLimitsPagePlansQuery = { plans: Array<{ id: string, name: string, isPublic: boolean, monthlyPriceUsd: number, yearlyPriceUsd: number, features: { [key: string]: any } | string | number | boolean | null, limits: { rowVersions?: number | null, projects?: number | null, seats?: number | null, storageBytes?: number | null } }> };
+
 export type UpdateProjectMutationVariables = Exact<{
   data: UpdateProjectInput;
 }>;
@@ -2828,6 +2877,40 @@ export const MigrationBranchFragmentDoc = gql`
   draft {
     id
   }
+}
+    `;
+export const UsageMetricFragmentDoc = gql`
+    fragment UsageMetric on UsageMetricModel {
+  current
+  limit
+  percentage
+}
+    `;
+export const LimitsPageSubscriptionFragmentDoc = gql`
+    fragment LimitsPageSubscription on SubscriptionModel {
+  planId
+  status
+  provider
+  interval
+  currentPeriodStart
+  currentPeriodEnd
+  cancelAt
+}
+    `;
+export const LimitsPagePlanFragmentDoc = gql`
+    fragment LimitsPagePlan on PlanModel {
+  id
+  name
+  isPublic
+  monthlyPriceUsd
+  yearlyPriceUsd
+  limits {
+    rowVersions
+    projects
+    seats
+    storageBytes
+  }
+  features
 }
     `;
 export const TableStackFragmentFragmentDoc = gql`
@@ -3647,6 +3730,62 @@ export const GetMigrationsDocument = gql`
   }
 }
     `;
+export const ActivateEarlyAccessDocument = gql`
+    mutation activateEarlyAccess($data: ActivateEarlyAccessInput!) {
+  activateEarlyAccess(data: $data) {
+    ...LimitsPageSubscription
+  }
+}
+    ${LimitsPageSubscriptionFragmentDoc}`;
+export const CreateCheckoutDocument = gql`
+    mutation createCheckout($data: CreateCheckoutInput!) {
+  createCheckout(data: $data) {
+    checkoutUrl
+  }
+}
+    `;
+export const CancelSubscriptionDocument = gql`
+    mutation cancelSubscription($data: CancelSubscriptionInput!) {
+  cancelSubscription(data: $data)
+}
+    `;
+export const GetLimitsPageDataDocument = gql`
+    query getLimitsPageData($data: GetOrganizationInput!) {
+  configuration {
+    billing {
+      enabled
+    }
+  }
+  organization(data: $data) {
+    id
+    subscription {
+      ...LimitsPageSubscription
+    }
+    usage {
+      rowVersions {
+        ...UsageMetric
+      }
+      projects {
+        ...UsageMetric
+      }
+      seats {
+        ...UsageMetric
+      }
+      storageBytes {
+        ...UsageMetric
+      }
+    }
+  }
+}
+    ${LimitsPageSubscriptionFragmentDoc}
+${UsageMetricFragmentDoc}`;
+export const GetLimitsPagePlansDocument = gql`
+    query getLimitsPagePlans {
+  plans {
+    ...LimitsPagePlan
+  }
+}
+    ${LimitsPagePlanFragmentDoc}`;
 export const UpdateProjectDocument = gql`
     mutation updateProject($data: UpdateProjectInput!) {
   updateProject(data: $data)
@@ -4286,6 +4425,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getMigrations(variables: GetMigrationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMigrationsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMigrationsQuery>(GetMigrationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMigrations', 'query', variables);
+    },
+    activateEarlyAccess(variables: ActivateEarlyAccessMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ActivateEarlyAccessMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ActivateEarlyAccessMutation>(ActivateEarlyAccessDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'activateEarlyAccess', 'mutation', variables);
+    },
+    createCheckout(variables: CreateCheckoutMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCheckoutMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCheckoutMutation>(CreateCheckoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'createCheckout', 'mutation', variables);
+    },
+    cancelSubscription(variables: CancelSubscriptionMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CancelSubscriptionMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CancelSubscriptionMutation>(CancelSubscriptionDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'cancelSubscription', 'mutation', variables);
+    },
+    getLimitsPageData(variables: GetLimitsPageDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetLimitsPageDataQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetLimitsPageDataQuery>(GetLimitsPageDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getLimitsPageData', 'query', variables);
+    },
+    getLimitsPagePlans(variables?: GetLimitsPagePlansQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetLimitsPagePlansQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetLimitsPagePlansQuery>(GetLimitsPagePlansDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getLimitsPagePlans', 'query', variables);
     },
     updateProject(variables: UpdateProjectMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateProjectMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateProjectMutation>(UpdateProjectDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateProject', 'mutation', variables);

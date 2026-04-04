@@ -375,6 +375,10 @@ export type GetMeProjectsInput = {
   first: Scalars['Int']['input'];
 };
 
+export type GetOrganizationInput = {
+  organizationId: Scalars['String']['input'];
+};
+
 export type GetProjectBranchesInput = {
   after?: InputMaybe<Scalars['String']['input']>;
   first: Scalars['Int']['input'];
@@ -1045,6 +1049,7 @@ export type Query = {
   getRowCountForeignKeysTo: Scalars['Int']['output'];
   me: MeModel;
   meProjects: ProjectsConnection;
+  organization: OrganizationModel;
   plans: Array<PlanModel>;
   project: ProjectModel;
   projectEndpoints: EndpointsConnection;
@@ -1099,6 +1104,11 @@ export type QueryGetRowCountForeignKeysToArgs = {
 
 export type QueryMeProjectsArgs = {
   data: GetMeProjectsInput;
+};
+
+
+export type QueryOrganizationArgs = {
+  data: GetOrganizationInput;
 };
 
 

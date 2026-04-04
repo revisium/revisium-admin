@@ -1,0 +1,15 @@
+mutation activateEarlyAccess($data: ActivateEarlyAccessInput!) {
+  activateEarlyAccess(data: $data) {
+    ...LimitsPageSubscription
+  }
+}
+
+mutation createCheckout($data: CreateCheckoutInput!) {
+  createCheckout(data: $data) {
+    checkoutUrl
+  }
+}
+
+mutation cancelSubscription($data: CancelSubscriptionInput!) {
+  cancelSubscription(data: $data)
+}

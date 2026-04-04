@@ -7,12 +7,12 @@ export const useOrganizationNavigationState = () => {
   const isProjectsActive = matches.some((match) => match.id === RouteIds.OrganizationOverview)
   const isMembersActive = matches.some((match) => match.id === RouteIds.OrganizationMembers)
   const isSettingsActive = matches.some((match) => match.id === RouteIds.OrganizationSettings)
-  const isBillingActive = matches.some((match) => match.id === RouteIds.OrganizationBilling)
+  const isLimitsActive = matches.some((match) => match.id === RouteIds.OrganizationLimits)
 
   return {
     isProjectsActive,
     isMembersActive,
     isSettingsActive,
-    isBillingActive,
+    isLimitsActive,
   }
 }

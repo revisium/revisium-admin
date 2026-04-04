@@ -22,7 +22,7 @@ import { GetTokenPage } from 'src/pages/GetTokenPage'
 import { OrganizationPage } from 'src/pages/OrganizationPage'
 import { OrganizationSettingsPage } from 'src/pages/OrganizationSettingsPage'
 import { OrganizationMembersPage } from 'src/pages/OrganizationMembersPage'
-import { OrganizationBillingPage } from 'src/pages/OrganizationBillingPage'
+import { OrganizationLimitsPage } from 'src/pages/OrganizationLimitsPage'
 import { ProjectLayout } from 'src/pages/ProjectLayout'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
@@ -58,7 +58,7 @@ import {
   ORGANIZATION_ROUTE,
   ORGANIZATION_SETTINGS_ROUTE,
   ORGANIZATION_MEMBERS_ROUTE,
-  ORGANIZATION_BILLING_ROUTE,
+  ORGANIZATION_LIMITS_ROUTE,
   PROJECT_ROUTE,
   REVISION_ROUTE,
   RouteIds,
@@ -178,10 +178,10 @@ const organizationRouteObject = {
       id: RouteIds.OrganizationMembers,
     },
     {
-      path: ORGANIZATION_BILLING_ROUTE,
-      element: <OrganizationBillingPage />,
+      path: ORGANIZATION_LIMITS_ROUTE,
+      element: <OrganizationLimitsPage />,
       loader: checkAuth,
-      id: RouteIds.OrganizationBilling,
+      id: RouteIds.OrganizationLimits,
     },
     {
       path: PROJECT_ROUTE,

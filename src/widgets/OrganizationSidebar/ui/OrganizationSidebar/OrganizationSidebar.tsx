@@ -13,7 +13,7 @@ import { OrganizationHeader } from 'src/widgets/OrganizationSidebar/ui/Organizat
 export const OrganizationSidebar: FC = observer(() => {
   const model = useViewModel(OrganizationSidebarViewModel)
 
-  const { isProjectsActive, isMembersActive, isSettingsActive, isBillingActive } = useOrganizationNavigationState()
+  const { isProjectsActive, isMembersActive, isSettingsActive, isLimitsActive } = useOrganizationNavigationState()
 
   return (
     <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
@@ -41,12 +41,12 @@ export const OrganizationSidebar: FC = observer(() => {
             isActive={isSettingsActive}
           />
         )}
-        {model.canAccessBilling && (
+        {model.billingEnabled && (
           <NavigationButton
-            to={model.billingLink}
+            to={model.limitsLink}
             label="Billing"
             icon={<PiCreditCardLight />}
-            isActive={isBillingActive}
+            isActive={isLimitsActive}
           />
         )}
       </Flex>

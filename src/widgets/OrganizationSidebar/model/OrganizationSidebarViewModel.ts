@@ -3,7 +3,7 @@ import { generatePath } from 'react-router-dom'
 import { OrganizationContext } from 'src/entities/Organization/model/OrganizationContext.ts'
 import {
   APP_ROUTE,
-  ORGANIZATION_BILLING_ROUTE,
+  ORGANIZATION_LIMITS_ROUTE,
   ORGANIZATION_MEMBERS_ROUTE,
   ORGANIZATION_ROUTE,
   ORGANIZATION_SETTINGS_ROUTE,
@@ -29,6 +29,10 @@ export class OrganizationSidebarViewModel {
     return this.context.isAuthenticated
   }
 
+  public get billingEnabled(): boolean {
+    return this.configurationService.billingEnabled
+  }
+
   private get organizationCondition(): Record<string, unknown> {
     return { organizationId: this.organizationId }
   }
@@ -39,10 +43,6 @@ export class OrganizationSidebarViewModel {
 
   public get canAccessSettings(): boolean {
     return this.permissionService.can('update', 'Organization', this.organizationCondition)
-  }
-
-  public get canAccessBilling(): boolean {
-    return this.configurationService.billingEnabled && this.canAccessSettings
   }
 
   public get projectsLink(): string {
@@ -63,8 +63,8 @@ export class OrganizationSidebarViewModel {
     })
   }
 
-  public get billingLink(): string {
-    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${ORGANIZATION_BILLING_ROUTE}`, {
+  public get limitsLink(): string {
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${ORGANIZATION_LIMITS_ROUTE}`, {
       organizationId: this.organizationId,
     })
   }

@@ -1,0 +1,64 @@
+fragment UsageMetric on UsageMetricModel {
+  current
+  limit
+  percentage
+}
+
+fragment LimitsPageSubscription on SubscriptionModel {
+  planId
+  status
+  provider
+  interval
+  currentPeriodStart
+  currentPeriodEnd
+  cancelAt
+}
+
+fragment LimitsPagePlan on PlanModel {
+  id
+  name
+  isPublic
+  monthlyPriceUsd
+  yearlyPriceUsd
+  limits {
+    rowVersions
+    projects
+    seats
+    storageBytes
+  }
+  features
+}
+
+query getLimitsPageData($data: GetOrganizationInput!) {
+  configuration {
+    billing {
+      enabled
+    }
+  }
+  organization(data: $data) {
+    id
+    subscription {
+      ...LimitsPageSubscription
+    }
+    usage {
+      rowVersions {
+        ...UsageMetric
+      }
+      projects {
+        ...UsageMetric
+      }
+      seats {
+        ...UsageMetric
+      }
+      storageBytes {
+        ...UsageMetric
+      }
+    }
+  }
+}
+
+query getLimitsPagePlans {
+  plans {
+    ...LimitsPagePlan
+  }
+}

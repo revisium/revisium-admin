@@ -11,11 +11,14 @@ const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trimEn
 const ENV_DIR = '.env'
 const ENV_PREFIX = 'REACT_APP_'
 
-console.log(`http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`)
-
 export default function viteConfig({ mode }) {
   const env = loadEnv(mode, ENV_DIR, ENV_PREFIX)
   process.env = { ...process.env, ...env }
+
+  const graphqlProtocol = process.env.REACT_APP_GRAPHQL_SERVER_PROTOCOL || 'http'
+  const graphqlTarget = `${graphqlProtocol}://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`
+  const endpointProtocol = process.env.REACT_APP_ENDPOINT_PROTOCOL || graphqlProtocol
+  const endpointTarget = `${endpointProtocol}://${process.env.REACT_APP_ENDPOINT_HOST}:${process.env.REACT_APP_ENDPOINT_PORT}`
 
   return defineConfig({
     plugins: [
@@ -45,32 +48,39 @@ export default function viteConfig({ mode }) {
     server: {
       proxy: {
         [process.env.REACT_APP_GRAPHQL_SERVER_URL]: {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
         [process.env.REACT_APP_SWAGGER_SERVER_URL]: {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
         [process.env.REACT_APP_ENDPOINT_SERVER_URL]: {
-          target: `http://${process.env.REACT_APP_ENDPOINT_HOST}:${process.env.REACT_APP_ENDPOINT_PORT}`,
+          target: endpointTarget,
           changeOrigin: true,
+          secure: endpointProtocol === 'https',
         },
         '/mcp': {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
         '/.well-known/oauth-authorization-server': {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
         '/.well-known/oauth-protected-resource': {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
         '/oauth': {
-          target: `http://${process.env.REACT_APP_GRAPHQL_SERVER_HOST}:${process.env.REACT_APP_GRAPHQL_SERVER_PORT}`,
+          target: graphqlTarget,
           changeOrigin: true,
+          secure: graphqlProtocol === 'https',
         },
       },
     },

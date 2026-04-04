@@ -16,7 +16,7 @@ export const ORGANIZATION_ROUTE = ':organizationId'
 
 export const ORGANIZATION_SETTINGS_ROUTE = '-/settings'
 export const ORGANIZATION_MEMBERS_ROUTE = '-/members'
-export const ORGANIZATION_BILLING_ROUTE = '-/billing'
+export const ORGANIZATION_LIMITS_ROUTE = '-/limits'
 
 export const PROJECT_ROUTE = ':projectName'
 export const PROJECT_SETTINGS_ROUTE = '-/settings'
@@ -63,7 +63,7 @@ export enum RouteIds {
   OrganizationOverview = 'organizationOverview',
   OrganizationSettings = 'organizationSettings',
   OrganizationMembers = 'organizationMembers',
-  OrganizationBilling = 'organizationBilling',
+  OrganizationLimits = 'organizationLimits',
 
   ProjectSettings = 'projectSettings',
   ProjectUsers = 'projectUsers',

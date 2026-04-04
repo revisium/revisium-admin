@@ -121,6 +121,8 @@ const PlanCard: FC<{ plan: LimitsPagePlanFragment; model: LimitsPageViewModel }>
       } else {
         await model.createCheckout(plan.id)
       }
+    } else if (model.canDowngradeTo(plan)) {
+      await model.cancelSubscription()
     }
   }
 

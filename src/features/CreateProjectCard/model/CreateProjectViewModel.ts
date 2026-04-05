@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { OrganizationContext } from 'src/entities/Organization/model/OrganizationContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
+import { AuthService } from 'src/shared/model'
 import { CreateProjectDataSource } from './CreateProjectDataSource.ts'
 
 export class CreateProjectViewModel implements IViewModel {
@@ -13,6 +14,7 @@ export class CreateProjectViewModel implements IViewModel {
   constructor(
     private readonly dataSource: CreateProjectDataSource,
     private readonly context: OrganizationContext,
+    private readonly authService: AuthService,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -30,7 +32,7 @@ export class CreateProjectViewModel implements IViewModel {
   }
 
   private get organizationId(): string {
-    return this.context.organizationId
+    return this.context.organizationId || this.authService.user?.organizationId || ''
   }
 
   public setProjectName(value: string): void {
@@ -70,7 +72,8 @@ container.register(
   () => {
     const dataSource = container.get(CreateProjectDataSource)
     const context = container.get(OrganizationContext)
-    return new CreateProjectViewModel(dataSource, context)
+    const authService = container.get(AuthService)
+    return new CreateProjectViewModel(dataSource, context, authService)
   },
   { scope: 'request' },
 )

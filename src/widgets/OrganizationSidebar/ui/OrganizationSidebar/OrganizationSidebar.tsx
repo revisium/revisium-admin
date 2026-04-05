@@ -33,15 +33,6 @@ export const OrganizationSidebar: FC = observer(() => {
         {model.canManageMembers && (
           <NavigationButton to={model.membersLink} label="Members" icon={<PiUsersLight />} isActive={isMembersActive} />
         )}
-        {/* TODO: enable when organization settings page is implemented */}
-        {/* {model.canAccessSettings && (
-          <NavigationButton
-            to={model.settingsLink}
-            label="Settings"
-            icon={<PiGearLight />}
-            isActive={isSettingsActive}
-          />
-        )} */}
         {model.billingEnabled && (
           <NavigationButton
             to={model.limitsLink}

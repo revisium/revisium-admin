@@ -1,7 +1,7 @@
 import { Box, Flex, Separator, Spacer, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { PiCreditCardLight, PiGearLight, PiGridFourLight, PiSignInLight, PiUsersLight } from 'react-icons/pi'
+import { PiCreditCardLight, PiGridFourLight, PiSignInLight, PiUsersLight } from 'react-icons/pi'
 import { LOGIN_ROUTE } from 'src/shared/config/routes.ts'
 import { useViewModel } from 'src/shared/lib'
 import { AccountButton } from 'src/widgets/AccountButton'
@@ -13,7 +13,7 @@ import { OrganizationHeader } from 'src/widgets/OrganizationSidebar/ui/Organizat
 export const OrganizationSidebar: FC = observer(() => {
   const model = useViewModel(OrganizationSidebarViewModel)
 
-  const { isProjectsActive, isMembersActive, isSettingsActive, isLimitsActive } = useOrganizationNavigationState()
+  const { isProjectsActive, isMembersActive, isLimitsActive } = useOrganizationNavigationState()
 
   return (
     <VStack alignItems="flex-start" gap={0} width="100%" flex={1}>
@@ -33,14 +33,15 @@ export const OrganizationSidebar: FC = observer(() => {
         {model.canManageMembers && (
           <NavigationButton to={model.membersLink} label="Members" icon={<PiUsersLight />} isActive={isMembersActive} />
         )}
-        {model.canAccessSettings && (
+        {/* TODO: enable when organization settings page is implemented */}
+        {/* {model.canAccessSettings && (
           <NavigationButton
             to={model.settingsLink}
             label="Settings"
             icon={<PiGearLight />}
             isActive={isSettingsActive}
           />
-        )}
+        )} */}
         {model.billingEnabled && (
           <NavigationButton
             to={model.limitsLink}

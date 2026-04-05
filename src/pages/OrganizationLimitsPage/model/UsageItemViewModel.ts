@@ -41,7 +41,9 @@ export class UsageItemViewModel {
   }
 
   public get percentage(): number | null {
-    return this.metric.percentage ?? null
+    const value = this.metric.percentage ?? null
+    if (value === null) return null
+    return Math.min(value, 100)
   }
 
   public get progressColor(): string {

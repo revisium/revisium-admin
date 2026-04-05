@@ -12,7 +12,7 @@ export class PlanItemViewModel {
     private readonly plan: LimitsPagePlanFragment,
     private readonly parent: LimitsPageViewModel,
   ) {
-    makeAutoObservable(this)
+    makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get id(): string {

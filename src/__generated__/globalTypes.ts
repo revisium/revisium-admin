@@ -60,6 +60,7 @@ export type ApiKeyModel = {
   permissions?: Maybe<Scalars['JSON']['output']>;
   prefix: Scalars['String']['output'];
   projectIds: Array<Scalars['String']['output']>;
+  projects: Array<ProjectModel>;
   readOnly: Scalars['Boolean']['output'];
   revokedAt?: Maybe<Scalars['DateTime']['output']>;
   tableIds: Array<Scalars['String']['output']>;

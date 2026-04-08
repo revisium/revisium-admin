@@ -62,6 +62,7 @@ export type ApiKeyModel = {
   permissions?: Maybe<Scalars['JSON']['output']>;
   prefix: Scalars['String']['output'];
   projectIds: Array<Scalars['String']['output']>;
+  projects: Array<ProjectModel>;
   readOnly: Scalars['Boolean']['output'];
   revokedAt?: Maybe<Scalars['DateTime']['output']>;
   tableIds: Array<Scalars['String']['output']>;
@@ -2107,54 +2108,54 @@ export type UpdatePasswordMutationVariables = Exact<{
 
 export type UpdatePasswordMutation = { updatePassword: boolean };
 
-export type ApiKeyFieldsFragment = { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null };
+export type ApiKeyFieldsFragment = { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> };
 
 export type MyApiKeysQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyApiKeysQuery = { myApiKeys: Array<{ id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null }> };
+export type MyApiKeysQuery = { myApiKeys: Array<{ id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> }> };
 
 export type ServiceApiKeysQueryVariables = Exact<{
   organizationId: Scalars['String']['input'];
 }>;
 
 
-export type ServiceApiKeysQuery = { serviceApiKeys: Array<{ id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null }> };
+export type ServiceApiKeysQuery = { serviceApiKeys: Array<{ id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> }> };
 
 export type ApiKeyByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type ApiKeyByIdQuery = { apiKeyById: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null } };
+export type ApiKeyByIdQuery = { apiKeyById: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> } };
 
 export type CreatePersonalApiKeyMutationVariables = Exact<{
   data: CreatePersonalApiKeyInput;
 }>;
 
 
-export type CreatePersonalApiKeyMutation = { createPersonalApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null } } };
+export type CreatePersonalApiKeyMutation = { createPersonalApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> } } };
 
 export type CreateServiceApiKeyMutationVariables = Exact<{
   data: CreateServiceApiKeyInput;
 }>;
 
 
-export type CreateServiceApiKeyMutation = { createServiceApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null } } };
+export type CreateServiceApiKeyMutation = { createServiceApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> } } };
 
 export type RevokeApiKeyMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type RevokeApiKeyMutation = { revokeApiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null } };
+export type RevokeApiKeyMutation = { revokeApiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> } };
 
 export type RotateApiKeyMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type RotateApiKeyMutation = { rotateApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null } } };
+export type RotateApiKeyMutation = { rotateApiKey: { secret: string, apiKey: { id: string, prefix: string, type: ApiKeyType, name: string, organizationId?: string | null, projectIds: Array<string>, branchNames: Array<string>, tableIds: Array<string>, readOnly: boolean, permissions?: { [key: string]: any } | string | number | boolean | null | null, allowedIps: Array<string>, expiresAt?: string | null, lastUsedAt?: string | null, createdAt: string, revokedAt?: string | null, projects: Array<{ id: string, name: string }> } } };
 
 export type CreateProjectMutationVariables = Exact<{
   data: CreateProjectInput;
@@ -2925,6 +2926,10 @@ export const ApiKeyFieldsFragmentDoc = gql`
   name
   organizationId
   projectIds
+  projects {
+    id
+    name
+  }
   branchNames
   tableIds
   readOnly

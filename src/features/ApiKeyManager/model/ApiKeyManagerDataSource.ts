@@ -40,17 +40,6 @@ export class ApiKeyManagerDataSource {
     return this.serviceKeysRequest.fetch({ organizationId })
   }
 
-  public async fetchProjectNames(organizationId: string): Promise<Map<string, string>> {
-    const map = new Map<string, string>()
-    const result = await client.organizationProjects({
-      data: { organizationId, first: 100 },
-    })
-    for (const edge of result.projects.edges) {
-      map.set(edge.node.id, edge.node.name)
-    }
-    return map
-  }
-
   public async createPersonalKey(data: Parameters<typeof client.createPersonalApiKey>[0]['data']) {
     const result = await this.createPersonalRequest.fetch({ data })
     if (result.isRight) {

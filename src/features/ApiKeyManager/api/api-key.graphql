@@ -5,6 +5,10 @@ fragment ApiKeyFields on ApiKeyModel {
   name
   organizationId
   projectIds
+  projects {
+    id
+    name
+  }
   branchNames
   tableIds
   readOnly

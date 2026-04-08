@@ -7,14 +7,8 @@ export interface ResolvedProject {
 }
 
 export class ApiKeyModel {
-  private _projectNameResolver: ((id: string) => string) | null = null
-
   constructor(public readonly data: ApiKeyFieldsFragment) {
     makeAutoObservable(this)
-  }
-
-  public setProjectNameResolver(resolver: (id: string) => string): void {
-    this._projectNameResolver = resolver
   }
 
   public get id(): string {
@@ -83,10 +77,7 @@ export class ApiKeyModel {
   }
 
   public get resolvedProjects(): ResolvedProject[] {
-    return this.data.projectIds.map((id) => ({
-      id,
-      name: this._projectNameResolver?.(id) ?? id,
-    }))
+    return this.data.projects
   }
 
   public get permissionLabel(): string {

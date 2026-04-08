@@ -1,15 +1,17 @@
 import { makeAutoObservable } from 'mobx'
+import { ApiKeyManagerViewModel } from 'src/features/ApiKeyManager'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { LOGOUT_ROUTE } from 'src/shared/config/routes.ts'
 import { container } from 'src/shared/lib/DIContainer.ts'
 import { AuthService } from 'src/shared/model'
 import { AccountSettingsDataSource } from './AccountSettingsDataSource.ts'
 
-type ActiveTab = 'account' | 'password'
+type ActiveTab = 'account' | 'password' | 'api-keys'
 
 export class AccountSettingsViewModel implements IViewModel {
   private _isOpen = false
   private _activeTab: ActiveTab = 'account'
+  public readonly apiKeyManager: ApiKeyManagerViewModel
 
   public oldPassword = ''
   public newPassword = ''
@@ -18,8 +20,11 @@ export class AccountSettingsViewModel implements IViewModel {
   constructor(
     private readonly dataSource: AccountSettingsDataSource,
     private readonly authService: AuthService,
+    apiKeyManager: ApiKeyManagerViewModel,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+    this.apiKeyManager = apiKeyManager
+    this.apiKeyManager.configure({ mode: 'personal' })
   }
 
   public get isOpen(): boolean {
@@ -142,6 +147,7 @@ export class AccountSettingsViewModel implements IViewModel {
 
   public dispose(): void {
     this.dataSource.dispose()
+    this.apiKeyManager.dispose()
   }
 }
 
@@ -150,7 +156,8 @@ container.register(
   () => {
     const dataSource = container.get(AccountSettingsDataSource)
     const authService = container.get(AuthService)
-    return new AccountSettingsViewModel(dataSource, authService)
+    const apiKeyManager = container.get(ApiKeyManagerViewModel)
+    return new AccountSettingsViewModel(dataSource, authService, apiKeyManager)
   },
   { scope: 'singleton' },
 )

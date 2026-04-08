@@ -1,0 +1,68 @@
+fragment ApiKeyFields on ApiKeyModel {
+  id
+  prefix
+  type
+  name
+  organizationId
+  projectIds
+  branchNames
+  tableIds
+  readOnly
+  permissions
+  allowedIps
+  expiresAt
+  lastUsedAt
+  createdAt
+  revokedAt
+}
+
+query myApiKeys {
+  myApiKeys {
+    ...ApiKeyFields
+  }
+}
+
+query serviceApiKeys($organizationId: String!) {
+  serviceApiKeys(organizationId: $organizationId) {
+    ...ApiKeyFields
+  }
+}
+
+query apiKeyById($id: ID!) {
+  apiKeyById(id: $id) {
+    ...ApiKeyFields
+  }
+}
+
+mutation createPersonalApiKey($data: CreatePersonalApiKeyInput!) {
+  createPersonalApiKey(data: $data) {
+    apiKey {
+      ...ApiKeyFields
+    }
+    secret
+  }
+}
+
+mutation createServiceApiKey($data: CreateServiceApiKeyInput!) {
+  createServiceApiKey(data: $data) {
+    apiKey {
+      ...ApiKeyFields
+    }
+    secret
+  }
+}
+
+mutation revokeApiKey($id: ID!) {
+  revokeApiKey(id: $id) {
+    ...ApiKeyFields
+  }
+}
+
+mutation rotateApiKey($id: ID!) {
+  rotateApiKey(id: $id) {
+    apiKey {
+      ...ApiKeyFields
+    }
+    secret
+  }
+}

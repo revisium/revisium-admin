@@ -37,15 +37,42 @@ input AdminUserInput {
   userId: String!
 }
 
+type ApiKeyModel {
+  allowedIps: [String!]!
+  branchNames: [String!]!
+  createdAt: DateTime!
+  expiresAt: DateTime
+  id: ID!
+  lastUsedAt: DateTime
+  name: String!
+  organizationId: String
+  permissions: JSON
+  prefix: String!
+  projectIds: [String!]!
+  readOnly: Boolean!
+  revokedAt: DateTime
+  tableIds: [String!]!
+  type: ApiKeyType!
+}
+
+enum ApiKeyType {
+  INTERNAL
+  PERSONAL
+  SERVICE
+}
+
+type ApiKeyWithSecretModel {
+  apiKey: ApiKeyModel!
+  secret: String!
+}
+
 type ApplyMigrationResultModel {
   error: String
   id: String!
   status: ApplyMigrationStatus!
 }
 
-"""
-Status of migration application
-"""
+"""Status of migration application"""
 enum ApplyMigrationStatus {
   applied
   failed
@@ -105,6 +132,18 @@ input CancelSubscriptionInput {
   organizationId: ID!
 }
 
+input CaslPermissionsInput {
+  rules: [CaslRuleInput!]!
+}
+
+input CaslRuleInput {
+  action: [String!]!
+  conditions: JSONObject
+  fields: [String!]
+  inverted: Boolean
+  subject: [String!]!
+}
+
 enum ChangeType {
   ADDED
   MODIFIED
@@ -156,6 +195,17 @@ input CreateEndpointInput {
   type: EndpointType!
 }
 
+input CreatePersonalApiKeyInput {
+  allowedIps: [String!]
+  branchNames: [String!]
+  expiresAt: DateTime
+  name: String!
+  organizationId: String
+  projectIds: [String!]
+  readOnly: Boolean = false
+  tableIds: [String!]
+}
+
 input CreateProjectInput {
   branchName: String
   fromRevisionId: String
@@ -199,6 +249,18 @@ type CreateRowsResultModel {
 input CreateRowsRowInput {
   data: JSON!
   rowId: String!
+}
+
+input CreateServiceApiKeyInput {
+  allowedIps: [String!]
+  branchNames: [String!]
+  expiresAt: DateTime
+  name: String!
+  organizationId: String!
+  permissions: CaslPermissionsInput!
+  projectIds: [String!]
+  readOnly: Boolean = false
+  tableIds: [String!]
 }
 
 input CreateTableInput {
@@ -333,9 +395,7 @@ input GetBranchRevisionsInput {
   comment: String
   first: Int!
   inclusive: Boolean
-  """
-  Sort order: asc (default) or desc
-  """
+  """Sort order: asc (default) or desc"""
   sort: SortOrder
 }
 
@@ -506,6 +566,11 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 input JsonFilter {
   array_contains: [JSON!]
   array_ends_with: JSON
@@ -519,9 +584,7 @@ input JsonFilter {
   path: [String!]
   search: String
   searchIn: SearchIn
-  """
-  Default: simple
-  """
+  """Default: simple"""
   searchLanguage: SearchLanguage
   searchType: SearchType
   string_contains: String
@@ -598,10 +661,12 @@ type Mutation {
   createBranch(data: CreateBranchInput!): BranchModel!
   createCheckout(data: CreateCheckoutInput!): CheckoutResultModel!
   createEndpoint(data: CreateEndpointInput!): EndpointModel!
+  createPersonalApiKey(data: CreatePersonalApiKeyInput!): ApiKeyWithSecretModel!
   createProject(data: CreateProjectInput!): ProjectModel!
   createRevision(data: CreateRevisionInput!): RevisionModel!
   createRow(data: CreateRowInput!): CreateRowResultModel!
   createRows(data: CreateRowsInput!): CreateRowsResultModel!
+  createServiceApiKey(data: CreateServiceApiKeyInput!): ApiKeyWithSecretModel!
   createTable(data: CreateTableInput!): CreateTableResultModel!
   createUser(data: CreateUserInput!): Boolean!
   deleteBranch(data: DeleteBranchInput!): Boolean!
@@ -621,6 +686,8 @@ type Mutation {
   renameTable(data: RenameTableInput!): RenameTableResultModel!
   resetPassword(data: ResetPasswordInput!): Boolean!
   revertChanges(data: RevertChangesInput!): BranchModel!
+  revokeApiKey(id: ID!): ApiKeyModel!
+  rotateApiKey(id: ID!): ApiKeyWithSecretModel!
   setUsername(data: SetUsernameInput!): Boolean!
   signUp(data: SignUpInput!): Boolean!
   updatePassword(data: UpdatePasswordInput!): Boolean!
@@ -746,10 +813,13 @@ type PermissionModel {
 
 type PlanLimitsModel {
   apiCallsPerDay: Int
+  branchesPerProject: Int
   projects: Int
   rowVersions: Int
+  rowsPerTable: Int
   seats: Int
   storageBytes: Float
+  tablesPerRevision: Int
 }
 
 type PlanModel {
@@ -792,14 +862,15 @@ type ProjectsConnection {
 type Query {
   adminUser(data: AdminUserInput!): UserModel
   adminUsers(data: SearchUsersInput!): UsersConnection!
+  apiKeyById(id: ID!): ApiKeyModel!
   availableProviders(country: String, method: String): [PaymentProviderModel!]!
   branch(data: GetBranchInput!): BranchModel!
   branches(data: GetBranchesInput!): BranchesConnection!
   configuration: ConfigurationModel!
-  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
-    @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int! @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
   me: MeModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
+  myApiKeys: [ApiKeyModel!]!
   organization(data: GetOrganizationInput!): OrganizationModel!
   plans: [PlanModel!]!
   project(data: GetProjectInput!): ProjectModel!
@@ -812,6 +883,7 @@ type Query {
   rows(data: GetRowsInput!): RowsConnection!
   searchRows(data: SearchRowsInput!): SearchResultsConnection!
   searchUsers(data: SearchUsersInput!): SearchUsersConnection!
+  serviceApiKeys(organizationId: String!): [ApiKeyModel!]!
   subSchemaItems(data: GetSubSchemaItemsInput!): SubSchemaItemsConnection!
   table(data: GetTableInput!): TableModel
   tableChanges(data: GetTableChangesInput!): TableChangesConnection!
@@ -1037,9 +1109,7 @@ enum SearchIn {
   values
 }
 
-"""
-Language for full-text search. Default: simple
-"""
+"""Language for full-text search. Default: simple"""
 enum SearchLanguage {
   arabic
   armenian

@@ -186,7 +186,7 @@ export const ProjectSettingsPage: React.FC = observer(() => {
               ) : (
                 <Box p={4} textAlign="center" borderWidth="1px" borderColor="gray.200" borderRadius="lg" bg="gray.50">
                   <Text fontSize="sm" color="gray.500">
-                    No API keys scoped to this project.
+                    You don&apos;t have permission to manage API keys for this project.
                   </Text>
                   <ChakraLink asChild fontSize="xs" color="blue.500" mt={2} display="inline-block">
                     <RouterLink to={store.organizationSettingsLink}>

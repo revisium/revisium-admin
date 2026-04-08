@@ -15,6 +15,10 @@ export class OrganizationSettingsPageModel implements IViewModel {
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
     this.apiKeyManager = apiKeyManager
+    this.apiKeyManager.configure({
+      mode: 'service',
+      organizationId: this.context.organizationId,
+    })
   }
 
   public get organizationId(): string {
@@ -25,12 +29,7 @@ export class OrganizationSettingsPageModel implements IViewModel {
     return this.permissionService.can('update', 'Organization', { organizationId: this.organizationId })
   }
 
-  public init(): void {
-    this.apiKeyManager.configure({
-      mode: 'service',
-      organizationId: this.organizationId,
-    })
-  }
+  public init(): void {}
 
   public dispose(): void {
     this.apiKeyManager.dispose()

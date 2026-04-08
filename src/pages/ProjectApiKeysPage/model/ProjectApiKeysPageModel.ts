@@ -16,6 +16,14 @@ export class ProjectApiKeysPageModel implements IViewModel {
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
     this.apiKeyManager = apiKeyManager
+    const projectId = this.projectPermissions.projectId ?? undefined
+    this.apiKeyManager.configure({
+      mode: 'service',
+      organizationId: this.context.organizationId,
+      defaultProjectId: projectId,
+      defaultProjectName: this.context.projectName,
+      filterByProjectId: projectId,
+    })
   }
 
   public get organizationId(): string {
@@ -34,16 +42,7 @@ export class ProjectApiKeysPageModel implements IViewModel {
     return `/app/${this.context.organizationId}/-/settings`
   }
 
-  public init(): void {
-    const projectId = this.projectPermissions.projectId ?? undefined
-    this.apiKeyManager.configure({
-      mode: 'service',
-      organizationId: this.context.organizationId,
-      defaultProjectId: projectId,
-      defaultProjectName: this.context.projectName,
-      filterByProjectId: projectId,
-    })
-  }
+  public init(): void {}
 
   public dispose(): void {
     this.apiKeyManager.dispose()

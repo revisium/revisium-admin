@@ -29,7 +29,6 @@ export class ApiKeyManagerViewModel implements IViewModel {
   private _config: ApiKeyManagerConfig = { mode: 'personal' }
   private _items: ApiKeyModel[] = []
   private _isLoaded = false
-  private _projectNames: Map<string, string> = new Map()
 
   private _isCreateDialogOpen = false
   private _isSecretDialogOpen = false
@@ -64,14 +63,6 @@ export class ApiKeyManagerViewModel implements IViewModel {
 
   public get filterByProjectId(): string | undefined {
     return this._config.filterByProjectId
-  }
-
-  public get projectNames(): Map<string, string> {
-    return this._projectNames
-  }
-
-  public resolveProjectName(projectId: string): string {
-    return this._projectNames.get(projectId) ?? projectId
   }
 
   public get items(): ApiKeyModel[] {
@@ -194,10 +185,7 @@ export class ApiKeyManagerViewModel implements IViewModel {
         this._isLoaded = true
       })
     } else if (this._config.organizationId) {
-      const [result, projectNames] = await Promise.all([
-        this.dataSource.fetchServiceKeys(this._config.organizationId),
-        this.dataSource.fetchProjectNames(this._config.organizationId),
-      ])
+      const result = await this.dataSource.fetchServiceKeys(this._config.organizationId)
 
       if (!result.isRight) {
         if (isAborted(result)) {
@@ -210,14 +198,7 @@ export class ApiKeyManagerViewModel implements IViewModel {
       }
 
       runInAction(() => {
-        this._projectNames = projectNames
-        this._items = result.data.serviceApiKeys
-          .filter((k) => k.type !== 'INTERNAL')
-          .map((k) => {
-            const model = new ApiKeyModel(k)
-            model.setProjectNameResolver(this.resolveProjectName)
-            return model
-          })
+        this._items = result.data.serviceApiKeys.filter((k) => k.type !== 'INTERNAL').map((k) => new ApiKeyModel(k))
         this._isLoaded = true
       })
     }

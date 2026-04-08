@@ -9,6 +9,8 @@ import {
   ENDPOINTS_ROUTE,
   MIGRATIONS_ROUTE,
   ORGANIZATION_ROUTE,
+  ORGANIZATION_SETTINGS_ROUTE,
+  PROJECT_API_KEYS_ROUTE,
   PROJECT_MCP_ROUTE,
   PROJECT_ROUTE,
   PROJECT_SETTINGS_ROUTE,
@@ -126,6 +128,25 @@ export class LinkMaker {
     return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_MCP_ROUTE}`, {
       organizationId: this.organizationId,
       projectName: this.projectName,
+    })
+  }
+
+  public makeProjectApiKeysLink(): string {
+    if (!this.organizationId || !this.projectName) {
+      return ''
+    }
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${PROJECT_ROUTE}/${PROJECT_API_KEYS_ROUTE}`, {
+      organizationId: this.organizationId,
+      projectName: this.projectName,
+    })
+  }
+
+  public makeOrganizationSettingsLink(): string {
+    if (!this.organizationId) {
+      return ''
+    }
+    return generatePath(`/${APP_ROUTE}/${ORGANIZATION_ROUTE}/${ORGANIZATION_SETTINGS_ROUTE}`, {
+      organizationId: this.organizationId,
     })
   }
 

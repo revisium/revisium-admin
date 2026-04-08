@@ -1,8 +1,9 @@
 import { makeAutoObservable } from 'mobx'
 import { LinkMaker } from 'src/entities/Navigation/model/LinkMaker.ts'
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
+import { ApiKeyManagerViewModel } from 'src/features/ApiKeyManager'
 import { container, ObservableRequest } from 'src/shared/lib'
-import { ProjectPermissions } from 'src/shared/model/AbilityService'
+import { PermissionService, ProjectPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { RouterService } from 'src/shared/model/RouterService.ts'
 import { toaster } from 'src/shared/ui'
@@ -14,17 +15,38 @@ export class ProjectSettingsPageModel {
   private readonly updateRequest = ObservableRequest.of(client.updateProject)
   private readonly deleteRequest = ObservableRequest.of(client.deleteProjectForSettings)
 
+  public readonly apiKeyManager: ApiKeyManagerViewModel
+
   constructor(
     private readonly context: ProjectContext,
     private readonly routerService: RouterService,
     private readonly projectPermissions: ProjectPermissions,
+    private readonly permissionService: PermissionService,
     private readonly linkMaker: LinkMaker,
+    apiKeyManager: ApiKeyManagerViewModel,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
+    this.apiKeyManager = apiKeyManager
+    const projectId = this.projectPermissions.projectId ?? undefined
+    this.apiKeyManager.configure({
+      mode: 'service',
+      organizationId: this.context.organizationId,
+      defaultProjectId: projectId,
+      defaultProjectName: this.context.projectName,
+      filterByProjectId: projectId,
+    })
   }
 
   public get endpointsLink(): string {
     return this.linkMaker.makeEndpointsLink()
+  }
+
+  public get canManageServiceKeys(): boolean {
+    return this.permissionService.can('update', 'Organization', { organizationId: this.context.organizationId })
+  }
+
+  public get organizationSettingsLink(): string {
+    return `/app/${this.context.organizationId}/-/settings`
   }
 
   public get canUpdateProject(): boolean {
@@ -106,6 +128,7 @@ export class ProjectSettingsPageModel {
   public dispose() {
     this.updateRequest.abort()
     this.deleteRequest.abort()
+    this.apiKeyManager.dispose()
   }
 }
 
@@ -115,9 +138,18 @@ container.register(
     const context = container.get(ProjectContext)
     const router = container.get(RouterService)
     const projectPermissions = container.get(ProjectPermissions)
+    const permissionService = container.get(PermissionService)
     const linkMaker = container.get(LinkMaker)
+    const apiKeyManager = container.get(ApiKeyManagerViewModel)
 
-    return new ProjectSettingsPageModel(context, router, projectPermissions, linkMaker)
+    return new ProjectSettingsPageModel(
+      context,
+      router,
+      projectPermissions,
+      permissionService,
+      linkMaker,
+      apiKeyManager,
+    )
   },
   { scope: 'request' },
 )

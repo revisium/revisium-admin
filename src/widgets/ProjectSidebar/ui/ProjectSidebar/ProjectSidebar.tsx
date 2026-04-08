@@ -4,7 +4,7 @@ import { FC, useEffect } from 'react'
 import {
   PiGearLight,
   PiGitBranchLight,
-  // PiKeyLight,
+  PiKeyLight,
   PiUsersLight,
   PiDatabaseLight,
   PiFileTextLight,
@@ -54,6 +54,7 @@ export const ProjectSidebar: FC = observer(() => {
     isBranchesActive,
     isProjectUsersActive,
     isMcpActive,
+    isApiKeysActive,
     isProjectLevelActive,
     isBranchesLevelActive,
   } = useNavigationState()
@@ -173,6 +174,14 @@ export const ProjectSidebar: FC = observer(() => {
               label="Users"
               icon={<PiUsersLight />}
               isActive={isProjectUsersActive}
+            />
+          )}
+          {model.isAuthenticated && (
+            <NavigationButton
+              to={linkMaker.makeProjectApiKeysLink()}
+              label="API Keys"
+              icon={<PiKeyLight />}
+              isActive={isApiKeysActive}
             />
           )}
           {model.canAccessSettings && (

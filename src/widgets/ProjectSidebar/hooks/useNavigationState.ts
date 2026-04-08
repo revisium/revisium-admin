@@ -14,6 +14,7 @@ export const useNavigationState = () => {
   const isBranchesActive = matches.some((match) => match.id === RouteIds.Branches)
   const isProjectUsersActive = matches.some((match) => match.id === RouteIds.ProjectUsers)
   const isMcpActive = matches.some((match) => match.id === RouteIds.ProjectMcp)
+  const isApiKeysActive = matches.some((match) => match.id === RouteIds.ProjectApiKeys)
 
   const isTablesActive =
     matches.some((match) => match.id === RouteIds.Revision) &&
@@ -23,7 +24,8 @@ export const useNavigationState = () => {
     !isRelationsActive &&
     !isBranchMapActive
   const isBranchesLevelActive = isBranchesActive || isBranchMapActive
-  const isProjectLevelActive = isProjectSettingsActive || isEndpointsActive || isProjectUsersActive || isMcpActive
+  const isProjectLevelActive =
+    isProjectSettingsActive || isEndpointsActive || isProjectUsersActive || isMcpActive || isApiKeysActive
 
   return {
     isTablesActive,
@@ -34,6 +36,7 @@ export const useNavigationState = () => {
     isEndpointsActive,
     isProjectUsersActive,
     isMcpActive,
+    isApiKeysActive,
     isProjectLevelActive,
     isBranchesLevelActive,
     isBranchesActive,

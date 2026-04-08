@@ -24,6 +24,7 @@ import { OrganizationSettingsPage } from 'src/pages/OrganizationSettingsPage'
 import { OrganizationMembersPage } from 'src/pages/OrganizationMembersPage'
 import { OrganizationLimitsPage } from 'src/pages/OrganizationLimitsPage'
 import { ProjectLayout } from 'src/pages/ProjectLayout'
+import { ProjectApiKeysPage } from 'src/pages/ProjectApiKeysPage'
 import { ProjectSettingsPage } from 'src/pages/ProjectSettingsPage'
 import { UsersPage } from 'src/pages/UsersPage'
 
@@ -216,7 +217,7 @@ const organizationRouteObject = {
         },
         {
           path: PROJECT_API_KEYS_ROUTE,
-          element: <div>Project API Keys Page</div>,
+          element: <ProjectApiKeysPage />,
           id: RouteIds.ProjectApiKeys,
         },
         {

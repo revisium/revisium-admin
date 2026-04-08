@@ -28,6 +28,7 @@ import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { PiArrowRightLight, PiCloudLight, PiLockSimpleLight } from 'react-icons/pi'
 import { Link as RouterLink } from 'react-router-dom'
+import { ApiKeyList } from 'src/features/ApiKeyManager'
 import { ProjectSettingsPageModel } from 'src/pages/ProjectSettingsPage/model/ProjectSettingsPageModel.ts'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
@@ -163,6 +164,37 @@ export const ProjectSettingsPage: React.FC = observer(() => {
                   }
                 />
               </VStack>
+            </Box>
+
+            <Box>
+              <HStack justify="space-between" align="center" mb={3}>
+                <Text fontSize="sm" fontWeight="600" color="gray.600">
+                  API Keys
+                </Text>
+                <ChakraLink asChild fontSize="xs" color="gray.500">
+                  <RouterLink to={store.organizationSettingsLink}>
+                    Manage all organization keys
+                    <Icon as={PiArrowRightLight} ml={1} />
+                  </RouterLink>
+                </ChakraLink>
+              </HStack>
+              <Text fontSize="xs" color="gray.500" mb="1rem">
+                Service keys scoped to this project.
+              </Text>
+              {store.canManageServiceKeys ? (
+                <ApiKeyList model={store.apiKeyManager} />
+              ) : (
+                <Box p={4} textAlign="center" borderWidth="1px" borderColor="gray.200" borderRadius="lg" bg="gray.50">
+                  <Text fontSize="sm" color="gray.500">
+                    No API keys scoped to this project.
+                  </Text>
+                  <ChakraLink asChild fontSize="xs" color="blue.500" mt={2} display="inline-block">
+                    <RouterLink to={store.organizationSettingsLink}>
+                      Contact an organization admin to manage API keys
+                    </RouterLink>
+                  </ChakraLink>
+                </Box>
+              )}
             </Box>
 
             {store.hasDeletePermission && (

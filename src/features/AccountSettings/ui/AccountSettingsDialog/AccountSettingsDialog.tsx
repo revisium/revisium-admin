@@ -11,7 +11,8 @@ import {
 } from '@chakra-ui/react/dialog'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
-import { PiSignOutLight, PiUserLight, PiLockLight } from 'react-icons/pi'
+import { PiKeyLight, PiSignOutLight, PiUserLight, PiLockLight } from 'react-icons/pi'
+import { ApiKeyList } from 'src/features/ApiKeyManager'
 import { toaster } from 'src/shared/ui'
 import { AccountSettingsViewModel } from '../../model/AccountSettingsViewModel.ts'
 
@@ -40,7 +41,9 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
             <DialogBody>
               <Tabs.Root
                 value={model.activeTab}
-                onValueChange={({ value }) => model.setActiveTab(value as 'account' | 'password')}
+                onValueChange={({ value }) => model.setActiveTab(value as 'account' | 'password' | 'api-keys')}
+                lazyMount
+                unmountOnExit
               >
                 <Tabs.List marginBottom="1rem">
                   <Tabs.Trigger value="account">
@@ -50,6 +53,10 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
                   <Tabs.Trigger value="password">
                     <PiLockLight />
                     Password
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value="api-keys">
+                    <PiKeyLight />
+                    Personal Tokens
                   </Tabs.Trigger>
                 </Tabs.List>
 
@@ -146,6 +153,21 @@ export const AccountSettingsDialog: FC<AccountSettingsDialogProps> = observer(({
                         {model.hasPassword ? 'Update Password' : 'Set Password'}
                       </Button>
                     </Flex>
+                  </VStack>
+                </Tabs.Content>
+
+                <Tabs.Content value="api-keys">
+                  <VStack align="stretch" gap="1rem">
+                    <Box>
+                      <Text fontSize="sm" fontWeight="500" color="gray.700">
+                        Personal Access Keys
+                      </Text>
+                      <Text fontSize="xs" color="gray.500" mt={1}>
+                        Personal keys act on your behalf and inherit your permissions. Use them for scripts, CLI tools,
+                        or any programmatic access to your data.
+                      </Text>
+                    </Box>
+                    <ApiKeyList model={model.apiKeyManager} />
                   </VStack>
                 </Tabs.Content>
               </Tabs.Root>

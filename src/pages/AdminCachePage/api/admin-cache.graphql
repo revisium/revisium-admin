@@ -1,0 +1,22 @@
+query adminCacheStats {
+  adminCacheStats {
+    totalHits
+    totalMisses
+    totalWrites
+    totalDeletes
+    totalClears
+    overallHitRate
+    byCategory {
+      key
+      hits
+      misses
+      writes
+      deletes
+      hitRate
+    }
+  }
+}
+
+mutation adminResetAllCache {
+  adminResetAllCache
+}

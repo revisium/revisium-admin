@@ -53,6 +53,10 @@ export class ConfigurationService {
     return this.data?.billing.enabled ?? false
   }
 
+  public get cacheEnabled(): boolean {
+    return this.data?.cache.enabled ?? false
+  }
+
   public get noAuth(): boolean {
     return this.data?.noAuth ?? false
   }

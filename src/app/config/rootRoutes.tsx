@@ -6,6 +6,7 @@ import { checkGuest } from 'src/app/lib/checkGuest.ts'
 import { checkSignUp } from 'src/app/lib/checkSignUp.ts'
 import { composeLoaders } from 'src/app/lib/composeLoaders.ts'
 import { mainPageLoader } from 'src/app/lib/mainPageLoader.ts'
+import { AdminCachePage } from 'src/pages/AdminCachePage'
 import { AdminDashboardPage } from 'src/pages/AdminDashboardPage'
 import { AdminLayout } from 'src/pages/AdminLayout'
 import { AdminOrganizationsPage } from 'src/pages/AdminOrganizationsPage'
@@ -47,6 +48,7 @@ import { TablePage } from 'src/pages/TablePage'
 import { UsernamePage } from 'src/pages/UsernamePage'
 import { AssetsPage } from 'src/pages/AssetsPage'
 import {
+  ADMIN_CACHE_ROUTE,
   ADMIN_ORGANIZATIONS_ROUTE,
   ADMIN_ROUTE,
   ADMIN_USER_DETAIL_ROUTE,
@@ -361,6 +363,11 @@ export const ROOT_ROUTES: RouteObject[] = [
             path: ADMIN_ORGANIZATIONS_ROUTE,
             element: <AdminOrganizationsPage />,
             id: RouteIds.AdminOrganizations,
+          },
+          {
+            path: ADMIN_CACHE_ROUTE,
+            element: <AdminCachePage />,
+            id: RouteIds.AdminCache,
           },
         ],
       },

@@ -43,6 +43,7 @@ export const ADMIN_ROUTE = 'admin'
 export const ADMIN_USERS_ROUTE = 'users'
 export const ADMIN_USER_DETAIL_ROUTE = ':userId'
 export const ADMIN_ORGANIZATIONS_ROUTE = 'organizations'
+export const ADMIN_CACHE_ROUTE = 'cache'
 
 export enum RouteIds {
   Organization = 'organization',
@@ -74,4 +75,5 @@ export enum RouteIds {
   AdminUsers = 'adminUsers',
   AdminUserDetail = 'adminUserDetail',
   AdminOrganizations = 'adminOrganizations',
+  AdminCache = 'adminCache',
 }

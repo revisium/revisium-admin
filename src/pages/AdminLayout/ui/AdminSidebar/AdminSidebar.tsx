@@ -1,9 +1,9 @@
 import { Box, Flex, Separator, Spacer, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback } from 'react'
-import { PiBuildingsLight, PiCaretCircleLeftLight, PiHouseLight, PiUsersLight } from 'react-icons/pi'
+import { PiBuildingsLight, PiCaretCircleLeftLight, PiDatabaseLight, PiHouseLight, PiUsersLight } from 'react-icons/pi'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ADMIN_ORGANIZATIONS_ROUTE, ADMIN_ROUTE, ADMIN_USERS_ROUTE } from 'src/shared/config/routes'
+import { ADMIN_CACHE_ROUTE, ADMIN_ORGANIZATIONS_ROUTE, ADMIN_ROUTE, ADMIN_USERS_ROUTE } from 'src/shared/config/routes'
 import { SidebarToggleButton } from 'src/shared/ui'
 import { AccountButton } from 'src/widgets/AccountButton'
 
@@ -91,6 +91,7 @@ export const AdminSidebar: FC = observer(() => {
   const isAdminRoot = currentPath === `/${ADMIN_ROUTE}`
   const isUsers = currentPath.startsWith(`/${ADMIN_ROUTE}/${ADMIN_USERS_ROUTE}`)
   const isOrganizations = currentPath.startsWith(`/${ADMIN_ROUTE}/${ADMIN_ORGANIZATIONS_ROUTE}`)
+  const isCache = currentPath.startsWith(`/${ADMIN_ROUTE}/${ADMIN_CACHE_ROUTE}`)
 
   const handleBack = useCallback(() => {
     navigate('/')
@@ -117,6 +118,12 @@ export const AdminSidebar: FC = observer(() => {
           label="Organizations"
           icon={<PiBuildingsLight />}
           isActive={isOrganizations}
+        />
+        <NavigationButton
+          to={`/${ADMIN_ROUTE}/${ADMIN_CACHE_ROUTE}`}
+          label="Cache"
+          icon={<PiDatabaseLight />}
+          isActive={isCache}
         />
       </Flex>
 

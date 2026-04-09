@@ -41,6 +41,10 @@ export class OrganizationSidebarViewModel {
     return this.permissionService.can('add', 'User', this.organizationCondition)
   }
 
+  public get canManageApiKeys(): boolean {
+    return this.permissionService.can('manage', 'ApiKey', this.organizationCondition)
+  }
+
   public get canAccessSettings(): boolean {
     return this.permissionService.can('update', 'Organization', this.organizationCondition)
   }

@@ -25,6 +25,10 @@ export class ProjectSidebarViewModel {
     return this.projectPermissions.canAccessSettings
   }
 
+  public get canManageApiKeys(): boolean {
+    return this.projectPermissions.canManageApiKeys
+  }
+
   public get canManageUsers(): boolean {
     return this.projectPermissions.canManageUsers
   }

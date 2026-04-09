@@ -167,6 +167,10 @@ export class ProjectPermissions {
     return this.can('read', 'User')
   }
 
+  public get canManageApiKeys(): boolean {
+    return this.can('manage', 'ApiKey')
+  }
+
   public get canManageUsers(): boolean {
     return this.canAddUser || this.canReadUser
   }

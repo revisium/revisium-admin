@@ -26,7 +26,7 @@ export class OrganizationSettingsPageModel implements IViewModel {
   }
 
   public get canManageServiceKeys(): boolean {
-    return this.permissionService.can('update', 'Organization', { organizationId: this.organizationId })
+    return this.permissionService.can('manage', 'ApiKey', { organizationId: this.organizationId })
   }
 
   public init(): void {}

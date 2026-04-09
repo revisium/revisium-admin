@@ -176,7 +176,7 @@ export const ProjectSidebar: FC = observer(() => {
               isActive={isProjectUsersActive}
             />
           )}
-          {model.isAuthenticated && (
+          {model.canManageApiKeys && (
             <NavigationButton
               to={linkMaker.makeProjectApiKeysLink()}
               label="API Keys"

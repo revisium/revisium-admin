@@ -35,7 +35,14 @@ export class ProjectApiKeysPageModel implements IViewModel {
   }
 
   public get canManageServiceKeys(): boolean {
-    return this.permissionService.can('update', 'Organization', { organizationId: this.context.organizationId })
+    const projectId = this.projectPermissions.projectId
+    if (projectId) {
+      return this.permissionService.can('manage', 'ApiKey', {
+        projectId,
+        organizationId: this.context.organizationId,
+      })
+    }
+    return this.permissionService.can('manage', 'ApiKey', { organizationId: this.context.organizationId })
   }
 
   public get organizationSettingsLink(): string {

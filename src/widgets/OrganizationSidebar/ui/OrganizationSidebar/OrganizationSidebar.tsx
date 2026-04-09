@@ -33,7 +33,7 @@ export const OrganizationSidebar: FC = observer(() => {
         {model.canManageMembers && (
           <NavigationButton to={model.membersLink} label="Members" icon={<PiUsersLight />} isActive={isMembersActive} />
         )}
-        {model.canAccessSettings && (
+        {model.canManageApiKeys && (
           <NavigationButton
             to={model.settingsLink}
             label="API Keys"

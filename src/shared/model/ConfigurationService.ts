@@ -54,7 +54,7 @@ export class ConfigurationService {
   }
 
   public get cacheEnabled(): boolean {
-    return this.data?.cache.enabled ?? false
+    return this.data?.cache?.enabled ?? false
   }
 
   public get noAuth(): boolean {

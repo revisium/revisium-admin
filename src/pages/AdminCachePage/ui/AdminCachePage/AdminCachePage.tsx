@@ -73,7 +73,7 @@ const KeyMetricRow: FC<KeyMetricRowProps> = ({ keyName, hits, misses, writes, de
         {hits} hits
       </Text>
       <Text fontSize="sm" color="gray.600" minWidth="80px" textAlign="right">
-        {misses} miss
+        {misses} misses
       </Text>
       <Text fontSize="sm" color="gray.600" minWidth="80px" textAlign="right">
         {writes} writes

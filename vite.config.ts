@@ -34,13 +34,29 @@ export default function viteConfig({ mode }) {
       },
     },
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-            'vendor-mobx': ['mobx', 'mobx-react-lite', 'mobx-utils'],
-            'vendor-chakra': ['@chakra-ui/react', '@emotion/react'],
-            'vendor-graphql': ['graphql', 'graphql-request'],
+          manualChunks(id) {
+            if (
+              id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/react-router-dom/')
+            ) {
+              return 'vendor-react'
+            }
+            if (
+              id.includes('node_modules/mobx/') ||
+              id.includes('node_modules/mobx-react-lite/') ||
+              id.includes('node_modules/mobx-utils/')
+            ) {
+              return 'vendor-mobx'
+            }
+            if (id.includes('node_modules/@chakra-ui/react/') || id.includes('node_modules/@emotion/react/')) {
+              return 'vendor-chakra'
+            }
+            if (id.includes('node_modules/graphql/') || id.includes('node_modules/graphql-request/')) {
+              return 'vendor-graphql'
+            }
           },
         },
       },

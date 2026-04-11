@@ -10,8 +10,15 @@ export const LogoutPage: FC = observer(() => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    model.logout()
-    navigate(`/${LOGIN_ROUTE}`)
+    let cancelled = false
+    void model.logout().finally(() => {
+      if (!cancelled) {
+        navigate(`/${LOGIN_ROUTE}`)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
   }, [model, navigate])
 
   return null

@@ -11,8 +11,14 @@ export const checkAuthOrPublic = async (_args: LoaderFunctionArgs) => {
 
   if (!authService.user) {
     if (configurationService.noAuth) {
-      const result = await client.login({ data: { emailOrUsername: 'admin', password: '' } })
-      await authService.setToken(result.login.accessToken)
+      try {
+        const result = await client.login({ data: { emailOrUsername: 'admin', password: '' } })
+        authService.setBearerToken(result.login.accessToken)
+        await authService.afterLogin()
+      } catch (e) {
+        console.error('noAuth bootstrap failed', e)
+        authService.setBearerToken(null)
+      }
       return true
     }
 

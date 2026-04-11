@@ -35,7 +35,7 @@ export class LoginGithubViewModel implements IViewModel {
         },
       })
 
-      await this.authService.setToken(result.loginGithub.accessToken)
+      await this.authService.afterLogin(result.loginGithub.accessToken)
 
       return true
     } catch (e) {

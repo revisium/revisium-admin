@@ -38,9 +38,8 @@ export class FileService {
 
     return fetch(signedUrl, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.authService.token}`,
-      },
+      credentials: 'include',
+      headers: this.authService.token ? { Authorization: `Bearer ${this.authService.token}` } : {},
       body: formData,
     })
   }

@@ -12,7 +12,7 @@ export class OrganizationContext {
   }
 
   public get organizationId(): string {
-    return this.routerParams.organizationId ?? ''
+    return this.routerParams.organizationId ?? this.authService.user?.organizationId ?? ''
   }
 
   public get isAuthenticated(): boolean {

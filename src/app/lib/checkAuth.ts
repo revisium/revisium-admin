@@ -11,10 +11,15 @@ export const checkAuth = async ({ request }: LoaderFunctionArgs) => {
 
   if (!authService.user) {
     if (configurationService.noAuth) {
-      const result = await client.login({ data: { emailOrUsername: 'admin', password: '' } })
-      authService.setBearerToken(result.login.accessToken)
-      await authService.afterLogin()
-      return true
+      try {
+        const result = await client.login({ data: { emailOrUsername: 'admin', password: '' } })
+        authService.setBearerToken(result.login.accessToken)
+        await authService.afterLogin()
+        return true
+      } catch (e) {
+        console.error('noAuth bootstrap failed', e)
+        authService.setBearerToken(null)
+      }
     }
 
     const url = new URL(request.url)

@@ -4,8 +4,12 @@ import type { PermissionService, SystemPermissions } from 'src/shared/model/Abil
 
 const SESSION_COOKIE_NAME = 'rev_session'
 
+let originalDocumentDescriptor: PropertyDescriptor | undefined
+let originalFetchDescriptor: PropertyDescriptor | undefined
+
 function installDocumentCookie(initial = ''): { set(value: string): void } {
   let current = initial
+  originalDocumentDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'document')
   Object.defineProperty(globalThis, 'document', {
     configurable: true,
     writable: true,
@@ -25,9 +29,19 @@ function installDocumentCookie(initial = ''): { set(value: string): void } {
   }
 }
 
-function uninstallDocumentCookie(): void {
-  // biome-ignore lint: explicit teardown
-  delete (globalThis as { document?: unknown }).document
+function restoreGlobals(): void {
+  if (originalDocumentDescriptor) {
+    Object.defineProperty(globalThis, 'document', originalDocumentDescriptor)
+  } else {
+    delete (globalThis as { document?: unknown }).document
+  }
+  if (originalFetchDescriptor) {
+    Object.defineProperty(globalThis, 'fetch', originalFetchDescriptor)
+  } else {
+    delete (globalThis as { fetch?: unknown }).fetch
+  }
+  originalDocumentDescriptor = undefined
+  originalFetchDescriptor = undefined
 }
 
 function makeApiService(getMe: jest.Mock): ApiService {
@@ -68,6 +82,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     cookieStore = installDocumentCookie('')
 
+    originalFetchDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'fetch')
     fetchMock = jest.fn()
     Object.defineProperty(globalThis, 'fetch', {
       value: fetchMock,
@@ -77,7 +92,7 @@ describe('AuthService', () => {
   })
 
   afterEach(() => {
-    uninstallDocumentCookie()
+    restoreGlobals()
     jest.clearAllMocks()
   })
 

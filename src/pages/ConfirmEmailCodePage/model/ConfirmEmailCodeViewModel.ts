@@ -38,7 +38,7 @@ export class ConfirmEmailCodeViewModel implements IViewModel {
           code,
         },
       })
-      await this.authService.setToken(result.confirmEmailCode.accessToken)
+      await this.authService.afterLogin(result.confirmEmailCode.accessToken)
       return true
     } catch (e) {
       console.error(e)

@@ -70,7 +70,7 @@ export class LoginViewModel implements IViewModel {
 
     try {
       const result = await loginRequest({ data: this.form.values })
-      await this.authService.setToken(result.login.accessToken)
+      await this.authService.afterLogin(result.login.accessToken)
       return true
     } catch (e) {
       console.error(e)

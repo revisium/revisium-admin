@@ -37,7 +37,7 @@ export class LoginGoogleViewModel implements IViewModel {
         },
       })
 
-      await this.authService.setToken(result.loginGoogle.accessToken)
+      await this.authService.afterLogin(result.loginGoogle.accessToken)
 
       return true
     } catch (e) {

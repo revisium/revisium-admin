@@ -12,9 +12,9 @@ export class LogoutViewModel implements IViewModel {
     makeAutoObservable(this)
   }
 
-  public logout() {
-    this.authService.logout()
+  public async logout(): Promise<void> {
     this.projectContext.clear()
+    await this.authService.logout()
   }
 
   dispose(): void {}

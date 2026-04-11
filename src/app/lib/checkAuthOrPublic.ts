@@ -12,7 +12,8 @@ export const checkAuthOrPublic = async (_args: LoaderFunctionArgs) => {
   if (!authService.user) {
     if (configurationService.noAuth) {
       const result = await client.login({ data: { emailOrUsername: 'admin', password: '' } })
-      await authService.setToken(result.login.accessToken)
+      authService.setBearerToken(result.login.accessToken)
+      await authService.afterLogin()
       return true
     }
 

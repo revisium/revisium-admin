@@ -1,19 +1,26 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container, copyToClipboard } from 'src/shared/lib'
-import { AuthService } from 'src/shared/model'
+import { ApiService } from 'src/shared/model/ApiService.ts'
 
 export class GetTokenPageViewModel implements IViewModel {
-  constructor(private readonly authService: AuthService) {
+  private _accessToken: string | null = null
+  private _loading = false
+
+  constructor(private readonly apiService: ApiService) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
   public get hasAccessToken(): boolean {
-    return Boolean(this.authService.token)
+    return Boolean(this._accessToken)
   }
 
   public get accessToken(): string {
-    return this.authService.token || ''
+    return this._accessToken || ''
+  }
+
+  public get loading(): boolean {
+    return this._loading
   }
 
   public get truncatedToken(): string {
@@ -23,25 +30,49 @@ export class GetTokenPageViewModel implements IViewModel {
   }
 
   public async copyAccessToken(): Promise<boolean> {
-    if (!this.authService.token) return false
+    if (!this._accessToken) return false
     try {
-      await copyToClipboard(this.authService.token)
+      await copyToClipboard(this._accessToken)
       return true
     } catch {
       return false
     }
   }
 
-  public init(): void {}
+  public init(): void {
+    void this.fetchAccessToken()
+  }
 
-  public dispose(): void {}
+  public dispose(): void {
+    this._accessToken = null
+  }
+
+  private async fetchAccessToken(): Promise<void> {
+    runInAction(() => {
+      this._loading = true
+    })
+    try {
+      const result = await this.apiService.client.issueAccessToken()
+      runInAction(() => {
+        this._accessToken = result.issueAccessToken.accessToken
+      })
+    } catch {
+      runInAction(() => {
+        this._accessToken = null
+      })
+    } finally {
+      runInAction(() => {
+        this._loading = false
+      })
+    }
+  }
 }
 
 container.register(
   GetTokenPageViewModel,
   () => {
-    const authService = container.get(AuthService)
-    return new GetTokenPageViewModel(authService)
+    const apiService = container.get(ApiService)
+    return new GetTokenPageViewModel(apiService)
   },
   { scope: 'request' },
 )

@@ -25,6 +25,16 @@ export const GetTokenPage = observer(() => {
     navigate(ROOT_ROUTE)
   }, [navigate])
 
+  if (model.loading) {
+    return (
+      <Page hideSidebar>
+        <Flex alignItems="center" justifyContent="center" flex={1}>
+          <Text color="newGray.400">Loading access token...</Text>
+        </Flex>
+      </Page>
+    )
+  }
+
   if (!model.hasAccessToken) {
     return (
       <Page hideSidebar>

@@ -144,8 +144,7 @@ type CacheMetricModel {
 }
 
 type CacheStatsModel {
-  byKey: [CacheMetricModel!]!
-  enabled: Boolean!
+  byCategory: [CacheMetricModel!]!
   overallHitRate: Float!
   totalClears: Int!
   totalDeletes: Int!
@@ -655,6 +654,7 @@ input LoginInput {
 
 type LoginModel {
   accessToken: String!
+  expiresIn: Int!
 }
 
 type MeModel {
@@ -903,6 +903,7 @@ type Query {
   configuration: ConfigurationModel!
   getRowCountForeignKeysTo(data: GetRowCountForeignKeysByInput!): Int!
     @deprecated(reason: "use RowModel.rowForeignKeysBy.totalCount")
+  issueAccessToken: LoginModel!
   me: MeModel!
   meProjects(data: GetMeProjectsInput!): ProjectsConnection!
   myApiKeys: [ApiKeyModel!]!

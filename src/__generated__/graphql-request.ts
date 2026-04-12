@@ -163,7 +163,6 @@ export type CacheMetricModel = {
 
 export type CacheStatsModel = {
   byCategory: Array<CacheMetricModel>
-  enabled: Scalars['Boolean']['output']
   overallHitRate: Scalars['Float']['output']
   totalClears: Scalars['Int']['output']
   totalDeletes: Scalars['Int']['output']
@@ -654,6 +653,7 @@ export type LoginInput = {
 
 export type LoginModel = {
   accessToken: Scalars['String']['output']
+  expiresIn: Scalars['Int']['output']
 }
 
 export type MeModel = {
@@ -1086,6 +1086,7 @@ export type Query = {
   configuration: ConfigurationModel
   /** @deprecated use RowModel.rowForeignKeysBy.totalCount */
   getRowCountForeignKeysTo: Scalars['Int']['output']
+  issueAccessToken: LoginModel
   me: MeModel
   meProjects: ProjectsConnection
   myApiKeys: Array<ApiKeyModel>
@@ -2924,6 +2925,10 @@ export type DeleteEndpointMutationVariables = Exact<{
 }>
 
 export type DeleteEndpointMutation = { deleteEndpoint: boolean }
+
+export type IssueAccessTokenQueryVariables = Exact<{ [key: string]: never }>
+
+export type IssueAccessTokenQuery = { issueAccessToken: { accessToken: string } }
 
 export type LoginGithubMutationVariables = Exact<{
   data: LoginGithubInput
@@ -5284,6 +5289,13 @@ export const DeleteEndpointDocument = gql`
     deleteEndpoint(data: $data)
   }
 `
+export const IssueAccessTokenDocument = gql`
+  query issueAccessToken {
+    issueAccessToken {
+      accessToken
+    }
+  }
+`
 export const LoginGithubDocument = gql`
   mutation loginGithub($data: LoginGithubInput!) {
     loginGithub(data: $data) {
@@ -6618,6 +6630,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
           }),
         'deleteEndpoint',
         'mutation',
+        variables,
+      )
+    },
+    issueAccessToken(
+      variables?: IssueAccessTokenQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<IssueAccessTokenQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<IssueAccessTokenQuery>(IssueAccessTokenDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'issueAccessToken',
+        'query',
         variables,
       )
     },

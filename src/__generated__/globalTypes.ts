@@ -169,8 +169,7 @@ export type CacheMetricModel = {
 
 export type CacheStatsModel = {
   __typename: 'CacheStatsModel'
-  byKey: Array<CacheMetricModel>
-  enabled: Scalars['Boolean']['output']
+  byCategory: Array<CacheMetricModel>
   overallHitRate: Scalars['Float']['output']
   totalClears: Scalars['Int']['output']
   totalDeletes: Scalars['Int']['output']
@@ -680,6 +679,7 @@ export type LoginInput = {
 export type LoginModel = {
   __typename: 'LoginModel'
   accessToken: Scalars['String']['output']
+  expiresIn: Scalars['Int']['output']
 }
 
 export type MeModel = {
@@ -1129,6 +1129,7 @@ export type Query = {
   configuration: ConfigurationModel
   /** @deprecated use RowModel.rowForeignKeysBy.totalCount */
   getRowCountForeignKeysTo: Scalars['Int']['output']
+  issueAccessToken: LoginModel
   me: MeModel
   meProjects: ProjectsConnection
   myApiKeys: Array<ApiKeyModel>

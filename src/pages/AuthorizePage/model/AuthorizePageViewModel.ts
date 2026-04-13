@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { AuthService } from 'src/shared/model'
+import { ApiService } from 'src/shared/model/ApiService.ts'
 
 interface OAuthParams {
   clientId: string
@@ -22,7 +23,10 @@ export class AuthorizePageViewModel implements IViewModel {
   private _redirectUri: string | null = null
   private _redirectTimer: ReturnType<typeof setTimeout> | null = null
 
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly apiService: ApiService,
+  ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -59,7 +63,9 @@ export class AuthorizePageViewModel implements IViewModel {
     if (!this._oauthParams) return
     if (this._isAuthorizing || this._isAuthorized) return
 
-    if (!this.authService.token) {
+    const accessToken = await this.ensureAccessToken()
+
+    if (!accessToken) {
       this._authorizeError = 'Please sign in to authorize'
       return
     }
@@ -72,7 +78,7 @@ export class AuthorizePageViewModel implements IViewModel {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.authService.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           client_id: this._oauthParams.clientId,
@@ -145,13 +151,29 @@ export class AuthorizePageViewModel implements IViewModel {
       clearTimeout(this._redirectTimer)
     }
   }
+
+  private async ensureAccessToken(): Promise<string | null> {
+    if (this.authService.token) {
+      return this.authService.token
+    }
+
+    try {
+      const result = await this.apiService.client.issueAccessToken()
+      const accessToken = result.issueAccessToken.accessToken
+      this.authService.setBearerToken(accessToken)
+      return accessToken
+    } catch {
+      return null
+    }
+  }
 }
 
 container.register(
   AuthorizePageViewModel,
   () => {
     const authService = container.get(AuthService)
-    return new AuthorizePageViewModel(authService)
+    const apiService = container.get(ApiService)
+    return new AuthorizePageViewModel(authService, apiService)
   },
   { scope: 'request' },
 )

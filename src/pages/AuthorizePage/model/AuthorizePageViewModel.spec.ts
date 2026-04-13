@@ -56,10 +56,7 @@ describe('AuthorizePageViewModel', () => {
     } as Response)
     globalThis.fetch = fetchMock
 
-    const model = new AuthorizePageViewModel(
-      authService as never,
-      apiService as never,
-    )
+    const model = new AuthorizePageViewModel(authService as never, apiService as never)
     activeModel = model
 
     model.init()
@@ -93,10 +90,7 @@ describe('AuthorizePageViewModel', () => {
       },
     }
 
-    const model = new AuthorizePageViewModel(
-      authService as never,
-      apiService as never,
-    )
+    const model = new AuthorizePageViewModel(authService as never, apiService as never)
     activeModel = model
 
     model.init()

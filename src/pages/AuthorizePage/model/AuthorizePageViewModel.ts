@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
-import { AuthService } from 'src/shared/model'
 
 interface OAuthParams {
   clientId: string
@@ -22,7 +21,7 @@ export class AuthorizePageViewModel implements IViewModel {
   private _redirectUri: string | null = null
   private _redirectTimer: ReturnType<typeof setTimeout> | null = null
 
-  constructor(private readonly authService: AuthService) {
+  constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
   }
 
@@ -59,20 +58,16 @@ export class AuthorizePageViewModel implements IViewModel {
     if (!this._oauthParams) return
     if (this._isAuthorizing || this._isAuthorized) return
 
-    if (!this.authService.token) {
-      this._authorizeError = 'Please sign in to authorize'
-      return
-    }
-
-    this._isAuthorizing = true
-    this._authorizeError = null
+    runInAction(() => {
+      this._isAuthorizing = true
+      this._authorizeError = null
+    })
 
     try {
       const response = await fetch('/oauth/authorize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.authService.token}`,
         },
         body: JSON.stringify({
           client_id: this._oauthParams.clientId,
@@ -147,11 +142,4 @@ export class AuthorizePageViewModel implements IViewModel {
   }
 }
 
-container.register(
-  AuthorizePageViewModel,
-  () => {
-    const authService = container.get(AuthService)
-    return new AuthorizePageViewModel(authService)
-  },
-  { scope: 'request' },
-)
+container.register(AuthorizePageViewModel, () => new AuthorizePageViewModel(), { scope: 'request' })

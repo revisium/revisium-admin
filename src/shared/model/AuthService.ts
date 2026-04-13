@@ -77,6 +77,12 @@ export class AuthService {
     this.apiService.setToken(token)
   }
 
+  public setInMemoryToken(token: string | null): void {
+    runInAction(() => {
+      this.token = token
+    })
+  }
+
   public async logout(): Promise<void> {
     try {
       await fetch(LOGOUT_URL, {

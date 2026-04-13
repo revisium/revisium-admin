@@ -37,10 +37,10 @@ describe('AuthorizePageViewModel', () => {
   })
 
   it('uses issueAccessToken when the session exists but the in-memory token is missing', async () => {
-    const setBearerToken = jest.fn()
+    const setInMemoryToken = jest.fn()
     const authService = {
       token: null,
-      setBearerToken,
+      setInMemoryToken,
     }
     const issueAccessToken = jest.fn().mockResolvedValue({
       issueAccessToken: { accessToken: 'jwt-from-session' },
@@ -66,7 +66,7 @@ describe('AuthorizePageViewModel', () => {
     await model.approve()
 
     expect(issueAccessToken).toHaveBeenCalledTimes(1)
-    expect(setBearerToken).toHaveBeenCalledWith('jwt-from-session')
+    expect(setInMemoryToken).toHaveBeenCalledWith('jwt-from-session')
     expect(fetchMock).toHaveBeenCalledWith(
       '/oauth/authorize',
       expect.objectContaining({
@@ -81,9 +81,11 @@ describe('AuthorizePageViewModel', () => {
   })
 
   it('shows the existing sign-in error when issueAccessToken fails', async () => {
+    const fetchMock = jest.fn()
+    globalThis.fetch = fetchMock
     const authService = {
       token: null,
-      setBearerToken: jest.fn(),
+      setInMemoryToken: jest.fn(),
     }
     const apiService = {
       client: {
@@ -102,5 +104,6 @@ describe('AuthorizePageViewModel', () => {
 
     expect(model.authorizeError).toBe('Please sign in to authorize')
     expect(model.isAuthorized).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

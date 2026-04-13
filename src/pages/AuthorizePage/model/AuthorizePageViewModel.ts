@@ -63,15 +63,20 @@ export class AuthorizePageViewModel implements IViewModel {
     if (!this._oauthParams) return
     if (this._isAuthorizing || this._isAuthorized) return
 
+    runInAction(() => {
+      this._isAuthorizing = true
+      this._authorizeError = null
+    })
+
     const accessToken = await this.ensureAccessToken()
 
     if (!accessToken) {
-      this._authorizeError = 'Please sign in to authorize'
+      runInAction(() => {
+        this._authorizeError = 'Please sign in to authorize'
+        this._isAuthorizing = false
+      })
       return
     }
-
-    this._isAuthorizing = true
-    this._authorizeError = null
 
     try {
       const response = await fetch('/oauth/authorize', {
@@ -160,7 +165,7 @@ export class AuthorizePageViewModel implements IViewModel {
     try {
       const result = await this.apiService.client.issueAccessToken()
       const accessToken = result.issueAccessToken.accessToken
-      this.authService.setBearerToken(accessToken)
+      this.authService.setInMemoryToken(accessToken)
       return accessToken
     } catch {
       return null

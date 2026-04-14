@@ -228,6 +228,21 @@ describe('CreateEndpointDialogViewModel', () => {
 
       expect(vm.canCreate).toBe(false)
     })
+
+    it('should return false when endpoint limit is reached', () => {
+      const vm = new CreateEndpointDialogViewModel(
+        createMockContext() as never,
+        createMockDataSource(),
+        createMockBranches(),
+        jest.fn(),
+        () => true,
+        () => 'Limit reached',
+      )
+
+      expect(vm.canCreate).toBe(false)
+      expect(vm.endpointLimitReached).toBe(true)
+      expect(vm.endpointLimitMessage).toBe('Limit reached')
+    })
   })
 
   describe('hasNoCustomRevisions', () => {

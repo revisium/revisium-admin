@@ -74,6 +74,10 @@ export class PlanItemViewModel {
     return formatLimitStorage(this.plan.limits.storageBytes)
   }
 
+  public get endpointsPerProjectLimit(): string {
+    return formatLimitNumber(this.plan.limits.endpointsPerProject)
+  }
+
   public async handleClick(): Promise<void> {
     if (this.canUpgrade) {
       if (this.earlyAccessAvailable) {

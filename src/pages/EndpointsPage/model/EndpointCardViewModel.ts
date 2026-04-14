@@ -23,12 +23,26 @@ export interface EndpointCardDependencies {
   copyToClipboard: (text: string) => Promise<void>
 }
 
+export interface EndpointLimitDependencies {
+  isCreationLocked: () => boolean
+  getCreationLockedReason: () => string | null
+}
+
 const defaultDependencies: EndpointCardDependencies = {
   urlBuilder: new EndpointUrlBuilder(),
   copyToClipboard,
 }
 
-export type EndpointCardViewModelFactoryFn = (data: EndpointCardData, onChanged: () => void) => EndpointCardViewModel
+const defaultLimitDependencies: EndpointLimitDependencies = {
+  isCreationLocked: () => false,
+  getCreationLockedReason: () => null,
+}
+
+export type EndpointCardViewModelFactoryFn = (
+  data: EndpointCardData,
+  onChanged: () => void,
+  limitDeps?: EndpointLimitDependencies,
+) => EndpointCardViewModel
 
 export class EndpointCardViewModelFactory {
   constructor(public readonly create: EndpointCardViewModelFactoryFn) {}
@@ -47,6 +61,7 @@ export class EndpointCardViewModel {
     private readonly data: EndpointCardData,
     private readonly onChanged: () => void,
     private readonly deps: EndpointCardDependencies = defaultDependencies,
+    private readonly limitDeps: EndpointLimitDependencies = defaultLimitDependencies,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
     this._endpointId = data.endpointId
@@ -104,11 +119,23 @@ export class EndpointCardViewModel {
   }
 
   public get canCreate(): boolean {
-    return this.projectPermissions.canCreateEndpoint
+    return this.projectPermissions.canCreateEndpoint && !this.isCreationLocked
   }
 
   public get canDelete(): boolean {
     return this.projectPermissions.canDeleteEndpoint
+  }
+
+  public get isCreationLocked(): boolean {
+    return this.limitDeps.isCreationLocked()
+  }
+
+  public get creationLockedReason(): string | null {
+    return this.limitDeps.getCreationLockedReason()
+  }
+
+  public get isLockedDisabled(): boolean {
+    return !this.isEnabled && this.isCreationLocked
   }
 
   public get graphqlUrl(): string {
@@ -143,7 +170,7 @@ export class EndpointCardViewModel {
   }
 
   public async enable(): Promise<void> {
-    if (this._isCreating || this._endpointId) {
+    if (this._isCreating || this._endpointId || this.isCreationLocked) {
       return
     }
 
@@ -203,11 +230,19 @@ export class EndpointCardViewModel {
 container.register(
   EndpointCardViewModelFactory,
   () => {
-    return new EndpointCardViewModelFactory((data, onChanged) => {
+    return new EndpointCardViewModelFactory((data, onChanged, limitDeps = defaultLimitDependencies) => {
       const context = container.get(ProjectContext)
       const projectPermissions = container.get(ProjectPermissions)
       const dataSource = container.get(EndpointsDataSource)
-      return new EndpointCardViewModel(context, projectPermissions, dataSource, data, onChanged)
+      return new EndpointCardViewModel(
+        context,
+        projectPermissions,
+        dataSource,
+        data,
+        onChanged,
+        defaultDependencies,
+        limitDeps,
+      )
     })
   },
   { scope: 'request' },

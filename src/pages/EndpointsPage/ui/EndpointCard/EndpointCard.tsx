@@ -34,6 +34,9 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
   }, [])
 
   const tooltipContent = model.revisionType === 'draft' ? DRAFT_TOOLTIP : HEAD_TOOLTIP
+  const switchDisabled =
+    model.isLoading || (!model.canCreate && !model.isEnabled) || (!model.canDelete && model.isEnabled)
+  const switchTooltip = model.isLockedDisabled ? model.creationLockedReason : null
 
   return (
     <Box
@@ -90,48 +93,48 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
             />
           </HStack>
 
-          {(model.canCreate || model.canDelete) && (
-            <Popover.Root
-              open={isDisablePopoverOpen}
-              onOpenChange={(e) => setIsDisablePopoverOpen(e.open)}
-              positioning={{ placement: 'bottom-end' }}
-            >
-              <Popover.Anchor>
-                <Switch.Root
-                  size="sm"
-                  checked={model.isEnabled}
-                  disabled={
-                    model.isLoading || (!model.canCreate && !model.isEnabled) || (!model.canDelete && model.isEnabled)
-                  }
-                  onCheckedChange={handleToggle}
-                >
-                  <Switch.HiddenInput />
-                  <Switch.Control />
-                </Switch.Root>
-              </Popover.Anchor>
-              <Portal>
-                <Popover.Positioner>
-                  <Popover.Content maxWidth="280px">
-                    <Popover.Arrow>
-                      <Popover.ArrowTip />
-                    </Popover.Arrow>
-                    <Popover.Body>
-                      <Text fontSize="sm" mb={3}>
-                        Are you sure? This endpoint will be disabled and API consumers will lose access.
-                      </Text>
-                      <HStack justify="flex-end" gap={2}>
-                        <Button size="xs" variant="ghost" onClick={handleDisableCancel}>
-                          Cancel
-                        </Button>
-                        <Button size="xs" colorPalette="red" onClick={handleDisableConfirm}>
-                          Disable
-                        </Button>
-                      </HStack>
-                    </Popover.Body>
-                  </Popover.Content>
-                </Popover.Positioner>
-              </Portal>
-            </Popover.Root>
+          {(model.canCreate || model.canDelete || model.isLockedDisabled) && (
+            <Tooltip content={switchTooltip ?? ''} disabled={!switchTooltip}>
+              <Popover.Root
+                open={isDisablePopoverOpen}
+                onOpenChange={(e) => setIsDisablePopoverOpen(e.open)}
+                positioning={{ placement: 'bottom-end' }}
+              >
+                <Popover.Anchor>
+                  <Switch.Root
+                    size="sm"
+                    checked={model.isEnabled}
+                    disabled={switchDisabled}
+                    onCheckedChange={handleToggle}
+                  >
+                    <Switch.HiddenInput />
+                    <Switch.Control />
+                  </Switch.Root>
+                </Popover.Anchor>
+                <Portal>
+                  <Popover.Positioner>
+                    <Popover.Content maxWidth="280px">
+                      <Popover.Arrow>
+                        <Popover.ArrowTip />
+                      </Popover.Arrow>
+                      <Popover.Body>
+                        <Text fontSize="sm" mb={3}>
+                          Are you sure? This endpoint will be disabled and API consumers will lose access.
+                        </Text>
+                        <HStack justify="flex-end" gap={2}>
+                          <Button size="xs" variant="ghost" onClick={handleDisableCancel}>
+                            Cancel
+                          </Button>
+                          <Button size="xs" colorPalette="red" onClick={handleDisableConfirm}>
+                            Disable
+                          </Button>
+                        </HStack>
+                      </Popover.Body>
+                    </Popover.Content>
+                  </Popover.Positioner>
+                </Portal>
+              </Popover.Root>
+            </Tooltip>
           )}
         </HStack>
       </Flex>

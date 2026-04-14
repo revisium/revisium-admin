@@ -59,6 +59,12 @@ query getProjectEndpoints(
   $branchId: String
   $type: EndpointType
 ) {
+  project(data: { organizationId: $organizationId, projectName: $projectName }) {
+    id
+    endpointUsage {
+      ...UsageMetric
+    }
+  }
   projectEndpoints(
     data: {
       organizationId: $organizationId

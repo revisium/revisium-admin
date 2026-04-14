@@ -2,13 +2,18 @@ import { makeAutoObservable } from 'mobx'
 import { container } from 'src/shared/lib'
 import { EndpointType } from 'src/__generated__/graphql-request'
 import { BranchWithRevisions } from '../api/EndpointsDataSource.ts'
-import { EndpointCardViewModel, EndpointCardViewModelFactory } from './EndpointCardViewModel.ts'
+import {
+  EndpointCardViewModel,
+  EndpointCardViewModelFactory,
+  EndpointLimitDependencies,
+} from './EndpointCardViewModel.ts'
 
 export type BranchEndpointsViewModelFactoryFn = (
   branch: BranchWithRevisions,
   endpointType: EndpointType,
   draftEndpointId: string | null,
   headEndpointId: string | null,
+  limitDeps: EndpointLimitDependencies,
   onChanged: () => void,
 ) => BranchEndpointsViewModel
 
@@ -26,6 +31,7 @@ export class BranchEndpointsViewModel {
     endpointType: EndpointType,
     draftEndpointId: string | null,
     headEndpointId: string | null,
+    limitDeps: EndpointLimitDependencies,
     onChanged: () => void,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
@@ -41,6 +47,7 @@ export class BranchEndpointsViewModel {
         endpointId: draftEndpointId,
       },
       onChanged,
+      limitDeps,
     )
 
     this.headCard = endpointCardFactory.create(
@@ -54,6 +61,7 @@ export class BranchEndpointsViewModel {
         endpointId: headEndpointId,
       },
       onChanged,
+      limitDeps,
     )
   }
 
@@ -73,17 +81,20 @@ export class BranchEndpointsViewModel {
 container.register(
   BranchEndpointsViewModelFactory,
   () => {
-    return new BranchEndpointsViewModelFactory((branch, endpointType, draftEndpointId, headEndpointId, onChanged) => {
-      const endpointCardFactory = container.get(EndpointCardViewModelFactory)
-      return new BranchEndpointsViewModel(
-        endpointCardFactory,
-        branch,
-        endpointType,
-        draftEndpointId,
-        headEndpointId,
-        onChanged,
-      )
-    })
+    return new BranchEndpointsViewModelFactory(
+      (branch, endpointType, draftEndpointId, headEndpointId, limitDeps, onChanged) => {
+        const endpointCardFactory = container.get(EndpointCardViewModelFactory)
+        return new BranchEndpointsViewModel(
+          endpointCardFactory,
+          branch,
+          endpointType,
+          draftEndpointId,
+          headEndpointId,
+          limitDeps,
+          onChanged,
+        )
+      },
+    )
   },
   { scope: 'request' },
 )

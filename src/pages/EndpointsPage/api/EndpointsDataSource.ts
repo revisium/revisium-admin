@@ -6,6 +6,7 @@ import {
   EndpointBranchFragment,
   EndpointFragment,
   EndpointType,
+  UsageMetricFragment,
 } from 'src/__generated__/graphql-request'
 
 export interface CreateEndpointInput {
@@ -27,6 +28,7 @@ export interface EndpointsResult {
   hasNextPage: boolean
   endCursor: string | null
   totalCount: number
+  endpointUsage: UsageMetricFragment | null
 }
 
 export interface BranchWithRevisions {
@@ -125,6 +127,7 @@ export class EndpointsDataSource {
       hasNextPage: result.data.projectEndpoints.pageInfo.hasNextPage,
       endCursor: result.data.projectEndpoints.pageInfo.endCursor ?? null,
       totalCount: result.data.projectEndpoints.totalCount,
+      endpointUsage: result.data.project.endpointUsage ?? null,
     }
   }
 

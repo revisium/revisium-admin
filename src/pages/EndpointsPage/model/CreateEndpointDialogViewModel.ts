@@ -14,6 +14,8 @@ interface RevisionOption {
 
 export type CreateEndpointDialogViewModelFactoryFn = (
   branches: BranchWithRevisions[],
+  isCreationLocked: () => boolean,
+  getCreationLockedReason: () => string | null,
   onCreated: () => void,
 ) => CreateEndpointDialogViewModel
 
@@ -36,7 +38,9 @@ export class CreateEndpointDialogViewModel {
     private readonly context: ProjectContext,
     private readonly dataSource: EndpointsDataSource,
     private readonly branches: BranchWithRevisions[],
-    private readonly onCreated: () => void,
+    private readonly onCreated: () => void = () => undefined,
+    private readonly isCreationLocked: () => boolean = () => false,
+    private readonly getCreationLockedReason: () => string | null = () => null,
   ) {
     makeAutoObservable(this, {}, { autoBind: true })
   }
@@ -89,7 +93,7 @@ export class CreateEndpointDialogViewModel {
   }
 
   public get canCreate(): boolean {
-    if (!this._selectedRevisionId || this._isCreating) {
+    if (!this._selectedRevisionId || this._isCreating || this.endpointLimitReached) {
       return false
     }
 
@@ -114,6 +118,14 @@ export class CreateEndpointDialogViewModel {
       return revision.hasGraphql
     }
     return revision.hasRestApi
+  }
+
+  public get endpointLimitReached(): boolean {
+    return this.isCreationLocked()
+  }
+
+  public get endpointLimitMessage(): string | null {
+    return this.getCreationLockedReason()
   }
 
   public open(): void {
@@ -222,11 +234,20 @@ export class CreateEndpointDialogViewModel {
 container.register(
   CreateEndpointDialogViewModelFactory,
   () => {
-    return new CreateEndpointDialogViewModelFactory((branches, onCreated) => {
-      const context = container.get(ProjectContext)
-      const dataSource = container.get(EndpointsDataSource)
-      return new CreateEndpointDialogViewModel(context, dataSource, branches, onCreated)
-    })
+    return new CreateEndpointDialogViewModelFactory(
+      (branches, isCreationLocked, getCreationLockedReason, onCreated) => {
+        const context = container.get(ProjectContext)
+        const dataSource = container.get(EndpointsDataSource)
+        return new CreateEndpointDialogViewModel(
+          context,
+          dataSource,
+          branches,
+          onCreated,
+          isCreationLocked,
+          getCreationLockedReason,
+        )
+      },
+    )
   },
   { scope: 'request' },
 )

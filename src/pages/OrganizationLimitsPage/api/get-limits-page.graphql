@@ -25,6 +25,7 @@ fragment LimitsPagePlan on PlanModel {
     projects
     seats
     storageBytes
+    endpointsPerProject
   }
   features
 }
@@ -51,6 +52,9 @@ query getLimitsPageData($data: GetOrganizationInput!) {
         ...UsageMetric
       }
       storageBytes {
+        ...UsageMetric
+      }
+      endpointsPerProject {
         ...UsageMetric
       }
     }

@@ -145,6 +145,7 @@ export class LimitsPageViewModel implements IViewModel {
       new UsageItemViewModel(u.projects, 'Projects', 'number'),
       new UsageItemViewModel(u.seats, 'Members', 'number'),
       new UsageItemViewModel(u.storageBytes, 'Storage', 'storage'),
+      new UsageItemViewModel(u.endpointsPerProject, 'Endpoints / Project', 'number'),
     ]
   }
 

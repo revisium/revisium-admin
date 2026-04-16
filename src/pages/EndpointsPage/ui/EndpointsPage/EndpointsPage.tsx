@@ -1,4 +1,17 @@
-import { Box, Button, Flex, HStack, HoverCard, Icon, Portal, Spinner, Tabs, Text, VStack } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  Flex,
+  HStack,
+  HoverCard,
+  Icon,
+  Portal,
+  Spinner,
+  Tabs,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import { PiInfoLight, PiPlusLight } from 'react-icons/pi'
 import { EndpointsPageViewModel, TabType } from 'src/pages/EndpointsPage/model/EndpointsPageViewModel.ts'
@@ -48,14 +61,35 @@ export const EndpointsPage = observer(() => {
             />
           </HStack>
           {model.canCreateEndpoint && (
-            <Tooltip content="Create endpoint for a specific revision (not just Draft/Head)">
-              <Button size="xs" variant="ghost" color="newGray.400" onClick={model.openCreateDialog}>
+            <Tooltip
+              content={model.endpointLimitMessage ?? 'Create endpoint for a specific revision (not just Draft/Head)'}
+            >
+              <Button
+                size="xs"
+                variant="ghost"
+                color="newGray.400"
+                onClick={model.openCreateDialog}
+                disabled={!model.canOpenCreateDialog}
+              >
                 <PiPlusLight />
                 Add custom
               </Button>
             </Tooltip>
           )}
         </HStack>
+        <HStack gap={2} mb={4}>
+          <Badge colorPalette={model.isEndpointCreationLocked ? 'orange' : 'green'} variant="subtle" size="sm">
+            {model.endpointLimitLabel === 'Unlimited' ? 'Unlimited' : `Limit ${model.endpointLimitLabel}`}
+          </Badge>
+          <Text fontSize="xs" color="newGray.500">
+            Endpoints in this project: {model.endpointUsageLabel}
+          </Text>
+        </HStack>
+        {model.endpointLimitMessage && (
+          <Text fontSize="xs" color="orange.500" mb={4}>
+            {model.endpointLimitMessage}
+          </Text>
+        )}
         <HStack gap={1} mb={6}>
           <Text fontSize="xs" color="newGray.400">
             Auto-generated APIs from your table schemas.

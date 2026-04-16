@@ -25,6 +25,7 @@ fragment LimitsPagePlan on PlanModel {
     projects
     seats
     storageBytes
+    endpointsPerProject
   }
   features
 }

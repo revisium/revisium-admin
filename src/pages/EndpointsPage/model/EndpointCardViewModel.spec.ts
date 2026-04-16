@@ -179,6 +179,25 @@ describe('EndpointCardViewModel', () => {
 
       expect(vm.canDelete).toBe(false)
     })
+
+    it('should block creation when endpoint limit is reached', () => {
+      const vm = new EndpointCardViewModel(
+        createMockContext() as never,
+        createMockProjectPermissions() as never,
+        createMockDataSource(),
+        createMockData(),
+        jest.fn(),
+        { urlBuilder: createMockUrlBuilder(), copyToClipboard: jest.fn() },
+        {
+          isCreationLocked: () => true,
+          getCreationLockedReason: () => 'Limit reached',
+        },
+      )
+
+      expect(vm.canCreate).toBe(false)
+      expect(vm.isLockedDisabled).toBe(true)
+      expect(vm.creationLockedReason).toBe('Limit reached')
+    })
   })
 
   describe('URLs', () => {
@@ -261,6 +280,27 @@ describe('EndpointCardViewModel', () => {
       await vm.enable()
 
       expect(dataSource.createEndpoint).not.toHaveBeenCalled()
+    })
+
+    it('should not create endpoint when endpoint limit is reached', async () => {
+      const dataSource = createMockDataSource()
+      const vm = new EndpointCardViewModel(
+        createMockContext() as never,
+        createMockProjectPermissions() as never,
+        dataSource,
+        createMockData({ endpointId: null }),
+        jest.fn(),
+        { urlBuilder: createMockUrlBuilder(), copyToClipboard: jest.fn() },
+        {
+          isCreationLocked: () => true,
+          getCreationLockedReason: () => 'Limit reached',
+        },
+      )
+
+      await vm.enable()
+
+      expect(dataSource.createEndpoint).not.toHaveBeenCalled()
+      expect(vm.isEnabled).toBe(false)
     })
 
     it('should not create endpoint if already creating', async () => {

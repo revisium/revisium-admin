@@ -2853,6 +2853,7 @@ export type GetProjectEndpointsQueryVariables = Exact<{
 }>
 
 export type GetProjectEndpointsQuery = {
+  project: { id: string; endpointUsage?: { current: number; limit?: number | null; percentage?: number | null } | null }
   projectEndpoints: {
     totalCount: number
     edges: Array<{
@@ -3038,7 +3039,13 @@ export type LimitsPagePlanFragment = {
   monthlyPriceUsd: number
   yearlyPriceUsd: number
   features: { [key: string]: any } | string | number | boolean | null
-  limits: { rowVersions?: number | null; projects?: number | null; seats?: number | null; storageBytes?: number | null }
+  limits: {
+    rowVersions?: number | null
+    projects?: number | null
+    seats?: number | null
+    storageBytes?: number | null
+    endpointsPerProject?: number | null
+  }
 }
 
 export type GetLimitsPageDataQueryVariables = Exact<{
@@ -3082,6 +3089,7 @@ export type GetLimitsPagePlansQuery = {
       projects?: number | null
       seats?: number | null
       storageBytes?: number | null
+      endpointsPerProject?: number | null
     }
   }>
 }
@@ -4391,6 +4399,7 @@ export const LimitsPagePlanFragmentDoc = gql`
       projects
       seats
       storageBytes
+      endpointsPerProject
     }
     features
   }
@@ -5227,6 +5236,12 @@ export const GetProjectEndpointsDocument = gql`
     $branchId: String
     $type: EndpointType
   ) {
+    project(data: { organizationId: $organizationId, projectName: $projectName }) {
+      id
+      endpointUsage {
+        ...UsageMetric
+      }
+    }
     projectEndpoints(
       data: {
         organizationId: $organizationId
@@ -5253,6 +5268,7 @@ export const GetProjectEndpointsDocument = gql`
     }
   }
   ${EndpointFragmentDoc}
+  ${UsageMetricFragmentDoc}
 `
 export const GetBranchRevisionsDocument = gql`
   query getBranchRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {

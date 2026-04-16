@@ -4,7 +4,7 @@ import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { IViewModel } from 'src/shared/config/types.ts'
 import { container } from 'src/shared/lib'
 import { ProjectPermissions } from 'src/shared/model/AbilityService'
-import { EndpointFragment, EndpointType } from 'src/__generated__/graphql-request'
+import { EndpointFragment, EndpointType, UsageMetricFragment } from 'src/__generated__/graphql-request'
 import { BranchWithRevisions, EndpointsDataSource } from '../api/EndpointsDataSource.ts'
 import { BranchEndpointsViewModel, BranchEndpointsViewModelFactory } from './BranchEndpointsViewModel.ts'
 import { CreateEndpointDialogViewModel, CreateEndpointDialogViewModelFactory } from './CreateEndpointDialogViewModel.ts'
@@ -27,6 +27,7 @@ export class EndpointsPageViewModel implements IViewModel {
   private _branchViewModels: BranchEndpointsViewModel[] = []
   private _customEndpointViewModels: CustomEndpointCardViewModel[] = []
   private _createDialogViewModel: CreateEndpointDialogViewModel | null = null
+  private _endpointUsage: UsageMetricFragment | null = null
 
   public readonly systemApi: SystemApiViewModel
 
@@ -122,6 +123,46 @@ export class EndpointsPageViewModel implements IViewModel {
     return this.projectPermissions.canCreateEndpoint
   }
 
+  public get endpointUsage(): UsageMetricFragment | null {
+    return this._endpointUsage
+  }
+
+  public get endpointLimitLabel(): string {
+    const limit = this._endpointUsage?.limit
+    if (limit === null || limit === undefined) {
+      return 'Unlimited'
+    }
+    return String(limit)
+  }
+
+  public get endpointUsageLabel(): string {
+    const current = this._endpointUsage?.current ?? 0
+    const limit = this._endpointUsage?.limit
+    if (limit === null || limit === undefined) {
+      return `${current} used`
+    }
+    return `${current} / ${limit}`
+  }
+
+  public get isEndpointCreationLocked(): boolean {
+    const usage = this._endpointUsage
+    if (!usage || usage.limit === null || usage.limit === undefined) {
+      return false
+    }
+    return usage.current >= usage.limit
+  }
+
+  public get endpointLimitMessage(): string | null {
+    if (!this.isEndpointCreationLocked) {
+      return null
+    }
+    return 'Endpoint limit reached for this project. Upgrade your plan or remove an endpoint to create another one.'
+  }
+
+  public get canOpenCreateDialog(): boolean {
+    return this.canCreateEndpoint && !this.isEndpointCreationLocked
+  }
+
   public get canDeleteEndpoint(): boolean {
     return this.projectPermissions.canDeleteEndpoint
   }
@@ -131,7 +172,16 @@ export class EndpointsPageViewModel implements IViewModel {
   }
 
   public openCreateDialog(): void {
-    this._createDialogViewModel ??= this.createDialogFactory.create(this._branches, this.handleEndpointChanged)
+    if (!this.canOpenCreateDialog) {
+      return
+    }
+
+    this._createDialogViewModel ??= this.createDialogFactory.create(
+      this._branches,
+      () => this.isEndpointCreationLocked,
+      () => this.endpointLimitMessage,
+      this.handleEndpointChanged,
+    )
     this._createDialogViewModel.open()
   }
 
@@ -174,6 +224,7 @@ export class EndpointsPageViewModel implements IViewModel {
 
       this._branches = this.sortBranches(branches)
       this._endpoints = endpointsResult.items
+      this._endpointUsage = endpointsResult.endpointUsage
       this.rebuildViewModels()
       this._state = State.ready
     })
@@ -189,6 +240,7 @@ export class EndpointsPageViewModel implements IViewModel {
     runInAction(() => {
       if (endpointsResult) {
         this._endpoints = endpointsResult.items
+        this._endpointUsage = endpointsResult.endpointUsage
         this.rebuildViewModels()
       }
     })
@@ -222,6 +274,10 @@ export class EndpointsPageViewModel implements IViewModel {
         endpointType,
         draftEndpointId,
         headEndpointId,
+        {
+          isCreationLocked: () => this.isEndpointCreationLocked,
+          getCreationLockedReason: () => this.endpointLimitMessage,
+        },
         this.handleEndpointChanged,
       )
     })

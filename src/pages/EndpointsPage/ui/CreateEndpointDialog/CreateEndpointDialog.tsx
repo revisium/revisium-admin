@@ -101,6 +101,12 @@ export const CreateEndpointDialog: FC<CreateEndpointDialogProps> = observer(({ m
                     endpoint.
                   </Text>
                 )}
+
+                {model.endpointLimitMessage && (
+                  <Text fontSize="sm" color="orange.500">
+                    {model.endpointLimitMessage}
+                  </Text>
+                )}
               </VStack>
             </Dialog.Body>
             <Dialog.Footer>

@@ -46,6 +46,9 @@ export const PlanCard: FC<PlanCardProps> = observer(({ model, parentModel }) => 
           <Text fontSize="xs" color="gray.500">
             {model.storageLimit} storage
           </Text>
+          <Text fontSize="xs" color="gray.500">
+            {model.endpointsPerProjectLimit} endpoints / project
+          </Text>
         </VStack>
         <Button
           size="sm"

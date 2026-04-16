@@ -34,6 +34,9 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
   }, [])
 
   const tooltipContent = model.revisionType === 'draft' ? DRAFT_TOOLTIP : HEAD_TOOLTIP
+  const switchDisabled =
+    model.isLoading || (!model.canCreate && !model.isEnabled) || (!model.canDelete && model.isEnabled)
+  const switchTooltip = model.isLockedDisabled ? model.creationLockedReason : null
 
   return (
     <Box
@@ -90,23 +93,23 @@ export const EndpointCard: FC<EndpointCardProps> = observer(({ model }) => {
             />
           </HStack>
 
-          {(model.canCreate || model.canDelete) && (
+          {(model.canCreate || model.canDelete || model.isLockedDisabled) && (
             <Popover.Root
               open={isDisablePopoverOpen}
               onOpenChange={(e) => setIsDisablePopoverOpen(e.open)}
               positioning={{ placement: 'bottom-end' }}
             >
-              <Popover.Anchor>
+              <Popover.Anchor asChild>
                 <Switch.Root
                   size="sm"
                   checked={model.isEnabled}
-                  disabled={
-                    model.isLoading || (!model.canCreate && !model.isEnabled) || (!model.canDelete && model.isEnabled)
-                  }
+                  disabled={switchDisabled}
                   onCheckedChange={handleToggle}
                 >
                   <Switch.HiddenInput />
-                  <Switch.Control />
+                  <Tooltip content={switchTooltip ?? ''} disabled={!switchTooltip}>
+                    <Switch.Control />
+                  </Tooltip>
                 </Switch.Root>
               </Popover.Anchor>
               <Portal>

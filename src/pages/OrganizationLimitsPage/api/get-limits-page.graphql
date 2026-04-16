@@ -54,9 +54,6 @@ query getLimitsPageData($data: GetOrganizationInput!) {
       storageBytes {
         ...UsageMetric
       }
-      endpointsPerProject {
-        ...UsageMetric
-      }
     }
   }
 }

@@ -3070,7 +3070,6 @@ export type GetLimitsPageDataQuery = {
       projects: { current: number; limit?: number | null; percentage?: number | null }
       seats: { current: number; limit?: number | null; percentage?: number | null }
       storageBytes: { current: number; limit?: number | null; percentage?: number | null }
-      endpointsPerProject: { current: number; limit?: number | null; percentage?: number | null }
     } | null
   }
 }
@@ -5415,9 +5414,6 @@ export const GetLimitsPageDataDocument = gql`
           ...UsageMetric
         }
         storageBytes {
-          ...UsageMetric
-        }
-        endpointsPerProject {
           ...UsageMetric
         }
       }

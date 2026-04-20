@@ -29,7 +29,9 @@ import React from 'react'
 import { PiArrowRightLight, PiCloudLight, PiLockSimpleLight } from 'react-icons/pi'
 import { Link as RouterLink } from 'react-router-dom'
 import { ApiKeyList } from 'src/features/ApiKeyManager'
+import { ProjectFileUsageViewModel } from 'src/pages/ProjectSettingsPage/model/ProjectFileUsageViewModel.ts'
 import { ProjectSettingsPageModel } from 'src/pages/ProjectSettingsPage/model/ProjectSettingsPageModel.ts'
+import { ProjectFileUsagePanel } from 'src/pages/ProjectSettingsPage/ui/ProjectFileUsagePanel/ProjectFileUsagePanel.tsx'
 import { useViewModel } from 'src/shared/lib'
 import { Page } from 'src/shared/ui'
 import { ProjectSidebar } from 'src/widgets/ProjectSidebar/ui/ProjectSidebar/ProjectSidebar.tsx'
@@ -95,6 +97,7 @@ const VisibilityCard: React.FC<VisibilityCardProps> = ({
 
 export const ProjectSettingsPage: React.FC = observer(() => {
   const store = useViewModel(ProjectSettingsPageModel)
+  const fileUsageModel = useViewModel(ProjectFileUsageViewModel)
 
   return (
     <Page sidebar={<ProjectSidebar />}>
@@ -196,6 +199,8 @@ export const ProjectSettingsPage: React.FC = observer(() => {
                 </Box>
               )}
             </Box>
+
+            <ProjectFileUsagePanel model={fileUsageModel} />
 
             {store.hasDeletePermission && (
               <Box>

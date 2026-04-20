@@ -687,6 +687,7 @@ export type Mutation = {
   addUserToOrganization: Scalars['Boolean']['output']
   addUserToProject: Scalars['Boolean']['output']
   adminResetAllCache: Scalars['Boolean']['output']
+  adminRestoreProjectFileBytes: RestoreProjectFileBytesResultModel
   applyMigrations: Array<ApplyMigrationResultModel>
   cancelSubscription: Scalars['Boolean']['output']
   confirmEmailCode: LoginModel
@@ -741,6 +742,10 @@ export type MutationAddUserToOrganizationArgs = {
 
 export type MutationAddUserToProjectArgs = {
   data: AddUserToProjectInput
+}
+
+export type MutationAdminRestoreProjectFileBytesArgs = {
+  data: RestoreProjectFileBytesInput
 }
 
 export type MutationApplyMigrationsArgs = {
@@ -1026,6 +1031,7 @@ export type PermissionModel = {
 export type PlanLimitsModel = {
   apiCallsPerDay?: Maybe<Scalars['Int']['output']>
   branchesPerProject?: Maybe<Scalars['Int']['output']>
+  endpointsPerProject?: Maybe<Scalars['Int']['output']>
   projects?: Maybe<Scalars['Int']['output']>
   rowVersions?: Maybe<Scalars['Int']['output']>
   rowsPerTable?: Maybe<Scalars['Int']['output']>
@@ -1048,9 +1054,19 @@ export type PluginsModel = {
   file: Scalars['Boolean']['output']
 }
 
+export type ProjectFileUsageReportModel = {
+  currentFileBytes: Scalars['String']['output']
+  drift: Scalars['String']['output']
+  expectedFileBytes: Scalars['String']['output']
+  fileBlobCount: Scalars['Int']['output']
+  projectId: Scalars['ID']['output']
+  referenceCount: Scalars['Int']['output']
+}
+
 export type ProjectModel = {
   allBranches: BranchesConnection
   createdAt: Scalars['DateTime']['output']
+  endpointUsage: UsageMetricModel
   id: Scalars['String']['output']
   isPublic: Scalars['Boolean']['output']
   name: Scalars['String']['output']
@@ -1079,6 +1095,7 @@ export type Query = {
   adminCacheStats: CacheStatsModel
   adminUser?: Maybe<UserModel>
   adminUsers: UsersConnection
+  adminValidateProjectFileBytes: ProjectFileUsageReportModel
   apiKeyById: ApiKeyModel
   availableProviders: Array<PaymentProviderModel>
   branch: BranchModel
@@ -1118,6 +1135,10 @@ export type QueryAdminUserArgs = {
 
 export type QueryAdminUsersArgs = {
   data: SearchUsersInput
+}
+
+export type QueryAdminValidateProjectFileBytesArgs = {
+  data: ValidateProjectFileBytesInput
 }
 
 export type QueryApiKeyByIdArgs = {
@@ -1272,6 +1293,19 @@ export type RenameTableResultModel = {
 export type ResetPasswordInput = {
   newPassword: Scalars['String']['input']
   userId: Scalars['String']['input']
+}
+
+export type RestoreProjectFileBytesInput = {
+  dryRun?: InputMaybe<Scalars['Boolean']['input']>
+  projectId: Scalars['ID']['input']
+}
+
+export type RestoreProjectFileBytesResultModel = {
+  drift: Scalars['String']['output']
+  dryRun: Scalars['Boolean']['output']
+  nextFileBytes: Scalars['String']['output']
+  previousFileBytes: Scalars['String']['output']
+  projectId: Scalars['ID']['output']
 }
 
 export type RevertChangesInput = {
@@ -1894,6 +1928,10 @@ export type UsersProjectModel = {
 export type UsersProjectModelEdge = {
   cursor: Scalars['String']['output']
   node: UsersProjectModel
+}
+
+export type ValidateProjectFileBytesInput = {
+  projectId: Scalars['ID']['input']
 }
 
 export type ViewChangeModel = {
@@ -2853,7 +2891,7 @@ export type GetProjectEndpointsQueryVariables = Exact<{
 }>
 
 export type GetProjectEndpointsQuery = {
-  project: { id: string; endpointUsage?: { current: number; limit?: number | null; percentage?: number | null } | null }
+  project: { id: string; endpointUsage: { current: number; limit?: number | null; percentage?: number | null } }
   projectEndpoints: {
     totalCount: number
     edges: Array<{
@@ -3135,6 +3173,35 @@ export type RemoveUserFromOrganizationMutationVariables = Exact<{
 }>
 
 export type RemoveUserFromOrganizationMutation = { removeUserFromOrganization: boolean }
+
+export type AdminValidateProjectFileBytesQueryVariables = Exact<{
+  data: ValidateProjectFileBytesInput
+}>
+
+export type AdminValidateProjectFileBytesQuery = {
+  adminValidateProjectFileBytes: {
+    projectId: string
+    currentFileBytes: string
+    expectedFileBytes: string
+    drift: string
+    fileBlobCount: number
+    referenceCount: number
+  }
+}
+
+export type AdminRestoreProjectFileBytesMutationVariables = Exact<{
+  data: RestoreProjectFileBytesInput
+}>
+
+export type AdminRestoreProjectFileBytesMutation = {
+  adminRestoreProjectFileBytes: {
+    projectId: string
+    previousFileBytes: string
+    nextFileBytes: string
+    drift: string
+    dryRun: boolean
+  }
+}
 
 export type UpdateProjectMutationVariables = Exact<{
   data: UpdateProjectInput
@@ -5267,8 +5334,8 @@ export const GetProjectEndpointsDocument = gql`
       totalCount
     }
   }
-  ${EndpointFragmentDoc}
   ${UsageMetricFragmentDoc}
+  ${EndpointFragmentDoc}
 `
 export const GetBranchRevisionsDocument = gql`
   query getBranchRevisions($data: GetBranchInput!, $revisionsData: GetBranchRevisionsInput!) {
@@ -5458,6 +5525,29 @@ export const AddUserToOrganizationDocument = gql`
 export const RemoveUserFromOrganizationDocument = gql`
   mutation removeUserFromOrganization($organizationId: String!, $userId: String!) {
     removeUserFromOrganization(data: { organizationId: $organizationId, userId: $userId })
+  }
+`
+export const AdminValidateProjectFileBytesDocument = gql`
+  query adminValidateProjectFileBytes($data: ValidateProjectFileBytesInput!) {
+    adminValidateProjectFileBytes(data: $data) {
+      projectId
+      currentFileBytes
+      expectedFileBytes
+      drift
+      fileBlobCount
+      referenceCount
+    }
+  }
+`
+export const AdminRestoreProjectFileBytesDocument = gql`
+  mutation adminRestoreProjectFileBytes($data: RestoreProjectFileBytesInput!) {
+    adminRestoreProjectFileBytes(data: $data) {
+      projectId
+      previousFileBytes
+      nextFileBytes
+      drift
+      dryRun
+    }
   }
 `
 export const UpdateProjectDocument = gql`
@@ -6879,6 +6969,36 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             ...wrappedRequestHeaders,
           }),
         'removeUserFromOrganization',
+        'mutation',
+        variables,
+      )
+    },
+    adminValidateProjectFileBytes(
+      variables: AdminValidateProjectFileBytesQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminValidateProjectFileBytesQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminValidateProjectFileBytesQuery>(AdminValidateProjectFileBytesDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'adminValidateProjectFileBytes',
+        'query',
+        variables,
+      )
+    },
+    adminRestoreProjectFileBytes(
+      variables: AdminRestoreProjectFileBytesMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<AdminRestoreProjectFileBytesMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<AdminRestoreProjectFileBytesMutation>(AdminRestoreProjectFileBytesDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'adminRestoreProjectFileBytes',
         'mutation',
         variables,
       )

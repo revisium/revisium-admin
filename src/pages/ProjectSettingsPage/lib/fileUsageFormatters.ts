@@ -1,16 +1,12 @@
 const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'] as const
 const BYTE_BASE = 1024n
 
-export function parseByteString(value: string): bigint {
-  return BigInt(value)
-}
-
 export function formatExactBytes(value: string): string {
-  return `${parseByteString(value).toLocaleString('en-US')} bytes`
+  return `${BigInt(value).toLocaleString('en-US')} bytes`
 }
 
 export function formatHumanReadableBytes(value: string): string {
-  const bytes = parseByteString(value)
+  const bytes = BigInt(value)
 
   if (bytes === 0n) {
     return '0 B'

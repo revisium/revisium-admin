@@ -6,12 +6,7 @@ import { container, isAborted, ObservableRequest } from 'src/shared/lib'
 import { PermissionService, ProjectPermissions } from 'src/shared/model/AbilityService'
 import { client } from 'src/shared/model/ApiService.ts'
 import { toaster } from 'src/shared/ui'
-import {
-  formatByteValue,
-  formatExactBytes,
-  formatHumanReadableBytes,
-  parseByteString,
-} from '../lib/fileUsageFormatters.ts'
+import { formatByteValue, formatExactBytes, formatHumanReadableBytes } from '../lib/fileUsageFormatters.ts'
 
 function getGraphQLErrorMessage(error: unknown): string {
   if (error instanceof ClientError) {
@@ -141,7 +136,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
   }
 
   public get hasDrift(): boolean {
-    return parseByteString(this.drift) !== 0n
+    return BigInt(this.drift) !== 0n
   }
 
   public get canRestore(): boolean {
@@ -161,7 +156,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
   }
 
   public get driftLabel(): string {
-    const drift = parseByteString(this.drift)
+    const drift = BigInt(this.drift)
 
     if (drift === 0n) {
       return '0 B (0 bytes)'
@@ -171,7 +166,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
   }
 
   public get driftColor(): string {
-    const drift = parseByteString(this.drift)
+    const drift = BigInt(this.drift)
 
     if (drift === 0n) {
       return 'green.600'
@@ -193,7 +188,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
       return '0 B (0 bytes)'
     }
 
-    const drift = parseByteString(this.preview.drift)
+    const drift = BigInt(this.preview.drift)
 
     if (drift === 0n) {
       return '0 B (0 bytes)'

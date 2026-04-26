@@ -97,7 +97,7 @@ const VisibilityCard: React.FC<VisibilityCardProps> = ({
 
 export const ProjectSettingsPage: React.FC = observer(() => {
   const store = useViewModel(ProjectSettingsPageModel)
-  const fileUsageModel = useViewModel(ProjectFileUsageViewModel)
+  const fileUsageModel = store.canManageFileUsage ? useViewModel(ProjectFileUsageViewModel) : null
 
   return (
     <Page sidebar={<ProjectSidebar />}>
@@ -200,7 +200,7 @@ export const ProjectSettingsPage: React.FC = observer(() => {
               )}
             </Box>
 
-            <ProjectFileUsagePanel model={fileUsageModel} />
+            {fileUsageModel && <ProjectFileUsagePanel model={fileUsageModel} />}
 
             {store.hasDeletePermission && (
               <Box>

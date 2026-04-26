@@ -29,9 +29,8 @@ function getGraphQLErrorMessage(error: unknown): string {
 }
 
 export class ProjectFileUsageViewModel implements IViewModel {
-  private readonly validateRequest = ObservableRequest.of(
-    (projectId: string) => client.adminValidateProjectFileBytes({ data: { projectId } }),
-    { skipResetting: true },
+  private readonly validateRequest = ObservableRequest.of((projectId: string) =>
+    client.adminValidateProjectFileBytes({ data: { projectId } }),
   )
   private readonly previewRestoreRequest = ObservableRequest.of((projectId: string) =>
     client.adminRestoreProjectFileBytes({ data: { projectId, dryRun: true } }),
@@ -57,7 +56,12 @@ export class ProjectFileUsageViewModel implements IViewModel {
       (projectId) => {
         runInAction(() => {
           this._lastProjectId = projectId
+          this._restoreDialogOpen = false
+          this._restoreError = null
         })
+
+        this.previewRestoreRequest.abort()
+        this.applyRestoreRequest.abort()
 
         if (!projectId) {
           return
@@ -222,7 +226,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
   public async validate(): Promise<void> {
     const projectId = this.projectPermissions.projectId
 
-    if (!projectId) {
+    if (!projectId || !this.hasManagePermission) {
       return
     }
 

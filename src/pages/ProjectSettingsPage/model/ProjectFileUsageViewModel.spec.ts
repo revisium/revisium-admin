@@ -63,6 +63,10 @@ describe('ProjectFileUsageViewModel', () => {
   })
 
   it('loads validate data and exposes zero-drift state', async () => {
+    permissionService.addProjectPermissions('project-1', [
+      { id: 'manage-file-usage', action: 'manage', subject: 'FileUsage' },
+    ])
+
     adminValidateProjectFileBytes.mockResolvedValue({
       adminValidateProjectFileBytes: {
         projectId: 'project-1',
@@ -84,6 +88,17 @@ describe('ProjectFileUsageViewModel', () => {
     expect(vm.fileBlobCount).toBe(0)
     expect(vm.referenceCount).toBe(0)
     expect(vm.canRestore).toBe(false)
+
+    vm.dispose()
+  })
+
+  it('does not auto-validate without manage permission', async () => {
+    const vm = new ProjectFileUsageViewModel(projectPermissions, permissionService)
+    await Promise.resolve()
+
+    expect(adminValidateProjectFileBytes).not.toHaveBeenCalled()
+    expect(vm.hasManagePermission).toBe(false)
+    expect(vm.currentBytesLabel).toBe('0 B (0 bytes)')
 
     vm.dispose()
   })
@@ -210,6 +225,39 @@ describe('ProjectFileUsageViewModel', () => {
 
     expect(vm.restoreDialogOpen).toBe(true)
     expect(vm.restoreError).toBe('Forbidden')
+
+    vm.dispose()
+  })
+
+  it('clears stale validate data before a new request', async () => {
+    permissionService.addProjectPermissions('project-1', [
+      { id: 'manage-file-usage', action: 'manage', subject: 'FileUsage' },
+    ])
+
+    adminValidateProjectFileBytes
+      .mockResolvedValueOnce({
+        adminValidateProjectFileBytes: {
+          projectId: 'project-1',
+          currentFileBytes: '1024',
+          expectedFileBytes: '2048',
+          drift: '1024',
+          fileBlobCount: 1,
+          referenceCount: 2,
+        },
+      })
+      .mockRejectedValueOnce(createClientError('Validate failed', 500))
+
+    const vm = new ProjectFileUsageViewModel(projectPermissions, permissionService)
+    await Promise.resolve()
+
+    expect(vm.currentBytesLabel).toBe('1.0 KB (1,024 bytes)')
+
+    await vm.validate()
+
+    expect(vm.validateError).toBe('Validate failed')
+    expect(vm.currentBytesLabel).toBe('0 B (0 bytes)')
+    expect(vm.expectedBytesLabel).toBe('0 B (0 bytes)')
+    expect(vm.driftLabel).toBe('0 B (0 bytes)')
 
     vm.dispose()
   })

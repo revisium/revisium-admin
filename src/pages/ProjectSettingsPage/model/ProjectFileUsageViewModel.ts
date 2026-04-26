@@ -43,7 +43,6 @@ export class ProjectFileUsageViewModel implements IViewModel {
 
   private _restoreDialogOpen = false
   private _restoreError: string | null = null
-  private _lastProjectId: string | null = null
 
   constructor(
     private readonly projectPermissions: ProjectPermissions,
@@ -55,7 +54,6 @@ export class ProjectFileUsageViewModel implements IViewModel {
       () => this.projectPermissions.projectId,
       (projectId) => {
         runInAction(() => {
-          this._lastProjectId = projectId
           this._restoreDialogOpen = false
           this._restoreError = null
         })
@@ -71,14 +69,6 @@ export class ProjectFileUsageViewModel implements IViewModel {
       },
       { fireImmediately: true },
     )
-  }
-
-  public get projectId(): string | null {
-    return this.projectPermissions.projectId ?? this._lastProjectId
-  }
-
-  public get organizationId(): string | null {
-    return this.projectPermissions.organizationId
   }
 
   public get report(): ProjectFileUsageReportModel | null {

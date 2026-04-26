@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react/dialog'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
+import { RestoreProjectFileBytesResultModel } from 'src/__generated__/graphql-request.ts'
 
 interface MetricCardProps {
   label: string
@@ -47,7 +48,7 @@ export interface ProjectFileUsagePanelModel {
   referenceCount: number
   canRestore: boolean
   restoreDialogOpen: boolean
-  preview: unknown
+  preview: RestoreProjectFileBytesResultModel | null
   previewPreviousBytesLabel: string
   previewNextBytesLabel: string
   previewDriftLabel: string
@@ -73,7 +74,13 @@ export const ProjectFileUsagePanel: React.FC<ProjectFileUsagePanelProps> = obser
             Validate tracked file bytes and preview a restore before applying it.
           </Text>
         </Box>
-        <Button variant="outline" size="sm" onClick={model.validate} loading={model.isRefreshing}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={model.validate}
+          loading={model.isLoading || model.isRefreshing}
+          disabled={model.isLoading}
+        >
           Refresh
         </Button>
       </HStack>

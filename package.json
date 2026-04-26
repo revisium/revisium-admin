@@ -11,6 +11,9 @@
     "url": "https://github.com/revisium/revisium-admin.git"
   },
   "type": "module",
+  "engines": {
+    "node": ">=24.11.1 <25"
+  },
   "files": [
     "dist"
   ],

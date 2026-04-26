@@ -18,6 +18,7 @@ export enum PermissionSubject {
   Endpoint = 'Endpoint',
   User = 'User',
   ApiKey = 'ApiKey',
+  FileUsage = 'FileUsage',
 }
 
 export type Actions = `${PermissionAction}`

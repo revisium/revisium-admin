@@ -16,3 +16,4 @@ export const copyToClipboard = jest.fn().mockResolvedValue(undefined)
 export { StackItem, StackManager, createStackRequest, createStackContext } from '../src/shared/lib/Stack'
 export type { StackRequest } from '../src/shared/lib/Stack'
 export { ObservableRequest } from '../src/shared/lib/ObservableRequest'
+export { isAborted } from '../src/shared/lib/Either'

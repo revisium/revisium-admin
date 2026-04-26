@@ -716,6 +716,7 @@ export type Mutation = {
   addUserToOrganization: Scalars['Boolean']['output']
   addUserToProject: Scalars['Boolean']['output']
   adminResetAllCache: Scalars['Boolean']['output']
+  adminRestoreProjectFileBytes: RestoreProjectFileBytesResultModel
   applyMigrations: Array<ApplyMigrationResultModel>
   cancelSubscription: Scalars['Boolean']['output']
   confirmEmailCode: LoginModel
@@ -770,6 +771,10 @@ export type MutationAddUserToOrganizationArgs = {
 
 export type MutationAddUserToProjectArgs = {
   data: AddUserToProjectInput
+}
+
+export type MutationAdminRestoreProjectFileBytesArgs = {
+  data: RestoreProjectFileBytesInput
 }
 
 export type MutationApplyMigrationsArgs = {
@@ -1063,6 +1068,7 @@ export type PlanLimitsModel = {
   __typename: 'PlanLimitsModel'
   apiCallsPerDay?: Maybe<Scalars['Int']['output']>
   branchesPerProject?: Maybe<Scalars['Int']['output']>
+  endpointsPerProject?: Maybe<Scalars['Int']['output']>
   projects?: Maybe<Scalars['Int']['output']>
   rowVersions?: Maybe<Scalars['Int']['output']>
   rowsPerTable?: Maybe<Scalars['Int']['output']>
@@ -1087,10 +1093,21 @@ export type PluginsModel = {
   file: Scalars['Boolean']['output']
 }
 
+export type ProjectFileUsageReportModel = {
+  __typename: 'ProjectFileUsageReportModel'
+  currentFileBytes: Scalars['String']['output']
+  drift: Scalars['String']['output']
+  expectedFileBytes: Scalars['String']['output']
+  fileBlobCount: Scalars['Int']['output']
+  projectId: Scalars['ID']['output']
+  referenceCount: Scalars['Int']['output']
+}
+
 export type ProjectModel = {
   __typename: 'ProjectModel'
   allBranches: BranchesConnection
   createdAt: Scalars['DateTime']['output']
+  endpointUsage: UsageMetricModel
   id: Scalars['String']['output']
   isPublic: Scalars['Boolean']['output']
   name: Scalars['String']['output']
@@ -1122,6 +1139,7 @@ export type Query = {
   adminCacheStats: CacheStatsModel
   adminUser?: Maybe<UserModel>
   adminUsers: UsersConnection
+  adminValidateProjectFileBytes: ProjectFileUsageReportModel
   apiKeyById: ApiKeyModel
   availableProviders: Array<PaymentProviderModel>
   branch: BranchModel
@@ -1161,6 +1179,10 @@ export type QueryAdminUserArgs = {
 
 export type QueryAdminUsersArgs = {
   data: SearchUsersInput
+}
+
+export type QueryAdminValidateProjectFileBytesArgs = {
+  data: ValidateProjectFileBytesInput
 }
 
 export type QueryApiKeyByIdArgs = {
@@ -1318,6 +1340,20 @@ export type RenameTableResultModel = {
 export type ResetPasswordInput = {
   newPassword: Scalars['String']['input']
   userId: Scalars['String']['input']
+}
+
+export type RestoreProjectFileBytesInput = {
+  dryRun?: InputMaybe<Scalars['Boolean']['input']>
+  projectId: Scalars['ID']['input']
+}
+
+export type RestoreProjectFileBytesResultModel = {
+  __typename: 'RestoreProjectFileBytesResultModel'
+  drift: Scalars['String']['output']
+  dryRun: Scalars['Boolean']['output']
+  nextFileBytes: Scalars['String']['output']
+  previousFileBytes: Scalars['String']['output']
+  projectId: Scalars['ID']['output']
 }
 
 export type RevertChangesInput = {
@@ -1987,6 +2023,10 @@ export type UsersProjectModelEdge = {
   __typename: 'UsersProjectModelEdge'
   cursor: Scalars['String']['output']
   node: UsersProjectModel
+}
+
+export type ValidateProjectFileBytesInput = {
+  projectId: Scalars['ID']['input']
 }
 
 export type ViewChangeModel = {

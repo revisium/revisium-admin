@@ -52,6 +52,18 @@ export class ProjectSettingsPageModel {
     return this.permissionService.can('manage', 'ApiKey', { organizationId: this.context.organizationId })
   }
 
+  public get canManageFileUsage(): boolean {
+    const projectId = this.projectPermissions.projectId
+    if (!projectId) {
+      return false
+    }
+
+    return this.permissionService.can('manage', 'FileUsage', {
+      projectId,
+      organizationId: this.context.organizationId,
+    })
+  }
+
   public get organizationSettingsLink(): string {
     return `/app/${this.context.organizationId}/-/settings`
   }

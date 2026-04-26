@@ -1,0 +1,20 @@
+query adminValidateProjectFileBytes($data: ValidateProjectFileBytesInput!) {
+  adminValidateProjectFileBytes(data: $data) {
+    projectId
+    currentFileBytes
+    expectedFileBytes
+    drift
+    fileBlobCount
+    referenceCount
+  }
+}
+
+mutation adminRestoreProjectFileBytes($data: RestoreProjectFileBytesInput!) {
+  adminRestoreProjectFileBytes(data: $data) {
+    projectId
+    previousFileBytes
+    nextFileBytes
+    drift
+    dryRun
+  }
+}

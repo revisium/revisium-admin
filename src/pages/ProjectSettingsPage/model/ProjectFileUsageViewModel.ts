@@ -250,7 +250,7 @@ export class ProjectFileUsageViewModel implements IViewModel {
   public async applyRestore(): Promise<void> {
     const projectId = this.projectPermissions.projectId
 
-    if (!projectId || !this.preview) {
+    if (!projectId || !this.preview || !this.canRestore) {
       return
     }
 

@@ -261,4 +261,45 @@ describe('ProjectFileUsageViewModel', () => {
 
     vm.dispose()
   })
+
+  it('does not apply restore without current manage permission', async () => {
+    permissionService.addProjectPermissions('project-1', [
+      { id: 'manage-file-usage', action: 'manage', subject: 'FileUsage' },
+    ])
+
+    adminValidateProjectFileBytes.mockResolvedValue({
+      adminValidateProjectFileBytes: {
+        projectId: 'project-1',
+        currentFileBytes: '1024',
+        expectedFileBytes: '2048',
+        drift: '1024',
+        fileBlobCount: 1,
+        referenceCount: 2,
+      },
+    })
+
+    adminRestoreProjectFileBytes.mockResolvedValue({
+      adminRestoreProjectFileBytes: {
+        projectId: 'project-1',
+        previousFileBytes: '1024',
+        nextFileBytes: '2048',
+        drift: '1024',
+        dryRun: true,
+      },
+    })
+
+    const vm = new ProjectFileUsageViewModel(projectPermissions, permissionService)
+    await Promise.resolve()
+
+    await vm.previewRestore()
+
+    permissionService.clearAll()
+
+    await vm.applyRestore()
+
+    expect(adminRestoreProjectFileBytes).toHaveBeenCalledTimes(1)
+    expect(vm.hasManagePermission).toBe(false)
+
+    vm.dispose()
+  })
 })

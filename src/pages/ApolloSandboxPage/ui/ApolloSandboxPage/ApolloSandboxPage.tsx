@@ -26,6 +26,7 @@ export const ApolloSandboxPage = () => {
         initialEndpoint={url}
         initialState={{
           document: model.document,
+          includeCookies: true,
           headers: { ...(model.token ? { Authorization: `Bearer ${model.token}` } : {}) },
         }}
       />

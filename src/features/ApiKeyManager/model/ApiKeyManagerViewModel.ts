@@ -29,6 +29,7 @@ export class ApiKeyManagerViewModel implements IViewModel {
   private _config: ApiKeyManagerConfig = { mode: 'personal' }
   private _items: ApiKeyModel[] = []
   private _isLoaded = false
+  private _loadError: string | null = null
 
   private _isCreateDialogOpen = false
   private _isSecretDialogOpen = false
@@ -101,7 +102,7 @@ export class ApiKeyManagerViewModel implements IViewModel {
   }
 
   public get error(): string | null {
-    return this.dataSource.error
+    return this._loadError ?? this.dataSource.error
   }
 
   public get isEmpty(): boolean {
@@ -164,9 +165,14 @@ export class ApiKeyManagerViewModel implements IViewModel {
   public reset(): void {
     this._items = []
     this._isLoaded = false
+    this._loadError = null
   }
 
   public async loadKeys(): Promise<void> {
+    runInAction(() => {
+      this._loadError = null
+    })
+
     if (this._config.mode === 'personal') {
       const result = await this.dataSource.fetchPersonalKeys()
 
@@ -202,6 +208,14 @@ export class ApiKeyManagerViewModel implements IViewModel {
         this._isLoaded = true
       })
     }
+  }
+
+  public handleLoadKeysError(error: unknown): void {
+    console.error(error)
+    runInAction(() => {
+      this._loadError = error instanceof Error ? error.message : 'Failed to load API keys'
+      this._isLoaded = true
+    })
   }
 
   public openCreateDialog(): void {

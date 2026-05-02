@@ -16,7 +16,7 @@ interface ApiKeyListProps {
 
 export const ApiKeyList: FC<ApiKeyListProps> = observer(({ model, showCreateButton = true }) => {
   useEffect(() => {
-    model.loadKeys().catch(() => undefined)
+    model.loadKeys().catch(model.handleLoadKeysError)
     return () => model.reset()
   }, [model])
 

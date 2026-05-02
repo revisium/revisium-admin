@@ -42,7 +42,7 @@ async function setupMocks(
 ) {
   await setupAuth(page)
 
-  const schema = options.schema || {
+  const schema = options.schema ?? {
     type: 'object',
     properties: {
       name: { type: 'string', default: '' },
@@ -53,7 +53,7 @@ async function setupMocks(
     required: ['name', 'age', 'active'],
   }
 
-  const rows = options.rows || [{ id: 'row-1', data: { name: 'Test User', age: 25, active: true } }]
+  const rows = options.rows ?? [{ id: 'row-1', data: { name: 'Test User', age: 25, active: true } }]
 
   await page.route('**/graphql', async (route, request) => {
     const body = request.postDataJSON()
@@ -87,7 +87,7 @@ async function setupMocks(
     }
 
     if (opName === 'UpdateRow' || opName === 'PatchRowInline') {
-      const data = body.variables?.data || {}
+      const data = body.variables?.data ?? {}
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -95,10 +95,10 @@ async function setupMocks(
           data: {
             [opName === 'PatchRowInline' ? 'patchRow' : 'updateRow']: {
               __typename: 'RowModel',
-              id: data.rowId || 'row-1',
+              id: data.rowId ?? 'row-1',
               versionId: 'row-1-v2',
               readonly: false,
-              data: data.data || {},
+              data: data.data ?? {},
               createdAt: '2024-01-01T00:00:00Z',
               updatedAt: new Date().toISOString(),
             },
@@ -556,13 +556,13 @@ test.describe('Cell Editors', () => {
     ) {
       await setupAuth(page)
 
-      const foreignTableId = options.foreignTableId || 'categories'
-      const foreignRows = options.foreignRows || [
+      const foreignTableId = options.foreignTableId ?? 'categories'
+      const foreignRows = options.foreignRows ?? [
         { id: 'cat-1', data: { name: 'Category 1' } },
         { id: 'cat-2', data: { name: 'Category 2' } },
         { id: 'cat-3', data: { name: 'Category 3' } },
       ]
-      const currentValue = options.currentValue || 'cat-1'
+      const currentValue = options.currentValue ?? 'cat-1'
 
       const schema = {
         type: 'object',
@@ -615,7 +615,7 @@ test.describe('Cell Editors', () => {
           let filteredRows = foreignRows
 
           if (searchFilter?.OR) {
-            const searchTerm = searchFilter.OR[0]?.id?.contains || searchFilter.OR[1]?.data?.search
+            const searchTerm = searchFilter.OR[0]?.id?.contains ?? searchFilter.OR[1]?.data?.search
             if (searchTerm) {
               filteredRows = foreignRows.filter(
                 (row) =>
@@ -652,8 +652,8 @@ test.describe('Cell Editors', () => {
         }
 
         if (opName === 'UpdateRow' || opName === 'PatchRowInline') {
-          const variables = body.variables?.data || {}
-          const rowData = variables.data || {}
+          const variables = body.variables?.data ?? {}
+          const rowData = variables.data ?? {}
           return route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -661,7 +661,7 @@ test.describe('Cell Editors', () => {
               data: {
                 [opName === 'PatchRowInline' ? 'patchRow' : 'updateRow']: {
                   __typename: 'RowModel',
-                  id: variables.rowId || 'row-1',
+                  id: variables.rowId ?? 'row-1',
                   versionId: 'row-1-v2',
                   readonly: false,
                   data: rowData,

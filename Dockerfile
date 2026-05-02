@@ -6,7 +6,6 @@ COPY package.json ./
 COPY package-lock.json ./
 
 RUN npm ci --ignore-scripts
-RUN npx patch-package
 
 COPY . .
 

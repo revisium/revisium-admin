@@ -8,7 +8,7 @@ import {
 import { ViewerSwitcherMode } from 'src/entities/Schema'
 
 export interface RowEditorStateItemRef {
-  item: unknown | null
+  item: unknown
 }
 
 export class RowEditorState {

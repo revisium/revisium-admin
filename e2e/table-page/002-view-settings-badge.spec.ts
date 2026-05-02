@@ -35,9 +35,9 @@ function createViewsResponse(
               id: 'default',
               name: 'Default',
               description: null,
-              columns: options.columns || null,
+              columns: options.columns ?? null,
               filters: null,
-              sorts: options.sorts || null,
+              sorts: options.sorts ?? null,
               search: null,
             },
           ],
@@ -64,9 +64,9 @@ function createUpdateViewsResponse(
             id: 'default',
             name: 'Default',
             description: null,
-            columns: options.columns || null,
+            columns: options.columns ?? null,
             filters: null,
-            sorts: options.sorts || null,
+            sorts: options.sorts ?? null,
             search: null,
           },
         ],
@@ -98,7 +98,7 @@ async function setupMocks(
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(options.viewsResponse || createViewsResponse()),
+        body: JSON.stringify(options.viewsResponse ?? createViewsResponse()),
       })
     }
 

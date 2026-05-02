@@ -80,12 +80,12 @@ export class SidebarStateViewModel {
         this.toggle()
       }
     }
-    window.addEventListener('keydown', this._keyboardHandler)
+    globalThis.addEventListener('keydown', this._keyboardHandler)
   }
 
   public disposeKeyboard(): void {
     if (this._keyboardHandler) {
-      window.removeEventListener('keydown', this._keyboardHandler)
+      globalThis.removeEventListener('keydown', this._keyboardHandler)
       this._keyboardHandler = null
     }
     this._hoverDelay.dispose()

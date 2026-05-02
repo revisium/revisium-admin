@@ -146,7 +146,7 @@ export class EndpointsPageViewModel implements IViewModel {
 
   public get isEndpointCreationLocked(): boolean {
     const usage = this._endpointUsage
-    if (!usage || usage.limit === null || usage.limit === undefined) {
+    if (usage?.limit === null || usage?.limit === undefined) {
       return false
     }
     return usage.current >= usage.limit

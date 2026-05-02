@@ -37,7 +37,7 @@ function createViewsResponse(
               description: null,
               columns: null,
               filters: null,
-              sorts: options.sorts || null,
+              sorts: options.sorts ?? null,
               search: null,
             },
           ],
@@ -56,7 +56,7 @@ async function setupMocks(
 ) {
   await setupAuth(page)
 
-  const rows = options.rows || createSampleRows(5)
+  const rows = options.rows ?? createSampleRows(5)
   const rowsResponse = createRowsResponse(rows)
 
   await page.route('**/graphql', async (route, request) => {
@@ -70,7 +70,7 @@ async function setupMocks(
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(options.viewsResponse || createTableViewsResponse(TABLE_ID)),
+        body: JSON.stringify(options.viewsResponse ?? createTableViewsResponse(TABLE_ID)),
       })
     }
 

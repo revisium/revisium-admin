@@ -51,7 +51,7 @@ export class AuthorizePageViewModel implements IViewModel {
     const redirectUrl = new URL(this._oauthParams.redirectUri)
     redirectUrl.searchParams.set('error', 'access_denied')
     redirectUrl.searchParams.set('state', this._oauthParams.state)
-    window.location.href = redirectUrl.toString()
+    globalThis.location.href = redirectUrl.toString()
   }
 
   public async approve(): Promise<void> {
@@ -96,7 +96,7 @@ export class AuthorizePageViewModel implements IViewModel {
       }
       this._redirectTimer = setTimeout(() => {
         if (this._redirectUri) {
-          window.location.href = this._redirectUri
+          globalThis.location.href = this._redirectUri
         }
       }, REDIRECT_DELAY_MS)
     } catch (e) {
@@ -112,12 +112,12 @@ export class AuthorizePageViewModel implements IViewModel {
       clearTimeout(this._redirectTimer)
     }
     if (this._redirectUri) {
-      window.location.href = this._redirectUri
+      globalThis.location.href = this._redirectUri
     }
   }
 
   public init(): void {
-    const params = new URLSearchParams(window.location.search)
+    const params = new URLSearchParams(globalThis.location.search)
     const clientId = params.get('client_id')
     const clientName = params.get('client_name')
     const redirectUri = params.get('redirect_uri')

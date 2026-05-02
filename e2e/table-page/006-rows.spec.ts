@@ -26,7 +26,7 @@ async function setupMocks(
 ) {
   await setupAuth(page)
 
-  const rows = options.rows || createSampleRows(5)
+  const rows = options.rows ?? createSampleRows(5)
   const rowsResponse = createRowsResponse(rows)
 
   await page.route('**/graphql', async (route, request) => {
@@ -113,7 +113,7 @@ async function setupMocks(
         },
       },
       tableListData: createTablesResponse(TABLE_ID),
-      getTableForLoader: options.tableResponse || createFullTableResponse(TABLE_ID),
+      getTableForLoader: options.tableResponse ?? createFullTableResponse(TABLE_ID),
       RowListRows: rowsResponse,
       getChanges: { data: { changes: { tables: 0, rows: 0 } } },
       GetRevisionChanges: { data: { revisionChanges: { tables: 0, rows: 0 } } },

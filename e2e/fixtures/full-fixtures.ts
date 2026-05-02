@@ -134,7 +134,7 @@ export function createFullTableResponse(tableId: string, schema?: object) {
         updatedAt: '2024-01-01T00:00:00Z',
         readonly: false,
         count: 0,
-        schema: schema || defaultSchema,
+        schema: schema ?? defaultSchema,
       },
     },
   }

@@ -35,7 +35,7 @@ function createViewsResponse(
               id: 'default',
               name: 'Default',
               description: null,
-              columns: options.columns || null,
+              columns: options.columns ?? null,
               filters: null,
               sorts: null,
               search: null,
@@ -69,7 +69,7 @@ async function setupMocks(
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(options.viewsResponse || createTableViewsResponse(TABLE_ID)),
+        body: JSON.stringify(options.viewsResponse ?? createTableViewsResponse(TABLE_ID)),
       })
     }
 

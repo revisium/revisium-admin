@@ -58,6 +58,10 @@ export class PlanItemViewModel {
     return !this.canUpgrade && !this.canDowngrade
   }
 
+  public get buttonHidden(): boolean {
+    return this.canDowngrade
+  }
+
   public get projectsLimit(): string {
     return formatLimitNumber(this.plan.limits.projects)
   }

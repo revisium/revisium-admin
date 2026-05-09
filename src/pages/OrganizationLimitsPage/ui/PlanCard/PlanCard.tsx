@@ -54,6 +54,7 @@ export const PlanCard: FC<PlanCardProps> = observer(({ model, parentModel }) => 
           size="sm"
           variant={model.isCurrent ? 'outline' : 'solid'}
           width="100%"
+          visibility={model.buttonHidden ? 'hidden' : 'visible'}
           disabled={model.buttonDisabled || parentModel.isActionLoading}
           onClick={model.handleClick}
         >

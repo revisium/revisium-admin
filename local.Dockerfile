@@ -15,5 +15,8 @@ RUN npm run build
 
 FROM --platform=linux/amd64 nginxinc/nginx-unprivileged:1.25.3-alpine
 
+ENV REVISIUM_ROBOTS_TXT=
+
 COPY --from=builder /home/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY --chmod=755 docker/40-render-robots-txt.sh /docker-entrypoint.d/40-render-robots-txt.sh

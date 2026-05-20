@@ -65,8 +65,8 @@ export class RowEditorState {
   }
 
   public setJsonValue(data: unknown): void {
-    const node = this.editor.root.node as unknown as { setValue(v: unknown): void }
-    node.setValue(data)
+    const node = this.editor.root.node as unknown as { setValue(v: unknown, options?: { internal?: boolean }): void }
+    node.setValue(data, { internal: true })
   }
 
   public dispose(): void {

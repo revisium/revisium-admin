@@ -154,7 +154,7 @@ describe('RowStackItemFactory', () => {
   })
 
   describe('createUpdatingItemWithState', () => {
-    it('should create RowUpdatingItem with provided state', () => {
+    it('should create RowUpdatingItem from the provided state value', () => {
       const deps = createMockFactoryDeps()
       const factory = new RowStackItemFactory(deps)
       const schema = createTestSchema()
@@ -165,7 +165,8 @@ describe('RowStackItemFactory', () => {
       const item = factory.createUpdatingItemWithState('users', state, 'row-123', false)
 
       expect(item.type).toBe(RowStackItemType.Updating)
-      expect(item.state).toBe(state)
+      expect(item.state).not.toBe(state)
+      expect(item.state.editor.getValue()).toEqual({ name: 'Test' })
       expect(item.originalRowId).toBe('row-123')
     })
   })

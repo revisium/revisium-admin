@@ -210,6 +210,7 @@ export interface MockRowEditorState {
   rowId: string
   setViewMode: jest.Mock
   setScrollPosition: jest.Mock
+  setJsonValue: jest.Mock
   dispose: jest.Mock
 }
 
@@ -238,6 +239,7 @@ export const createMockRowEditorState = (): MockRowEditorState => {
     rowId: 'test-row',
     setViewMode: jest.fn(),
     setScrollPosition: jest.fn(),
+    setJsonValue: jest.fn(),
     dispose: jest.fn(),
   }
 }

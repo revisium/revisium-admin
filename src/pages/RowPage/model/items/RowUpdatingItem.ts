@@ -119,13 +119,30 @@ export class RowUpdatingItem extends RowEditorItemBase {
   }
 
   private extractFileFieldData(fileId: string, rowData: JsonValue): Record<string, unknown> | null {
-    if (typeof rowData !== 'object' || rowData === null || Array.isArray(rowData)) {
+    if (typeof rowData !== 'object' || rowData === null) {
       return null
     }
 
-    for (const value of Object.values(rowData as Record<string, unknown>)) {
-      if (typeof value === 'object' && value !== null && (value as Record<string, unknown>).fileId === fileId) {
-        return value as Record<string, unknown>
+    if (Array.isArray(rowData)) {
+      for (const value of rowData) {
+        const fileData = this.extractFileFieldData(fileId, value as JsonValue)
+        if (fileData) {
+          return fileData
+        }
+      }
+      return null
+    }
+
+    const objectData = rowData as Record<string, unknown>
+
+    if (objectData.fileId === fileId) {
+      return objectData
+    }
+
+    for (const value of Object.values(objectData)) {
+      const fileData = this.extractFileFieldData(fileId, value as JsonValue)
+      if (fileData) {
+        return fileData
       }
     }
 

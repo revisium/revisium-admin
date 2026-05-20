@@ -44,7 +44,9 @@ describe('RowCreatingItem', () => {
   describe('approve', () => {
     it('should call createRow command on success', async () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
+      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({
+        row: { id: 'new-row', data: { name: 'Saved' } },
+      })
 
       const state = createMockRowEditorState()
       const item = new RowCreatingItem(deps, false, state as never)
@@ -55,12 +57,13 @@ describe('RowCreatingItem', () => {
       await item.approve()
 
       expect(deps.mutationDataSource.createRow).toHaveBeenCalled()
+      expect(state.setJsonValue).toHaveBeenCalledWith({ name: 'Saved' })
       expect(resolver).toHaveBeenCalledWith({ type: 'creatingToUpdating' })
     })
 
     it('should call selectForeignKeyRow when isSelectingForeignKey', async () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
+      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row', data: {} } })
 
       const state = createMockRowEditorState()
       const item = new RowCreatingItem(deps, true, state as never)
@@ -70,7 +73,7 @@ describe('RowCreatingItem', () => {
 
       await item.approve()
 
-      expect(resolver).toHaveBeenCalledWith({ type: 'selectForeignKeyRow', rowId: 'test-row' })
+      expect(resolver).toHaveBeenCalledWith({ type: 'selectForeignKeyRow', rowId: 'new-row' })
     })
 
     it('should not resolve on failure', async () => {
@@ -90,7 +93,7 @@ describe('RowCreatingItem', () => {
 
     it('should call editor.markAsSaved on success', async () => {
       const deps = createMockCreatingDeps()
-      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row' } })
+      ;(deps.mutationDataSource.createRow as jest.Mock).mockResolvedValue({ row: { id: 'new-row', data: {} } })
 
       const state = createMockRowEditorState()
       const item = new RowCreatingItem(deps, false, state as never)
@@ -118,7 +121,7 @@ describe('RowCreatingItem', () => {
     it('should return correct isLoading state', async () => {
       const deps = createMockCreatingDeps()
       ;(deps.mutationDataSource.createRow as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({ row: { id: 'new-row' } }), 10)),
+        () => new Promise((resolve) => setTimeout(() => resolve({ row: { id: 'new-row', data: {} } }), 10)),
       )
 
       const state = createMockRowEditorState()

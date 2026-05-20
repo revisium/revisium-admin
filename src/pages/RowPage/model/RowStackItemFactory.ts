@@ -132,9 +132,35 @@ export class RowStackItemFactory {
     rowId: string,
     isSelectingForeignKey: boolean,
   ): RowUpdatingItem {
-    const item = new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, state, rowId)
-    state.itemRef.item = item
+    const nextState = this.createEditingState(
+      this.deps.schemaCache.getOrThrow(tableId),
+      rowId,
+      state.editor.getValue() as JsonValue,
+      0,
+    )
+    nextState.viewMode = state.viewMode
+    const item = new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, nextState, rowId)
+    nextState.itemRef.item = item
     return item
+  }
+
+  private createEditingState(
+    schema: JsonObjectSchema,
+    rowId: string,
+    data: JsonValue,
+    foreignKeysCount: number,
+  ): RowEditorState {
+    const itemRef: ItemRef = { item: null }
+    return new RowEditorState({
+      schema: schema as ToolkitJsonSchema,
+      initialValue: data,
+      mode: this.deps.projectContext.isDraftRevision ? 'editing' : 'reading',
+      rowId,
+      refSchemas: schemaRefsMapper as Record<string, ToolkitJsonSchema>,
+      callbacks: this.createCallbacks(itemRef, true),
+      foreignKeysCount,
+      itemRef,
+    })
   }
 
   private createEditorDeps(tableId: string) {

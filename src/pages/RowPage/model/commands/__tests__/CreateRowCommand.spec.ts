@@ -30,7 +30,7 @@ describe('CreateRowCommand', () => {
 
       const result = await command.execute('new-row', data)
 
-      expect(result).toBe(true)
+      expect(result).toEqual({ row: { id: 'new-row' } })
       expect(deps.mutationDataSource.createRow).toHaveBeenCalledWith({
         revisionId: 'draft-1',
         tableId: 'test-table',
@@ -46,7 +46,7 @@ describe('CreateRowCommand', () => {
 
       const result = await command.execute('new-row', { name: 'Test' })
 
-      expect(result).toBe(false)
+      expect(result).toBeNull()
     })
 
     describe('side effects', () => {
@@ -88,7 +88,7 @@ describe('CreateRowCommand', () => {
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
         const result = await command.execute('new-row', { name: 'Test' })
 
-        expect(result).toBe(false)
+        expect(result).toBeNull()
         expect(consoleSpy).toHaveBeenCalled()
         consoleSpy.mockRestore()
       })

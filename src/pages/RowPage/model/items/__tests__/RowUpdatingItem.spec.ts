@@ -260,6 +260,27 @@ describe('RowUpdatingItem', () => {
 
       expect(result).toBeNull()
     })
+
+    it('should return nested file data from uploaded row data', async () => {
+      const deps = createMockUpdatingDeps()
+      ;(deps.mutationDataSource.uploadFile as jest.Mock) = jest.fn().mockResolvedValue({
+        row: {
+          data: {
+            profile: {
+              documents: [{ fileId: 'file-123', status: 'uploaded', fileName: 'contract.txt' }],
+            },
+          },
+        },
+      })
+
+      const state: MockRowEditorState = createMockRowEditorState()
+      const item = new RowUpdatingItem(deps, false, state as never, 'test-row')
+
+      const result = await item.uploadFileWithNotification('file-123', new File(['test'], 'contract.txt'))
+
+      expect(result).toEqual({ fileId: 'file-123', status: 'uploaded', fileName: 'contract.txt' })
+      expect(deps.notifications.onUploadSuccess).toHaveBeenCalled()
+    })
   })
 
   describe('approve failure', () => {

@@ -1,6 +1,6 @@
 import { ProjectContext } from 'src/entities/Project/model/ProjectContext.ts'
 import { JsonValue } from 'src/entities/Schema/types/json.types.ts'
-import { RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
+import { CreateRowResult, RowMutationDataSource } from 'src/widgets/RowStackWidget/model/RowMutationDataSource.ts'
 
 export interface CreateRowCommandDeps {
   mutationDataSource: RowMutationDataSource
@@ -11,7 +11,7 @@ export interface CreateRowCommandDeps {
 export class CreateRowCommand {
   constructor(private readonly deps: CreateRowCommandDeps) {}
 
-  public async execute(rowId: string, data: JsonValue): Promise<boolean> {
+  public async execute(rowId: string, data: JsonValue): Promise<CreateRowResult | null> {
     const { mutationDataSource, projectContext, tableId } = this.deps
 
     try {
@@ -26,13 +26,13 @@ export class CreateRowCommand {
         if (!projectContext.touched) {
           projectContext.updateTouched(true)
         }
-        return true
+        return result
       }
 
-      return false
+      return null
     } catch (e) {
       console.error(e)
-      return false
+      return null
     }
   }
 }

@@ -53,13 +53,14 @@ export class RowCreatingItem extends RowEditorItemBase {
       const result = await this.createRowCommand.execute(rowId, data)
 
       if (result) {
+        this.state.setJsonValue(result.row.data)
         this.state.editor.markAsSaved()
         if (this.isSelectingForeignKey) {
-          this.selectForeignKeyRow(rowId)
+          this.selectForeignKeyRow(result.row.id)
         } else {
           this.toUpdating()
         }
-        return rowId
+        return result.row.id
       }
 
       return null

@@ -136,7 +136,7 @@ export class RowStackItemFactory {
       this.deps.schemaCache.getOrThrow(tableId),
       rowId,
       state.editor.getValue() as JsonValue,
-      0,
+      state.foreignKeysCount,
     )
     nextState.viewMode = state.viewMode
     const item = new RowUpdatingItem(this.createEditorDeps(tableId), isSelectingForeignKey, nextState, rowId)

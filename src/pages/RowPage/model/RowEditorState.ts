@@ -44,6 +44,10 @@ export class RowEditorState {
     return this._foreignKeysCount > 0
   }
 
+  public get foreignKeysCount(): number {
+    return this._foreignKeysCount
+  }
+
   public get hasChanges(): boolean {
     return this.editor.hasChanges
   }

@@ -205,6 +205,7 @@ export interface MockRowEditorState {
   viewMode: string
   scrollPosition: number | null
   areThereForeignKeysBy: boolean
+  foreignKeysCount: number
   hasChanges: boolean
   isValid: boolean
   rowId: string
@@ -234,6 +235,7 @@ export const createMockRowEditorState = (): MockRowEditorState => {
     viewMode: 'tree',
     scrollPosition: null,
     areThereForeignKeysBy: false,
+    foreignKeysCount: 0,
     hasChanges: false,
     isValid: true,
     rowId: 'test-row',

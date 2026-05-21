@@ -159,7 +159,7 @@ describe('RowStackItemFactory', () => {
       const factory = new RowStackItemFactory(deps)
       const schema = createTestSchema()
 
-      const existingItem = factory.createUpdatingItem('users', schema, 'row-123', { name: 'Test' }, 0, false)
+      const existingItem = factory.createUpdatingItem('users', schema, 'row-123', { name: 'Test' }, 2, false)
       const state = existingItem.state
 
       const item = factory.createUpdatingItemWithState('users', state, 'row-123', false)
@@ -167,6 +167,7 @@ describe('RowStackItemFactory', () => {
       expect(item.type).toBe(RowStackItemType.Updating)
       expect(item.state).not.toBe(state)
       expect(item.state.editor.getValue()).toEqual({ name: 'Test' })
+      expect(item.state.foreignKeysCount).toBe(2)
       expect(item.originalRowId).toBe('row-123')
     })
   })

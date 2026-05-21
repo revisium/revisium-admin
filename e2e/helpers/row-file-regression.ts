@@ -345,14 +345,23 @@ export function createRowPageUploadMocks(
 
         const nextData = JSON.parse(JSON.stringify(rowData))
 
-        if (fileId === 'file-avatar-created') {
-          nextData.avatar = uploadedFile(fileId, 'avatar.txt')
-        }
-        if (fileId === 'file-contract-created') {
-          nextData.profile.contract = uploadedFile(fileId, 'contract.txt')
-        }
-        if (fileId === 'file-workflow-evidence-created') {
-          nextData.workflow.steps[0].evidence = uploadedFile(fileId, 'evidence.txt')
+        switch (fileId) {
+          case 'file-avatar-created':
+            nextData.avatar = uploadedFile(fileId, 'avatar.txt')
+            break
+          case 'file-contract-created':
+            nextData.profile.contract = uploadedFile(fileId, 'contract.txt')
+            break
+          case 'file-workflow-evidence-created':
+            nextData.workflow.steps[0].evidence = uploadedFile(fileId, 'evidence.txt')
+            break
+          default:
+            await route.fulfill({
+              status: 500,
+              contentType: 'application/json',
+              body: JSON.stringify({ error: `Unhandled test upload fileId: ${fileId}` }),
+            })
+            return
         }
 
         rowData = nextData

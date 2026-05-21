@@ -127,7 +127,7 @@ describe('RowStackManager', () => {
   })
 
   describe('item.toUpdating (from Creating)', () => {
-    it('should replace RowCreatingItem with RowUpdatingItem preserving state', async () => {
+    it('should replace RowCreatingItem with RowUpdatingItem preserving editor value', async () => {
       const deps = createMockDeps()
       const manager = new RowStackManager(deps)
       manager.init()
@@ -145,7 +145,8 @@ describe('RowStackManager', () => {
       expect(manager.stack[0].type).toBe(RowStackItemType.Updating)
 
       const updatingItem = manager.stack[0] as RowUpdatingItem
-      expect(updatingItem.state).toBe(state)
+      expect(updatingItem.state).not.toBe(state)
+      expect(updatingItem.state.editor.getValue()).toEqual(state.editor.getValue())
     })
   })
 

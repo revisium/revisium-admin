@@ -38,9 +38,7 @@ jobs:
           node-version: 24.11.1
           cache: 'npm'
       - run: npm ci
-      - run: npm run ts:check
-      - run: npm run lint
-      - run: npm run test:ci
+      - run: npm run verify
 
   e2e:
     runs-on: ubuntu-latest

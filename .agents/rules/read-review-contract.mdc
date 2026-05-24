@@ -1,0 +1,18 @@
+---
+description: Read the local review contract before review or implementation.
+alwaysApply: true
+---
+
+# Read Review Contract
+
+Start review and implementation checks from [`../REVIEW.md`](../REVIEW.md), then
+cross-check `README.md`, `ENV.md`, and implementation docs under `docs/` if present.
+
+Keep local contracts and implementation docs synchronized:
+
+- policy and review expectations: `AGENTS.md`, `REVIEW.md`
+- runtime/product assumptions: `README.md`, `ENV.md`
+- route behavior, permissions, and UX: corresponding files under `docs/`
+
+If implementation changes touch any of these surfaces, update affected docs in
+the same change so behavior and documentation do not drift.

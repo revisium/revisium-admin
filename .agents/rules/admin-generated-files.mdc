@@ -1,0 +1,10 @@
+---
+description: Keep generated files generated.
+alwaysApply: true
+---
+
+# Generated Files
+
+Do not hand-edit files under `src/__generated__/`.
+
+Update GraphQL sources/fixtures first, then rerun generation.

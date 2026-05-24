@@ -1,0 +1,15 @@
+---
+description: Keep admin UX and behavior docs-first and synchronized with implementation.
+alwaysApply: true
+---
+
+# Docs First for Admin Work
+
+`docs/` is the implementation source-of-truth for admin UX and behavior.
+
+Before changing route behavior, page composition, navigation, permissions,
+copy, validation, process, or architecture, update the matching docs in
+`revisium-admin/docs/...` (or create them) before code changes.
+
+If implementation and docs diverge, treat the PR as blocked until the same
+change either updates docs or reverts code to match docs.

@@ -1,0 +1,9 @@
+---
+description: Read the local review contract before review or implementation.
+alwaysApply: true
+---
+
+# Read Review Contract
+
+Start review and implementation checks from [`../REVIEW.md`](../REVIEW.md), then
+cross-check `README.md`, `ENV.md`, and implementation docs under `docs/` if present.

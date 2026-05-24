@@ -1,0 +1,11 @@
+---
+description: Keep admin UX and behavior docs first.
+alwaysApply: true
+---
+
+# Docs First for Admin Work
+
+Before changing route behavior, page composition, navigation, permissions, or copy,
+update or confirm the matching admin docs in `revisium-admin/docs/...` first.
+
+If implementation and docs diverge, treat the PR as blocked until both are aligned.

@@ -1,0 +1,16 @@
+---
+description: Run repo checks before handoff or PR updates.
+alwaysApply: true
+---
+
+# Validation and Tests
+
+Before handoff or PR update, run:
+
+- `npm run verify`
+
+For docs/agent contract-only changes, run:
+
+- `npm run agent:check`
+
+Run `npm run test:e2e` when user-visible flows are changed.

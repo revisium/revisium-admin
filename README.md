@@ -40,6 +40,12 @@ Administration interface for managing Revisium projects, schemas, and data.
 
 See [ENV.md](./ENV.md) for all environment variables.
 
+## Documentation
+
+Admin UX and page behavior documentation is in [`./docs`](./docs/README.md).
+Runbook-style and implementation docs in this repo are the canonical source for
+admin behavior changes.
+
 ## Related Packages
 
 | Package                                                                | Description                                                   |

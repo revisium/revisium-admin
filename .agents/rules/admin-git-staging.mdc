@@ -1,0 +1,12 @@
+---
+description: Keep commits scoped and reviewable.
+alwaysApply: true
+---
+
+# Git Staging
+
+Before committing, inspect `git status --short` and `git diff --cached`.
+
+Stage only files that belong to the requested change.
+
+Do not revert unrelated user changes.

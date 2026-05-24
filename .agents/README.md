@@ -4,9 +4,9 @@ This directory contains agent-facing workflows and rules for `revisium-admin`.
 They enforce the same contract as [../AGENTS.md](../AGENTS.md), [../REVIEW.md](../REVIEW.md),
 and the admin `README`/`ENV` docs.
 
-They are not a separate architecture source of truth. When implementation behavior,
-UX, architecture, or review policy changes, update canonical docs and root
-contracts first.
+They are not a separate architecture source of truth. They must mirror and enforce
+the same local contract as [../AGENTS.md](../AGENTS.md), [../REVIEW.md](../REVIEW.md),
+and implementation docs in `docs/`.
 
 ## Skills
 

@@ -2,16 +2,17 @@ FROM node:24.11.1-alpine AS builder
 
 WORKDIR /home/app
 
-COPY package.json ./
-COPY package-lock.json ./
+RUN corepack enable
 
-RUN npm ci --ignore-scripts
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
 
 RUN apk update && apk add git
 
-RUN npm run build
+RUN pnpm run build
 
 FROM nginxinc/nginx-unprivileged:1.25.3-alpine
 

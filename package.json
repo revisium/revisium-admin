@@ -11,6 +11,7 @@
     "url": "https://github.com/revisium/revisium-admin.git"
   },
   "type": "module",
+  "packageManager": "pnpm@11.5.2",
   "engines": {
     "node": ">=24.11.1 <25"
   },
@@ -20,7 +21,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "ts:check": "tsc --noEmit",
@@ -34,10 +35,10 @@
     "preview": "vite preview",
     "prettier": "prettier . --write",
     "format:check": "prettier --check \"AGENTS.md\" \"README.md\" \"REVIEW.md\" \"docs/**/*.md\"",
-    "agent:check": "npm run format:check && test -L CLAUDE.md && test \"$(readlink CLAUDE.md)\" = \"AGENTS.md\"",
+    "agent:check": "pnpm run format:check && test -L CLAUDE.md && test \"$(readlink CLAUDE.md)\" = \"AGENTS.md\"",
     "skills:lint": "node scripts/lint-skills.mjs",
-    "verify": "npm run agent:check && npm run skills:lint && npm run ts:check && npm run lint && npm run test:ci && npm run build",
-    "gql:codegen": "graphql-codegen && npm run prettier",
+    "verify": "pnpm run agent:check && pnpm run skills:lint && pnpm run ts:check && pnpm run lint && pnpm run test:ci && pnpm run build",
+    "gql:codegen": "graphql-codegen && pnpm run prettier",
     "gql:codegen:download": "graphql-codegen --download",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:patch": "npm version patch --no-git-tag-version"
@@ -50,7 +51,9 @@
     "@codemirror/lang-json": "6.0.1",
     "@codemirror/lang-markdown": "6.3.2",
     "@emotion/react": "11.14.0",
+    "@remix-run/router": "1.23.2",
     "@revisium/formula": "0.10.0",
+    "@revisium/schema-toolkit": "0.22.1",
     "@revisium/schema-toolkit-ui": "0.6.14",
     "@uiw/codemirror-theme-github": "4.25.4",
     "@uiw/react-codemirror": "4.23.12",
@@ -61,11 +64,13 @@
     "diff": "8.0.3",
     "graphql": "16.8.1",
     "graphql-request": "6.1.0",
+    "graphql-tag": "2.12.6",
     "jwt-decode": "4.0.0",
     "mobx": "6.12.3",
     "mobx-react-lite": "4.0.7",
     "mobx-utils": "6.0.8",
     "nanoid": "3.3.11",
+    "next-themes": "0.4.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-icons": "5.2.1",
@@ -76,17 +81,9 @@
     "vite": "8.0.7",
     "vite-plugin-checker": "0.11.0"
   },
-  "overrides": {
-    "immutable": "^4.3.8",
-    "minimatch": "^3.1.5",
-    "picomatch": "^4.0.4",
-    "brace-expansion": "^1.1.13",
-    "fast-uri": "^3.1.2",
-    "yaml": "^2.8.3",
-    "lodash": "4.18.1"
-  },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",
+    "dotenv": "16.6.1",
     "@graphql-codegen/near-operation-file-preset": "3.0.0",
     "@graphql-codegen/typescript": "4.0.6",
     "@graphql-codegen/typescript-graphql-request": "6.2.0",
@@ -94,6 +91,7 @@
     "@playwright/test": "1.57.0",
     "@types/diff": "7.0.2",
     "@types/jest": "29.5.12",
+    "@types/node": "25.1.0",
     "@types/react": "18.2.64",
     "@types/react-dom": "18.2.21",
     "@types/uuid": "9.0.8",

@@ -36,6 +36,23 @@ Administration interface for managing Revisium projects, schemas, and data.
 - **Diff viewer** — compare changes between revisions
 - **Users & Roles** — manage users and permissions
 
+## Development
+
+This project uses [pnpm](https://pnpm.io) (pinned via the `packageManager` field). Node version: see `.nvmrc` (24.11.1).
+
+```bash
+corepack enable           # activates the pinned pnpm
+pnpm install              # install dependencies (build scripts gated by pnpm-workspace.yaml allowBuilds)
+
+pnpm run format:check     # check formatting
+pnpm run lint             # lint
+pnpm run ts:check         # type-check
+pnpm run test:ci          # unit tests
+pnpm run build            # production build (tsc + vite)
+pnpm dev                  # local dev server
+pnpm run test:e2e         # Playwright E2E tests (requires a running app)
+```
+
 ## Configuration
 
 See [ENV.md](./ENV.md) for all environment variables.

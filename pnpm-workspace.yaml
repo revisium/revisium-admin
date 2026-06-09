@@ -1,0 +1,13 @@
+saveExact: true
+
+allowBuilds:
+  '@swc/core': true
+
+overrides:
+  immutable: ^4.3.8
+  minimatch: ^3.1.5
+  picomatch: ^4.0.4
+  brace-expansion: ^1.1.13
+  fast-uri: ^3.1.2
+  yaml: ^2.8.3
+  lodash: 4.18.1
